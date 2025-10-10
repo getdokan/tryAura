@@ -25,6 +25,8 @@ class Plugin {
 
         if ( is_admin() ) {
             new Admin();
+            // Register the Featured Image Enhancer UI assets.
+            new Enhancer();
         }
     }
 }

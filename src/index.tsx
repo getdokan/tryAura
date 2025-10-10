@@ -1,4 +1,4 @@
-import { render, useEffect, useState } from '@wordpress/element';
+import { createRoot, useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import { Button, TextControl, Notice, Spinner, Card, CardBody } from '@wordpress/components';
@@ -101,9 +101,10 @@ const App = () => {
 };
 
 function mount() {
-    const root = document.getElementById('try-aura-settings-root');
-    if ( root ) {
-        render( <App />, root );
+    const el = document.getElementById('try-aura-settings-root');
+    if ( el ) {
+        const root = (createRoot as any)(el);
+        root.render(<App />);
     }
 }
 

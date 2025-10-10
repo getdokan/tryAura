@@ -23,6 +23,9 @@ class Plugin {
         // Register custom REST endpoints.
         new SettingsController( 'try_aura_api_key' );
 
+        // Frontend try-on script on product pages.
+        new TryOn();
+
         if ( is_admin() ) {
             new Admin();
             // Register the Featured Image Enhancer UI assets.

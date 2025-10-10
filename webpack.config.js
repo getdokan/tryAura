@@ -9,5 +9,6 @@ module.exports = {
 	entry: {
 		index: path.resolve(process.cwd(), 'src', 'index.tsx'),
 		enhancer: path.resolve(process.cwd(), 'src', 'enhancer.tsx'),
+		tryon: path.resolve(process.cwd(), 'src', 'tryon.tsx'),
 	}
 };

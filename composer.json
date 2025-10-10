@@ -1,0 +1,28 @@
+{
+    "name": "dokan/try-aura",
+    "description": "an AI-powered virtual try-on and content creation platform built for fashion and eCommerce.",
+    "type": "wordpress-plugin",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Dokan\\TryAura\\": "inc/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Shazahanul Islam Shohag",
+            "email": "shohag121@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {},
+    "require-dev": {
+      "automattic/vipwpcs": "^3.0",
+      "phpcompatibility/phpcompatibility-wp": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

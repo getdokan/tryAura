@@ -505,43 +505,45 @@ const PreviewModal = ({ imageUrls, attachmentIds, onClose }: PreviewProps) => {
 					</div>
 				</div>
 
-				{/* Video section */}
-				<div style={{ marginTop: 16 }}>
-					<div style={{ fontWeight: 600, marginBottom: 8 }}>Generated video</div>
-					{videoUrl ? (
-						<video src={videoUrl} controls style={{ width: '100%', maxHeight: 360, background: '#000', borderRadius: 4 }} />
-					) : (
-						<div style={{ border: '1px solid #eee', borderRadius: 4, minHeight: 120, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-							<span>{videoMessage}</span>
-						</div>
-					)}
-					{videoError ? <div style={{ color: 'red', marginTop: 8 }}>{videoError}</div> : null}
-					<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: 8 }}>
+				{/* Video section — only available after an image is generated */}
+				{generatedUrl && (
+					<div style={{ marginTop: 16, maxWidth: 360 }}>
+						<div style={{ fontWeight: 600, marginBottom: 8 }}>Generated video</div>
 						{videoUrl ? (
-							<>
-								<button className="button" onClick={doGenerateVideo} disabled={isVideoBusy || !generatedUrl}>
-									{isVideoBusy ? 'Regenerating video…' : 'Regenerate video'}
-								</button>
-								<a
-									className="button"
-									href={isVideoBusy ? undefined : videoUrl}
-									download={isVideoBusy ? undefined : 'enhanced-video.mp4'}
-									aria-disabled={isVideoBusy}
-									style={{ pointerEvents: isVideoBusy ? 'none' : 'auto', opacity: isVideoBusy ? 0.6 : 1 }}
-								>
-									Download video
-								</a>
-								<button className="button button-primary" onClick={setVideoInMediaSelection} disabled={isVideoBusy || videoUploading || !videoUrl}>
-									{videoUploading ? 'Adding…' : 'Add to Media'}
-								</button>
-							</>
+							<video src={videoUrl} controls style={{ width: '100%', height: 'auto', maxHeight: 200, background: '#000', borderRadius: 4 }} />
 						) : (
-							<button className="button" onClick={doGenerateVideo} disabled={isVideoBusy || !generatedUrl}>
-								{isVideoBusy ? 'Generating video…' : 'Generate video'}
-							</button>
+							<div style={{ border: '1px solid #eee', borderRadius: 4, minHeight: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 12 }}>
+								<span>{videoMessage}</span>
+							</div>
 						)}
+						{videoError ? <div style={{ color: 'red', marginTop: 8 }}>{videoError}</div> : null}
+						<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: 8 }}>
+							{videoUrl ? (
+								<>
+									<button className="button" onClick={doGenerateVideo} disabled={isVideoBusy}>
+										{isVideoBusy ? 'Regenerating video…' : 'Regenerate video'}
+									</button>
+									<a
+										className="button"
+										href={isVideoBusy ? undefined : videoUrl}
+										download={isVideoBusy ? undefined : 'enhanced-video.mp4'}
+										aria-disabled={isVideoBusy}
+										style={{ pointerEvents: isVideoBusy ? 'none' : 'auto', opacity: isVideoBusy ? 0.6 : 1 }}
+									>
+										Download video
+									</a>
+									<button className="button button-primary" onClick={setVideoInMediaSelection} disabled={isVideoBusy || videoUploading || !videoUrl}>
+										{videoUploading ? 'Adding…' : 'Add to Media'}
+									</button>
+								</>
+							) : (
+								<button className="button" onClick={doGenerateVideo} disabled={isVideoBusy}>
+									{isVideoBusy ? 'Generating video…' : 'Generate video'}
+								</button>
+							)}
+						</div>
 					</div>
-				</div>
+				)}
 
 				{/* Actions */}
 				<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: 16 }}>

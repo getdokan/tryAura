@@ -78,11 +78,13 @@ type TryOnModalProps = {
 };
 
 const TryOnModal = ({ productImages, onClose }: TryOnModalProps) => {
-	const [userImage, setUserImage] = useState<string | null>(null);
+	const [userImages, setUserImages] = useState<string[]>([]);
 	const [status, setStatus] = useState<'idle'|'fetching'|'generating'|'parsing'|'done'|'error'>('idle');
-	const [message, setMessage] = useState<string>('Select or capture your photo, then click Try');
+	const [message, setMessage] = useState<string>('Select or capture one or more photos, then click Try');
 	const [error, setError] = useState<string | null>(null);
 	const [generatedUrl, setGeneratedUrl] = useState<string | null>(null);
+	const [activeTab, setActiveTab] = useState<'upload'|'camera'>('upload');
+	const [cameraActive, setCameraActive] = useState<boolean>(false);
 
 	// Camera
 	const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -99,11 +101,15 @@ const TryOnModal = ({ productImages, onClose }: TryOnModalProps) => {
 
 	const startCamera = async () => {
 		try {
-			const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+			const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
 			streamRef.current = stream;
-			if (videoRef.current) {
-				(videoRef.current as any).srcObject = stream;
-				await videoRef.current.play();
+			setCameraActive(true);
+			const video = videoRef.current;
+			if (video) {
+				try {
+					(video as any).srcObject = stream;
+					await video.play?.();
+				} catch {}
 			}
 			setMessage('Camera active — click Capture when ready');
 			setError(null);
@@ -117,16 +123,50 @@ const TryOnModal = ({ productImages, onClose }: TryOnModalProps) => {
 			streamRef.current?.getTracks().forEach((t) => t.stop());
 		} catch {}
 		streamRef.current = null;
-		if (videoRef.current) {
-			(videoRef.current as any).srcObject = null;
+		setCameraActive(false);
+		const video = videoRef.current;
+		if (video) {
+			try {
+				video.pause?.();
+				(video as any).srcObject = null;
+				video.load?.();
+			} catch {}
 		}
 	};
 
+	// Stop camera when switching away from Camera tab
+	useEffect(() => {
+		if (activeTab !== 'camera') {
+			stopCamera();
+		}
+	}, [activeTab]);
+	
+	// Attach stream to video when camera becomes active or when returning to Camera tab
+	useEffect(() => {
+		const video = videoRef.current;
+		const stream = streamRef.current;
+		if (cameraActive && activeTab === 'camera' && video && stream) {
+			try {
+				(video as any).srcObject = stream;
+				video.play?.().catch(() => {});
+			} catch {}
+		}
+	}, [cameraActive, activeTab]);
+	
 	const capture = () => {
 		if (!videoRef.current) return;
 		const video = videoRef.current;
+		// Ensure video has enough data and valid dimensions
+		if ((video as any).readyState !== undefined && (video as any).readyState < 2) {
+			setError('Camera not ready yet. Please wait a moment and try again.');
+			return;
+		}
 		const w = video.videoWidth || 640;
 		const h = video.videoHeight || 480;
+		if (!w || !h) {
+			setError('Camera not ready yet. Please wait a moment and try again.');
+			return;
+		}
 		if (!canvasRef.current) {
 			canvasRef.current = document.createElement('canvas');
 		}
@@ -137,19 +177,34 @@ const TryOnModal = ({ productImages, onClose }: TryOnModalProps) => {
 		if (!ctx) return;
 		ctx.drawImage(video, 0, 0, w, h);
 		const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
-		setUserImage(dataUrl);
+		setUserImages((prev) => [...prev, dataUrl]);
 		setMessage('Photo captured. Click Try to generate.');
 		stopCamera();
 	};
 
 	const onFileChange = (e: any) => {
-		const file: File | undefined = e?.target?.files?.[0];
-		if (!file) return;
-		const reader = new FileReader();
-		reader.onloadend = () => setUserImage(reader.result as string);
-		reader.readAsDataURL(file);
-		setMessage('Photo selected. Click Try to generate.');
+		const files: FileList | undefined = e?.target?.files;
+		if (!files || files.length === 0) return;
+		const readers: Promise<string>[] = [];
+		for (let i = 0; i < files.length; i++) {
+			const f = files[i];
+			readers.push(new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onloadend = () => resolve(reader.result as string);
+				reader.onerror = reject;
+				reader.readAsDataURL(f);
+			}));
+		}
+		Promise.all(readers).then((results) => {
+			setUserImages((prev) => [...prev, ...results]);
+			setMessage('Photo(s) selected. Click Try to generate.');
+		}).catch(() => {
+			setError('Failed to read one or more files.');
+		});
+		try { if (e?.target) e.target.value = null; } catch {}
 	};
+
+	const removeUserImage = (index: number) => { setUserImages((prev) => prev.filter((_, i) => i !== index)); };
 
 	const toInlineData = async (img: string): Promise<{ mimeType: string; data: string; }> => {
 		if (img.startsWith('data:')) {
@@ -177,7 +232,7 @@ const TryOnModal = ({ productImages, onClose }: TryOnModalProps) => {
 	};
 
 	const doTry = async () => {
-		if (!userImage) {
+		if (userImages.length === 0) {
 			setError('Please select or capture your photo first.');
 			return;
 		}
@@ -192,7 +247,8 @@ const TryOnModal = ({ productImages, onClose }: TryOnModalProps) => {
 			const apiKey = await resolveApiKey();
 			if (!apiKey) throw new Error('Missing API key. Please configure TryAura settings.');
 
-			const userInline = await toInlineData(userImage);
+			const primaryUserImage = userImages[0]; // Use first selected/captured photo as the user image
+			const userInline = await toInlineData(primaryUserImage);
 			const productInlineList = await Promise.all(productImages.slice(0, 3).map(toInlineData));
 
 			setStatus('generating');
@@ -244,23 +300,42 @@ const TryOnModal = ({ productImages, onClose }: TryOnModalProps) => {
 				<div style={{ display: 'flex', gap: 16, alignItems: 'stretch' }}>
 					<div style={{ flex: 1, minWidth: 260 }}>
 						<div style={{ fontWeight: 600, marginBottom: 8 }}>Your photo</div>
-						<div style={{ display: 'flex', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
-							<input type="file" accept="image/*" onChange={onFileChange} />
-							<button className="button" onClick={startCamera} disabled={!!streamRef.current || isBusy}>Start camera</button>
-							<button className="button" onClick={stopCamera} disabled={!streamRef.current || isBusy}>Stop</button>
-							<button className="button" onClick={capture} disabled={!streamRef.current || isBusy}>Capture</button>
-						</div>
-						<div style={{ border: '1px solid #eee', borderRadius: 4, minHeight: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-							{userImage ? (
-								<img src={userImage} alt="Your selected" style={{ maxWidth: '100%', height: 'auto', display: 'block' }} />
-							) : (
-								<video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', background: '#000' }} />
-							)}
-						</div>
-						{error ? <div style={{ color: 'red', marginTop: 8 }}>{error}</div> : null}
+ 					{/* Tabs for upload vs camera */}
+					<div style={{ display: 'flex', gap: 8, borderBottom: '1px solid #eee', marginBottom: 8 }}>
+						<button className="button" onClick={() => setActiveTab('upload')} aria-pressed={activeTab==='upload'} style={{ borderBottom: activeTab==='upload' ? '2px solid #2271b1' : '2px solid transparent' }}>Upload</button>
+						<button className="button" onClick={() => setActiveTab('camera')} aria-pressed={activeTab==='camera'} style={{ borderBottom: activeTab==='camera' ? '2px solid #2271b1' : '2px solid transparent' }}>Camera</button>
+					</div>
+					<div style={{ display: 'flex', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+						{activeTab === 'upload' ? (
+							<input type="file" accept="image/*" multiple onChange={onFileChange} />
+						) : (
+ 						<>
+ 							<button className="button" onClick={startCamera} disabled={cameraActive || isBusy}>Start camera</button>
+ 							<button className="button" onClick={stopCamera} disabled={!cameraActive || isBusy}>Stop</button>
+ 							<button className="button" onClick={capture} disabled={!cameraActive || isBusy}>Capture</button>
+ 						</>
+						)}
+					</div>
+					<div style={{ border: '1px solid #eee', borderRadius: 4, minHeight: 220, padding: 8 }}>
+						{activeTab === 'camera' && cameraActive ? (
+			       <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', background: '#000', display: 'block' }} />
+						) : userImages.length > 0 ? (
+							<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: 8 }}>
+								{userImages.map((img, idx) => (
+									<div key={idx} style={{ position: 'relative', border: '1px solid #eee', borderRadius: 4, overflow: 'hidden' }}>
+										<img src={img} alt={`Your ${idx + 1}`} style={{ width: '100%', height: 'auto', display: 'block' }} />
+										<button type="button" className="button" onClick={() => removeUserImage(idx)} aria-label="Remove photo" style={{ position: 'absolute', top: 4, right: 4, padding: '2px 6px', lineHeight: 1, fontSize: 12 }}>×</button>
+									</div>
+								))}
+							</div>
+						) : (
+							<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 180, color: '#666' }}>No photos selected yet.</div>
+						)}
+					</div>
+					{error ? <div style={{ color: 'red', marginTop: 8 }}>{error}</div> : null}
 					</div>
 
-					<div style={{ flex: 1, minWidth: 260 }}>
+					<div style={{ flex: 1, minWidth: 200 }}>
 						<div style={{ fontWeight: 600, marginBottom: 8 }}>Product image(s)</div>
 						<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: 8 }}>
 							{productImages.map((url, i) => (
@@ -288,7 +363,7 @@ const TryOnModal = ({ productImages, onClose }: TryOnModalProps) => {
 
 				<div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 16 }}>
 					<button className="button" onClick={onClose} disabled={isBusy}>Close</button>
-					<button className="button button-primary" onClick={doTry} disabled={isBusy || !userImage || productImages.length === 0}>
+					<button className="button button-primary" onClick={doTry} disabled={isBusy || userImages.length === 0 || productImages.length === 0}>
 						{isBusy ? 'Trying…' : 'Try'}
 					</button>
 				</div>

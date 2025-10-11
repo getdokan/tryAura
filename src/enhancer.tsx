@@ -488,11 +488,15 @@ const PreviewModal = ({ imageUrls, attachmentIds, onClose }: PreviewProps) => {
 				<div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
  				<div style={{ flex: 1 }}>
  					<div style={{ fontWeight: 600, marginBottom: 8 }}>{multiple ? 'Originals' : 'Original'}</div>
- 					<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 8 }}>
- 						{imageUrls.map((url, idx) => (
- 							<img key={idx} src={url} alt={`Original ${idx + 1}`} style={{ width: '100%', height: 'auto', display: 'block', border: '1px solid #eee', borderRadius: 4 }} />
- 						))}
- 					</div>
+ 					{multiple ? (
+ 						<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8 }}>
+ 							{imageUrls.map((url, idx) => (
+ 								<img key={idx} src={url} alt={`Original ${idx + 1}`} style={{ width: '100%', height: 'auto', display: 'block', border: '1px solid #eee', borderRadius: 4 }} />
+ 							))}
+ 						</div>
+ 					) : (
+ 						<img src={imageUrls[0]} alt="Original" style={{ width: '100%', height: 'auto', display: 'block', border: '1px solid #eee', borderRadius: 4 }} />
+ 					)}
  				</div>
 					<div style={{ flex: 1 }}>
 						<div style={{ fontWeight: 600, marginBottom: 8 }}>Generated</div>

@@ -683,15 +683,21 @@ function initEnhancerButton() {
 		const primary: HTMLElement | null = document.querySelector('.media-frame-toolbar .media-toolbar-primary');
 		const secondary: HTMLElement | null = document.querySelector('.media-frame-toolbar .media-toolbar-secondary');
 		const toolbar: HTMLElement | null = primary || secondary;
-		if ( toolbar && !toolbar.querySelector('#try-aura-ai-enhance') ) {
-			const container = document.createElement('span');
-			container.id = 'try-aura-ai-enhance';
-			container.style.display = 'inline-block';
-			container.style.marginLeft = '8px';
-            container.style.marginTop = '14px';
-			toolbar.appendChild(container);
-			const root = (createRoot as any)(container);
-			root.render(<EnhanceButton />);
+		if (toolbar) {
+			let container = toolbar.querySelector('#try-aura-ai-enhance') as HTMLElement | null;
+			if (!container) {
+				container = document.createElement('span');
+				container.id = 'try-aura-ai-enhance';
+				container.style.display = 'inline-block';
+				container.style.marginLeft = '8px';
+                container.style.marginTop = '14px';
+				toolbar.appendChild(container);
+			}
+			// Ensure the React button is rendered (WP may clear the toolbar on state changes)
+			if (!container.hasChildNodes() || (container as any).childElementCount === 0) {
+				const root = (createRoot as any)(container);
+				root.render(<EnhanceButton />);
+			}
 			clearInterval(interval);
 		}
 	}, 500);

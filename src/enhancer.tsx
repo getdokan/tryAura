@@ -79,6 +79,7 @@ const PreviewModal = ({ imageUrls, attachmentIds, onClose }: PreviewProps) => {
 	const [ videoUrl, setVideoUrl ] = useState<string | null>(null);
 	const [ videoError, setVideoError ] = useState<string | null>(null);
 	const [ videoUploading, setVideoUploading ] = useState<boolean>(false);
+	const [ activeTab, setActiveTab ] = useState<'image'|'video'>('image');
 	const multiple = imageUrls.length > 1;
 
 	useEffect(() => {
@@ -100,6 +101,7 @@ const PreviewModal = ({ imageUrls, attachmentIds, onClose }: PreviewProps) => {
 		}
 		setVideoUrl(null);
 		setVideoError(null);
+		setActiveTab('image');
 	}, [ imageUrls ]);
 
 	// Revoke video blob URL on unmount/change to free memory
@@ -483,7 +485,7 @@ const PreviewModal = ({ imageUrls, attachmentIds, onClose }: PreviewProps) => {
 					</label>
 				</div>
 
-				<div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+				<div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
  				<div style={{ flex: 1 }}>
  					<div style={{ fontWeight: 600, marginBottom: 8 }}>{multiple ? 'Originals' : 'Original'}</div>
  					<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 8 }}>
@@ -494,56 +496,61 @@ const PreviewModal = ({ imageUrls, attachmentIds, onClose }: PreviewProps) => {
  				</div>
 					<div style={{ flex: 1 }}>
 						<div style={{ fontWeight: 600, marginBottom: 8 }}>Generated</div>
-						{generatedUrl ? (
-							<img src={generatedUrl} alt="Generated" style={{ maxWidth: '100%', height: 'auto', display: 'block' }} />
+						{/* Tabs for Generated content */}
+						<div style={{ display: 'flex', gap: 8, borderBottom: '1px solid #eee', marginBottom: 8 }}>
+							<button className="button" onClick={() => setActiveTab('image')} aria-pressed={activeTab==='image'} style={{ borderBottom: activeTab==='image' ? '2px solid #2271b1' : '2px solid transparent' }}>Image</button>
+							<button className="button" onClick={() => setActiveTab('video')} disabled={!generatedUrl} aria-pressed={activeTab==='video'} style={{ borderBottom: activeTab==='video' ? '2px solid #2271b1' : '2px solid transparent', opacity: !generatedUrl ? 0.6 : 1, pointerEvents: !generatedUrl ? 'none' : 'auto' }}>Video</button>
+						</div>
+						{activeTab === 'image' ? (
+							generatedUrl ? (
+								<img src={generatedUrl} alt="Generated" style={{ width: '100%', height: 'auto', display: 'block' }} />
+							) : (
+								<div style={{ border: '1px solid #eee', borderRadius: 4, minHeight: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+									<span>{message}</span>
+								</div>
+							)
 						) : (
-							<div style={{ border: '1px solid #eee', borderRadius: 4, minHeight: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-								<span>{message}</span>
+							<div>
+								<div style={{ fontWeight: 600, marginBottom: 8 }}>Generated video</div>
+								{videoUrl ? (
+									<video src={videoUrl} controls style={{ width: '100%', height: 'auto', maxHeight: 200, background: '#000', borderRadius: 4 }} />
+								) : (
+									<div style={{ border: '1px solid #eee', borderRadius: 4, minHeight: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 12 }}>
+										<span>{videoMessage}</span>
+									</div>
+								)}
+								{videoError ? <div style={{ color: 'red', marginTop: 8 }}>{videoError}</div> : null}
+								<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: 8 }}>
+									{videoUrl ? (
+										<>
+											<button className="button" onClick={doGenerateVideo} disabled={isVideoBusy}>
+												{isVideoBusy ? 'Regenerating video…' : 'Regenerate video'}
+											</button>
+											<a
+												className="button"
+												href={isVideoBusy ? undefined : videoUrl}
+												download={isVideoBusy ? undefined : 'enhanced-video.mp4'}
+												aria-disabled={isVideoBusy}
+												style={{ pointerEvents: isVideoBusy ? 'none' : 'auto', opacity: isVideoBusy ? 0.6 : 1 }}
+											>
+												Download video
+											</a>
+											<button className="button button-primary" onClick={setVideoInMediaSelection} disabled={isVideoBusy || videoUploading || !videoUrl}>
+												{videoUploading ? 'Adding…' : 'Add to Media'}
+											</button>
+										</>
+									) : (
+										<button className="button" onClick={doGenerateVideo} disabled={isVideoBusy}>
+											{isVideoBusy ? 'Generating video…' : 'Generate video'}
+										</button>
+									)}
+								</div>
 							</div>
 						)}
 						{error ? <div style={{ color: 'red', marginTop: 8 }}>{error}</div> : null}
 					</div>
 				</div>
 
-				{/* Video section — only available after an image is generated */}
-				{generatedUrl && (
-					<div style={{ marginTop: 16, maxWidth: 360 }}>
-						<div style={{ fontWeight: 600, marginBottom: 8 }}>Generated video</div>
-						{videoUrl ? (
-							<video src={videoUrl} controls style={{ width: '100%', height: 'auto', maxHeight: 200, background: '#000', borderRadius: 4 }} />
-						) : (
-							<div style={{ border: '1px solid #eee', borderRadius: 4, minHeight: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 12 }}>
-								<span>{videoMessage}</span>
-							</div>
-						)}
-						{videoError ? <div style={{ color: 'red', marginTop: 8 }}>{videoError}</div> : null}
-						<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: 8 }}>
-							{videoUrl ? (
-								<>
-									<button className="button" onClick={doGenerateVideo} disabled={isVideoBusy}>
-										{isVideoBusy ? 'Regenerating video…' : 'Regenerate video'}
-									</button>
-									<a
-										className="button"
-										href={isVideoBusy ? undefined : videoUrl}
-										download={isVideoBusy ? undefined : 'enhanced-video.mp4'}
-										aria-disabled={isVideoBusy}
-										style={{ pointerEvents: isVideoBusy ? 'none' : 'auto', opacity: isVideoBusy ? 0.6 : 1 }}
-									>
-										Download video
-									</a>
-									<button className="button button-primary" onClick={setVideoInMediaSelection} disabled={isVideoBusy || videoUploading || !videoUrl}>
-										{videoUploading ? 'Adding…' : 'Add to Media'}
-									</button>
-								</>
-							) : (
-								<button className="button" onClick={doGenerateVideo} disabled={isVideoBusy}>
-									{isVideoBusy ? 'Generating video…' : 'Generate video'}
-								</button>
-							)}
-						</div>
-					</div>
-				)}
 
 				{/* Actions */}
 				<div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: 16 }}>
@@ -677,6 +684,7 @@ function initEnhancerButton() {
 			container.id = 'try-aura-ai-enhance';
 			container.style.display = 'inline-block';
 			container.style.marginLeft = '8px';
+            container.style.marginTop = '14px';
 			toolbar.appendChild(container);
 			const root = (createRoot as any)(container);
 			root.render(<EnhanceButton />);

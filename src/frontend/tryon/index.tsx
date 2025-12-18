@@ -1,5 +1,6 @@
 import { createRoot, useEffect, useRef, useState } from '@wordpress/element';
 import { GoogleGenAI } from '@google/genai';
+import './style.scss';
 
 // Minimal frontend Try-On implementation: Adds a "Try on" button next to Add to cart on WooCommerce
 // product pages. Clicking it opens a popup to upload or capture a photo and generates an AI try-on

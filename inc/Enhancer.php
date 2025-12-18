@@ -25,8 +25,21 @@ class Enhancer {
 			return;
 		}
 
-		$asset_file = plugin_dir_path( __DIR__ ) . 'build/enhancer.asset.php';
-		$deps       = [ 'wp-element', 'media-views' ];
+        $components_asset = plugin_dir_path( __DIR__ ) . 'build/components.asset.php';
+        $deps       = ['wp-element'];
+        $version    = '1.0.0';
+
+        if ( file_exists( $components_asset ) ) {
+            $asset   = include $components_asset; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+            $deps    = $asset['dependencies'] ?? $deps;
+            $version = $asset['version'] ?? $version;
+        }
+
+        $components_script_url = plugin_dir_url( __DIR__ ) . 'build/components.js';
+        wp_register_script( 'try-aura-components', $components_script_url, $deps, $version, true );
+
+		$asset_file = plugin_dir_path( __DIR__ ) . 'build/admin/enhancer/index.asset.php';
+		$deps       = [ 'wp-element', 'media-views', 'try-aura-components' ];
 		$version    = '1.0.0';
 
 		if ( file_exists( $asset_file ) ) {
@@ -39,9 +52,24 @@ class Enhancer {
 			$version = $asset['version'] ?? $version;
 		}
 
-		$script_url = plugin_dir_url( __DIR__ ) . 'build/enhancer.js';
+		$script_url = plugin_dir_url( __DIR__ ) . 'build/admin/enhancer/index.js';
 
 		wp_register_script( 'try-aura-enhancer', $script_url, $deps, $version, true );
+
+        // Enqueue compiled Tailwind CSS for frontend if available.
+        $css_path = plugin_dir_path( __DIR__ ) . 'build/admin/enhancer/style-index.css';
+        if ( file_exists( $css_path ) ) {
+            $css_url = plugin_dir_url( __DIR__ ) . 'build/admin/enhancer/style-index.css';
+            wp_register_style( 'try-aura-enhancer', $css_url, [], filemtime( $css_path ) );
+            wp_enqueue_style( 'try-aura-enhancer' );
+        }
+
+        $css_path = plugin_dir_path( __DIR__ ) . 'build/style-components.css';
+        if ( file_exists( $css_path ) ) {
+            $css_url = plugin_dir_url( __DIR__ ) . 'build/style-components.css';
+            wp_register_style( 'try-aura-components', $css_url, [], filemtime( $css_path ) );
+            wp_enqueue_style( 'try-aura-components' );
+        }
 
 		// Pass settings (API key, REST URL, nonce) to the enhancer UI.
 		wp_localize_script( 'try-aura-enhancer', 'tryAura', [
@@ -51,5 +79,6 @@ class Enhancer {
 		] );
 
 		wp_enqueue_script( 'try-aura-enhancer' );
+		wp_enqueue_script( 'try-aura-components' );
 	}
 }

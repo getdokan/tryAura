@@ -1,5 +1,4 @@
 {
-  "extends": "@wordpress/scripts/config/tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "@wordpress/element"

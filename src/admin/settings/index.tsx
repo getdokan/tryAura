@@ -2,6 +2,7 @@ import { createRoot, useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import { Button, TextControl, Notice, Spinner, Card, CardBody } from '@wordpress/components';
+import './style.scss';
 
 declare global {
     interface Window { // eslint-disable-line @typescript-eslint/consistent-type-definitions

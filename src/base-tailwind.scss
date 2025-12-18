@@ -1,0 +1,13 @@
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+.tryaura {
+  @import "tailwindcss/utilities.css" layer(utilities) source(none) important;
+  @layer base {
+    @import "tailwindcss/preflight.css";
+  }
+}
+
+@theme {
+  --color-primary: #7047EB;
+}

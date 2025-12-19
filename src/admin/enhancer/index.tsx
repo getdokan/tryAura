@@ -144,7 +144,7 @@ function addEnhancerButton( toolbar ) {
 		if ( ! container ) {
 			container = document.createElement( 'span' );
 			container.id = 'try-aura-ai-enhance';
-			container.className = time.toString();
+			container.dataset.tryauramediaroot = time.toString();
 			container.style.display = 'inline-block';
 			container.style.marginLeft = '8px';
 			container.style.marginTop = '14px';
@@ -156,8 +156,11 @@ function addEnhancerButton( toolbar ) {
 			( container as any ).childElementCount === 0
 		) {
 			const root = ( createRoot as any )( container );
-			window[ time ] = root;
-			root.render( <EnhanceButton /> );
+			if ( ! window.tryAuraMediaRoots ) {
+				window.tryAuraMediaRoots = {};
+			}
+			window.tryAuraMediaRoots[ time ] = root;
+			window.tryAuraMediaRoots[ time ].render( <EnhanceButton /> );
 		}
 	}
 }
@@ -197,14 +200,15 @@ function addEnhancerButton( toolbar ) {
 				.find( '.media-toolbar' )
 				.find( '.media-toolbar-primary.search-form' )
 				.find( '#try-aura-ai-enhance' );
+
 			if ( button[ 0 ] ) {
-				const className = button[ 0 ].className;
-				const root = window[ className ];
+				const rootId = $( button[ 0 ] ).data( 'tryauramediaroot' );
+				const root = window.tryAuraMediaRoots[ rootId ];
 
 				try {
 					root?.unmount?.();
 				} catch {}
-				delete window[ className ];
+				delete window.tryAuraMediaRoots[ rootId ];
 				button.remove();
 			}
 

@@ -8,21 +8,37 @@
             "Dokan\\TryAura\\": "inc/"
         }
     },
-    "authors": [
-        {
-            "name": "Shazahanul Islam Shohag",
-            "email": "shohag121@gmail.com"
-        }
-    ],
+	"authors": [
+		{
+			"name": "Dokan Inc.",
+			"email": "info@dokan.co"
+		}
+	],
     "minimum-stability": "stable",
-    "require": {},
+    "require": {
+		"php": ">=7.4"
+	},
     "require-dev": {
-      "automattic/vipwpcs": "^3.0",
-      "phpcompatibility/phpcompatibility-wp": "*"
+        "automattic/vipwpcs": "^3.0",
+        "phpcompatibility/phpcompatibility-wp": "*",
+	    "wp-coding-standards/wpcs": "^3.0",
+	    "squizlabs/php_codesniffer": "*",
+	    "dealerdirect/phpcodesniffer-composer-installer": "*"
     },
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
-    }
+    },
+	"scripts": {
+		"phpcs": [
+			"vendor/bin/phpcs inc templates try-aura.php --standard=phpcs.xml"
+		],
+		"phpcs:report": [
+			"vendor/bin/phpcs inc templates try-aura.php --standard=phpcs.xml --report-file='phpcs-report.txt'"
+		],
+		"phpcbf": [
+			"vendor/bin/phpcbf -p"
+		]
+	}
 }

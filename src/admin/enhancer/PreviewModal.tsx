@@ -2,22 +2,10 @@ import { useEffect, useState } from '@wordpress/element';
 import { GoogleGenAI } from '@google/genai';
 import { Button } from '../../components';
 import { __ } from '@wordpress/i18n';
-import {
-	X,
-	Wallpaper,
-	Leaf,
-	Circle,
-	Settings,
-	Shirt,
-	User,
-	Image,
-	Video,
-	Square,
-	RectangleHorizontal,
-	RectangleVertical,
-} from 'lucide-react';
-import ModernSelect from '../../components/ModernSelect';
-import GroupButton from '../../components/GroupButton';
+import { X } from 'lucide-react';
+import OriginalImage from './PreviewSections/OriginalImage';
+import ConfigSettings from './PreviewSections/ConfigSettings';
+import Output from './PreviewSections/Output';
 
 declare const wp: any;
 
@@ -610,410 +598,43 @@ const PreviewModal = ( {
 				</div>
 
 				<div className="flex flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
-					<div className="w-[500px] max-h-[533px] overflow-auto">
-						<div className="text-[14px] mb-[8px]">
-							{ multiple ? 'Original Images' : 'Original Image' }
-						</div>
-						{ multiple ? (
-							<div className="flex flex-col gap-[8px]">
-								{ imageUrls.map( ( url, idx ) => (
-									<img
-										key={ idx }
-										src={ url }
-										alt={ `Original ${ idx + 1 }` }
-										className="w-auto h-[152px] h-auto block border-none rounded-[8px]"
-									/>
-								) ) }
-							</div>
-						) : (
-							<img
-								src={ imageUrls[ 0 ] }
-								alt="Original"
-								className="w-auto h-[152px] h-auto block border-none rounded-[8px]"
-							/>
-						) }
-					</div>
-					<div className="w-full flex flex-col gap-[32px]">
-						{ /* Tabs for Generated content */ }
-						{ supportsVideo && (
-							<GroupButton
-								options={ [
-									{
-										label: __(
-											'Generate Image',
-											'tryaura'
-										),
-										value: 'image',
-									},
-									{
-										label: __(
-											'Generate Video',
-											'tryaura'
-										),
-										value: 'video',
-										disabled: ! generatedUrl,
-									},
-								] }
-								value={ activeTab }
-								onClick={ ( tab ) => setActiveTab( tab ) }
-							/>
-						) }
-
-						<div className="flex flex-col gap-[12px]">
-							{ /* Controls */ }
-							{ ! isBlockEditorPage &&
-								isWoocommerceProductPage && (
-									<>
-										<ModernSelect
-											value={ backgroundType }
-											onChange={ ( val ) =>
-												setBackgroundType( val )
-											}
-											label={ __(
-												'Background preference',
-												'try-aura'
-											) }
-											options={ [
-												{
-													label: __(
-														'Plain',
-														'try-aura'
-													),
-													value: 'plain',
-													icon: <Circle />,
-												},
-												{
-													label: __(
-														'Natural',
-														'try-aura'
-													),
-													value: 'natural',
-													icon: <Leaf />,
-												},
-												{
-													label: __(
-														'Studio',
-														'try-aura'
-													),
-													value: 'studio',
-													icon: <Wallpaper />,
-												},
-												{
-													label: __(
-														'Custom',
-														'try-aura'
-													),
-													value: 'custom',
-													icon: <Settings />,
-												},
-											] }
-										/>
-
-										<ModernSelect
-											value={ styleType }
-											onChange={ ( val ) =>
-												setStyleType( val )
-											}
-											label={ __(
-												'Output style',
-												'try-aura'
-											) }
-											options={ [
-												{
-													label: __(
-														'Photo realistic',
-														'try-aura'
-													),
-													value: 'photo-realistic',
-													icon: <Image />,
-												},
-												{
-													label: __(
-														'Studio mockup',
-														'try-aura'
-													),
-													value: 'studio mockup',
-													icon: <Shirt />,
-												},
-												{
-													label: __(
-														'Model shoot',
-														'try-aura'
-													),
-													value: 'model shoot',
-													icon: <User />,
-												},
-											] }
-										/>
-									</>
-								) }
-
-							{ isBlockEditorPage &&
-								! isWoocommerceProductPage && (
-									<ModernSelect
-										value={ imageSize }
-										variant="list"
-										onChange={ ( val ) =>
-											setImageSize( val )
-										}
-										label={ __( 'Image Size', 'try-aura' ) }
-										options={ [
-											{
-												label: __( '1:1', 'try-aura' ),
-												value: '1:1',
-												icon: <Square />,
-											},
-											{
-												label: __( '16:9', 'try-aura' ),
-												value: '16:9',
-												icon: <RectangleHorizontal />,
-											},
-											{
-												label: __( '9:16', 'try-aura' ),
-												value: '9:16',
-												icon: <RectangleVertical />,
-											},
-										] }
-									/>
-								) }
-
-							<label
-								style={ {
-									display: 'flex',
-									flexDirection: 'column',
-									gap: 4,
-								} }
-							>
-								<span className="w-[500] text-[14px] mb-[8px]">
-									{ __( 'Prompt (Optional)' ) }
-								</span>
-								<textarea
-									className="border border-[#E9E9E9]"
-									value={ optionalPrompt }
-									onChange={ ( e: any ) =>
-										setOptionalPrompt( e.target.value )
-									}
-									rows={ 3 }
-									placeholder={ __(
-										'Add any specific instructions (optional)',
-										'tryaura'
-									) }
-								/>
-							</label>
-
-							<div className="flex flex-row gap-[12px]">
-								{ generatedUrl ? (
-									<>
-										<Button
-											onClick={ doGenerate }
-											disabled={ isBusy }
-										>
-											{ isBusy
-												? __(
-														'Regenerating…',
-														'tryaura'
-												  )
-												: __(
-														'Regenerate',
-														'tryaura'
-												  ) }
-										</Button>
-
-										<Button
-											type="link"
-											variant="outline"
-											href={
-												isBusy
-													? undefined
-													: generatedUrl
-											}
-											download={
-												isBusy
-													? undefined
-													: 'enhanced.png'
-											}
-											aria-disabled={ isBusy }
-											style={ {
-												pointerEvents: isBusy
-													? 'none'
-													: 'auto',
-												opacity: isBusy ? 0.6 : 1,
-											} }
-										>
-											{ __( 'Download', 'try-aura' ) }
-										</Button>
-									</>
-								) : (
-									<Button
-										color="primary"
-										onClick={ doGenerate }
-										disabled={ isBusy }
-									>
-										{ isBusy
-											? __( 'Generating…', 'try-aura' )
-											: __( 'Generate', 'try-aura' ) }
-									</Button>
-								) }
-							</div>
-						</div>
-					</div>
-					<div className="w-full">
-						<div className="w-[500] text-[14px] mb-[8px]">
-							{ __( 'Generated Output', 'try-aura' ) }
-						</div>
-						{ activeTab === 'image' ? (
-							generatedUrl ? (
-								<div className="flex flex-col gap-[20px]">
-									<img
-										src={ generatedUrl }
-										alt="Generated"
-										className="w-full h-auto block rounded-[8px]"
-									/>
-									{ supportsVideo && (
-										<div className="flex justify-center">
-											<Button
-												variant="solid"
-												className="border border-primary text-primary bg-white"
-												onClick={ () =>
-													setActiveTab( 'video' )
-												}
-											>
-												{ __(
-													'Generate Video',
-													'tryaura'
-												) }
-											</Button>
-										</div>
-									) }
-								</div>
-							) : (
-								<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex items-center justify-center">
-									<span>{ message }</span>
-								</div>
-							)
-						) : (
-							<div>
-								<div
-									style={ {
-										fontWeight: 600,
-										marginBottom: 8,
-									} }
-								>
-									Generated video
-								</div>
-								{ videoUrl ? (
-									<video
-										src={ videoUrl }
-										controls
-										style={ {
-											width: '100%',
-											height: 'auto',
-											maxHeight: 200,
-											background: '#000',
-											borderRadius: 4,
-										} }
-									/>
-								) : (
-									<div
-										style={ {
-											border: '1px solid #eee',
-											borderRadius: 4,
-											minHeight: 100,
-											display: 'flex',
-											alignItems: 'center',
-											justifyContent: 'center',
-											padding: 12,
-										} }
-									>
-										<span>{ videoMessage }</span>
-									</div>
-								) }
-								{ videoError ? (
-									<div
-										style={ { color: 'red', marginTop: 8 } }
-									>
-										{ videoError }
-									</div>
-								) : null }
-								<div
-									style={ {
-										display: 'flex',
-										gap: '8px',
-										justifyContent: 'flex-end',
-										marginTop: 8,
-									} }
-								>
-									{ videoUrl ? (
-										<>
-											<button
-												className="button"
-												onClick={ doGenerateVideo }
-												disabled={ isVideoBusy }
-											>
-												{ isVideoBusy
-													? 'Regenerating video…'
-													: 'Regenerate video' }
-											</button>
-											<a
-												className="button"
-												href={
-													isVideoBusy
-														? undefined
-														: videoUrl
-												}
-												download={
-													isVideoBusy
-														? undefined
-														: 'enhanced-video.mp4'
-												}
-												aria-disabled={ isVideoBusy }
-												style={ {
-													pointerEvents: isVideoBusy
-														? 'none'
-														: 'auto',
-													opacity: isVideoBusy
-														? 0.6
-														: 1,
-												} }
-											>
-												Download video
-											</a>
-											<button
-												className="button button-primary"
-												onClick={
-													setVideoInMediaSelection
-												}
-												disabled={
-													isVideoBusy ||
-													videoUploading ||
-													! videoUrl
-												}
-											>
-												{ videoUploading
-													? 'Adding…'
-													: 'Add to Media' }
-											</button>
-										</>
-									) : (
-										<button
-											className="button"
-											onClick={ doGenerateVideo }
-											disabled={ isVideoBusy }
-										>
-											{ isVideoBusy
-												? 'Generating video…'
-												: 'Generate video' }
-										</button>
-									) }
-								</div>
-							</div>
-						) }
-						{ error ? (
-							<div style={ { color: 'red', marginTop: 8 } }>
-								{ error }
-							</div>
-						) : null }
-					</div>
+					<OriginalImage
+						imageUrls={ imageUrls }
+						multiple={ multiple }
+					/>
+					<ConfigSettings
+						supportsVideo={ supportsVideo }
+						activeTab={ activeTab }
+						setActiveTab={ setActiveTab }
+						isBlockEditorPage={ isBlockEditorPage }
+						isWoocommerceProductPage={ isWoocommerceProductPage }
+						backgroundType={ backgroundType }
+						setBackgroundType={ setBackgroundType }
+						generatedUrl={ generatedUrl }
+						styleType={ styleType }
+						setStyleType={ setStyleType }
+						imageSize={ imageSize }
+						setImageSize={ setImageSize }
+						optionalPrompt={ optionalPrompt }
+						setOptionalPrompt={ setOptionalPrompt }
+						doGenerate={ doGenerate }
+						isBusy={ isBusy }
+					/>
+					<Output
+						generatedUrl={ generatedUrl }
+						supportsVideo={ supportsVideo }
+						activeTab={ activeTab }
+						setActiveTab={ setActiveTab }
+						message={ message }
+						videoUrl={ videoUrl }
+						videoMessage={ videoMessage }
+						videoError={ videoError }
+						doGenerateVideo={ doGenerateVideo }
+						isVideoBusy={ isVideoBusy }
+						videoUploading={ videoUploading }
+						setVideoInMediaSelection={ setVideoInMediaSelection }
+						error={ error }
+					/>
 				</div>
 				{ /* Actions */ }
 				<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">

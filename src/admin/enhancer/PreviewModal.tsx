@@ -59,25 +59,35 @@ const PreviewModal = ( {
 	const [ status, setStatus ] = useState<
 		'idle' | 'fetching' | 'generating' | 'parsing' | 'done' | 'error'
 	>( 'idle' );
-	const [ message, setMessage ] = useState< string >( 'Ready to generate' );
+	const [ message, setMessage ] = useState< string >(
+		__( 'Ready to generate', 'try-aura' )
+	);
 	const [ generatedUrl, setGeneratedUrl ] = useState< string | null >( null );
 	const [ error, setError ] = useState< string | null >( null );
-	const [ backgroundType, setBackgroundType ] =
-		useState< string >( 'studio' );
-	const [ styleType, setStyleType ] = useState< string >( 'photo-realistic' );
-	const [ imageSize, setImageSize ] = useState< string >( '1:1' );
-	const [ optionalPrompt, setOptionalPrompt ] = useState< string >( '' );
 	const [ uploading, setUploading ] = useState< boolean >( false );
 	// Video generation state
 	const [ videoStatus, setVideoStatus ] = useState<
 		'idle' | 'generating' | 'polling' | 'downloading' | 'done' | 'error'
 	>( 'idle' );
 	const [ videoMessage, setVideoMessage ] = useState< string >(
-		'Ready to generate video'
+		__( 'Ready to generate video', 'try-aura' )
 	);
 	const [ videoUrl, setVideoUrl ] = useState< string | null >( null );
 	const [ videoError, setVideoError ] = useState< string | null >( null );
 	const [ videoUploading, setVideoUploading ] = useState< boolean >( false );
+	const [ videoConfigData, setVideoConfigData ] = useState( {
+		styles: 'studio',
+		cameraMotion: 'zoom in',
+		aspectRatio: '1:1',
+		duration: '5 sec',
+		optionalPrompt: '',
+	} );
+	const [ imageConfigData, setImageConfigData ] = useState( {
+		imageSize: '1:1',
+		backgroundType: 'studio',
+		styleType: 'photo-realistic',
+		optionalPrompt: '',
+	} );
 	const [ activeTab, setActiveTab ] = useState< 'image' | 'video' >(
 		'image'
 	);
@@ -98,7 +108,9 @@ const PreviewModal = ( {
 	useEffect( () => {
 		setStatus( 'idle' );
 		setMessage( 'Ready to generate' );
-		setGeneratedUrl( null );
+		setGeneratedUrl(
+			'http://try-aura.test/wp-content/uploads/2025/12/enhanced-68-1766396866511.png'
+		);
 		setError( null );
 		// Reset video state too when images change
 		setVideoStatus( 'idle' );
@@ -108,7 +120,9 @@ const PreviewModal = ( {
 				URL.revokeObjectURL( videoUrl );
 			} catch {}
 		}
-		setVideoUrl( null );
+		setVideoUrl(
+			'http://try-aura.test/wp-content/uploads/2025/12/enhanced-video-99-1766397268816.mp4'
+		);
 		setVideoError( null );
 		setActiveTab( 'image' );
 	}, [ imageUrls ] );
@@ -167,8 +181,9 @@ const PreviewModal = ( {
 			const ai = new GoogleGenAI( { apiKey } );
 
 			const extras =
-				optionalPrompt && optionalPrompt.trim().length
-					? `\n\nAdditional instruction from user: ${ optionalPrompt.trim() }`
+				imageConfigData?.optionalPrompt &&
+				imageConfigData?.optionalPrompt.trim().length
+					? `\n\nAdditional instruction from user: ${ imageConfigData?.optionalPrompt.trim() }`
 					: '';
 			const multiHint =
 				imageUrls.length > 1
@@ -339,10 +354,11 @@ const PreviewModal = ( {
 			}
 
 			const extras =
-				optionalPrompt && optionalPrompt.trim().length
-					? `\n\nAdditional instruction from user: ${ optionalPrompt.trim() }`
+				videoConfigData?.optionalPrompt &&
+				videoConfigData?.optionalPrompt.trim().length
+					? `\n\nAdditional instruction from user: ${ videoConfigData?.optionalPrompt.trim() }`
 					: '';
-			const videoPromptText = `Create a short 3–5 second smooth product showcase video based on the generated try-on image. Use gentle camera motion and keep the scene aligned with preferences. make the model walk relaxed.`;
+			const videoPromptText = `Create a short 3–5 second smooth product showcase video based on the generated try-on image. Use gentle camera motion and keep the scene aligned with preferences. make the model walk relaxed.${ extras }`;
 			// Extract base64 from the generated data URL to avoid stack overflow from large buffers
 			let generatedImageByteBase64 = '';
 			let generatedImageMime = 'image/png';
@@ -609,22 +625,18 @@ const PreviewModal = ( {
 						setActiveTab={ setActiveTab }
 						isBlockEditorPage={ isBlockEditorPage }
 						isWoocommerceProductPage={ isWoocommerceProductPage }
-						backgroundType={ backgroundType }
-						setBackgroundType={ setBackgroundType }
 						generatedUrl={ generatedUrl }
 						videoUrl={ videoUrl }
-						styleType={ styleType }
-						setStyleType={ setStyleType }
-						imageSize={ imageSize }
-						setImageSize={ setImageSize }
-						optionalPrompt={ optionalPrompt }
-						setOptionalPrompt={ setOptionalPrompt }
 						doGenerate={ doGenerate }
 						isBusy={ isBusy }
 						doGenerateVideo={ doGenerateVideo }
 						isVideoBusy={ isVideoBusy }
 						uploading={ uploading }
 						videoUploading={ videoUploading }
+						videoConfigData={ videoConfigData }
+						setVideoConfigData={ setVideoConfigData }
+						imageConfigData={ imageConfigData }
+						setImageConfigData={ setImageConfigData }
 					/>
 					<Output
 						generatedUrl={ generatedUrl }

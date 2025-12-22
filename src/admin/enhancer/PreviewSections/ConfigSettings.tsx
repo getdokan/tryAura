@@ -10,22 +10,18 @@ function ConfigSettings( {
 	setActiveTab,
 	isBlockEditorPage,
 	isWoocommerceProductPage,
-	backgroundType,
-	setBackgroundType,
 	generatedUrl,
 	videoUrl,
-	styleType,
-	setStyleType,
-	imageSize,
-	setImageSize,
-	optionalPrompt,
-	setOptionalPrompt,
 	doGenerate,
 	isBusy,
 	doGenerateVideo,
 	isVideoBusy,
 	uploading,
 	videoUploading,
+	videoConfigData,
+	setVideoConfigData,
+	imageConfigData,
+	setImageConfigData,
 } ) {
 	return (
 		<div className="w-full flex flex-col gap-[32px]">
@@ -51,29 +47,15 @@ function ConfigSettings( {
 			<div className="flex flex-col gap-[12px]">
 				{ activeTab === 'image' ? (
 					<ImageConfigInputs
-						backgroundType={ backgroundType }
-						styleType={ styleType }
-						imageSize={ imageSize }
-						optionalPrompt={ optionalPrompt }
-						setBackgroundType={ setBackgroundType }
-						setStyleType={ setStyleType }
-						setImageSize={ setImageSize }
-						setOptionalPrompt={ setOptionalPrompt }
 						isBlockEditorPage={ isBlockEditorPage }
 						isWoocommerceProductPage={ isWoocommerceProductPage }
+						imageConfigData={ imageConfigData }
+						setImageConfigData={ setImageConfigData }
 					/>
 				) : (
 					<VideoConfigInputs
-						backgroundType={ backgroundType }
-						styleType={ styleType }
-						imageSize={ imageSize }
-						optionalPrompt={ optionalPrompt }
-						setBackgroundType={ setBackgroundType }
-						setStyleType={ setStyleType }
-						setImageSize={ setImageSize }
-						setOptionalPrompt={ setOptionalPrompt }
-						isBlockEditorPage={ isBlockEditorPage }
-						isWoocommerceProductPage={ isWoocommerceProductPage }
+						videoConfigData={ videoConfigData }
+						setVideoConfigData={ setVideoConfigData }
 					/>
 				) }
 
@@ -100,11 +82,30 @@ function ConfigSettings( {
 							<Button
 								type="link"
 								variant="outline"
-								href={ activeTab === 'image' ? ( isBusy ? undefined : generatedUrl ) : ( isVideoBusy ? undefined : videoUrl ) }
-								download={ activeTab === 'image' ? ( isBusy ? undefined : 'enhanced.png' ) : ( isVideoBusy ? undefined : 'enhanced-video.mp4' ) }
-								aria-disabled={ activeTab === 'image' ? isBusy : isVideoBusy }
+								href={
+									activeTab === 'image'
+										? isBusy
+											? undefined
+											: generatedUrl
+										: isVideoBusy
+										? undefined
+										: videoUrl
+								}
+								download={
+									activeTab === 'image'
+										? isBusy
+											? undefined
+											: 'enhanced.png'
+										: isVideoBusy
+										? undefined
+										: 'enhanced-video.mp4'
+								}
+								aria-disabled={
+									activeTab === 'image' ? isBusy : isVideoBusy
+								}
 								style={ {
-									pointerEvents: isBusy || isVideoBusy ? 'none' : 'auto',
+									pointerEvents:
+										isBusy || isVideoBusy ? 'none' : 'auto',
 									opacity: isBusy || isVideoBusy ? 0.6 : 1,
 								} }
 								disabled={

@@ -13,27 +13,22 @@ import {
 	ArrowUp,
 	ArrowDown,
 	ZoomIn,
-	ZoomOut, Clock9
-} from "lucide-react";
+	ZoomOut,
+	Clock9,
+} from 'lucide-react';
 
 function VideoConfigInputs( {
-	backgroundType,
-	styleType,
-	imageSize,
-	optionalPrompt,
-	setBackgroundType,
-	setStyleType,
-	setImageSize,
-	setOptionalPrompt,
-	isBlockEditorPage,
-	isWoocommerceProductPage,
+	videoConfigData,
+	setVideoConfigData,
 } ) {
 	return (
 		<>
 			{ /* Controls */ }
 			<ModernSelect
-				value={ backgroundType }
-				onChange={ ( val ) => setBackgroundType( val ) }
+				value={ videoConfigData.styles }
+				onChange={ ( val ) =>
+					setVideoConfigData( { ...videoConfigData, styles: val } )
+				}
 				label={ __( 'Styles', 'try-aura' ) }
 				options={ [
 					{
@@ -60,8 +55,13 @@ function VideoConfigInputs( {
 			/>
 
 			<ModernSelect
-				value={ styleType }
-				onChange={ ( val ) => setStyleType( val ) }
+				value={ videoConfigData.cameraMotion }
+				onChange={ ( val ) =>
+					setVideoConfigData( {
+						...videoConfigData,
+						cameraMotion: val,
+					} )
+				}
 				label={ __( 'Camera Motion', 'try-aura' ) }
 				options={ [
 					{
@@ -105,9 +105,14 @@ function VideoConfigInputs( {
 			<div className="flex flex-row gap-[12px] w-full">
 				<ModernSelect
 					className="w-1/2"
-					value={ imageSize }
 					variant="list"
-					onChange={ ( val ) => setImageSize( val ) }
+					value={ videoConfigData.aspectRatio }
+					onChange={ ( val ) =>
+						setVideoConfigData( {
+							...videoConfigData,
+							aspectRatio: val,
+						} )
+					}
 					label={ __( 'Aspect Ratio', 'try-aura' ) }
 					options={ [
 						{
@@ -129,9 +134,14 @@ function VideoConfigInputs( {
 				/>
 				<ModernSelect
 					className="w-1/2"
-					value={ imageSize }
+					value={ videoConfigData.duration }
+					onChange={ ( val ) =>
+						setVideoConfigData( {
+							...videoConfigData,
+							duration: val,
+						} )
+					}
 					variant="list"
-					onChange={ ( val ) => setImageSize( val ) }
 					label={ __( 'Duration', 'try-aura' ) }
 					options={ [
 						{
@@ -143,7 +153,7 @@ function VideoConfigInputs( {
 							label: __( '10 Sec', 'try-aura' ),
 							value: '10 sec',
 							icon: <Clock9 />,
-						}
+						},
 					] }
 				/>
 			</div>
@@ -161,9 +171,12 @@ function VideoConfigInputs( {
 				</span>
 				<textarea
 					className="border border-[#E9E9E9]"
-					value={ optionalPrompt }
-					onChange={ ( e: any ) =>
-						setOptionalPrompt( e.target.value )
+					value={ videoConfigData.optionalPrompt }
+					onChange={ ( e ) =>
+						setVideoConfigData( {
+							...videoConfigData,
+							optionalPrompt: e.target.value,
+						} )
 					}
 					rows={ 3 }
 					placeholder={ __(

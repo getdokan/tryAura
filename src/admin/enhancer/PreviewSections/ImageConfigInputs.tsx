@@ -14,16 +14,10 @@ import {
 } from 'lucide-react';
 
 function ImageConfigInputs( {
-	backgroundType,
-	styleType,
-	imageSize,
-	optionalPrompt,
-	setBackgroundType,
-	setStyleType,
-	setImageSize,
-	setOptionalPrompt,
 	isBlockEditorPage,
 	isWoocommerceProductPage,
+	imageConfigData,
+	setImageConfigData,
 } ) {
 	return (
 		<>
@@ -31,8 +25,13 @@ function ImageConfigInputs( {
 			{ ! isBlockEditorPage && isWoocommerceProductPage && (
 				<>
 					<ModernSelect
-						value={ backgroundType }
-						onChange={ ( val ) => setBackgroundType( val ) }
+						value={ imageConfigData?.backgroundType ?? '' }
+						onChange={ ( val ) =>
+							setImageConfigData( {
+								...imageConfigData,
+								backgroundType: val,
+							} )
+						}
 						label={ __( 'Background preference', 'try-aura' ) }
 						options={ [
 							{
@@ -59,8 +58,13 @@ function ImageConfigInputs( {
 					/>
 
 					<ModernSelect
-						value={ styleType }
-						onChange={ ( val ) => setStyleType( val ) }
+						value={ imageConfigData?.styleType ?? '' }
+						onChange={ ( val ) =>
+							setStyleType( {
+								...imageConfigData,
+								styleType: val,
+							} )
+						}
 						label={ __( 'Output style', 'try-aura' ) }
 						options={ [
 							{
@@ -85,9 +89,11 @@ function ImageConfigInputs( {
 
 			{ isBlockEditorPage && ! isWoocommerceProductPage && (
 				<ModernSelect
-					value={ imageSize }
+					value={ imageConfigData?.imageSize ?? '' }
 					variant="list"
-					onChange={ ( val ) => setImageSize( val ) }
+					onChange={ ( val ) =>
+						setImageSize( { ...imageConfigData, imageSize: val } )
+					}
 					label={ __( 'Image Size', 'try-aura' ) }
 					options={ [
 						{
@@ -121,9 +127,12 @@ function ImageConfigInputs( {
 				</span>
 				<textarea
 					className="border border-[#E9E9E9] placeholder-[#A5A5AA]"
-					value={ optionalPrompt }
+					value={ imageConfigData?.optionalPrompt ?? '' }
 					onChange={ ( e: any ) =>
-						setOptionalPrompt( e.target.value )
+						setImageConfigData( {
+							...imageConfigData,
+							optionalPrompt: e.target.value,
+						} )
 					}
 					rows={ 3 }
 					placeholder={ __(

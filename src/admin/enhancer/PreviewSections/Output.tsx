@@ -10,10 +10,6 @@ function Output( {
 	videoUrl,
 	videoMessage,
 	videoError,
-	doGenerateVideo,
-	isVideoBusy,
-	videoUploading,
-	setVideoInMediaSelection,
 	error,
 } ) {
 	return (

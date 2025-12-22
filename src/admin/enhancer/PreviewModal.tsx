@@ -571,12 +571,10 @@ const PreviewModal = ( {
 	};
 
 	const isBusy =
-		uploading ||
 		status === 'fetching' ||
 		status === 'generating' ||
 		status === 'parsing';
 	const isVideoBusy =
-		videoUploading ||
 		videoStatus === 'generating' ||
 		videoStatus === 'polling' ||
 		videoStatus === 'downloading';
@@ -625,6 +623,8 @@ const PreviewModal = ( {
 						isBusy={ isBusy }
 						doGenerateVideo={ doGenerateVideo }
 						isVideoBusy={ isVideoBusy }
+						uploading={ uploading }
+						videoUploading={ videoUploading }
 					/>
 					<Output
 						generatedUrl={ generatedUrl }
@@ -635,10 +635,6 @@ const PreviewModal = ( {
 						videoUrl={ videoUrl }
 						videoMessage={ videoMessage }
 						videoError={ videoError }
-						doGenerateVideo={ doGenerateVideo }
-						isVideoBusy={ isVideoBusy }
-						videoUploading={ videoUploading }
-						setVideoInMediaSelection={ setVideoInMediaSelection }
 						error={ error }
 					/>
 				</div>
@@ -657,7 +653,11 @@ const PreviewModal = ( {
 									: disabledVideoAddToMedia
 							}
 						>
-							{ uploading
+							{ (
+								activeTab === 'image'
+									? uploading
+									: videoUploading
+							)
 								? __( 'Adding…' )
 								: __( 'Add to Media Library', 'try-aura' ) }
 						</Button>

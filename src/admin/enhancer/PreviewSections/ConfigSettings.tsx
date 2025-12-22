@@ -24,6 +24,8 @@ function ConfigSettings( {
 	isBusy,
 	doGenerateVideo,
 	isVideoBusy,
+	uploading,
+	videoUploading,
 } ) {
 	return (
 		<div className="w-full flex flex-col gap-[32px]">
@@ -85,7 +87,9 @@ function ConfigSettings( {
 										: doGenerateVideo
 								}
 								disabled={
-									activeTab === 'image' ? isBusy : isVideoBusy
+									activeTab === 'image'
+										? isBusy || uploading
+										: isVideoBusy || videoUploading
 								}
 							>
 								{ isBusy
@@ -103,6 +107,9 @@ function ConfigSettings( {
 									pointerEvents: isBusy || isVideoBusy ? 'none' : 'auto',
 									opacity: isBusy || isVideoBusy ? 0.6 : 1,
 								} }
+								disabled={
+									activeTab === 'image' ? isBusy : isVideoBusy
+								}
 							>
 								{ __( 'Download', 'try-aura' ) }
 							</Button>
@@ -115,10 +122,12 @@ function ConfigSettings( {
 									: doGenerateVideo
 							}
 							disabled={
-								activeTab === 'image' ? isBusy : isVideoBusy
+								activeTab === 'image'
+									? isBusy || uploading
+									: isVideoBusy || videoUploading
 							}
 						>
-							{ isBusy
+							{ ( activeTab === 'image' ? isBusy : isVideoBusy )
 								? __( 'Generating…', 'try-aura' )
 								: __( 'Generate', 'try-aura' ) }
 						</Button>

@@ -22,7 +22,7 @@ const ModernSelect = ( {
 } ) => {
 	const [ open, setOpen ] = useState( false );
 	const contentRef = useRef< HTMLDivElement >( null );
-	const anchorRef = useRef< HTMLButtonElement | null >( null );
+	const [ popoverAnchor, setPopoverAnchor ] = useState();
 	const current = options.find( ( o ) => o.value === value );
 
 	if ( variant === 'list' ) {
@@ -43,7 +43,8 @@ const ModernSelect = ( {
 			) }
 			<div>
 				<button
-					ref={ anchorRef }
+					// @ts-ignore
+					ref={ setPopoverAnchor }
 					type="button"
 					className="w-full p-[10px_16px] border border-[#E9E9E9] rounded-[5px] flex items-center justify-between bg-white focus:outline-none"
 					aria-haspopup="listbox"
@@ -63,10 +64,9 @@ const ModernSelect = ( {
 
 				{ open ? (
 					<Popover
-						anchor={ anchorRef.current }
-						placement="bottom-start"
+						anchor={ popoverAnchor }
 						onClose={ () => setOpen( false ) }
-						focusOnMount={ false }
+						onFocusOutside={ () => setOpen( false ) }
 						noArrow
 						flip={ true }
 						style={ {

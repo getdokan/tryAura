@@ -60,7 +60,7 @@ function ImageConfigInputs( {
 					<ModernSelect
 						value={ imageConfigData?.styleType ?? '' }
 						onChange={ ( val ) =>
-							setStyleType( {
+							setImageConfigData( {
 								...imageConfigData,
 								styleType: val,
 							} )
@@ -92,7 +92,10 @@ function ImageConfigInputs( {
 					value={ imageConfigData?.imageSize ?? '' }
 					variant="list"
 					onChange={ ( val ) =>
-						setImageSize( { ...imageConfigData, imageSize: val } )
+						setImageConfigData( {
+							...imageConfigData,
+							imageSize: val,
+						} )
 					}
 					label={ __( 'Image Size', 'try-aura' ) }
 					options={ [

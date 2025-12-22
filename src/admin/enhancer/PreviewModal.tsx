@@ -108,9 +108,7 @@ const PreviewModal = ( {
 	useEffect( () => {
 		setStatus( 'idle' );
 		setMessage( 'Ready to generate' );
-		setGeneratedUrl(
-			'http://try-aura.test/wp-content/uploads/2025/12/enhanced-68-1766396866511.png'
-		);
+		setGeneratedUrl( null );
 		setError( null );
 		// Reset video state too when images change
 		setVideoStatus( 'idle' );
@@ -120,9 +118,7 @@ const PreviewModal = ( {
 				URL.revokeObjectURL( videoUrl );
 			} catch {}
 		}
-		setVideoUrl(
-			'http://try-aura.test/wp-content/uploads/2025/12/enhanced-video-99-1766397268816.mp4'
-		);
+		setVideoUrl( null );
 		setVideoError( null );
 		setActiveTab( 'image' );
 	}, [ imageUrls ] );
@@ -189,7 +185,7 @@ const PreviewModal = ( {
 				imageUrls.length > 1
 					? '\n\nNote: Multiple input images provided. If a person/model photo and separate product images are present, compose the result with the model wearing/using the product(s) while keeping the background as requested.'
 					: '';
-			const promptText = `Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ backgroundType }\n- Output style: ${ styleType }\n\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output.${ extras }${ multiHint }`;
+			const promptText = `Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output.${ extras }${ multiHint }`;
 			const prompt = [
 				{ text: promptText },
 				...encodedImages.map( ( img ) => ( {
@@ -358,7 +354,9 @@ const PreviewModal = ( {
 				videoConfigData?.optionalPrompt.trim().length
 					? `\n\nAdditional instruction from user: ${ videoConfigData?.optionalPrompt.trim() }`
 					: '';
-			const videoPromptText = `Create a short 3–5 second smooth product showcase video based on the generated try-on image. Use gentle camera motion and keep the scene aligned with preferences. make the model walk relaxed.${ extras }`;
+			const { styles, cameraMotion, aspectRatio, duration } =
+				videoConfigData;
+			const videoPromptText = `Create a smooth ${ duration } product showcase video based on the generated try-on image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`;
 			// Extract base64 from the generated data URL to avoid stack overflow from large buffers
 			let generatedImageByteBase64 = '';
 			let generatedImageMime = 'image/png';

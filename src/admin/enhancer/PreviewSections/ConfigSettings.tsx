@@ -13,6 +13,7 @@ function ConfigSettings( {
 	backgroundType,
 	setBackgroundType,
 	generatedUrl,
+	videoUrl,
 	styleType,
 	setStyleType,
 	imageSize,
@@ -21,6 +22,8 @@ function ConfigSettings( {
 	setOptionalPrompt,
 	doGenerate,
 	isBusy,
+	doGenerateVideo,
+	isVideoBusy,
 } ) {
 	return (
 		<div className="w-full flex flex-col gap-[32px]">
@@ -75,7 +78,16 @@ function ConfigSettings( {
 				<div className="flex flex-row gap-[12px]">
 					{ generatedUrl ? (
 						<>
-							<Button onClick={ doGenerate } disabled={ isBusy }>
+							<Button
+								onClick={
+									activeTab === 'image'
+										? doGenerate
+										: doGenerateVideo
+								}
+								disabled={
+									activeTab === 'image' ? isBusy : isVideoBusy
+								}
+							>
 								{ isBusy
 									? __( 'Regenerating…', 'tryaura' )
 									: __( 'Regenerate', 'tryaura' ) }
@@ -84,12 +96,12 @@ function ConfigSettings( {
 							<Button
 								type="link"
 								variant="outline"
-								href={ isBusy ? undefined : generatedUrl }
-								download={ isBusy ? undefined : 'enhanced.png' }
-								aria-disabled={ isBusy }
+								href={ activeTab === 'image' ? ( isBusy ? undefined : generatedUrl ) : ( isVideoBusy ? undefined : videoUrl ) }
+								download={ activeTab === 'image' ? ( isBusy ? undefined : 'enhanced.png' ) : ( isVideoBusy ? undefined : 'enhanced-video.mp4' ) }
+								aria-disabled={ activeTab === 'image' ? isBusy : isVideoBusy }
 								style={ {
-									pointerEvents: isBusy ? 'none' : 'auto',
-									opacity: isBusy ? 0.6 : 1,
+									pointerEvents: isBusy || isVideoBusy ? 'none' : 'auto',
+									opacity: isBusy || isVideoBusy ? 0.6 : 1,
 								} }
 							>
 								{ __( 'Download', 'try-aura' ) }
@@ -97,9 +109,14 @@ function ConfigSettings( {
 						</>
 					) : (
 						<Button
-							color="primary"
-							onClick={ doGenerate }
-							disabled={ isBusy }
+							onClick={
+								activeTab === 'image'
+									? doGenerate
+									: doGenerateVideo
+							}
+							disabled={
+								activeTab === 'image' ? isBusy : isVideoBusy
+							}
 						>
 							{ isBusy
 								? __( 'Generating…', 'try-aura' )

@@ -49,98 +49,22 @@ function Output( {
 				)
 			) : (
 				<div>
-					<div
-						style={ {
-							fontWeight: 600,
-							marginBottom: 8,
-						} }
-					>
-					</div>
 					{ videoUrl ? (
 						<video
 							src={ videoUrl }
 							controls
-							style={ {
-								width: '100%',
-								height: 'auto',
-								maxHeight: 200,
-								background: '#000',
-								borderRadius: 4,
-							} }
+							className="w-full h-auto block rounded-[8px] bg-[#000]"
 						/>
 					) : (
 						<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex items-center justify-center">
-							<span>{ message }</span>
+							<span>{ videoMessage }</span>
 						</div>
 					) }
-					{ videoError ? (
+					{ videoError && (
 						<div style={ { color: 'red', marginTop: 8 } }>
 							{ videoError }
 						</div>
-					) : null }
-					<div
-						style={ {
-							display: 'flex',
-							gap: '8px',
-							justifyContent: 'flex-end',
-							marginTop: 8,
-						} }
-					>
-						{ videoUrl ? (
-							<>
-								<button
-									className="button"
-									onClick={ doGenerateVideo }
-									disabled={ isVideoBusy }
-								>
-									{ isVideoBusy
-										? 'Regenerating video…'
-										: 'Regenerate video' }
-								</button>
-								<a
-									className="button"
-									href={ isVideoBusy ? undefined : videoUrl }
-									download={
-										isVideoBusy
-											? undefined
-											: 'enhanced-video.mp4'
-									}
-									aria-disabled={ isVideoBusy }
-									style={ {
-										pointerEvents: isVideoBusy
-											? 'none'
-											: 'auto',
-										opacity: isVideoBusy ? 0.6 : 1,
-									} }
-								>
-									Download video
-								</a>
-								<button
-									className="button button-primary"
-									onClick={ setVideoInMediaSelection }
-									disabled={
-										isVideoBusy ||
-										videoUploading ||
-										! videoUrl
-									}
-								>
-									{ videoUploading
-										? 'Adding…'
-										: 'Add to Media' }
-								</button>
-							</>
-						) : (
-							<button
-								className="button"
-								onClick={ doGenerateVideo }
-								disabled={ isVideoBusy }
-							>
-								{ isVideoBusy
-									? 'Generating video…'
-									: 'Generate video' }
-							</button>
-						) }
-					</div>
+					) }
 				</div>
 			) }
 			{ error ? (

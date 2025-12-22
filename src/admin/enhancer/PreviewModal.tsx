@@ -581,6 +581,9 @@ const PreviewModal = ( {
 		videoStatus === 'polling' ||
 		videoStatus === 'downloading';
 
+	const disabledImageAddToMedia = isBusy || uploading || ! generatedUrl;
+	const disabledVideoAddToMedia = isVideoBusy || videoUploading || ! videoUrl;
+
 	return (
 		<div className="ai-enhancer-modal fixed inset-[0px] bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[200000]">
 			<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto">
@@ -611,6 +614,7 @@ const PreviewModal = ( {
 						backgroundType={ backgroundType }
 						setBackgroundType={ setBackgroundType }
 						generatedUrl={ generatedUrl }
+						videoUrl={ videoUrl }
 						styleType={ styleType }
 						setStyleType={ setStyleType }
 						imageSize={ imageSize }
@@ -619,6 +623,8 @@ const PreviewModal = ( {
 						setOptionalPrompt={ setOptionalPrompt }
 						doGenerate={ doGenerate }
 						isBusy={ isBusy }
+						doGenerateVideo={ doGenerateVideo }
+						isVideoBusy={ isVideoBusy }
 					/>
 					<Output
 						generatedUrl={ generatedUrl }
@@ -640,8 +646,16 @@ const PreviewModal = ( {
 				<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
 					{ generatedUrl && (
 						<Button
-							onClick={ setInMediaSelection }
-							disabled={ isBusy || uploading || ! generatedUrl }
+							onClick={
+								activeTab === 'image'
+									? setInMediaSelection
+									: setVideoInMediaSelection
+							}
+							disabled={
+								activeTab === 'image'
+									? disabledImageAddToMedia
+									: disabledVideoAddToMedia
+							}
 						>
 							{ uploading
 								? __( 'Adding…' )

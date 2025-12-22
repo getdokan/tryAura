@@ -120,7 +120,7 @@ function ImageConfigInputs( {
 					{ __( 'Prompt (Optional)' ) }
 				</span>
 				<textarea
-					className="border border-[#E9E9E9]"
+					className="border border-[#E9E9E9] placeholder-[#A5A5AA]"
 					value={ optionalPrompt }
 					onChange={ ( e: any ) =>
 						setOptionalPrompt( e.target.value )

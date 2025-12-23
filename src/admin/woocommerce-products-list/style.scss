@@ -1,0 +1,9 @@
+@import "../../base-tailwind.scss";
+
+@source "../woocommerce-products-list/**/*.{ts,tsx,js,jsx,php,html}";
+@source "../../../templates/products/tryon-switch.php";
+
+
+.column-try_aura_try_on {
+	width: 80px;
+}

@@ -1,7 +1,6 @@
 'use strict';
 
-const path = require('path');
-const defaultConfig = require('@wordpress/scripts/config/webpack.config');
+const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 
 // Extend the default @wordpress/scripts webpack config to support multiple entries.
 module.exports = {
@@ -18,5 +17,7 @@ module.exports = {
 		'admin/settings/index': './src/admin/settings/index.tsx',
 		'admin/enhancer/index': './src/admin/enhancer/index.tsx',
 		'frontend/tryon/index': './src/frontend/tryon/index.tsx',
-	}
+		'admin/woocommerce-products-list':
+			'./src/admin/woocommerce-products-list/index.tsx',
+	},
 };

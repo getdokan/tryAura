@@ -57,7 +57,7 @@ class Assets {
 		if ( file_exists( $css_path ) ) {
 			$styles['try-aura-tryon'] = array(
 				'src'     => $asset_url . 'build/frontend/tryon/style-index.css',
-				'deps'    => array(),
+				'deps'    => array( 'try-aura-components' ),
 				'version' => filemtime( $css_path ),
 			);
 		}

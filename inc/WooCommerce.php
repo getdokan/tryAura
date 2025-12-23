@@ -24,6 +24,9 @@ class WooCommerce {
 			return;
 		}
 
+		// Frontend try-on script on product pages.
+		new TryOn();
+
 		// Add product list column.
 		add_filter( 'manage_edit-product_columns', array( $this, 'add_product_column' ) );
 		add_action( 'manage_product_posts_custom_column', array( $this, 'render_product_column' ), 10, 2 );

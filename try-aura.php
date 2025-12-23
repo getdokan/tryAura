@@ -18,4 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+// Define constant for the Plugin file.
+defined( 'TRYAURA_FILE' ) || define( 'TRYAURA_FILE', __FILE__ );
+defined( 'TRYAURA_DIR' ) || define( 'TRYAURA_DIR', __DIR__ );
+
 new Dokan\TryAura\Plugin();

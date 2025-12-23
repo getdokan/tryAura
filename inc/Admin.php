@@ -71,28 +71,6 @@ class Admin {
 			return;
 		}
 
-		$asset_file = plugin_dir_path( __DIR__ ) . 'build/admin/settings/index.asset.php';
-		$deps       = array( 'wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n', 'wp-api' );
-		$version    = '1.0.0';
-
-		if ( file_exists( $asset_file ) ) {
-			$asset   = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			$deps    = isset( $asset['dependencies'] ) ? $asset['dependencies'] : $deps;
-			$version = isset( $asset['version'] ) ? $asset['version'] : $version;
-		}
-
-		$script_url = plugin_dir_url( __DIR__ ) . 'build/admin/settings/index.js';
-
-		wp_register_script( 'try-aura-admin', $script_url, $deps, $version, true );
-
-		// Enqueue compiled Tailwind CSS if available.
-		$css_path = plugin_dir_path( __DIR__ ) . 'build/admin/settings/style-index.css';
-		if ( file_exists( $css_path ) ) {
-			$css_url = plugin_dir_url( __DIR__ ) . 'build/admin/settings/style-index.css';
-			wp_register_style( 'try-aura-admin', $css_url, array(), filemtime( $css_path ) );
-			wp_enqueue_style( 'try-aura-admin' );
-		}
-
 		// Localize data for the app.
 		wp_localize_script(
 			'try-aura-admin',
@@ -111,6 +89,7 @@ class Admin {
 		}
 
 		wp_enqueue_script( 'try-aura-admin' );
+		wp_enqueue_style( 'try-aura-admin' );
 	}
 
 	/**

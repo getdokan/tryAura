@@ -1,4 +1,6 @@
 import { __ } from '@wordpress/i18n';
+import { twMerge } from 'tailwind-merge';
+import { CircleCheck } from 'lucide-react';
 
 function Index( {
 	productImages,
@@ -24,21 +26,28 @@ function Index( {
 				{ productImages.map( ( url, i ) => {
 					const isSelected = selectedProductImages.includes( url );
 					return (
-						<img
-							key={ i }
-							src={ url }
-							alt={ `Product ${ i + 1 }` }
-							onClick={ () => onToggleImage( url ) }
-							style={ {
-								width: '100%',
-								height: 'auto',
-								borderRadius: 4,
-								border: isSelected
-									? '2px solid #007cba'
-									: '1px solid #eee',
-								cursor: 'pointer',
-							} }
-						/>
+						<div key={ i } className="relative">
+							<img
+								src={ url }
+								alt={ `Product ${ i + 1 }` }
+								onClick={ () => onToggleImage( url ) }
+								className={ twMerge(
+									'w-full aspect-square object-contain rounded-[4px] cursor-pointer',
+									isSelected
+										? 'border-2 border-black p-[2px]'
+										: 'border border-solid border-[#eee]'
+								) }
+							/>
+							{ isSelected && (
+								<CircleCheck
+									size={ 16 }
+									className={ twMerge(
+										'absolute top-[4px] right-[4px] bg-white rounded-full',
+										isSelected && 'text-black'
+									) }
+								/>
+							) }
+						</div>
 					);
 				} ) }
 			</div>

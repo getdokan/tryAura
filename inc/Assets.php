@@ -106,7 +106,7 @@ class Assets {
 			}
 			$version = $asset['version'] ?? '1.0.0';
 
-			$scripts['try-aura-components'] = array(
+			$scripts['try-aura-enhancer'] = array(
 				'version' => $version,
 				'src'     => $asset_url . 'build/admin/enhancer/index.js',
 				'deps'    => $deps,

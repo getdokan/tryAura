@@ -27,16 +27,11 @@ function UseCamera( {
 						autoPlay
 						playsInline
 						muted
-						style={ {
-							width: '100%',
-							height: '100%',
-							background: '#000',
-							display: 'block',
-						} }
+						className="w-full h-full bg-[#000] block"
 					/>
 
 					<button
-						className="bg-[#000000] text-white px-[65px] py-[14px] cursor-pointer mx-auto"
+						className="bg-[#000000] text-white px-[50px] py-[10px] cursor-pointer mx-auto"
 						onClick={ capture }
 						disabled={ ! cameraActive || isBusy }
 					>
@@ -56,7 +51,10 @@ function UseCamera( {
 				) }
 
 				{ ! cameraActive && (
-					<button className="bg-[#000000] text-white px-[65px] py-[14px] cursor-pointer mx-auto" onClick={ startCamera }>
+					<button
+						className="bg-[#000000] text-white px-[50px] py-[10px] cursor-pointer mx-auto"
+						onClick={ startCamera }
+					>
 						{ __( 'Recapture', 'try-aura' ) }
 					</button>
 				) }

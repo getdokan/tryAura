@@ -4,6 +4,7 @@ import { __ } from "@wordpress/i18n";
 import { X } from "lucide-react";
 import UserImageSection from "./UserImageSection";
 import ProductImagesSection from "./ProductImagesSection";
+import Output from "./Output";
 
 type TryOnModalProps = {
 	productImages: string[];
@@ -340,7 +341,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			<div className="ai-enhancer-modal fixed inset-[0px] bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[200000]">
 				<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto">
 					<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] p-[16px_24px]">
-						<h2 className="mt-0 font-[700] font-bold text-[18px] text-[#25252D] font-[Inter]">
+						<h2 className="m-0 font-[700] font-bold text-[18px] text-[#25252D]">
 							{ __( 'Try-On Product', 'try-aura' ) }
 						</h2>
 						<button
@@ -374,70 +375,16 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 							onToggleImage={ toggleProductImage }
 						/>
 
-						<div className="w-1/3">
-							<div style={ { fontWeight: 600, marginBottom: 8 } }>
-								Generated
-							</div>
-							{ generatedUrl ? (
-								<img
-									src={ generatedUrl }
-									alt="Generated try-on"
-									style={ {
-										maxWidth: '100%',
-										height: 'auto',
-										display: 'block',
-									} }
-								/>
-							) : (
-								<div
-									style={ {
-										border: '1px solid #eee',
-										borderRadius: 4,
-										minHeight: 220,
-										display: 'flex',
-										alignItems: 'center',
-										justifyContent: 'center',
-										padding: 12,
-									} }
-								>
-									<span>{ message }</span>
-								</div>
-							) }
-							{ generatedUrl ? (
-								<div
-									style={ {
-										display: 'flex',
-										gap: 8,
-										marginTop: 8,
-										justifyContent: 'flex-end',
-									} }
-								>
-									<a
-										className="button"
-										href={
-											isBusy ? undefined : generatedUrl
-										}
-										download={
-											isBusy ? undefined : 'tryon.png'
-										}
-										aria-disabled={ isBusy }
-										style={ {
-											pointerEvents: isBusy
-												? 'none'
-												: 'auto',
-											opacity: isBusy ? 0.6 : 1,
-										} }
-									>
-										Download
-									</a>
-								</div>
-							) : null }
-						</div>
+						<Output
+							generatedUrl={ generatedUrl }
+							message={ message }
+							isBusy={ isBusy }
+						/>
 					</div>
 					{ /* Actions */ }
 					<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
 						<button
-							className="button button-primary"
+							className="bg-[#000000] text-white px-[50px] py-[10px] cursor-pointer"
 							onClick={ doTry }
 							disabled={
 								isBusy ||
@@ -445,7 +392,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 								selectedProductImages.length === 0
 							}
 						>
-							{ isBusy ? 'Trying…' : 'Try' }
+							{ isBusy
+								? __( 'Trying…', 'try-aura' )
+								: __( 'Try On', 'try-aura' ) }
 						</button>
 					</div>
 				</div>

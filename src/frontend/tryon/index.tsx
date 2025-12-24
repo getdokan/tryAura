@@ -4,6 +4,9 @@ import './style.scss';
 import { __ } from '@wordpress/i18n';
 import { Camera, UploadCloud, User, X } from 'lucide-react';
 import { Button, GroupButton } from '../../components';
+import UploadImage from './UploadImage';
+import ImagePreview from './ImagePreview';
+import UseCamera from './UseCamera';
 
 // Minimal frontend Try-On implementation: Adds a "Try on" button next to Add to cart on WooCommerce
 // product pages. Clicking it opens a popup to upload or capture a photo and generates an AI try-on
@@ -58,7 +61,7 @@ function unique< T >( arr: T[] ): T[] {
 function getProductImageUrls(): string[] {
 	const imgs: HTMLImageElement[] = Array.from(
 		document.querySelectorAll(
-			'.woocommerce-product-gallery__image img, .woocommerce-product-gallery__wrapper img, .product .images img, .woocommerce-main-image, .entry-summary img'
+			'.woocommerce-product-gallery__wrapper img:not(.zoomImg)'
 		)
 	);
 	const urls: string[] = imgs
@@ -198,14 +201,14 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		}
 		ctx.drawImage( video, 0, 0, w, h );
 		const dataUrl = canvas.toDataURL( 'image/jpeg', 0.95 );
-		setUserImages( ( prev ) => [ ...prev, dataUrl ] );
+		setUserImages( [ dataUrl ] );
 		setMessage( 'Photo captured. Click Try to generate.' );
 		stopCamera();
 	};
 
 	const onFileChange = ( e: any ) => {
 		const files: FileList | undefined = e?.target?.files;
-		console.log( files );
+
 		if ( ! files || files.length === 0 ) {
 			return;
 		}
@@ -223,7 +226,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		}
 		Promise.all( readers )
 			.then( ( results ) => {
-				setUserImages( ( prev ) => [ ...prev, ...results ] );
+				setUserImages( results );
 				setMessage( 'Photo(s) selected. Click Try to generate.' );
 			} )
 			.catch( () => {
@@ -355,9 +358,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		<>
 			<div className="ai-enhancer-modal fixed inset-[0px] bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[200000]">
 				<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto">
-					<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] pt-[16px] pl-[24px] pr-[24px]">
-						<h2 className="mt-0">
-							{ __( 'Virtual Try-On', 'try-aura' ) }
+					<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] p-[16px_24px]">
+						<h2 className="mt-0 font-[700] font-bold text-[18px] text-[#25252D] font-[Inter]">
+							{ __( 'Try-On Product', 'try-aura' ) }
 						</h2>
 						<button
 							className="w-[16px] h-[16px] cursor-pointer p-0 m-0 bg-transparent"
@@ -379,163 +382,46 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 										label: 'Upload Image',
 										value: 'upload',
 										icon: <UploadCloud size={ 16 } />,
+										className: 'w-1/2',
 									},
 									{
 										label: 'Use Camera',
 										value: 'camera',
 										icon: <Camera size={ 16 } />,
+										className: 'w-1/2',
 									},
 								] }
 								onClick={ ( value ) => {
 									setUserImages( [] );
 									setActiveTab( value );
+
+									if ( value === 'camera' ) {
+										startCamera();
+									} else {
+										stopCamera();
+									}
 								} }
 								value={ activeTab }
-								className={ 'mb-[20px]' }
+								className="mb-[20px] flex w-full"
 							/>
-							<div
-								style={ {
-									display: 'flex',
-									gap: 8,
-									flexWrap: 'wrap',
-								} }
-							>
-								{ activeTab === 'upload' &&
-									userImages.length === 0 && (
-										<div>
-											<div className="max-w-md mx-auto">
-												<label
-													htmlFor="image-upload"
-													className="block cursor-pointer"
-												>
-													<div className="rounded-xl border-2 border-dashed border-gray-300 bg-gray-100 px-8 py-12 text-center shadow-sm hover:border-gray-400 transition-colors duration-200">
-														<input
-															type="file"
-															id="image-upload"
-															accept="image/*"
-															multiple={ false }
-															onChange={
-																onFileChange
-															}
-															className="hidden"
-														/>
-
-														<User
-															size={ 24 }
-															className="mx-auto text-gray-400"
-														/>
-
-														<p className="mt-6 text-xl font-medium text-purple-600">
-															Add Your Image
-														</p>
-
-														<p className="mt-4 text-sm text-gray-600">
-															Supports: jpg, png,
-															and img formats.
-														</p>
-
-														<p className="mt-2 text-sm text-gray-600">
-															File size must be
-															under 25 MB.
-														</p>
-													</div>
-												</label>
-											</div>
-										</div>
+							<div className="flex flex-wrap gap-[8px] w-full">
+								{ activeTab === 'upload' && (
+										<UploadImage
+											onFileChange={ onFileChange }
+											userImages={ userImages }
+											removeUserImage={ removeUserImage }
+										/>
 									) }
 
 								{ activeTab === 'camera' && (
-									<>
-										<button
-											className="button"
-											onClick={ startCamera }
-											disabled={ cameraActive || isBusy }
-										>
-											Start camera
-										</button>
-										<button
-											className="button"
-											onClick={ stopCamera }
-											disabled={
-												! cameraActive || isBusy
-											}
-										>
-											Stop
-										</button>
-
-										{ cameraActive && (
-											<div>
-												<video
-													ref={ videoRef }
-													autoPlay
-													playsInline
-													muted
-													style={ {
-														width: '100%',
-														height: '100%',
-														background: '#000',
-														display: 'block',
-													} }
-												/>
-											</div>
-										) }
-
-										<button
-											className="button"
-											onClick={ capture }
-											disabled={
-												! cameraActive || isBusy
-											}
-										>
-											Capture
-										</button>
-									</>
-								) }
-							</div>
-
-							<div>
-								{ userImages.length > 0 && (
-									<div className="flex flex-col gap-[8px]">
-										{ userImages.map( ( img, idx ) => (
-											<div
-												key={ idx }
-												style={ {
-													position: 'relative',
-													border: '1px solid #eee',
-													borderRadius: 4,
-													overflow: 'hidden',
-												} }
-											>
-												<img
-													src={ img }
-													alt={ `Your ${ idx + 1 }` }
-													style={ {
-														width: '100%',
-														height: 'auto',
-														display: 'block',
-													} }
-												/>
-												<button
-													type="button"
-													className="button"
-													onClick={ () =>
-														removeUserImage( idx )
-													}
-													aria-label="Remove photo"
-													style={ {
-														position: 'absolute',
-														top: 4,
-														right: 4,
-														padding: '2px 6px',
-														lineHeight: 1,
-														fontSize: 12,
-													} }
-												>
-													×
-												</button>
-											</div>
-										) ) }
-									</div>
+									<UseCamera
+										videoRef={ videoRef }
+										capture={ capture }
+										cameraActive={ cameraActive }
+										userImages={ userImages }
+										removeUserImage={ removeUserImage }
+										startCamera={ startCamera }
+									/>
 								) }
 							</div>
 							{ error ? (
@@ -545,9 +431,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 							) : null }
 						</div>
 
-						<div className="w-1/3 flex flex-col gap-[32px]">
-							<div style={ { fontWeight: 600, marginBottom: 8 } }>
-								Product image(s)
+						<div className="w-1/3">
+							<div className="font-[500] text-[14px] text-[#25252D] mb-[20px]">
+								{ __( 'Product Images', 'try-aura' ) }
 							</div>
 							<div
 								style={ {

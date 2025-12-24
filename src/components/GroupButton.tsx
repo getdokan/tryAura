@@ -1,7 +1,13 @@
 import { twMerge } from 'tailwind-merge';
 
 export interface GroupButtonProps {
-	options: { label: string; value: string; disabled?: boolean; icon?: any }[];
+	options: {
+		label: string;
+		value: string;
+		disabled?: boolean;
+		icon?: any;
+		className?: string;
+	}[];
 	onClick: ( value: string ) => void;
 	value: string;
 	className?: string;
@@ -33,7 +39,8 @@ const GroupButton = ( {
 								: '',
 							option?.disabled
 								? 'opacity-50 cursor-not-allowed'
-								: ''
+								: '',
+							option?.className ?? ''
 						) }
 						onClick={ () => onClick( option?.value ) }
 						key={ option?.value }

@@ -12,7 +12,8 @@
     "packages-update": "wp-scripts packages-update",
     "plugin-zip": "wp-scripts plugin-zip",
     "makepot": "wp i18n make-pot --domain='try-aura' --include='build,inc,lib,templates,try-aura.php' . --headers='{\"Report-Msgid-Bugs-To\":\"https://dokan.co/contact/\"}' --file-comment=\"Copyright (c) $(date +'%Y') Dokan Inc. All Rights Reserved.\" languages/try-aura.pot",
-    "zip": "rm -rf try-aura try-aura.zip && mkdir try-aura && cp -r build inc templates vendor try-aura.php try-aura/ && zip -r try-aura.zip try-aura && rm -rf try-aura"
+    "zip": "rm -rf try-aura try-aura.zip && mkdir try-aura && cp -r build inc templates vendor try-aura.php try-aura/ && zip -r try-aura.zip try-aura && rm -rf try-aura",
+	"version": "node bin/version-replace"
   },
   "author": "WeDevs",
   "license": "MIT",

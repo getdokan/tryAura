@@ -24,6 +24,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		'upload'
 	);
 	const [ cameraActive, setCameraActive ] = useState< boolean >( false );
+	const [ selectedProductImages, setSelectedProductImages ] = useState<
+		string[]
+	>( productImages.length > 0 ? [ productImages[ 0 ] ] : [] );
 
 	// Camera
 	const videoRef = useRef< HTMLVideoElement | null >( null );
@@ -206,6 +209,21 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		setUserImages( ( prev ) => prev.filter( ( _, i ) => i !== index ) );
 	};
 
+	const toggleProductImage = ( url: string ) => {
+		setSelectedProductImages( ( prev ) => {
+			if ( prev.includes( url ) ) {
+				if ( prev.length <= 1 ) {
+					return prev;
+				}
+				return prev.filter( ( u ) => u !== url );
+			}
+			if ( prev.length < 3 ) {
+				return [ ...prev, url ];
+			}
+			return prev;
+		} );
+	};
+
 	const toInlineData = async (
 		img: string
 	): Promise< { mimeType: string; data: string } > => {
@@ -238,8 +256,8 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			setError( 'Please select or capture your photo first.' );
 			return;
 		}
-		if ( ! productImages.length ) {
-			setError( 'No product image found on this page.' );
+		if ( selectedProductImages.length === 0 ) {
+			setError( 'Please select at least one product image.' );
 			return;
 		}
 		try {
@@ -256,12 +274,11 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			const primaryUserImage = userImages[ 0 ]; // Use first selected/captured photo as the user image
 			const userInline = await toInlineData( primaryUserImage );
 			const productInlineList = await Promise.all(
-				productImages.slice( 0, 3 ).map( toInlineData )
+				selectedProductImages.map( toInlineData )
 			);
 
 			setStatus( 'generating' );
 			setMessage( 'Generating try-on preview…' );
-			const ai = new GoogleGenAI( { apiKey } );
 
 			const promptText =
 				'Create a realistic virtual try-on image. The first image is the user/customer photo. The subsequent image(s) are the product to wear/use. Put the product on the person naturally with correct proportions, lighting, and perspective. Keep a neutral background suitable for eCommerce.';
@@ -280,6 +297,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				} );
 			}
 
+			const ai = new GoogleGenAI( { apiKey } );
 			const response: any = await ( ai as any ).models.generateContent( {
 				model: 'gemini-2.5-flash-image-preview',
 				contents,
@@ -352,6 +370,8 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 
 						<ProductImagesSection
 							productImages={ productImages }
+							selectedProductImages={ selectedProductImages }
+							onToggleImage={ toggleProductImage }
 						/>
 
 						<div className="w-1/3">
@@ -422,7 +442,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 							disabled={
 								isBusy ||
 								userImages.length === 0 ||
-								productImages.length === 0
+								selectedProductImages.length === 0
 							}
 						>
 							{ isBusy ? 'Trying…' : 'Try' }

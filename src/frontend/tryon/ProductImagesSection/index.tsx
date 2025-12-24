@@ -16,13 +16,7 @@ function Index( {
 			<div className="font-[500] text-[14px] text-[#25252D] mb-[20px]">
 				{ __( 'Product Images', 'try-aura' ) }
 			</div>
-			<div
-				style={ {
-					display: 'grid',
-					gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))',
-					gap: 8,
-				} }
-			>
+			<div className="grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] gap-2">
 				{ productImages.map( ( url, i ) => {
 					const isSelected = selectedProductImages.includes( url );
 					return (

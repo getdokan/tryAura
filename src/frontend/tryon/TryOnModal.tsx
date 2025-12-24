@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "@wordpress/element";
 import { GoogleGenAI } from "@google/genai";
 import { __ } from "@wordpress/i18n";
-import { GroupButton } from "../../components";
-import { Camera, UploadCloud, X } from "lucide-react";
-import UploadImage from "./UploadImage";
-import UseCamera from "./UseCamera";
+import { X } from "lucide-react";
+import UserImageSection from "./UserImageSection";
+import ProductImagesSection from "./ProductImagesSection";
 
 type TryOnModalProps = {
 	productImages: string[];
@@ -336,92 +335,24 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 					</div>
 
 					<div className="flex flex-row gap-[24px] mt-[24px] pl-[24px] pr-[24px]">
-						<div className="w-1/3 max-h-[533px] overflow-auto">
-							<div className="font-[500] text-[14px] text-[#25252D] mb-[20px]">
-								{ __( 'Your Image', 'try-aura' ) }
-							</div>
-							<GroupButton
-								options={ [
-									{
-										label: 'Upload Image',
-										value: 'upload',
-										icon: <UploadCloud size={ 16 } />,
-										className: 'w-1/2',
-									},
-									{
-										label: 'Use Camera',
-										value: 'camera',
-										icon: <Camera size={ 16 } />,
-										className: 'w-1/2',
-									},
-								] }
-								onClick={ ( value ) => {
-									setUserImages( [] );
-									setActiveTab( value );
+						<UserImageSection
+							onFileChange={ onFileChange }
+							userImages={ userImages }
+							removeUserImage={ removeUserImage }
+							videoRef={ videoRef }
+							capture={ capture }
+							cameraActive={ cameraActive }
+							setActiveTab={ setActiveTab }
+							startCamera={ startCamera }
+							stopCamera={ stopCamera }
+							activeTab={ activeTab }
+							setUserImages={ setUserImages }
+							error={ error }
+						/>
 
-									if ( value === 'camera' ) {
-										startCamera();
-									} else {
-										stopCamera();
-									}
-								} }
-								value={ activeTab }
-								className="mb-[20px] flex w-full"
-							/>
-							<div className="flex flex-wrap gap-[8px] w-full">
-								{ activeTab === 'upload' && (
-									<UploadImage
-										onFileChange={ onFileChange }
-										userImages={ userImages }
-										removeUserImage={ removeUserImage }
-									/>
-								) }
-
-								{ activeTab === 'camera' && (
-									<UseCamera
-										videoRef={ videoRef }
-										capture={ capture }
-										cameraActive={ cameraActive }
-										userImages={ userImages }
-										removeUserImage={ removeUserImage }
-										startCamera={ startCamera }
-									/>
-								) }
-							</div>
-							{ error ? (
-								<div style={ { color: 'red', marginTop: 8 } }>
-									{ error }
-								</div>
-							) : null }
-						</div>
-
-						<div className="w-1/3">
-							<div className="font-[500] text-[14px] text-[#25252D] mb-[20px]">
-								{ __( 'Product Images', 'try-aura' ) }
-							</div>
-							<div
-								style={ {
-									display: 'grid',
-									gridTemplateColumns:
-										'repeat(auto-fill, minmax(90px, 1fr))',
-									gap: 8,
-								} }
-							>
-								{ productImages.map( ( url, i ) => (
-									<img
-										key={ i }
-										src={ url }
-										alt={ `Product ${ i + 1 }` }
-										style={ {
-											width: '100%',
-											height: 'auto',
-											borderRadius: 4,
-											border: '1px solid #eee',
-										} }
-									/>
-								) ) }
-							</div>
-						</div>
+						<ProductImagesSection
+							productImages={ productImages }
+						/>
 
 						<div className="w-1/3">
 							<div style={ { fontWeight: 600, marginBottom: 8 } }>

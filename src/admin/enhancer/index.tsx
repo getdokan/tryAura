@@ -1,13 +1,7 @@
-import { createRoot, useEffect, useRef, useState } from '@wordpress/element';
+import { createRoot } from '@wordpress/element';
 import './style.scss';
-import PreviewModal from './PreviewModal';
-import { __ } from '@wordpress/i18n';
-
-/**
- * Lightweight UI that injects an "Enhance with AI" button into the
- * WordPress Featured Image media modal toolbar. This implementation focuses
- * only on the UI using @wordpress/element, without any REST/AI backend.
- */
+import { applyFilters, doAction } from '@wordpress/hooks';
+import EnhanceButton from './EnhanceButton';
 
 declare const wp: any;
 
@@ -22,133 +16,36 @@ declare global {
 	}
 }
 
-const EnhanceButton = () => {
-	const [ open, setOpen ] = useState( false );
-	const [ previewUrls, setPreviewUrls ] = useState< string[] >( [] );
-	const [ attachmentIds, setAttachmentIds ] = useState< number[] >( [] );
-	const [ loading, setLoading ] = useState( false );
-	const modalContainerRef = useRef< HTMLDivElement | null >( null );
-	const modalRootRef = useRef< any >( null );
-
-	const handleClick = () => {
-		setLoading( true );
-		try {
-			// Prefer the current global media frame if available, otherwise fall back to the Featured Image frame.
-			const frameObj =
-				wp?.media?.frame ||
-				( wp?.media?.featuredImage?.frame
-					? wp.media.featuredImage.frame()
-					: null );
-			const state =
-				typeof frameObj?.state === 'function' ? frameObj.state() : null;
-			const collection = state?.get?.( 'selection' );
-			const models =
-				collection?.models ||
-				( collection?.toArray ? collection.toArray() : [] );
-			const items = ( models || [] )
-				.map( ( m: any ) =>
-					typeof m?.toJSON === 'function' ? m.toJSON() : m
-				)
-				.filter( ( j: any ) => j && j.url && j.id );
-			if ( ! items.length ) {
-				window.alert( 'Please select at least one image.' );
-				return;
-			}
-			setPreviewUrls( items.map( ( j: any ) => j.url ) );
-			setAttachmentIds( items.map( ( j: any ) => j.id ) );
-			setOpen( true );
-		} catch ( e ) {
-			// eslint-disable-next-line no-console
-			console.error( e );
-			window.alert( 'Unable to read current selection.' );
-		} finally {
-			setLoading( false );
-		}
-	};
-
-	// Render the modal into document.body to avoid toolbar overflow/stacking issues.
-	useEffect( () => {
-		if ( ! open || previewUrls.length === 0 ) {
-			// cleanup if exists
-			if ( modalContainerRef.current ) {
-				try {
-					modalRootRef.current?.unmount?.();
-				} catch {}
-				modalContainerRef.current.remove();
-				modalContainerRef.current = null;
-				modalRootRef.current = null;
-			}
-			return;
-		}
-
-		if ( ! modalContainerRef.current ) {
-			const container = document.createElement( 'div' );
-			container.id = 'try-aura-ai-modal-root';
-			container.className = 'tryaura';
-			document.body.appendChild( container );
-			modalContainerRef.current = container;
-		}
-
-		const container = modalContainerRef.current!;
-		if ( ! modalRootRef.current ) {
-			modalRootRef.current = ( createRoot as any )( container );
-		}
-		modalRootRef.current.render(
-			<PreviewModal
-				imageUrls={ previewUrls }
-				attachmentIds={ attachmentIds }
-				onClose={ () => setOpen( false ) }
-				supportsVideo={ true }
-			/>
-		);
-
-		return () => {
-			// On deps change or unmount, we re-render on next effect; do not remove here unless closing
-		};
-	}, [ open, previewUrls, attachmentIds ] );
-
-	useEffect( () => {
-		return () => {
-			// Ensure cleanup on component unmount
-			if ( modalContainerRef.current ) {
-				try {
-					modalRootRef.current?.unmount?.();
-				} catch {}
-				modalContainerRef.current.remove();
-				modalContainerRef.current = null;
-			}
-		};
-	}, [] );
-
-	return (
-		<div>
-			<button
-				className="button media-button button-primary button-large"
-				onClick={ handleClick }
-				disabled={ loading }
-			>
-				{ __( 'Enhance with AI', 'try-aura' ) }
-			</button>
-		</div>
-	);
-};
+const tryauramediaroot = applyFilters(
+	'tryaura.media_root_name',
+	'tryauramediaroot'
+);
 
 function addEnhancerButton( toolbar ) {
 	toolbar = toolbar[ 0 ] ?? null;
 	if ( toolbar ) {
 		let container = toolbar.querySelector(
-			'#try-aura-ai-enhance'
+			applyFilters(
+				'tryaura.admin_enhance_btn_selector',
+				'#try-aura-ai-enhance'
+			)
 		) as HTMLElement | null;
 		const time = Date.now();
 
 		if ( ! container ) {
 			container = document.createElement( 'span' );
 			container.id = 'try-aura-ai-enhance';
-			container.dataset.tryauramediaroot = time.toString();
+			container.dataset[ tryauramediaroot ] = time.toString();
 			container.style.display = 'inline-block';
 			container.style.marginLeft = '8px';
 			container.style.marginTop = '14px';
+			container = applyFilters(
+				'tryaura.admin_enhance_btn_container',
+				container
+			);
 			toolbar.appendChild( container );
+
+			doAction( 'tryaura.admin_enhance_btn_added', container, toolbar );
 		}
 		// Ensure the React button is rendered (WP may clear the toolbar on state changes)
 		if (
@@ -185,7 +82,9 @@ function addEnhancerButton( toolbar ) {
 				.find( '.media-frame-toolbar' )
 				.find( '.media-toolbar' )
 				.find( '.media-toolbar-primary.search-form' );
-			addEnhancerButton( toolBar );
+			addEnhancerButton(
+				applyFilters( 'tryaura.admin_enhance_btn_toolbar', toolBar )
+			);
 
 			return ret;
 		};
@@ -195,21 +94,43 @@ function addEnhancerButton( toolbar ) {
 			// Call original open first so the DOM exists
 			const ret = origClose.apply( this, args );
 
-			const button = $( this.controller.el )
+			let button = $( this.controller.el )
 				.find( '.media-frame-toolbar' )
 				.find( '.media-toolbar' )
 				.find( '.media-toolbar-primary.search-form' )
 				.find( '#try-aura-ai-enhance' );
 
+			button = applyFilters(
+				'tryaura.admin_enhance_btn_toolbar_close',
+				button
+			);
+
 			if ( button[ 0 ] ) {
-				const rootId = $( button[ 0 ] ).data( 'tryauramediaroot' );
-				const root = window.tryAuraMediaRoots[ rootId ];
+				const rootId = $( button[ 0 ] ).data( tryauramediaroot );
+				let root = window.tryAuraMediaRoots[ rootId ];
 
 				try {
+					root = applyFilters(
+						'tryaura.admin_enhance_media_unmount_before_filter',
+						root
+					);
+					doAction(
+						'tryaura.admin_enhance_media_unmount_before_action',
+						root
+					);
 					root?.unmount?.();
+					doAction(
+						'tryaura.admin_enhance_media_unmount_after_action',
+						root
+					);
 				} catch {}
+				doAction(
+					'tryaura.admin_enhance_media_unmounted_before',
+					root
+				);
 				delete window.tryAuraMediaRoots[ rootId ];
 				button.remove();
+				doAction( 'tryaura.admin_enhance_media_unmounted_after', root );
 			}
 
 			return ret;

@@ -13,7 +13,7 @@
     "makepot": "wp i18n make-pot --domain='try-aura' --include='build,inc,lib,templates,try-aura.php' . --headers='{\"Report-Msgid-Bugs-To\":\"https://dokan.co/contact/\"}' --file-comment=\"Copyright (c) $(date +'%Y') Dokan Inc. All Rights Reserved.\" languages/try-aura.pot",
     "zip": "rm -rf try-aura try-aura.zip && mkdir try-aura && cp -r build inc templates vendor try-aura.php try-aura/ && zip -r try-aura.zip try-aura && rm -rf try-aura",
     "plugin-zip": "wp-scripts plugin-zip",
-	"version": "node bin/version-replace"
+    "version": "node bin/version-replace"
   },
   "author": "WeDevs",
   "license": "MIT",
@@ -35,6 +35,7 @@
     "@wordpress/api-fetch": "^7.36.0",
     "@wordpress/components": "^30.9.0",
     "@wordpress/element": "^6.36.0",
+    "@wordpress/hooks": "^4.37.0",
     "lucide-react": "^0.561.0",
     "postcss": "^8.5.6",
     "tailwind-merge": "^3.4.0",

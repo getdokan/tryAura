@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import UserImageSection from './UserImageSection';
 import ProductImagesSection from './ProductImagesSection';
 import Output from './Output';
+import { applyFilters, doAction } from '@wordpress/hooks';
 
 type TryOnModalProps = {
 	productImages: string[];
@@ -17,7 +18,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		'idle' | 'fetching' | 'generating' | 'parsing' | 'done' | 'error'
 	>( 'idle' );
 	const [ message, setMessage ] = useState< string >(
-		'Select or capture one or more photos, then click Try'
+		__( 'Select or capture one or more photos, then click Try', 'try-aura' )
 	);
 	const [ error, setError ] = useState< string | null >( null );
 	const [ generatedUrl, setGeneratedUrl ] = useState< string | null >( null );
@@ -44,6 +45,11 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 
 	const startCamera = async () => {
 		try {
+			doAction( 'try-aura.before_camera_start', {
+				videoRef,
+				streamRef,
+				canvasRef,
+			} );
 			const stream = await navigator.mediaDevices.getUserMedia( {
 				video: { facingMode: 'user' },
 				audio: false,
@@ -59,6 +65,12 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			}
 			setMessage( 'Camera active — click Capture when ready' );
 			setError( null );
+
+			doAction( 'try-aura.after_camera_start', {
+				videoRef,
+				streamRef,
+				canvasRef,
+			} );
 		} catch ( e: any ) {
 			setError( e?.message || 'Unable to access camera.' );
 		}
@@ -78,17 +90,26 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			if ( ! rest || ! nonce ) {
 				return null;
 			}
+			doAction( 'try-aura.before_api_key_fetch', { rest, nonce } );
 			const res = await fetch(
-				rest.replace( /\/?$/, '/' ) + 'try-aura/v1/settings',
-				{
+				applyFilters(
+					'tryaura.tryon.api_key_fetch_url',
+					rest.replace( /\/?$/, '/' ) + 'try-aura/v1/settings'
+				),
+				applyFilters( 'tryaura.tryon.api_key_fetch_options', {
 					headers: { 'X-WP-Nonce': nonce },
 					credentials: 'same-origin',
-				}
+				} )
 			);
 			if ( ! res.ok ) {
 				return null;
 			}
-			const data = await res.json();
+
+			doAction( 'try-aura.after_api_key_fetch', res );
+			const data = applyFilters(
+				'tryaura.tryon.api_key_fetch_data',
+				await res.json()
+			);
 			const opt = ( data && ( data as any ).try_aura_api_key ) as
 				| string
 				| undefined;
@@ -104,6 +125,12 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		} catch {}
 		streamRef.current = null;
 		setCameraActive( false );
+		doAction(
+			'try-aura.after_camera_stop',
+			videoRef,
+			streamRef,
+			canvasRef
+		);
 		const video = videoRef.current;
 		if ( video ) {
 			try {
@@ -144,18 +171,31 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			( video as any ).readyState < 2
 		) {
 			setError(
-				'Camera not ready yet. Please wait a moment and try again.'
+				__(
+					'Camera not ready yet. Please wait a moment and try again.',
+					'try-aura'
+				)
 			);
 			return;
 		}
-		const w = video.videoWidth || 640;
-		const h = video.videoHeight || 480;
+		const w = applyFilters(
+			'tryaura.tryon.photo_capture_width',
+			video.videoWidth || 640
+		);
+		const h = applyFilters(
+			'tryaura.tryon.photo_capture_height',
+			video.videoHeight || 480
+		);
 		if ( ! w || ! h ) {
 			setError(
-				'Camera not ready yet. Please wait a moment and try again.'
+				__(
+					'Camera not ready yet. Please wait a moment and try again.',
+					'try-aura'
+				)
 			);
 			return;
 		}
+		doAction( 'try-aura.before_photo_capture', { videoRef, canvasRef } );
 		if ( ! canvasRef.current ) {
 			canvasRef.current = document.createElement( 'canvas' );
 		}
@@ -167,10 +207,19 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			return;
 		}
 		ctx.drawImage( video, 0, 0, w, h );
-		const dataUrl = canvas.toDataURL( 'image/jpeg', 0.95 );
+		const dataUrl = applyFilters(
+			'tryaura.tryon.photo_capture_data_url',
+			canvas.toDataURL( 'image/jpeg', 0.95 )
+		);
 		setUserImages( [ dataUrl ] );
 		setMessage( 'Photo captured. Click Try to generate.' );
 		stopCamera();
+
+		doAction( 'try-aura.after_photo_capture', {
+			videoRef,
+			canvasRef,
+			dataUrl,
+		} );
 	};
 
 	const onFileChange = ( e: any ) => {
@@ -193,11 +242,13 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		}
 		Promise.all( readers )
 			.then( ( results ) => {
+				doAction( 'try-aura.photo_selected_before', { files, results } );
 				setUserImages( results );
-				setMessage( 'Photo(s) selected. Click Try to generate.' );
+				setMessage( __( 'Photo(s) selected. Click Try to generate.', 'try-aura' ) );
+				doAction( 'try-aura.photo_selected_after', { files, results } );
 			} )
 			.catch( () => {
-				setError( 'Failed to read one or more files.' );
+				setError( __( 'Failed to read one or more files.', 'try-aura' ) );
 			} );
 		try {
 			if ( e?.target ) {
@@ -211,6 +262,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 	};
 
 	const toggleProductImage = ( url: string ) => {
+		url = applyFilters( 'tryaura.tryon.product_image_url', url );
 		setSelectedProductImages( ( prev ) => {
 			if ( prev.includes( url ) ) {
 				if ( prev.length <= 1 ) {
@@ -254,21 +306,21 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 
 	const doTry = async () => {
 		if ( userImages.length === 0 ) {
-			setError( 'Please select or capture your photo first.' );
+			setError( __( 'Please select or capture your photo first.', 'try-aura' ) );
 			return;
 		}
 		if ( selectedProductImages.length === 0 ) {
-			setError( 'Please select at least one product image.' );
+			setError( __( 'Please select at least one product image.', 'try-aura' ) );
 			return;
 		}
 		try {
 			setError( null );
 			setStatus( 'fetching' );
-			setMessage( 'Preparing images…' );
+			setMessage( __( 'Preparing images…', 'try-aura' ) );
 			const apiKey = await resolveApiKey();
 			if ( ! apiKey ) {
 				throw new Error(
-					'Missing API key. Please configure TryAura settings.'
+					__( 'Missing API key. Please configure TryAura settings.', 'try-aura' )
 				);
 			}
 
@@ -279,10 +331,12 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			);
 
 			setStatus( 'generating' );
-			setMessage( 'Generating try-on preview…' );
+			setMessage( __( 'Generating try-on preview…', 'try-aura' ) );
 
-			const promptText =
-				'Create a realistic virtual try-on image. The first image is the user/customer photo. The subsequent image(s) are the product to wear/use. Put the product on the person naturally with correct proportions, lighting, and perspective. Keep a neutral background suitable for eCommerce.';
+			const promptText = applyFilters(
+				'tryaura.tryon.prompt_text',
+				'Create a realistic virtual try-on image. The first image is the user/customer photo. The subsequent image(s) are the product to wear/use. Put the product on the person naturally with correct proportions, lighting, and perspective. Keep a neutral background suitable for eCommerce.'
+			);
 			const contents: any[] = [
 				{ text: promptText },
 				{
@@ -298,14 +352,18 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				} );
 			}
 
+			doAction( 'try-aura.before_model_generation', { contents } );
 			const ai = new GoogleGenAI( { apiKey } );
-			const response: any = await ( ai as any ).models.generateContent( {
-				model: 'gemini-2.5-flash-image-preview',
-				contents,
-			} );
+			const response: any = await ( ai as any ).models.generateContent(
+				applyFilters( 'tryaura.tryon_content_generation_options', {
+					model: 'gemini-2.5-flash-image-preview',
+					contents,
+				} )
+			);
+			doAction( 'try-aura.after_model_generation', response );
 
 			setStatus( 'parsing' );
-			setMessage( 'Processing result…' );
+			setMessage( __( 'Processing result…', 'try-aura' ) );
 			const parts = response?.candidates?.[ 0 ]?.content?.parts || [];
 			let data64: string | null = null;
 			let outMime: string = 'image/png';
@@ -323,19 +381,19 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			const dataUrl = `data:${ outMime };base64,${ data64 }`;
 			setGeneratedUrl( dataUrl );
 			setStatus( 'done' );
-			setMessage( 'Done' );
+			setMessage( __( 'Done', 'try-aura' ) );
 		} catch ( e: any ) {
-			setError( e?.message || 'Generation failed.' );
+			setError( e?.message || __( 'Generation failed.', 'try-aura' ) );
 			setStatus( 'error' );
-			setMessage( 'Generation failed.' );
+			setMessage( __( 'Generation failed.', 'try-aura' ) );
 		}
 	};
 
 	const addToCart = () => {
 		// @ts-ignore
-		const productId = window?.tryAura?.productId;
+		const productId = applyFilters( 'tryaura.tryon.product_id', window?.tryAura?.productId );
 		if ( productId ) {
-			window.location.href = `?add-to-cart=${ productId }`;
+			window.location.href = applyFilters( 'tryaura.tryon.add_to_cart_url', `?add-to-cart=${ productId }` );
 		}
 	};
 

@@ -1,4 +1,4 @@
-import { ModernSelect } from '../../../components';
+import { Button, ModernSelect } from "../../../components";
 import { __ } from '@wordpress/i18n';
 import {
 	Leaf,
@@ -16,10 +16,15 @@ import {
 	ZoomOut,
 	Clock9,
 } from 'lucide-react';
+import ConfigFooter from "./ConfigFooter";
 
 function VideoConfigInputs( {
 	videoConfigData,
 	setVideoConfigData,
+															videoUrl,
+															doGenerateVideo,
+															isVideoBusy,
+															videoUploading,
 } ) {
 	return (
 		<>
@@ -186,6 +191,13 @@ function VideoConfigInputs( {
 					id="try-aura-video-optional-prompt"
 				/>
 			</label>
+
+			<ConfigFooter
+				generatedUrl={ videoUrl }
+				doGenerate={ doGenerateVideo }
+				isBusy={ isVideoBusy }
+				uploading={ videoUploading }
+			/>
 		</>
 	);
 }

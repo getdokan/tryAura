@@ -51,89 +51,21 @@ function ConfigSettings( {
 						isWoocommerceProductPage={ isWoocommerceProductPage }
 						imageConfigData={ imageConfigData }
 						setImageConfigData={ setImageConfigData }
+						generatedUrl={ generatedUrl }
+						doGenerate={ doGenerate }
+						isBusy={ isBusy }
+						uploading={ uploading }
 					/>
 				) : (
 					<VideoConfigInputs
 						videoConfigData={ videoConfigData }
 						setVideoConfigData={ setVideoConfigData }
+						doGenerateVideo={ doGenerateVideo }
+						isVideoBusy={ isVideoBusy }
+						videoUploading={ videoUploading }
+						videoUrl={ videoUrl }
 					/>
 				) }
-
-				<div className="flex flex-row gap-[12px]">
-					{ generatedUrl ? (
-						<>
-							<Button
-								onClick={
-									activeTab === 'image'
-										? doGenerate
-										: doGenerateVideo
-								}
-								disabled={
-									activeTab === 'image'
-										? isBusy || uploading
-										: isVideoBusy || videoUploading
-								}
-							>
-								{ isBusy
-									? __( 'Regenerating…', 'tryaura' )
-									: __( 'Regenerate', 'tryaura' ) }
-							</Button>
-
-							<Button
-								type="link"
-								variant="outline"
-								href={
-									activeTab === 'image'
-										? isBusy
-											? undefined
-											: generatedUrl
-										: isVideoBusy
-										? undefined
-										: videoUrl
-								}
-								download={
-									activeTab === 'image'
-										? isBusy
-											? undefined
-											: 'enhanced.png'
-										: isVideoBusy
-										? undefined
-										: 'enhanced-video.mp4'
-								}
-								aria-disabled={
-									activeTab === 'image' ? isBusy : isVideoBusy
-								}
-								style={ {
-									pointerEvents:
-										isBusy || isVideoBusy ? 'none' : 'auto',
-									opacity: isBusy || isVideoBusy ? 0.6 : 1,
-								} }
-								disabled={
-									activeTab === 'image' ? isBusy : isVideoBusy
-								}
-							>
-								{ __( 'Download', 'try-aura' ) }
-							</Button>
-						</>
-					) : (
-						<Button
-							onClick={
-								activeTab === 'image'
-									? doGenerate
-									: doGenerateVideo
-							}
-							disabled={
-								activeTab === 'image'
-									? isBusy || uploading
-									: isVideoBusy || videoUploading
-							}
-						>
-							{ ( activeTab === 'image' ? isBusy : isVideoBusy )
-								? __( 'Generating…', 'try-aura' )
-								: __( 'Generate', 'try-aura' ) }
-						</Button>
-					) }
-				</div>
 			</div>
 		</div>
 	);

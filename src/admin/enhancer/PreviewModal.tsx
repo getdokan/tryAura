@@ -130,7 +130,7 @@ const PreviewModal = ( {
 	useEffect( () => {
 		setStatus( 'idle' );
 		setMessage( __( 'Ready to generate', 'try-aura' ) );
-		setGeneratedUrl( null );
+		setGeneratedUrl( 'https://try-aura.test/wp-content/uploads/2025/12/enhanced-16.png' );
 		setError( null );
 		// Reset video state too when images change
 		setVideoStatus( 'idle' );

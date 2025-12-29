@@ -1,4 +1,4 @@
-import { ModernSelect } from '../../../components';
+import { Button, ModernSelect } from '../../../components';
 import { __ } from '@wordpress/i18n';
 import {
 	Circle,
@@ -12,12 +12,17 @@ import {
 	RectangleHorizontal,
 	RectangleVertical,
 } from 'lucide-react';
+import ConfigFooter from "./ConfigFooter";
 
 function ImageConfigInputs( {
 	isBlockEditorPage,
 	isWoocommerceProductPage,
 	imageConfigData,
 	setImageConfigData,
+	generatedUrl,
+	doGenerate,
+	isBusy,
+	uploading,
 } ) {
 	return (
 		<>
@@ -144,6 +149,13 @@ function ImageConfigInputs( {
 					) }
 				/>
 			</label>
+
+			<ConfigFooter
+				generatedUrl={ generatedUrl }
+				doGenerate={ doGenerate }
+				isBusy={ isBusy }
+				uploading={ uploading }
+			/>
 		</>
 	);
 }

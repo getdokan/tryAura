@@ -38,10 +38,11 @@ class TryOn {
 			'try-aura-tryon',
 			'tryAura',
 			array(
-				'restUrl' => esc_url_raw( rest_url() ),
-				'nonce'   => wp_create_nonce( 'wp_rest' ),
+				'restUrl'   => esc_url_raw( rest_url() ),
+				'nonce'     => wp_create_nonce( 'wp_rest' ),
+				'productId' => $product_id,
 				// NOTE: Exposes the saved API key to the frontend. In production, proxy via server.
-				'apiKey'  => get_option( 'try_aura_api_key', '' ),
+				'apiKey'    => get_option( 'try_aura_api_key', '' ),
 			)
 		);
 

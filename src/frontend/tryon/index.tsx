@@ -1,6 +1,6 @@
 import { createRoot } from '@wordpress/element';
 import './style.scss';
-import TryOnModal from "./TryOnModal";
+import TryOnModal from './TryOnModal';
 
 // Minimal frontend Try-On implementation: Adds a "Try on" button next to Add to cart on WooCommerce
 // product pages. Clicking it opens a popup to upload or capture a photo and generates an AI try-on
@@ -13,6 +13,7 @@ declare global {
 			restUrl?: string;
 			nonce?: string;
 			apiKey?: string;
+			productId?: number;
 		};
 	}
 }
@@ -66,7 +67,7 @@ function injectButton() {
 		return;
 	}
 	const addToCart: HTMLElement | null = document.querySelector(
-		'.single_add_to_cart_button'
+		'.single_add_to_cart_button, .wc-block-add-to-cart-button, .wc-block-components-product-add-to-cart-button'
 	);
 	if ( ! addToCart ) {
 		return;

@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "@wordpress/element";
-import { GoogleGenAI } from "@google/genai";
-import { __ } from "@wordpress/i18n";
-import { X } from "lucide-react";
-import UserImageSection from "./UserImageSection";
-import ProductImagesSection from "./ProductImagesSection";
-import Output from "./Output";
+import { useEffect, useRef, useState } from '@wordpress/element';
+import { GoogleGenAI } from '@google/genai';
+import { __ } from '@wordpress/i18n';
+import { X } from 'lucide-react';
+import UserImageSection from './UserImageSection';
+import ProductImagesSection from './ProductImagesSection';
+import Output from './Output';
 
 type TryOnModalProps = {
 	productImages: string[];
@@ -331,6 +331,14 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		}
 	};
 
+	const addToCart = () => {
+		// @ts-ignore
+		const productId = window?.tryAura?.productId;
+		if ( productId ) {
+			window.location.href = `?add-to-cart=${ productId }`;
+		}
+	};
+
 	const isBusy =
 		status === 'fetching' ||
 		status === 'generating' ||
@@ -384,7 +392,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 					{ /* Actions */ }
 					<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
 						<button
-							className="bg-[#000000] text-white px-[50px] py-[10px] cursor-pointer"
+							className="bg-[#000000] text-white px-[50px] py-[10px] cursor-pointer font-[500] text-[14px]"
 							onClick={ doTry }
 							disabled={
 								isBusy ||
@@ -395,6 +403,12 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 							{ isBusy
 								? __( 'Trying…', 'try-aura' )
 								: __( 'Try On', 'try-aura' ) }
+						</button>
+						<button
+							className="bg-white text-black px-[50px] py-[10px] cursor-pointer border border-[#E9E9E9] font-[500] text-[14px]"
+							onClick={ addToCart }
+						>
+							{ __( 'Add to Cart', 'try-aura' ) }
 						</button>
 					</div>
 				</div>

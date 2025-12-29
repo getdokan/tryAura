@@ -32,11 +32,12 @@ function ConfigSettings( {
 						{
 							label: __( 'Generate Image', 'tryaura' ),
 							value: 'image',
+							disabled: isBusy || isVideoBusy,
 						},
 						{
 							label: __( 'Generate Video', 'tryaura' ),
 							value: 'video',
-							disabled: ! generatedUrl,
+							disabled: isBusy || isVideoBusy,
 						},
 					] }
 					value={ activeTab }

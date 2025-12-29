@@ -197,6 +197,7 @@ function VideoConfigInputs( {
 				doGenerate={ doGenerateVideo }
 				isBusy={ isVideoBusy }
 				uploading={ videoUploading }
+				downloadName="enhanced-video.mp4"
 			/>
 		</>
 	);

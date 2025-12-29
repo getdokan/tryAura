@@ -1,7 +1,7 @@
 import { Button } from '../../../components';
 import { __ } from '@wordpress/i18n';
 
-function ConfigFooter( { generatedUrl, doGenerate, isBusy, uploading } ) {
+function ConfigFooter( { generatedUrl, doGenerate, isBusy, uploading, downloadName } ) {
 	return (
 		<div className="flex flex-row gap-[12px]">
 			{ generatedUrl ? (
@@ -19,7 +19,7 @@ function ConfigFooter( { generatedUrl, doGenerate, isBusy, uploading } ) {
 						type="link"
 						variant="outline"
 						href={ isBusy ? undefined : generatedUrl }
-						download={ isBusy ? undefined : 'enhanced.png' }
+						download={ isBusy ? undefined : downloadName }
 						aria-disabled={ isBusy }
 						style={ {
 							pointerEvents: isBusy ? 'none' : 'auto',

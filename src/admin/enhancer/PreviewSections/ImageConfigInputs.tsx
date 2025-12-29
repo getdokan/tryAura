@@ -155,6 +155,7 @@ function ImageConfigInputs( {
 				doGenerate={ doGenerate }
 				isBusy={ isBusy }
 				uploading={ uploading }
+				downloadName="enhanced.png"
 			/>
 		</>
 	);

@@ -34,7 +34,7 @@ const getAdminRoutes = () => {
 	) as Array< TryAuraAdminRoute >;
 
 	routes.push( {
-		id: 'dokan-404',
+		id: 'tryaura-404',
 		element: <p>{ __( 'Page not found', 'try-aura' ) }</p>,
 		path: '*',
 	} );

@@ -1,8 +1,9 @@
 import { createRoot } from '@wordpress/element';
 import './style.scss';
 import TryOnModal from './TryOnModal';
-import { applyFilters } from "@wordpress/hooks";
-import { __ } from "@wordpress/i18n";
+import { addAction, applyFilters, doAction } from '@wordpress/hooks';
+import { __ } from '@wordpress/i18n';
+import { select } from '@wordpress/data';
 
 declare global {
 	interface Window {
@@ -41,8 +42,36 @@ function getProductImageUrls(): string[] {
 	return applyFilters( 'tryaura.tryon.product_image_urls', unique( urls ) );
 }
 
+const isUserLoggedIn = (): boolean => {
+	const logedIn = select( 'core' ).getCurrentUser();
+	const domLogedin = document.body.classList.contains( 'logged-in' );
+
+	return logedIn && domLogedin;
+};
+
+const goToLogin = () => {
+	const loginUrl = ( window.location.href =
+		window?.tryAura?.loginUrl ?? '/wp-login.php' );
+
+	const currentUrl = new URL( window.location.href );
+
+	// add your custom param
+	currentUrl.searchParams.set( 'tryOnAutoOpen', 'true' );
+	// Redirect to My Account with the current product URL as a parameter
+	window.location.href = `${ loginUrl }?tryaura_redirect_to=${ encodeURIComponent(
+		currentUrl.toString()
+	) }`;
+};
+
 function openTryOnModal( productImages: string[] ) {
-	const containerId = applyFilters( 'tryaura.tryon.container_id', 'try-aura-tryon-modal-root' );
+	if ( ! isUserLoggedIn() ) {
+		goToLogin();
+		return;
+	}
+	const containerId = applyFilters(
+		'tryaura.tryon.container_id',
+		'try-aura-tryon-modal-root'
+	);
 	let container = document.getElementById( containerId );
 	if ( ! container ) {
 		container = document.createElement( 'div' );
@@ -61,6 +90,15 @@ function openTryOnModal( productImages: string[] ) {
 		<TryOnModal productImages={ productImages } onClose={ handleClose } />
 	);
 }
+
+const handleTryOnBtnClick = () => {
+	const images = getProductImageUrls();
+	if ( ! images.length ) {
+		window.alert( __( 'No product images found to try on.', 'try-aura' ) );
+		return;
+	}
+	openTryOnModal( images );
+};
 
 function injectButton() {
 	const btnId = applyFilters(
@@ -89,15 +127,24 @@ function injectButton() {
 	btn.style.marginLeft = '8px';
 	addToCart.insertAdjacentElement( 'afterend', btn );
 
-	btn.addEventListener( 'click', () => {
-		const images = getProductImageUrls();
-		if ( ! images.length ) {
-			window.alert( __( 'No product images found to try on.', 'try-aura' ) );
-			return;
-		}
-		openTryOnModal( images );
-	} );
+	btn.addEventListener( 'click', handleTryOnBtnClick );
+
+	doAction( 'tryaura.tryon.button_added', btn, addToCart );
 }
+
+addAction( 'tryaura.tryon.button_added', 'try-aura-tryon-button-added', () => {
+	// check if in the url there is a tryOnAutoOpen param, if so, open the modal
+	const currentUrl = new URL( window.location.href );
+	const tryOnAutoOpen = currentUrl.searchParams.get( 'tryOnAutoOpen' );
+	if ( tryOnAutoOpen ) {
+		const productImages = getProductImageUrls();
+		if ( productImages.length ) {
+			openTryOnModal( productImages );
+			currentUrl.searchParams.delete( 'tryOnAutoOpen' );
+			window.history.replaceState( null, '', currentUrl.toString() );
+		}
+	}
+} );
 
 function init() {
 	injectButton();

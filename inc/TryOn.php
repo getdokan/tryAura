@@ -10,8 +10,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Registers and enqueues the Frontend Try-On UI assets on single product pages.
  */
 class TryOn {
+	/**
+	 * Class constructor.
+	 */
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
+		add_filter( 'woocommerce_login_redirect', array( $this, 'redirect_to_try_on' ), 10, 2 );
 	}
 
 	/**
@@ -41,12 +45,40 @@ class TryOn {
 				'restUrl'   => esc_url_raw( rest_url() ),
 				'nonce'     => wp_create_nonce( 'wp_rest' ),
 				'productId' => $product_id,
-				// NOTE: Exposes the saved API key to the frontend. In production, proxy via server.
-				'apiKey'    => get_option( 'try_aura_api_key', '' ),
+				'loginUrl'  => $this->get_login_url(),
 			)
 		);
 
 		wp_enqueue_style( 'try-aura-tryon' );
 		wp_enqueue_script( 'try-aura-tryon' );
+	}
+
+	/**
+	 * If WooCommerce is active, redirect to account login page or WordPress login page.
+	 *
+	 * @return string Login URL.
+	 */
+	private function get_login_url() {
+		if ( function_exists( 'wc_get_page_permalink' ) ) {
+			return wc_get_page_permalink( 'myaccount' );
+		}
+
+		return wp_login_url();
+	}
+
+	/**
+	 * Redirect to Try-On page after login if the parameter is set.
+	 *
+	 * @param string   $redirect the redirect URL.
+	 * @param \WP_User $user the logged in user.
+	 *
+	 * @return string Redirect URL.
+	 */
+	public function redirect_to_try_on( $redirect, $user ) {
+		if ( ! empty( $_REQUEST['tryaura_redirect_to'] ) ) {
+			return esc_url_raw( wp_unslash( $_REQUEST['tryaura_redirect_to'] ) );
+		}
+
+		return $redirect;
 	}
 }

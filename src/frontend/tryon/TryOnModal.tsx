@@ -405,7 +405,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 	return (
 		<>
 			<div className="ai-enhancer-modal fixed inset-[0px] bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[200000]">
-				<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto">
+				<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto max-h-[90vh] overflow-y-auto">
 					<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] p-[16px_24px]">
 						<h2 className="m-0 font-[700] font-bold text-[18px] text-[#25252D]">
 							{ __( 'Try-On Product', 'try-aura' ) }
@@ -419,7 +419,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 						</button>
 					</div>
 
-					<div className="flex flex-row gap-[24px] mt-[24px] pl-[24px] pr-[24px]">
+					<div className="flex flex-col sm:flex-row gap-[24px] mt-[24px] pl-[24px] pr-[24px]">
 						<UserImageSection
 							onFileChange={ onFileChange }
 							userImages={ userImages }
@@ -450,7 +450,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 					{ /* Actions */ }
 					<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
 						<button
-							className="bg-[#000000] text-white px-[50px] py-[10px] cursor-pointer font-[500] text-[14px]"
+							className="bg-[#000000] text-white px-[10px] sm:px-[50px] py-[10px] cursor-pointer font-[500] text-[14px]"
 							onClick={ doTry }
 							disabled={
 								isBusy ||
@@ -463,7 +463,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 								: __( 'Try On', 'try-aura' ) }
 						</button>
 						<button
-							className="bg-white text-black px-[50px] py-[10px] cursor-pointer border border-[#E9E9E9] font-[500] text-[14px]"
+							className="bg-white text-black px-[10px] sm:px-[50px] py-[10px] cursor-pointer border border-[#E9E9E9] font-[500] text-[14px]"
 							onClick={ addToCart }
 						>
 							{ __( 'Add to Cart', 'try-aura' ) }

@@ -105,7 +105,6 @@ class Admin {
 	 */
 	public function render_page(): void {
 		echo '<div class="wrap">';
-		echo '<h1>' . esc_html__( 'TryAura Settings', 'try-aura' ) . '</h1>';
 		echo '<div id="try-aura-settings-root" class="tryaura"></div>';
 		echo '</div>';
 	}

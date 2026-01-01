@@ -25,6 +25,7 @@ function VideoConfigInputs( {
 															doGenerateVideo,
 															isVideoBusy,
 															videoUploading,
+															isBlockEditorPage = false
 } ) {
 	return (
 		<>
@@ -172,11 +173,16 @@ function VideoConfigInputs( {
 				htmlFor="try-aura-video-optional-prompt"
 			>
 				<span className="w-[500] text-[14px] mb-[8px]">
-					{ __( 'Prompt (Optional)' ) }
+					{ __(
+						isBlockEditorPage
+							? 'Prompt'
+							: 'Prompt (Optional)'
+						) }
 				</span>
 				<textarea
 					className="border border-[#E9E9E9]"
 					value={ videoConfigData.optionalPrompt }
+					required
 					onChange={ ( e ) =>
 						setVideoConfigData( {
 							...videoConfigData,
@@ -185,7 +191,9 @@ function VideoConfigInputs( {
 					}
 					rows={ 3 }
 					placeholder={ __(
-						'Add any specific instructions (optional)',
+						isBlockEditorPage
+							? 'Add any specific instructions'
+							: 'Add any specific instructions (optional)',
 						'tryaura'
 					) }
 					id="try-aura-video-optional-prompt"
@@ -198,6 +206,9 @@ function VideoConfigInputs( {
 				isBusy={ isVideoBusy }
 				uploading={ videoUploading }
 				downloadName="enhanced-video.mp4"
+				isBlockEditorPage = {isBlockEditorPage}
+				optionalPrompt = {videoConfigData?.optionalPrompt ?? ''}
+
 			/>
 		</>
 	);

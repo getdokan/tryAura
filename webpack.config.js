@@ -14,7 +14,7 @@ module.exports = {
 				type: 'window',
 			},
 		},
-		'admin/settings/index': './src/admin/settings/index.tsx',
+		'admin/dashboard/index': './src/admin/dashboard/index.tsx',
 		'admin/enhancer/index': './src/admin/enhancer/index.tsx',
 		'frontend/tryon/index': './src/frontend/tryon/index.tsx',
 		'admin/woocommerce-products-list':

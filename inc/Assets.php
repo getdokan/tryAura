@@ -36,10 +36,10 @@ class Assets {
 		$asset_path = plugin_dir_path( __DIR__ );
 		$styles     = array();
 
-		$css_path = $asset_path . 'build/admin/settings/style-index.css';
+		$css_path = $asset_path . 'build/admin/dashboard/style-index.css';
 		if ( file_exists( $css_path ) ) {
 			$styles['try-aura-admin'] = array(
-				'src'     => $asset_url . 'build/admin/settings/style-index.css',
+				'src'     => $asset_url . 'build/admin/dashboard/style-index.css',
 				'deps'    => array(),
 				'version' => filemtime( $css_path ),
 			);
@@ -85,7 +85,7 @@ class Assets {
 		$asset_path = plugin_dir_path( __DIR__ );
 		$scripts    = array();
 
-		$asset_file = $asset_path . 'build/admin/settings/index.asset.php';
+		$asset_file = $asset_path . 'build/admin/dashboard/index.asset.php';
 		if ( file_exists( $asset_file ) ) {
 			$asset   = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			$deps    = $asset['dependencies'] ?? array( 'wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n', 'wp-api' );
@@ -93,7 +93,7 @@ class Assets {
 
 			$scripts['try-aura-admin'] = array(
 				'version' => $version,
-				'src'     => $asset_url . 'build/admin/settings/index.js',
+				'src'     => $asset_url . 'build/admin/dashboard/index.js',
 				'deps'    => $deps,
 			);
 		}

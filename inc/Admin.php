@@ -30,15 +30,23 @@ class Admin {
 	 * Register the TryAura top-level admin page.
 	 */
 	public function register_admin_page(): void {
+		global $submenu;
+		$slug       = 'try-aura';
+		$capability = 'manage_options';
+		$menu_icon  = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXNwYXJrbGVzLWljb24gbHVjaWRlLXNwYXJrbGVzIj48cGF0aCBkPSJNMTEuMDE3IDIuODE0YTEgMSAwIDAgMSAxLjk2NiAwbDEuMDUxIDUuNTU4YTIgMiAwIDAgMCAxLjU5NCAxLjU5NGw1LjU1OCAxLjA1MWExIDEgMCAwIDEgMCAxLjk2NmwtNS41NTggMS4wNTFhMiAyIDAgMCAwLTEuNTk0IDEuNTk0bC0xLjA1MSA1LjU1OGExIDEgMCAwIDEtMS45NjYgMGwtMS4wNTEtNS41NThhMiAyIDAgMCAwLTEuNTk0LTEuNTk0bC01LjU1OC0xLjA1MWExIDEgMCAwIDEgMC0xLjk2Nmw1LjU1OC0xLjA1MWEyIDIgMCAwIDAgMS41OTQtMS41OTR6Ii8+PHBhdGggZD0iTTIwIDJ2NCIvPjxwYXRoIGQ9Ik0yMiA0aC00Ii8+PGNpcmNsZSBjeD0iNCIgY3k9IjIwIiByPSIyIi8+PC9zdmc+';
+
 		add_menu_page(
 			__( 'TryAura', 'try-aura' ),
 			__( 'TryAura', 'try-aura' ),
-			'manage_options',
-			'try-aura',
+			$capability,
+			$slug,
 			array( $this, 'render_page' ),
-			'dashicons-camera',
+			$menu_icon,
 			56
 		);
+
+		$submenu[ $slug ][] = array( __( 'Dashboard', 'try-aura' ), $capability, 'admin.php?page=' . $slug . '#/' );
+		$submenu[ $slug ][] = array( __( 'Settings', 'try-aura' ), $capability, 'admin.php?page=' . $slug . '#/settings' );
 	}
 
 	/**

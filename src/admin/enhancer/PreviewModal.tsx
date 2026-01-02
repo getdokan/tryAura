@@ -731,37 +731,6 @@ const PreviewModal = ( {
 				blob,
 				newId
 			);
-
-			// Select it in the media frame (do not set featured image for videos)
-			try {
-				const frameObj =
-					wp?.media?.frame ||
-					( wp?.media?.featuredImage?.frame
-						? wp.media.featuredImage.frame()
-						: null );
-				if ( frameObj ) {
-					const state =
-						typeof frameObj.state === 'function'
-							? frameObj.state()
-							: null;
-					const selection = state?.get?.( 'selection' );
-					if ( selection ) {
-						const att = wp?.media?.model?.Attachment?.get
-							? wp.media.model.Attachment.get( newId )
-							: null;
-						if ( att?.fetch ) {
-							try {
-								await att.fetch();
-							} catch {}
-						}
-						if ( att ) {
-							selection.reset( [ att ] );
-						}
-					}
-				}
-			} catch {}
-
-			onClose();
 		} catch ( e: any ) {
 			setVideoError(
 				e?.message || 'Failed to add video to Media Library.'

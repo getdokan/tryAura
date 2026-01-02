@@ -67,7 +67,8 @@ const PreviewModal = ( {
 		isBusy,
 		isVideoBusy,
 		videoSource,
-		selectedOriginalIndices,
+		selectedImageIndices,
+		selectedVideoIndices,
 	} = useSelect(
 		( select ) => {
 			const store = select( STORE_NAME );
@@ -82,7 +83,8 @@ const PreviewModal = ( {
 				isBusy: store.isBusy(),
 				isVideoBusy: store.isVideoBusy(),
 				videoSource: store.getVideoSource(),
-				selectedOriginalIndices: store.getSelectedOriginalIndices(),
+				selectedImageIndices: store.getSelectedImageIndices(),
+				selectedVideoIndices: store.getSelectedVideoIndices(),
 			};
 		},
 		[ STORE_NAME ]
@@ -162,7 +164,7 @@ const PreviewModal = ( {
 	const doGenerate = async () => {
 		try {
 			const selectedUrls = imageUrls.filter( ( _, idx ) =>
-				selectedOriginalIndices.includes( idx )
+				selectedImageIndices.includes( idx )
 			);
 
 			if ( selectedUrls.length === 0 ) {
@@ -442,8 +444,8 @@ const PreviewModal = ( {
 				sourceUrl = generatedUrl;
 			} else {
 				if (
-					! selectedOriginalIndices ||
-					! selectedOriginalIndices.length
+					! selectedVideoIndices ||
+					! selectedVideoIndices.length
 				) {
 					setVideoError(
 						__(
@@ -454,7 +456,7 @@ const PreviewModal = ( {
 					return;
 				}
 				// Use the first selected original image as the reference
-				sourceUrl = imageUrls[ selectedOriginalIndices[ 0 ] ];
+				sourceUrl = imageUrls[ selectedVideoIndices[ 0 ] ];
 			}
 
 			setVideoError( null );

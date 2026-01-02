@@ -81,12 +81,18 @@ export const setVideoSource = ( videoSource: VideoSource ) => ( {
 	type: TYPES.SET_VIDEO_SOURCE,
 	videoSource,
 } );
-
-export const setSelectedOriginalIndices = (
-	selectedOriginalIndices: number[]
+export const setSelectedImageIndices = (
+	selectedImageIndices: number[]
 ) => ( {
-	type: TYPES.SET_SELECTED_ORIGINAL_INDICES,
-	selectedOriginalIndices,
+	type: TYPES.SET_SELECTED_IMAGE_INDICES,
+	selectedImageIndices,
+} );
+
+export const setSelectedVideoIndices = (
+	selectedVideoIndices: number[]
+) => ( {
+	type: TYPES.SET_SELECTED_VIDEO_INDICES,
+	selectedVideoIndices,
 } );
 
 export const setActiveTab = ( activeTab: ActiveTab ) => ( {

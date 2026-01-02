@@ -35,5 +35,6 @@ export interface EnhancerState {
 	imageConfigData: ImageConfigData;
 	activeTab: ActiveTab;
 	videoSource: VideoSource;
-	selectedOriginalIndices: number[];
+	selectedImageIndices: number[];
+	selectedVideoIndices: number[];
 }

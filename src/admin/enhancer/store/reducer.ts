@@ -30,7 +30,8 @@ export const INITIAL_STATE: EnhancerState = {
 	},
 	activeTab: 'image',
 	videoSource: 'original-image',
-	selectedOriginalIndices: [ 0 ],
+	selectedImageIndices: [ 0 ],
+	selectedVideoIndices: [ 0 ],
 };
 
 const reducer = (
@@ -83,10 +84,15 @@ const reducer = (
 			};
 		case TYPES.SET_VIDEO_SOURCE:
 			return { ...state, videoSource: action.videoSource };
-		case TYPES.SET_SELECTED_ORIGINAL_INDICES:
+		case TYPES.SET_SELECTED_IMAGE_INDICES:
 			return {
 				...state,
-				selectedOriginalIndices: action.selectedOriginalIndices,
+				selectedImageIndices: action.selectedImageIndices,
+			};
+		case TYPES.SET_SELECTED_VIDEO_INDICES:
+			return {
+				...state,
+				selectedVideoIndices: action.selectedVideoIndices,
 			};
 		case TYPES.SET_ACTIVE_TAB:
 			return { ...state, activeTab: action.activeTab };

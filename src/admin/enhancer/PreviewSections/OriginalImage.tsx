@@ -11,18 +11,33 @@ function OriginalImage( {
 	imageUrls: string[];
 	multiple?: boolean;
 } ) {
-	const { activeTab, videoSource, selectedOriginalIndices, generatedUrl } =
-		useSelect( ( select ) => {
-			const store = select( STORE_NAME );
-			return {
-				activeTab: store.getActiveTab(),
-				videoSource: store.getVideoSource(),
-				selectedOriginalIndices: store.getSelectedOriginalIndices(),
-				generatedUrl: store.getGeneratedUrl(),
-			};
-		}, [] );
+	const {
+		activeTab,
+		videoSource,
+		selectedImageIndices,
+		selectedVideoIndices,
+		generatedUrl,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return {
+			activeTab: store.getActiveTab(),
+			videoSource: store.getVideoSource(),
+			selectedImageIndices: store.getSelectedImageIndices(),
+			selectedVideoIndices: store.getSelectedVideoIndices(),
+			generatedUrl: store.getGeneratedUrl(),
+		};
+	}, [] );
 
-	const { setSelectedOriginalIndices } = useDispatch( STORE_NAME );
+	const { setSelectedImageIndices, setSelectedVideoIndices } =
+		useDispatch( STORE_NAME );
+
+	const selectedOriginalIndices =
+		activeTab === 'image' ? selectedImageIndices : selectedVideoIndices;
+
+	const setSelectedOriginalIndices =
+		activeTab === 'image'
+			? setSelectedImageIndices
+			: setSelectedVideoIndices;
 
 	const limits =
 		activeTab === 'image' ? { min: 1, max: 3 } : { min: 1, max: 1 };

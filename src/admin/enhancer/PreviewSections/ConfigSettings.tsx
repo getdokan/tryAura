@@ -1,6 +1,5 @@
 import GroupButton from '../../../components/GroupButton';
 import { __ } from '@wordpress/i18n';
-import { Button } from '../../../components';
 import ImageConfigInputs from './ImageConfigInputs';
 import VideoConfigInputs from './VideoConfigInputs';
 
@@ -64,6 +63,7 @@ function ConfigSettings( {
 						doGenerateVideo={ doGenerateVideo }
 						isVideoBusy={ isVideoBusy }
 						videoUploading={ videoUploading }
+						generatedImageUrl={ generatedUrl }
 						videoUrl={ videoUrl }
 					/>
 				) }

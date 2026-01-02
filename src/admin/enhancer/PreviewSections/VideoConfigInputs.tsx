@@ -1,4 +1,4 @@
-import { Button, ModernSelect } from "../../../components";
+import { Button, ModernSelect } from '../../../components';
 import { __ } from '@wordpress/i18n';
 import {
 	Leaf,
@@ -16,18 +16,46 @@ import {
 	ZoomOut,
 	Clock9,
 } from 'lucide-react';
-import ConfigFooter from "./ConfigFooter";
+import ConfigFooter from './ConfigFooter';
 
 function VideoConfigInputs( {
 	videoConfigData,
 	setVideoConfigData,
-															videoUrl,
-															doGenerateVideo,
-															isVideoBusy,
-															videoUploading,
+	videoUrl,
+	doGenerateVideo,
+	isVideoBusy,
+	videoUploading,
+	generatedImageUrl,
+}: {
+	videoConfigData: Record< any, any >;
+	setVideoConfigData: ( data: Record< any, any > ) => void;
+	videoUrl: string;
+	doGenerateVideo: () => void;
+	isVideoBusy: boolean;
+	videoUploading: boolean;
+	generatedImageUrl: string;
 } ) {
 	return (
 		<>
+			{ /* Controls */ }
+			{ generatedImageUrl && (
+				<ModernSelect
+					value={ 'generated-image' }
+					onChange={ ( val ) => console.log( val ) }
+					label={ __( 'Video image reference source', 'try-aura' ) }
+					options={ [
+						{
+							label: __( 'Generated Image', 'try-aura' ),
+							value: 'generated-image',
+						},
+						{
+							label: __( 'Original Image', 'try-aura' ),
+							value: 'original-image',
+						},
+					] }
+					variant="list"
+				/>
+			) }
 			{ /* Controls */ }
 			<ModernSelect
 				value={ videoConfigData.styles }

@@ -4,6 +4,7 @@ function OriginalImage( {
 }: {
 	imageUrls: string[];
 	multiple?: boolean;
+	activeTab: string;
 } ) {
 	return (
 		<div className="w-[500px] max-h-[533px] overflow-auto">

@@ -768,6 +768,7 @@ const PreviewModal = ( {
 					<OriginalImage
 						imageUrls={ imageUrls }
 						multiple={ multiple }
+						activeTab={ activeTab }
 					/>
 					<ConfigSettings
 						supportsVideo={ supportsVideo }

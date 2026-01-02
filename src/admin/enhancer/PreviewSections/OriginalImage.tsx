@@ -1,6 +1,7 @@
 import { useSelect, useDispatch } from '@wordpress/data';
 import { STORE_NAME } from '../store';
 import { Check } from 'lucide-react';
+import { __ } from '@wordpress/i18n';
 
 const MIN_SELECTED_IMAGES = 1;
 const MAX_SELECTED_IMAGES = 1;
@@ -12,22 +13,32 @@ function OriginalImage( {
 	imageUrls: string[];
 	multiple?: boolean;
 } ) {
-	const { activeTab, videoSource, selectedOriginalIndices } = useSelect(
-		( select ) => {
+	const { activeTab, videoSource, selectedOriginalIndices, generatedUrl } =
+		useSelect( ( select ) => {
 			const store = select( STORE_NAME );
 			return {
 				activeTab: store.getActiveTab(),
 				videoSource: store.getVideoSource(),
 				selectedOriginalIndices: store.getSelectedOriginalIndices(),
+				generatedUrl: store.getGeneratedUrl(),
 			};
-		},
-		[]
-	);
+		}, [] );
 
 	const { setSelectedOriginalIndices } = useDispatch( STORE_NAME );
 
 	const showSelection =
 		activeTab === 'video' && videoSource === 'original-image';
+
+	const showGeneratedImage =
+		activeTab === 'video' && videoSource === 'generated-image';
+
+	let sectionTitle = multiple
+		? __( 'Original Images', 'try-aura' )
+		: __( 'Original Image', 'try-aura' );
+
+	if ( showGeneratedImage ) {
+		sectionTitle = __( 'Generated Image', 'try-aura' );
+	}
 
 	const toggleSelection = ( index: number ) => {
 		if ( ! showSelection ) {
@@ -47,68 +58,85 @@ function OriginalImage( {
 		setSelectedOriginalIndices( nextIndices );
 	};
 
-	return (
-		<div className="w-[500px] max-h-[533px] overflow-auto">
-			<div className="text-[14px] mb-[8px]">
-				{ multiple ? 'Original Images' : 'Original Image' }
-				{ showSelection && multiple && (
-					<span className="text-[12px] text-gray-500 ml-2">
-						(Select { MIN_SELECTED_IMAGES }-{ MAX_SELECTED_IMAGES })
-					</span>
-				) }
-			</div>
-			{ multiple ? (
-				<div className="flex flex-col gap-[8px]">
-					{ imageUrls.map( ( url, idx ) => (
-						<div
-							key={ idx }
-							className={ `relative rounded-[8px] overflow-hidden ${
-								showSelection
-									? 'cursor-pointer hover:opacity-90 transition-opacity'
-									: ''
-							} ${
-								showSelection &&
-								selectedOriginalIndices.includes( idx )
-									? 'ring-2 ring-[#2271b1]'
-									: ''
-							}` }
-							onClick={ () => toggleSelection( idx ) }
-						>
-							<img
-								src={ url }
-								alt={ `Original ${ idx + 1 }` }
-								className="w-full h-auto block border-none"
-							/>
-							{ showSelection &&
-								selectedOriginalIndices.includes( idx ) && (
-									<div className="absolute top-2 right-2 bg-[#2271b1] text-white rounded-full p-0.5">
-										<Check size={ 16 } />
-									</div>
-								) }
-						</div>
-					) ) }
-				</div>
-			) : (
-				<div
-					className={ `relative rounded-[8px] overflow-hidden ${
-						showSelection && selectedOriginalIndices.includes( 0 )
-							? 'ring-2 ring-[#2271b1]'
-							: ''
-					}` }
-				>
+	let content;
+	if ( showGeneratedImage ) {
+		content = (
+			<div className="relative rounded-[8px] overflow-hidden">
+				{ generatedUrl ? (
 					<img
-						src={ imageUrls[ 0 ] }
-						alt="Original"
+						src={ generatedUrl }
+						alt="Generated"
 						className="w-full h-auto block border-none"
 					/>
-					{ showSelection &&
-						selectedOriginalIndices.includes( 0 ) && (
-							<div className="absolute top-2 right-2 bg-[#2271b1] text-white rounded-full p-0.5">
-								<Check size={ 16 } />
-							</div>
-						) }
-				</div>
-			) }
+				) : (
+					<div className="w-full h-[200px] bg-gray-100 flex items-center justify-center text-gray-400">
+						{ __( 'No generated image available', 'try-aura' ) }
+					</div>
+				) }
+			</div>
+		);
+	} else if ( multiple ) {
+		content = (
+			<div className="flex flex-col gap-[8px]">
+				{ imageUrls.map( ( url, idx ) => (
+					<div
+						key={ idx }
+						className={ `relative rounded-[8px] overflow-hidden ${
+							showSelection
+								? 'cursor-pointer hover:opacity-90 transition-opacity'
+								: ''
+						}` }
+						onClick={ () => toggleSelection( idx ) }
+					>
+						<img
+							src={ url }
+							alt={ `Original ${ idx + 1 }` }
+							className={ `w-full h-auto block rounded-[8px]
+								${
+									showSelection &&
+									selectedOriginalIndices.includes( idx )
+										? 'border-2 border-primary'
+										: 'border-none'
+								}
+							` }
+						/>
+						{ showSelection &&
+							selectedOriginalIndices.includes( idx ) && (
+								<div className="absolute top-2 right-2 bg-primary text-white rounded-full p-0.5">
+									<Check size={ 16 } />
+								</div>
+							) }
+					</div>
+				) ) }
+			</div>
+		);
+	} else {
+		content = (
+			<div
+				className={ `relative rounded-[8px] overflow-hidden ${
+					showSelection && selectedOriginalIndices.includes( 0 )
+						? 'ring-2 ring-primary'
+						: ''
+				}` }
+			>
+				<img
+					src={ imageUrls[ 0 ] }
+					alt="Original"
+					className="w-full h-auto block border-none"
+				/>
+				{ showSelection && selectedOriginalIndices.includes( 0 ) && (
+					<div className="absolute top-2 right-2 bg-primary text-white rounded-full p-0.5">
+						<Check size={ 16 } />
+					</div>
+				) }
+			</div>
+		);
+	}
+
+	return (
+		<div className="w-[500px] max-h-[533px] overflow-auto">
+			<div className="text-[14px] mb-[8px]">{ sectionTitle }</div>
+			{ content }
 		</div>
 	);
 }

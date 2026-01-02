@@ -2,9 +2,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { STORE_NAME } from '../store';
 import { Check } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
-
-const MIN_SELECTED_IMAGES = 1;
-const MAX_SELECTED_IMAGES = 1;
+import { useEffect } from '@wordpress/element';
 
 function OriginalImage( {
 	imageUrls,
@@ -26,8 +24,25 @@ function OriginalImage( {
 
 	const { setSelectedOriginalIndices } = useDispatch( STORE_NAME );
 
+	const limits =
+		activeTab === 'image' ? { min: 1, max: 3 } : { min: 1, max: 1 };
+
+	useEffect( () => {
+		if ( selectedOriginalIndices.length > limits.max ) {
+			setSelectedOriginalIndices(
+				selectedOriginalIndices.slice( 0, limits.max )
+			);
+		}
+	}, [
+		activeTab,
+		limits.max,
+		selectedOriginalIndices,
+		setSelectedOriginalIndices,
+	] );
+
 	const showSelection =
-		activeTab === 'video' && videoSource === 'original-image';
+		activeTab === 'image' ||
+		( activeTab === 'video' && videoSource === 'original-image' );
 
 	const showGeneratedImage =
 		activeTab === 'video' && videoSource === 'generated-image';
@@ -47,12 +62,12 @@ function OriginalImage( {
 
 		let nextIndices = [ ...selectedOriginalIndices ];
 		if ( nextIndices.includes( index ) ) {
-			if ( nextIndices.length > MIN_SELECTED_IMAGES ) {
+			if ( nextIndices.length > limits.min ) {
 				nextIndices = nextIndices.filter( ( i ) => i !== index );
 			}
-		} else if ( nextIndices.length < MAX_SELECTED_IMAGES ) {
+		} else if ( nextIndices.length < limits.max ) {
 			nextIndices.push( index );
-		} else if ( MAX_SELECTED_IMAGES === 1 ) {
+		} else if ( limits.max === 1 ) {
 			nextIndices = [ index ];
 		}
 		setSelectedOriginalIndices( nextIndices );
@@ -87,6 +102,17 @@ function OriginalImage( {
 								: ''
 						}` }
 						onClick={ () => toggleSelection( idx ) }
+						role={ showSelection ? 'button' : undefined }
+						tabIndex={ showSelection ? 0 : -1 }
+						onKeyDown={ ( e ) => {
+							if (
+								showSelection &&
+								( e.key === 'Enter' || e.key === ' ' )
+							) {
+								e.preventDefault();
+								toggleSelection( idx );
+							}
+						} }
 					>
 						<img
 							src={ url }

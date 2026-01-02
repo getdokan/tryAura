@@ -161,6 +161,16 @@ const PreviewModal = ( {
 
 	const doGenerate = async () => {
 		try {
+			const selectedUrls = imageUrls.filter( ( _, idx ) =>
+				selectedOriginalIndices.includes( idx )
+			);
+
+			if ( selectedUrls.length === 0 ) {
+				throw new Error(
+					__( 'Please select at least one image.', 'try-aura' )
+				);
+			}
+
 			const apiKey = await resolveApiKey();
 			if ( ! apiKey ) {
 				throw new Error(
@@ -174,7 +184,7 @@ const PreviewModal = ( {
 			setStatus( 'fetching' );
 			setMessage( __( 'Fetching images…', 'try-aura' ) );
 			const encodedImages = await Promise.all(
-				imageUrls.map( async ( url ) => {
+				selectedUrls.map( async ( url ) => {
 					const resp = await fetch( url, {
 						credentials: 'same-origin',
 					} );
@@ -210,7 +220,7 @@ const PreviewModal = ( {
 					? `\n\nAdditional instruction from user: ${ imageConfigData?.optionalPrompt.trim() }`
 					: '';
 			const multiHint =
-				imageUrls.length > 1
+				selectedUrls.length > 1
 					? applyFilters(
 							'tryaura.ai_enhance_multi_image_hint',
 							'\n\nNote: Multiple input images provided. If a person/model photo and separate product images are present, compose the result with the model wearing/using the product(s) while keeping the background as requested.'

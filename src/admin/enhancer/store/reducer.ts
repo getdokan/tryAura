@@ -29,6 +29,8 @@ export const INITIAL_STATE: EnhancerState = {
 		optionalPrompt: '',
 	},
 	activeTab: 'image',
+	videoSource: 'original-image',
+	selectedOriginalIndices: [ 0 ],
 };
 
 const reducer = (
@@ -48,7 +50,13 @@ const reducer = (
 		case TYPES.SET_MESSAGE:
 			return { ...state, message: action.message };
 		case TYPES.SET_GENERATED_URL:
-			return { ...state, generatedUrl: action.generatedUrl };
+			return {
+				...state,
+				generatedUrl: action.generatedUrl,
+				videoSource: action.generatedUrl
+					? 'generated-image'
+					: state.videoSource,
+			};
 		case TYPES.SET_ERROR:
 			return { ...state, error: action.error };
 		case TYPES.SET_UPLOADING:
@@ -72,6 +80,13 @@ const reducer = (
 			return {
 				...state,
 				imageConfigData: { ...state.imageConfigData, ...action.data },
+			};
+		case TYPES.SET_VIDEO_SOURCE:
+			return { ...state, videoSource: action.videoSource };
+		case TYPES.SET_SELECTED_ORIGINAL_INDICES:
+			return {
+				...state,
+				selectedOriginalIndices: action.selectedOriginalIndices,
 			};
 		case TYPES.SET_ACTIVE_TAB:
 			return { ...state, activeTab: action.activeTab };

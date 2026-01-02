@@ -66,6 +66,8 @@ const PreviewModal = ( {
 		activeTab,
 		isBusy,
 		isVideoBusy,
+		videoSource,
+		selectedOriginalIndices,
 	} = useSelect(
 		( select ) => {
 			const store = select( STORE_NAME );
@@ -79,6 +81,8 @@ const PreviewModal = ( {
 				activeTab: store.getActiveTab(),
 				isBusy: store.isBusy(),
 				isVideoBusy: store.isVideoBusy(),
+				videoSource: store.getVideoSource(),
+				selectedOriginalIndices: store.getSelectedOriginalIndices(),
 			};
 		},
 		[ STORE_NAME ]
@@ -417,12 +421,32 @@ const PreviewModal = ( {
 
 	const doGenerateVideo = async () => {
 		try {
-			if ( ! generatedUrl ) {
-				setVideoError(
-					__( 'Please generate an image first.', 'try-aura' )
-				);
-				return;
+			let sourceUrl = '';
+			if ( videoSource === 'generated-image' ) {
+				if ( ! generatedUrl ) {
+					setVideoError(
+						__( 'Please generate an image first.', 'try-aura' )
+					);
+					return;
+				}
+				sourceUrl = generatedUrl;
+			} else {
+				if (
+					! selectedOriginalIndices ||
+					! selectedOriginalIndices.length
+				) {
+					setVideoError(
+						__(
+							'Please select at least one original image.',
+							'try-aura'
+						)
+					);
+					return;
+				}
+				// Use the first selected original image as the reference
+				sourceUrl = imageUrls[ selectedOriginalIndices[ 0 ] ];
 			}
+
 			setVideoError( null );
 			setVideoStatus( 'generating' );
 			setVideoMessage( __( 'Starting video generation…', 'try-aura' ) );
@@ -448,29 +472,29 @@ const PreviewModal = ( {
 				videoConfigData;
 			const videoPromptText = applyFilters(
 				'tryaura.video_generation_prompt',
-				`Create a smooth ${ duration } product showcase video based on the generated try-on image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`
+				videoSource === 'generated-image'
+					? `Create a smooth ${ duration } product showcase video based on the generated try-on image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`
+					: `Create a smooth ${ duration } product showcase video based on the provided original image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`
 			);
-			// Extract base64 from the generated data URL to avoid stack overflow from large buffers
-			let generatedImageByteBase64 = '';
-			let generatedImageMime = 'image/png';
-			if ( generatedUrl.startsWith( 'data:' ) ) {
-				const commaIdx = generatedUrl.indexOf( ',' );
-				const header = generatedUrl.substring(
+			// Extract base64 from the source URL
+			let sourceImageByteBase64 = '';
+			let sourceImageMime = 'image/png';
+			if ( sourceUrl.startsWith( 'data:' ) ) {
+				const commaIdx = sourceUrl.indexOf( ',' );
+				const header = sourceUrl.substring(
 					0,
 					Math.max( 0, commaIdx )
 				);
 				const match = /^data:([^;]+)/.exec( header );
-				generatedImageMime =
+				sourceImageMime =
 					match && match[ 1 ] ? match[ 1 ] : 'image/png';
-				generatedImageByteBase64 =
+				sourceImageByteBase64 =
 					commaIdx >= 0
-						? generatedUrl.substring( commaIdx + 1 )
-						: generatedUrl;
+						? sourceUrl.substring( commaIdx + 1 )
+						: sourceUrl;
 			} else {
-				const blob = await fetch( generatedUrl ).then( ( r ) =>
-					r.blob()
-				);
-				generatedImageMime = blob.type || 'image/png';
+				const blob = await fetch( sourceUrl ).then( ( r ) => r.blob() );
+				sourceImageMime = blob.type || 'image/png';
 				const dataUrl: string = await new Promise(
 					( resolve, reject ) => {
 						const reader = new FileReader();
@@ -481,7 +505,7 @@ const PreviewModal = ( {
 					}
 				);
 				const commaIdx2 = dataUrl.indexOf( ',' );
-				generatedImageByteBase64 =
+				sourceImageByteBase64 =
 					commaIdx2 >= 0
 						? dataUrl.substring( commaIdx2 + 1 )
 						: dataUrl;
@@ -507,9 +531,8 @@ const PreviewModal = ( {
 							{
 								prompt: videoPromptText,
 								image: {
-									bytesBase64Encoded:
-										generatedImageByteBase64,
-									mimeType: generatedImageMime,
+									bytesBase64Encoded: sourceImageByteBase64,
+									mimeType: sourceImageMime,
 								},
 							},
 						],
@@ -764,9 +787,7 @@ const PreviewModal = ( {
 						doGenerate={ doGenerate }
 						doGenerateVideo={ doGenerateVideo }
 					/>
-					<Output
-						supportsVideo={ supportsVideo }
-					/>
+					<Output supportsVideo={ supportsVideo } />
 				</div>
 				{ /* Actions */ }
 				<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">

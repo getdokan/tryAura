@@ -1,5 +1,5 @@
 import * as TYPES from './constants';
-import { Status, VideoStatus, ActiveTab } from './types';
+import { Status, VideoStatus, ActiveTab, VideoSource } from './types';
 
 const actions = {};
 
@@ -75,6 +75,18 @@ export const setVideoConfigData = ( data: any ) => ( {
 export const setImageConfigData = ( data: any ) => ( {
 	type: TYPES.SET_IMAGE_CONFIG_DATA,
 	data,
+} );
+
+export const setVideoSource = ( videoSource: VideoSource ) => ( {
+	type: TYPES.SET_VIDEO_SOURCE,
+	videoSource,
+} );
+
+export const setSelectedOriginalIndices = (
+	selectedOriginalIndices: number[]
+) => ( {
+	type: TYPES.SET_SELECTED_ORIGINAL_INDICES,
+	selectedOriginalIndices,
 } );
 
 export const setActiveTab = ( activeTab: ActiveTab ) => ( {

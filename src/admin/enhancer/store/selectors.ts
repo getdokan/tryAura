@@ -17,6 +17,9 @@ export const getVideoUploading = ( state: EnhancerState ) => state.videoUploadin
 export const getVideoConfigData = ( state: EnhancerState ) => state.videoConfigData;
 export const getImageConfigData = ( state: EnhancerState ) => state.imageConfigData;
 export const getActiveTab = ( state: EnhancerState ) => state.activeTab;
+export const getVideoSource = ( state: EnhancerState ) => state.videoSource;
+export const getSelectedOriginalIndices = ( state: EnhancerState ) =>
+	state.selectedOriginalIndices;
 
 export const isBusy = ( state: EnhancerState ) =>
 	state.status === 'fetching' ||

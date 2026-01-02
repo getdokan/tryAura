@@ -29,6 +29,7 @@ function VideoConfigInputs( {
 		isVideoBusy,
 		videoUploading,
 		generatedImageUrl,
+		videoSource,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
@@ -37,18 +38,19 @@ function VideoConfigInputs( {
 			isVideoBusy: store.isVideoBusy(),
 			videoUploading: store.getVideoUploading(),
 			generatedImageUrl: store.getGeneratedUrl(),
+			videoSource: store.getVideoSource(),
 		};
 	}, [] );
 
-	const { setVideoConfigData } = useDispatch( STORE_NAME );
+	const { setVideoConfigData, setVideoSource } = useDispatch( STORE_NAME );
 
 	return (
 		<>
 			{ /* Controls */ }
 			{ generatedImageUrl && (
 				<ModernSelect
-					value={ 'generated-image' }
-					onChange={ ( val ) => console.log( val ) }
+					value={ videoSource }
+					onChange={ ( val ) => setVideoSource( val ) }
 					label={ __( 'Video image reference source', 'try-aura' ) }
 					options={ [
 						{

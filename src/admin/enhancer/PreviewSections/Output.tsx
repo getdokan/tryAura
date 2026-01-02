@@ -1,17 +1,34 @@
+import { useSelect, useDispatch } from '@wordpress/data';
+import { STORE_NAME } from '../store';
 import { __ } from '@wordpress/i18n';
 import { Button } from '../../../components';
 
 function Output( {
-	generatedUrl,
 	supportsVideo,
-	activeTab,
-	setActiveTab,
-	message,
-	videoUrl,
-	videoMessage,
-	videoError,
-	error,
 } ) {
+	const {
+		generatedUrl,
+		activeTab,
+		message,
+		videoUrl,
+		videoMessage,
+		videoError,
+		error,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return {
+			generatedUrl: store.getGeneratedUrl(),
+			activeTab: store.getActiveTab(),
+			message: store.getMessage(),
+			videoUrl: store.getVideoUrl(),
+			videoMessage: store.getVideoMessage(),
+			videoError: store.getVideoError(),
+			error: store.getError(),
+		};
+	}, [] );
+
+	const { setActiveTab } = useDispatch( STORE_NAME );
+
 	return (
 		<div className="w-full">
 			<div className="w-[500] text-[14px] mb-[8px]">

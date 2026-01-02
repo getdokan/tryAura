@@ -1,4 +1,6 @@
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { STORE_NAME } from './store';
 import { GoogleGenAI } from '@google/genai';
 import { Button } from '../../components';
 import { __ } from '@wordpress/i18n';
@@ -54,44 +56,50 @@ const PreviewModal = ( {
 	onClose,
 	supportsVideo,
 }: PreviewProps ) => {
-	const [ isBlockEditorPage, setIsBlockEditorPage ] = useState( false );
-	const [ isWoocommerceProductPage, setIsWoocommerceProductPage ] =
-		useState( false );
-	const [ status, setStatus ] = useState<
-		'idle' | 'fetching' | 'generating' | 'parsing' | 'done' | 'error'
-	>( 'idle' );
-	const [ message, setMessage ] = useState< string >(
-		__( 'Ready to generate', 'try-aura' )
+	const {
+		generatedUrl,
+		uploading,
+		videoUrl,
+		videoUploading,
+		videoConfigData,
+		imageConfigData,
+		activeTab,
+		isBusy,
+		isVideoBusy,
+	} = useSelect(
+		( select ) => {
+			const store = select( STORE_NAME );
+			return {
+				generatedUrl: store.getGeneratedUrl(),
+				uploading: store.getUploading(),
+				videoUrl: store.getVideoUrl(),
+				videoUploading: store.getVideoUploading(),
+				videoConfigData: store.getVideoConfigData(),
+				imageConfigData: store.getImageConfigData(),
+				activeTab: store.getActiveTab(),
+				isBusy: store.isBusy(),
+				isVideoBusy: store.isVideoBusy(),
+			};
+		},
+		[ STORE_NAME ]
 	);
-	const [ generatedUrl, setGeneratedUrl ] = useState< string | null >( null );
-	const [ error, setError ] = useState< string | null >( null );
-	const [ uploading, setUploading ] = useState< boolean >( false );
-	// Video generation state
-	const [ videoStatus, setVideoStatus ] = useState<
-		'idle' | 'generating' | 'polling' | 'downloading' | 'done' | 'error'
-	>( 'idle' );
-	const [ videoMessage, setVideoMessage ] = useState< string >(
-		__( 'Ready to generate video', 'try-aura' )
-	);
-	const [ videoUrl, setVideoUrl ] = useState< string | null >( null );
-	const [ videoError, setVideoError ] = useState< string | null >( null );
-	const [ videoUploading, setVideoUploading ] = useState< boolean >( false );
-	const [ videoConfigData, setVideoConfigData ] = useState( {
-		styles: 'studio',
-		cameraMotion: 'zoom in',
-		aspectRatio: '1:1',
-		duration: '5 sec',
-		optionalPrompt: '',
-	} );
-	const [ imageConfigData, setImageConfigData ] = useState( {
-		imageSize: '1:1',
-		backgroundType: 'studio',
-		styleType: 'photo-realistic',
-		optionalPrompt: '',
-	} );
-	const [ activeTab, setActiveTab ] = useState< 'image' | 'video' >(
-		'image'
-	);
+
+	const {
+		setIsBlockEditorPage,
+		setIsWoocommerceProductPage,
+		setStatus,
+		setMessage,
+		setGeneratedUrl,
+		setError,
+		setUploading,
+		setVideoStatus,
+		setVideoMessage,
+		setVideoUrl,
+		setVideoError,
+		setVideoUploading,
+		resetState,
+	} = useDispatch( STORE_NAME );
+
 	const multiple = imageUrls.length > 1;
 
 	useEffect( () => {
@@ -128,22 +136,13 @@ const PreviewModal = ( {
 
 	// Reset state when image changes
 	useEffect( () => {
-		setStatus( 'idle' );
-		setMessage( __( 'Ready to generate', 'try-aura' ) );
-		setGeneratedUrl( null );
-		setError( null );
-		// Reset video state too when images change
-		setVideoStatus( 'idle' );
-		setVideoMessage( __( 'Ready to generate video', 'try-aura' ) );
 		if ( videoUrl && videoUrl.startsWith( 'blob:' ) ) {
 			try {
 				URL.revokeObjectURL( videoUrl );
 			} catch {}
 		}
-		setVideoUrl( null );
-		setVideoError( null );
-		setActiveTab( 'image' );
-	}, [ imageUrls ] );
+		resetState();
+	}, [ imageUrls, resetState ] );
 
 	// Revoke video blob URL on unmount/change to free memory
 	useEffect( () => {
@@ -736,15 +735,6 @@ const PreviewModal = ( {
 		}
 	};
 
-	const isBusy =
-		status === 'fetching' ||
-		status === 'generating' ||
-		status === 'parsing';
-	const isVideoBusy =
-		videoStatus === 'generating' ||
-		videoStatus === 'polling' ||
-		videoStatus === 'downloading';
-
 	const disabledImageAddToMedia = isBusy || uploading || ! generatedUrl;
 	const disabledVideoAddToMedia = isVideoBusy || videoUploading || ! videoUrl;
 
@@ -768,37 +758,14 @@ const PreviewModal = ( {
 					<OriginalImage
 						imageUrls={ imageUrls }
 						multiple={ multiple }
-						activeTab={ activeTab }
 					/>
 					<ConfigSettings
 						supportsVideo={ supportsVideo }
-						activeTab={ activeTab }
-						setActiveTab={ setActiveTab }
-						isBlockEditorPage={ isBlockEditorPage }
-						isWoocommerceProductPage={ isWoocommerceProductPage }
-						generatedUrl={ generatedUrl }
-						videoUrl={ videoUrl }
 						doGenerate={ doGenerate }
-						isBusy={ isBusy }
 						doGenerateVideo={ doGenerateVideo }
-						isVideoBusy={ isVideoBusy }
-						uploading={ uploading }
-						videoUploading={ videoUploading }
-						videoConfigData={ videoConfigData }
-						setVideoConfigData={ setVideoConfigData }
-						imageConfigData={ imageConfigData }
-						setImageConfigData={ setImageConfigData }
 					/>
 					<Output
-						generatedUrl={ generatedUrl }
 						supportsVideo={ supportsVideo }
-						activeTab={ activeTab }
-						setActiveTab={ setActiveTab }
-						message={ message }
-						videoUrl={ videoUrl }
-						videoMessage={ videoMessage }
-						videoError={ videoError }
-						error={ error }
 					/>
 				</div>
 				{ /* Actions */ }

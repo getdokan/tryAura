@@ -1,3 +1,5 @@
+import { useSelect, useDispatch } from '@wordpress/data';
+import { STORE_NAME } from '../store';
 import { Button, ModernSelect } from '../../../components';
 import { __ } from '@wordpress/i18n';
 import {
@@ -19,22 +21,27 @@ import {
 import ConfigFooter from './ConfigFooter';
 
 function VideoConfigInputs( {
-	videoConfigData,
-	setVideoConfigData,
-	videoUrl,
 	doGenerateVideo,
-	isVideoBusy,
-	videoUploading,
-	generatedImageUrl,
-}: {
-	videoConfigData: Record< any, any >;
-	setVideoConfigData: ( data: Record< any, any > ) => void;
-	videoUrl: string;
-	doGenerateVideo: () => void;
-	isVideoBusy: boolean;
-	videoUploading: boolean;
-	generatedImageUrl: string;
 } ) {
+	const {
+		videoConfigData,
+		videoUrl,
+		isVideoBusy,
+		videoUploading,
+		generatedImageUrl,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return {
+			videoConfigData: store.getVideoConfigData(),
+			videoUrl: store.getVideoUrl(),
+			isVideoBusy: store.isVideoBusy(),
+			videoUploading: store.getVideoUploading(),
+			generatedImageUrl: store.getGeneratedUrl(),
+		};
+	}, [] );
+
+	const { setVideoConfigData } = useDispatch( STORE_NAME );
+
 	return (
 		<>
 			{ /* Controls */ }
@@ -60,7 +67,7 @@ function VideoConfigInputs( {
 			<ModernSelect
 				value={ videoConfigData.styles }
 				onChange={ ( val ) =>
-					setVideoConfigData( { ...videoConfigData, styles: val } )
+					setVideoConfigData( { styles: val } )
 				}
 				label={ __( 'Styles', 'try-aura' ) }
 				options={ [
@@ -91,7 +98,6 @@ function VideoConfigInputs( {
 				value={ videoConfigData.cameraMotion }
 				onChange={ ( val ) =>
 					setVideoConfigData( {
-						...videoConfigData,
 						cameraMotion: val,
 					} )
 				}
@@ -142,7 +148,6 @@ function VideoConfigInputs( {
 					value={ videoConfigData.aspectRatio }
 					onChange={ ( val ) =>
 						setVideoConfigData( {
-							...videoConfigData,
 							aspectRatio: val,
 						} )
 					}
@@ -170,7 +175,6 @@ function VideoConfigInputs( {
 					value={ videoConfigData.duration }
 					onChange={ ( val ) =>
 						setVideoConfigData( {
-							...videoConfigData,
 							duration: val,
 						} )
 					}
@@ -207,7 +211,6 @@ function VideoConfigInputs( {
 					value={ videoConfigData.optionalPrompt }
 					onChange={ ( e ) =>
 						setVideoConfigData( {
-							...videoConfigData,
 							optionalPrompt: e.target.value,
 						} )
 					}

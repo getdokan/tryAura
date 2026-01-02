@@ -153,17 +153,18 @@ function OriginalImage( {
 		);
 	} else {
 		content = (
-			<div
-				className={ `relative rounded-[8px] overflow-hidden ${
-					showSelection && selectedOriginalIndices.includes( 0 )
-						? 'ring-2 ring-primary'
-						: ''
-				}` }
-			>
+			<div className="relative rounded-[8px] overflow-hidden">
 				<img
 					src={ imageUrls[ 0 ] }
-					alt="Original"
-					className="w-full h-auto block border-none"
+					alt={ 'Original' }
+					className={ `w-full h-auto block rounded-[8px]
+								${
+									showSelection &&
+									selectedOriginalIndices.includes( 0 )
+										? 'border-2 border-primary'
+										: 'border-none'
+								}
+							` }
 				/>
 				{ showSelection && selectedOriginalIndices.includes( 0 ) && (
 					<div className="absolute top-2 right-2 bg-primary text-white rounded-full p-0.5">

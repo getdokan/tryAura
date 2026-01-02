@@ -163,6 +163,7 @@ const PreviewModal = ( {
 
 	const doGenerate = async () => {
 		try {
+			setError( null );
 			const selectedUrls = imageUrls.filter( ( _, idx ) =>
 				selectedImageIndices.includes( idx )
 			);

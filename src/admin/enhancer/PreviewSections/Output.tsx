@@ -14,6 +14,8 @@ function Output( {
 		videoMessage,
 		videoError,
 		error,
+		isBusy,
+		isVideoBusy,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
@@ -24,6 +26,8 @@ function Output( {
 			videoMessage: store.getVideoMessage(),
 			videoError: store.getVideoError(),
 			error: store.getError(),
+			isBusy: store.isBusy(),
+			isVideoBusy: store.isVideoBusy(),
 		};
 	}, [] );
 
@@ -36,7 +40,7 @@ function Output( {
 			</div>
 			{ /* eslint-disable-next-line no-nested-ternary */ }
 			{ activeTab === 'image' ? (
-				generatedUrl ? (
+				generatedUrl && ! isBusy ? (
 					<div className="flex flex-col gap-[20px]">
 						<img
 							src={ generatedUrl }
@@ -62,7 +66,7 @@ function Output( {
 				)
 			) : (
 				<div>
-					{ videoUrl ? (
+					{ videoUrl && ! isVideoBusy ? (
 						<video
 							src={ videoUrl }
 							controls

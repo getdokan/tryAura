@@ -2,16 +2,8 @@ import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import geminiLogo from './assets/geminiLogo.svg';
-import {
-	Button,
-	TextControl,
-	Notice,
-	Spinner,
-	Card,
-	CardBody,
-} from '@wordpress/components';
-import { ModernSelect } from '../../../components';
-import GeminiIntegrationSettings from './compnents/GeminIntegrationSettings';
+import {Button} from '../../../components'
+import GeminiIntegrationSettings from './components/GeminIntegrationSettings';
 declare global {
 	interface Window {
 		// eslint-disable-line @typescript-eslint/consistent-type-definitions
@@ -98,7 +90,6 @@ const Settings = () => {
 				<div>
 					<div className='font-inter font-semibold text-[20px] leading-[28px] align-middle mb-[30px]'>
 						Settings
-
 					</div>
 
 					<div className='flex justify-between bg-[#FFFFFF] border-2 border-[#FFFFFF] p-7 rounded-[20px]'>
@@ -125,26 +116,25 @@ const Settings = () => {
 							</div>
 						</div>
 						<div className='flex items-center'>
-							<button 
-								className='flex items-center justify-center w-[115px] h-[40px] pt-[10px] pb-[10px] pl-[24px] pr-[24px] gap-[10px] rounded-[5px] bg-[#7c4dff] hover:bg-[#6b3de6] text-white text-sm font-medium opacity-100 transition-colors duration-200'
-
-								onClick={()=> {
-									console.log("clicked")
-									console.log(isSettingsMainPage)
-									setIsSettingsMainPage(false)
-									console.log(isSettingsMainPage)
-
-							}}>Configure</button>
+						<Button
+							className='py-3 px-7'
+							onClick={()=> {
+								setIsSettingsMainPage(false);
+							}}
+						> 
+							Configure
+						</Button>
 						</div>
 					</div>
 				</div>
 			)}
+
 			{!isSettingsMainPage && (
 				<div className='bg-[#FFFFFF]'>
 
 					<GeminiIntegrationSettings 
-					isSettingsMainPage
-					setIsSettingsMainPage = {setIsSettingsMainPage}
+						isSettingsMainPage = {isSettingsMainPage}
+						setIsSettingsMainPage = {setIsSettingsMainPage}
 					/>
 				</div>
 

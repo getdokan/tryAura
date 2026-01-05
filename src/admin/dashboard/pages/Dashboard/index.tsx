@@ -23,14 +23,6 @@ function Index() {
 			.catch( () => setLoading( false ) );
 	}, [] );
 
-	if ( loading ) {
-		return (
-			<div className="p-6">
-				{ __( 'Loading statistics…', 'try-aura' ) }
-			</div>
-		);
-	}
-
 	return (
 		<div>
 			<h1 className="font-[600] text-[20px] leading-[28px] text-[rgba(51,51,51,0.8)]">
@@ -43,30 +35,35 @@ function Index() {
 					value={ stats.image_count }
 					iconColor="#7047EB"
 					Icon={ Image }
+					loading={ loading }
 				/>
 				<StateCardItem
 					title={ __( 'Videos Generated', 'try-aura' ) }
 					value={ stats.video_count }
 					iconColor="#FF9345"
 					Icon={ Video }
+					loading={ loading }
 				/>
 				<StateCardItem
 					title={ __( 'Virtual Try-Ons', 'try-aura' ) }
 					value={ stats.tryon_count.toLocaleString() }
 					iconColor="#0ea5e9"
 					Icon={ Eye }
+					loading={ loading }
 				/>
 				<StateCardItem
 					title={ __( 'API Token Counts', 'try-aura' ) }
 					value={ stats.total_tokens.toLocaleString() }
 					iconColor="#47BF73"
 					Icon={ Sparkles }
+					loading={ loading }
 				/>
 				<StateCardItem
-					title={ __( 'Total Video Duration', 'try-aura' ) }
+					title={ __( 'Generated Video Duration', 'try-aura' ) }
 					value={ stats.video_seconds.toFixed( 1 ) + 's' }
 					iconColor="#f59e0b"
 					Icon={ Clock }
+					loading={ loading }
 				/>
 			</div>
 		</div>

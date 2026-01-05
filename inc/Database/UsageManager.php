@@ -67,17 +67,41 @@ class UsageManager {
 	/**
 	 * Get statistics.
 	 *
+	 * @param array $args Filter arguments.
+	 *
 	 * @return array
 	 */
-	public function get_stats(): array {
+	public function get_stats( array $args = array() ): array {
 		global $wpdb;
 		$table = self::get_table_name();
 
-		$image_count   = $wpdb->get_var( "SELECT COUNT(*) FROM $table WHERE type = 'image' AND status = 'success'" );
-		$video_count   = $wpdb->get_var( "SELECT COUNT(*) FROM $table WHERE type = 'video' AND status = 'success'" );
-		$tryon_count   = $wpdb->get_var( "SELECT COUNT(*) FROM $table WHERE generated_from = 'tryon' AND status = 'success'" );
-		$total_tokens  = $wpdb->get_var( "SELECT SUM(total_tokens) FROM $table WHERE status = 'success'" );
-		$video_seconds = $wpdb->get_var( "SELECT SUM(video_seconds) FROM $table WHERE type = 'video' AND status = 'success'" );
+		$start_date = $args['start_date'] ?? null;
+		$end_date   = $args['end_date'] ?? null;
+
+		$where  = "WHERE status = 'success'";
+		$params = array();
+
+		if ( $start_date ) {
+			$where   .= ' AND created_at >= %s';
+			$params[] = $start_date . ' 00:00:00';
+		}
+
+		if ( $end_date ) {
+			$where   .= ' AND created_at <= %s';
+			$params[] = $end_date . ' 23:59:59';
+		}
+
+		$sql_image   = $wpdb->prepare( "SELECT COUNT(*) FROM $table $where AND type = 'image'", $params );
+		$sql_video   = $wpdb->prepare( "SELECT COUNT(*) FROM $table $where AND type = 'video'", $params );
+		$sql_tryon   = $wpdb->prepare( "SELECT COUNT(*) FROM $table $where AND generated_from = 'tryon'", $params );
+		$sql_tokens  = $wpdb->prepare( "SELECT SUM(total_tokens) FROM $table $where", $params );
+		$sql_seconds = $wpdb->prepare( "SELECT SUM(video_seconds) FROM $table $where AND type = 'video'", $params );
+
+		$image_count   = $wpdb->get_var( $sql_image );
+		$video_count   = $wpdb->get_var( $sql_video );
+		$tryon_count   = $wpdb->get_var( $sql_tryon );
+		$total_tokens  = $wpdb->get_var( $sql_tokens );
+		$video_seconds = $wpdb->get_var( $sql_seconds );
 
 		return array(
 			'image_count'   => (int) $image_count,

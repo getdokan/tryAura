@@ -19,7 +19,6 @@ export const INITIAL_STATE: EnhancerState = {
 		styles: 'studio',
 		cameraMotion: 'zoom in',
 		aspectRatio: '1:1',
-		duration: '5 sec',
 		optionalPrompt: '',
 	},
 	imageConfigData: {

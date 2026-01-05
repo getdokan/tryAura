@@ -14,7 +14,6 @@ export interface VideoConfigData {
 	styles: string;
 	cameraMotion: string;
 	aspectRatio: string;
-	duration: string;
 	optionalPrompt: string;
 }
 

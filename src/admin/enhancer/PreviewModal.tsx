@@ -479,13 +479,12 @@ const PreviewModal = ( {
 					? `\n\nAdditional instruction from user: ${ videoConfigData?.optionalPrompt.trim() }`
 					: ''
 			);
-			const { styles, cameraMotion, aspectRatio, duration } =
-				videoConfigData;
+			const { styles, cameraMotion, aspectRatio } = videoConfigData;
 			const videoPromptText = applyFilters(
 				'tryaura.video_generation_prompt',
 				videoSource === 'generated-image'
-					? `Create a smooth ${ duration } product showcase video based on the generated try-on image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`
-					: `Create a smooth ${ duration } product showcase video based on the provided original image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`
+					? `Create a smooth product showcase video based on the generated try-on image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`
+					: `Create a smooth product showcase video based on the provided original image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`
 			);
 			// Extract base64 from the source URL
 			let sourceImageByteBase64 = '';

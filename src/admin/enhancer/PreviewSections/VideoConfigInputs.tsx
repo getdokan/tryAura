@@ -172,29 +172,6 @@ function VideoConfigInputs( {
 						},
 					] }
 				/>
-				<ModernSelect
-					className="w-1/2"
-					value={ videoConfigData.duration }
-					onChange={ ( val ) =>
-						setVideoConfigData( {
-							duration: val,
-						} )
-					}
-					variant="list"
-					label={ __( 'Duration', 'try-aura' ) }
-					options={ [
-						{
-							label: __( '5 Sec', 'try-aura' ),
-							value: '5 sec',
-							icon: <Clock9 />,
-						},
-						{
-							label: __( '10 Sec', 'try-aura' ),
-							value: '10 sec',
-							icon: <Clock9 />,
-						},
-					] }
-				/>
 			</div>
 
 			<label

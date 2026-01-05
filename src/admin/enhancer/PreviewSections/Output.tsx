@@ -2,10 +2,10 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { STORE_NAME } from '../store';
 import { __ } from '@wordpress/i18n';
 import { Button } from '../../../components';
+import Star from '../images/star.gif';
+import Congrats from '../images/congrats.gif';
 
-function Output( {
-	supportsVideo,
-} ) {
+function Output( { supportsVideo } ) {
 	const {
 		generatedUrl,
 		activeTab,
@@ -60,7 +60,14 @@ function Output( {
 						) }
 					</div>
 				) : (
-					<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex items-center justify-center">
+					<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1 items-center justify-center">
+						{ isBusy && (
+							<img
+								src={ Star }
+								className="w-8 h-8"
+								alt={ __( 'Image loading', 'try-aura' ) }
+							/>
+						) }
 						<span>{ message }</span>
 					</div>
 				)
@@ -73,7 +80,14 @@ function Output( {
 							className="w-full h-auto block rounded-[8px] bg-[#000]"
 						/>
 					) : (
-						<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex items-center justify-center">
+						<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1  items-center justify-center">
+							{ isVideoBusy && (
+								<img
+									src={ Star }
+									className="w-8 h-8"
+									alt={ __( 'Video loading', 'try-aura' ) }
+								/>
+							) }
 							<span>{ videoMessage }</span>
 						</div>
 					) }

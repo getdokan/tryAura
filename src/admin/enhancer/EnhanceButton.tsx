@@ -2,6 +2,7 @@ import PreviewModal from './PreviewModal';
 import { __ } from '@wordpress/i18n';
 import { useEffect, useRef, useState, createPortal } from '@wordpress/element';
 import { applyFilters, doAction } from '@wordpress/hooks';
+import { Toaster } from 'react-hot-toast';
 
 const EnhanceButton = () => {
 	const [ open, setOpen ] = useState( false );

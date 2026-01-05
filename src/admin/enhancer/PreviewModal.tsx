@@ -9,6 +9,7 @@ import OriginalImage from './PreviewSections/OriginalImage';
 import ConfigSettings from './PreviewSections/ConfigSettings';
 import Output from './PreviewSections/Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
+import toast, { Toaster } from 'react-hot-toast';
 
 declare const wp: any;
 
@@ -444,10 +445,7 @@ const PreviewModal = ( {
 				}
 				sourceUrl = generatedUrl;
 			} else {
-				if (
-					! selectedVideoIndices ||
-					! selectedVideoIndices.length
-				) {
+				if ( ! selectedVideoIndices || ! selectedVideoIndices.length ) {
 					setVideoError(
 						__(
 							'Please select at least one original image.',
@@ -725,6 +723,8 @@ const PreviewModal = ( {
 				);
 			}
 
+			toast.success( __( 'Video added to Media Library.', 'try-aura' ) );
+
 			doAction(
 				'tryaura.video_generation_upload_success',
 				filename,
@@ -744,7 +744,7 @@ const PreviewModal = ( {
 	const disabledVideoAddToMedia = isVideoBusy || videoUploading || ! videoUrl;
 
 	return (
-		<div className="ai-enhancer-modal fixed inset-[0px] bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[200000]">
+		<div className="ai-enhancer-modal fixed inset-[0px] bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[160000]">
 			<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto">
 				<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] pt-[16px] pl-[24px] pr-[24px]">
 					<h2 className="mt-0">
@@ -773,7 +773,7 @@ const PreviewModal = ( {
 				</div>
 				{ /* Actions */ }
 				<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
-					{ generatedUrl && (
+					{ ( generatedUrl || videoUrl ) && (
 						<Button
 							onClick={
 								activeTab === 'image'
@@ -805,6 +805,8 @@ const PreviewModal = ( {
 					</Button>
 				</div>
 			</div>
+
+			<Toaster position="bottom-right" />
 		</div>
 	);
 };

@@ -1,6 +1,7 @@
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
+import geminiLogo from './assets/geminiLogo.svg';
 import {
 	Button,
 	TextControl,
@@ -9,7 +10,8 @@ import {
 	Card,
 	CardBody,
 } from '@wordpress/components';
-
+import { ModernSelect } from '../../../components';
+import GeminiIntegrationSettings from './compnents/GeminIntegrationSettings';
 declare global {
 	interface Window {
 		// eslint-disable-line @typescript-eslint/consistent-type-definitions
@@ -35,6 +37,9 @@ const Settings = () => {
 	const [ saving, setSaving ] = useState< boolean >( false );
 	const [ saved, setSaved ] = useState< boolean >( false );
 	const [ error, setError ] = useState< string | null >( null );
+
+	const [ isSettingsMainPage, setIsSettingsMainPage ] = useState< boolean >( true);
+
 
 	// On mount, fetch the current saved value to ensure persistence across reloads.
 	useEffect( () => {
@@ -88,52 +93,111 @@ const Settings = () => {
 	};
 
 	return (
-		<Card>
-			<CardBody>
-				<p>
-					{ __(
-						'Enter your TryAura API key. This key authenticates requests between your store and TryAura services.',
-						'try-aura'
-					) }
-				</p>
-				{ error && (
-					<Notice status="error" isDismissible={ false }>
-						{ error }
-					</Notice>
-				) }
-				{ saved && (
-					<Notice
-						status="success"
-						isDismissible={ true }
-						onRemove={ () => setSaved( false ) }
-					>
-						{ __( 'API Key saved successfully.', 'try-aura' ) }
-					</Notice>
-				) }
-				<TextControl
-					label={ __( 'API Key', 'try-aura' ) }
-					value={ apiKey }
-					onChange={ setApiKey }
-					help={ __(
-						'Paste the API key provided by TryAura.',
-						'try-aura'
-					) }
-				/>
-				<Button
-					variant="primary"
-					onClick={ onSave }
-					disabled={ saving }
-				>
-					{ saving ? (
-						<>
-							<Spinner /> { __( 'Saving…', 'try-aura' ) }
-						</>
-					) : (
-						__( 'Save Changes', 'try-aura' )
-					) }
-				</Button>
-			</CardBody>
-		</Card>
+		<>
+			{isSettingsMainPage && (
+				<div>
+					<div className='font-inter font-semibold text-[20px] leading-[28px] align-middle mb-[30px]'>
+						Settings
+
+					</div>
+
+					<div className='flex justify-between bg-[#FFFFFF] border-2 border-[#FFFFFF] p-7 rounded-[20px]'>
+						<div className='flex'>
+							<div className='mr-[14px]'>
+								<img src={geminiLogo} alt="alt text" srcset="" />
+							</div>
+							<div className='flex flex-col justify-center'>
+								<div className='flex mb-[10px]'>
+									<div className="font-sans font-semibold text-base leading-[22.88px] tracking-normal">
+										Gemin API
+									</div>
+									<div className='ml-[12px]'>
+										<p className="bg-green-100 text-green-700 rounded m-0">
+											Connected
+
+										</p>
+									</div>
+								</div>
+
+								<div>
+								This key authenticates requests between your store and TryAura services.
+								</div>
+							</div>
+						</div>
+						<div className='flex items-center'>
+							<button 
+								className='flex items-center justify-center w-[115px] h-[40px] pt-[10px] pb-[10px] pl-[24px] pr-[24px] gap-[10px] rounded-[5px] bg-[#7c4dff] hover:bg-[#6b3de6] text-white text-sm font-medium opacity-100 transition-colors duration-200'
+
+								onClick={()=> {
+									console.log("clicked")
+									console.log(isSettingsMainPage)
+									setIsSettingsMainPage(false)
+									console.log(isSettingsMainPage)
+
+							}}>Configure</button>
+						</div>
+					</div>
+				</div>
+			)}
+			{!isSettingsMainPage && (
+				<div className='bg-[#FFFFFF]'>
+
+					<GeminiIntegrationSettings 
+					isSettingsMainPage
+					setIsSettingsMainPage = {setIsSettingsMainPage}
+					/>
+				</div>
+
+			)}
+			
+		
+		</>
+		// <Card>
+		// 	<CardBody>
+		// 		<p>
+		// 			{ __(
+		// 				'Enter your TryAura API key. This key authenticates requests between your store and TryAura services.',
+		// 				'try-aura'
+		// 			) }
+		// 		</p>
+		// 		{ error && (
+		// 			<Notice status="error" isDismissible={ false }>
+		// 				{ error }
+		// 			</Notice>
+		// 		) }
+		// 		{ saved && (
+		// 			<Notice
+		// 				status="success"
+		// 				isDismissible={ true }
+		// 				onRemove={ () => setSaved( false ) }
+		// 			>
+		// 				{ __( 'API Key saved successfully.', 'try-aura' ) }
+		// 			</Notice>
+		// 		) }
+		// 		<TextControl
+		// 			label={ __( 'API Key', 'try-aura' ) }
+		// 			value={ apiKey }
+		// 			onChange={ setApiKey }
+		// 			help={ __(
+		// 				'Paste the API key provided by TryAura.',
+		// 				'try-aura'
+		// 			) }
+		// 		/>
+		// 		<Button
+		// 			variant="primary"
+		// 			onClick={ onSave }
+		// 			disabled={ saving }
+		// 		>
+		// 			{ saving ? (
+		// 				<>
+		// 					<Spinner /> { __( 'Saving…', 'try-aura' ) }
+		// 				</>
+		// 			) : (
+		// 				__( 'Save Changes', 'try-aura' )
+		// 			) }
+		// 		</Button>
+		// 	</CardBody>
+		// </Card>
 	);
 };
 

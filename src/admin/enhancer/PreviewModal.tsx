@@ -520,51 +520,25 @@ const PreviewModal = ( {
 						? dataUrl.substring( commaIdx2 + 1 )
 						: dataUrl;
 			}
-			// Start long-running video generation operation via REST API
-			const BASE_URL = applyFilters(
-				'tryaura.video_generation_base_url',
-				'https://generativelanguage.googleapis.com/v1beta'
-			);
-			const startRes = await fetch(
-				applyFilters(
-					'tryaura.video_generation_start_url',
-					`${ BASE_URL }/models/veo-3.0-fast-generate-001:predictLongRunning`
-				),
-				applyFilters( 'tryaura.video_generation_start_fetch_options', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'x-goog-api-key': apiKey,
+			// Start long-running video generation operation via @google/genai SDK
+			const ai = new GoogleGenAI( { apiKey } );
+			let operation: any = await ( ai as any ).models.generateVideos(
+				applyFilters( 'tryaura.video_generation_params', {
+					model: 'veo-3.0-fast-generate-001',
+					source: {
+						prompt: videoPromptText,
+						image: {
+							imageBytes: sourceImageByteBase64,
+							mimeType: sourceImageMime,
+						},
 					},
-					body: JSON.stringify( {
-						instances: [
-							{
-								prompt: videoPromptText,
-								image: {
-									bytesBase64Encoded: sourceImageByteBase64,
-									mimeType: sourceImageMime,
-								},
-							},
-						],
-					} ),
+					config: {
+						aspectRatio,
+					},
 				} )
 			);
-			doAction( 'tryaura.video_generation_start', startRes );
-			if ( ! startRes.ok ) {
-				const t = await startRes.text();
-				doAction( 'tryaura.video_generation_start_failed', startRes );
-				throw new Error( t || 'Failed to start video generation.' );
-			}
-			const startJson = await startRes.json();
-			const operationName = startJson?.name;
-			if ( ! operationName ) {
-				doAction( 'tryaura.video_generation_start_failed', startJson );
-				throw new Error(
-					'No operation name returned from video generation.'
-				);
-			}
 
-			doAction( 'tryaura.video_generation_start_success', startJson );
+			doAction( 'tryaura.video_generation_start', operation );
 
 			setVideoStatus( 'polling' );
 			setVideoMessage(
@@ -573,44 +547,48 @@ const PreviewModal = ( {
 					'try-aura'
 				)
 			);
-			let finalJson: any = null;
+
 			for ( let i = 0; i < 60; i++ ) {
-				// up to ~10 minutes
-				await new Promise( ( r ) => setTimeout( r, 10000 ) );
-				const statusRes = await fetch(
-					`${ BASE_URL }/${ operationName }`,
-					{
-						headers: { 'x-goog-api-key': apiKey },
-					}
-				);
-				if ( ! statusRes.ok ) {
-					const t = await statusRes.text();
-					throw new Error(
-						t ||
-							__(
-								'Failed to poll video generation status.',
-								'try-aura'
-							)
-					);
-				}
-				const json = await statusRes.json();
-				if ( json?.done ) {
-					finalJson = json;
+				if ( operation.done ) {
 					break;
 				}
+				// up to ~10 minutes
+				await new Promise( ( r ) => setTimeout( r, 10000 ) );
+				operation = await ( ai as any ).operations.getVideosOperation( {
+					operation,
+				} );
 			}
-			if ( ! finalJson ) {
+
+			if ( ! operation.done ) {
 				throw new Error(
 					__( 'Timed out waiting for video generation.', 'try-aura' )
 				);
 			}
 
+			// Console log token costs
+			if ( operation.metadata && ( operation.metadata as any ).usage ) {
+				console.log(
+					'Video generation token costs:',
+					( operation.metadata as any ).usage
+				);
+			} else if (
+				operation.response &&
+				( operation.response as any ).usageMetadata
+			) {
+				console.log(
+					'Video generation token costs:',
+					( operation.response as any ).usageMetadata
+				);
+			} else {
+				console.log( 'Video generation metadata:', operation.metadata );
+			}
+
 			const uri = applyFilters(
 				'tryaura.video_generation_download_uri',
-				finalJson?.response?.generateVideoResponse
+				operation.response?.generateVideoResponse
 					?.generatedSamples?.[ 0 ]?.video?.uri ||
-					finalJson?.response?.generatedVideos?.[ 0 ]?.video?.uri ||
-					finalJson?.response?.generatedVideos?.[ 0 ]?.uri
+					operation.response?.generatedVideos?.[ 0 ]?.video?.uri ||
+					operation.response?.generatedVideos?.[ 0 ]?.uri
 			);
 
 			if ( ! uri ) {

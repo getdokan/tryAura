@@ -139,36 +139,28 @@ function VideoConfigInputs( { doGenerateVideo } ) {
 				] }
 			/>
 
-			<div className="flex flex-row gap-[12px] w-full">
-				<ModernSelect
-					className="w-1/2"
-					variant="list"
-					value={ videoConfigData.aspectRatio }
-					onChange={ ( val ) =>
-						setVideoConfigData( {
-							aspectRatio: val,
-						} )
-					}
-					label={ __( 'Aspect Ratio', 'try-aura' ) }
-					options={ [
-						{
-							label: __( '1:1', 'try-aura' ),
-							value: '1:1',
-							icon: <Square />,
-						},
-						{
-							label: __( '16:9', 'try-aura' ),
-							value: '16:9',
-							icon: <RectangleHorizontal />,
-						},
-						{
-							label: __( '9:16', 'try-aura' ),
-							value: '9:16',
-							icon: <RectangleVertical />,
-						},
-					] }
-				/>
-			</div>
+			<ModernSelect
+				variant="list"
+				value={ videoConfigData.aspectRatio }
+				onChange={ ( val ) =>
+					setVideoConfigData( {
+						aspectRatio: val,
+					} )
+				}
+				label={ __( 'Aspect Ratio', 'try-aura' ) }
+				options={ [
+					{
+						label: __( '16:9', 'try-aura' ),
+						value: '16:9',
+						icon: <RectangleHorizontal />,
+					},
+					{
+						label: __( '9:16', 'try-aura' ),
+						value: '9:16',
+						icon: <RectangleVertical />,
+					},
+				] }
+			/>
 
 			<label
 				style={ {

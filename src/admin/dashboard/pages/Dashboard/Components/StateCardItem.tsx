@@ -21,7 +21,7 @@ function StateCardItem( {
 				className
 			) }
 		>
-			<Icon size={ 36 } color={ iconColor } />
+			<Icon size={ 36 } color={ iconColor } strokeWidth={ 2 } />
 			<p className="font-[500] text-[14px] text-[rgba(99,99,99,1)] p-0 m-0">
 				{ title }
 			</p>

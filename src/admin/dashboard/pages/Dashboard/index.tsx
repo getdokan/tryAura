@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import StateCardItem from './Components/StateCardItem';
-import { Image, Video, Cpu, Clock } from 'lucide-react';
+import { Image, Video, Sparkles, Clock, Eye } from 'lucide-react';
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
@@ -8,6 +8,7 @@ function Index() {
 	const [ stats, setStats ] = useState( {
 		image_count: 0,
 		video_count: 0,
+		tryon_count: 0,
 		total_tokens: 0,
 		video_seconds: 0,
 	} );
@@ -34,22 +35,28 @@ function Index() {
 
 			<div className="mt-[16px] flex flex-row gap-[32px] flex-wrap">
 				<StateCardItem
-					title={ __( 'Total Images', 'try-aura' ) }
+					title={ __( 'Images Generated', 'try-aura' ) }
 					value={ stats.image_count }
 					iconColor="#7047EB"
 					Icon={ Image }
 				/>
 				<StateCardItem
-					title={ __( 'Total Videos', 'try-aura' ) }
+					title={ __( 'Videos Generated', 'try-aura' ) }
 					value={ stats.video_count }
 					iconColor="#FF9345"
 					Icon={ Video }
 				/>
 				<StateCardItem
-					title={ __( 'Total Tokens Used', 'try-aura' ) }
+					title={ __( 'Virtual Try-Ons', 'try-aura' ) }
+					value={ stats.tryon_count.toLocaleString() }
+					iconColor="#0ea5e9"
+					Icon={ Eye }
+				/>
+				<StateCardItem
+					title={ __( 'API Token Counts', 'try-aura' ) }
 					value={ stats.total_tokens.toLocaleString() }
 					iconColor="#47BF73"
-					Icon={ Cpu }
+					Icon={ Sparkles }
 				/>
 				<StateCardItem
 					title={ __( 'Total Video Duration', 'try-aura' ) }

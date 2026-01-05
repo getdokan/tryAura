@@ -36,12 +36,14 @@ class DashboardController {
 
 		$image_count   = $wpdb->get_var( "SELECT COUNT(*) FROM $table WHERE type = 'image' AND status = 'success'" );
 		$video_count   = $wpdb->get_var( "SELECT COUNT(*) FROM $table WHERE type = 'video' AND status = 'success'" );
+		$tryon_count   = $wpdb->get_var( "SELECT COUNT(*) FROM $table WHERE generated_from = 'tryon' AND status = 'success'" );
 		$total_tokens  = $wpdb->get_var( "SELECT SUM(total_tokens) FROM $table WHERE status = 'success'" );
 		$video_seconds = $wpdb->get_var( "SELECT SUM(video_seconds) FROM $table WHERE type = 'video' AND status = 'success'" );
 
 		return new WP_REST_Response( array(
 			'image_count'   => (int) $image_count,
 			'video_count'   => (int) $video_count,
+			'tryon_count'   => (int) $tryon_count,
 			'total_tokens'  => (int) $total_tokens,
 			'video_seconds' => (float) $video_seconds,
 		), 200 );

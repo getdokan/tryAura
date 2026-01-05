@@ -13,9 +13,12 @@ export const getVideoStatus = ( state: EnhancerState ) => state.videoStatus;
 export const getVideoMessage = ( state: EnhancerState ) => state.videoMessage;
 export const getVideoUrl = ( state: EnhancerState ) => state.videoUrl;
 export const getVideoError = ( state: EnhancerState ) => state.videoError;
-export const getVideoUploading = ( state: EnhancerState ) => state.videoUploading;
-export const getVideoConfigData = ( state: EnhancerState ) => state.videoConfigData;
-export const getImageConfigData = ( state: EnhancerState ) => state.imageConfigData;
+export const getVideoUploading = ( state: EnhancerState ) =>
+	state.videoUploading;
+export const getVideoConfigData = ( state: EnhancerState ) =>
+	state.videoConfigData;
+export const getImageConfigData = ( state: EnhancerState ) =>
+	state.imageConfigData;
 export const getActiveTab = ( state: EnhancerState ) => state.activeTab;
 export const getVideoSource = ( state: EnhancerState ) => state.videoSource;
 export const getSelectedImageIndices = ( state: EnhancerState ) =>

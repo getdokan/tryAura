@@ -1,8 +1,7 @@
 import './style.scss';
-import Button from "./Button";
-import ModernSelect from "./ModernSelect";
-import GroupButton from "./GroupButton";
-
+import Button from './Button';
+import ModernSelect from './ModernSelect';
+import GroupButton from './GroupButton';
 
 export { Button };
 export { ModernSelect };

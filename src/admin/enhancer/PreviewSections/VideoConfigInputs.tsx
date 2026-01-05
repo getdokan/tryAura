@@ -20,9 +20,7 @@ import {
 } from 'lucide-react';
 import ConfigFooter from './ConfigFooter';
 
-function VideoConfigInputs( {
-	doGenerateVideo,
-} ) {
+function VideoConfigInputs( { doGenerateVideo } ) {
 	const {
 		videoConfigData,
 		videoUrl,
@@ -68,9 +66,7 @@ function VideoConfigInputs( {
 			{ /* Controls */ }
 			<ModernSelect
 				value={ videoConfigData.styles }
-				onChange={ ( val ) =>
-					setVideoConfigData( { styles: val } )
-				}
+				onChange={ ( val ) => setVideoConfigData( { styles: val } ) }
 				label={ __( 'Styles', 'try-aura' ) }
 				options={ [
 					{

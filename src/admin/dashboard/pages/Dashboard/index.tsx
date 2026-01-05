@@ -24,7 +24,11 @@ function Index() {
 	}, [] );
 
 	if ( loading ) {
-		return <div className="p-6">{ __( 'Loading statistics…', 'try-aura' ) }</div>;
+		return (
+			<div className="p-6">
+				{ __( 'Loading statistics…', 'try-aura' ) }
+			</div>
+		);
 	}
 
 	return (

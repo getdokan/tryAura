@@ -1,5 +1,17 @@
-export type Status = 'idle' | 'fetching' | 'generating' | 'parsing' | 'done' | 'error';
-export type VideoStatus = 'idle' | 'generating' | 'polling' | 'downloading' | 'done' | 'error';
+export type Status =
+	| 'idle'
+	| 'fetching'
+	| 'generating'
+	| 'parsing'
+	| 'done'
+	| 'error';
+export type VideoStatus =
+	| 'idle'
+	| 'generating'
+	| 'polling'
+	| 'downloading'
+	| 'done'
+	| 'error';
 export type ActiveTab = 'image' | 'video';
 export type VideoSource = 'generated-image' | 'original-image';
 

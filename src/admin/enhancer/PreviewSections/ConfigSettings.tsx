@@ -5,11 +5,7 @@ import { __ } from '@wordpress/i18n';
 import ImageConfigInputs from './ImageConfigInputs';
 import VideoConfigInputs from './VideoConfigInputs';
 
-function ConfigSettings( {
-	supportsVideo,
-	doGenerate,
-	doGenerateVideo,
-} ) {
+function ConfigSettings( { supportsVideo, doGenerate, doGenerateVideo } ) {
 	const { activeTab, isBusy, isVideoBusy } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
@@ -45,13 +41,9 @@ function ConfigSettings( {
 
 			<div className="flex flex-col gap-[12px]">
 				{ activeTab === 'image' ? (
-					<ImageConfigInputs
-						doGenerate={ doGenerate }
-					/>
+					<ImageConfigInputs doGenerate={ doGenerate } />
 				) : (
-					<VideoConfigInputs
-						doGenerateVideo={ doGenerateVideo }
-					/>
+					<VideoConfigInputs doGenerateVideo={ doGenerateVideo } />
 				) }
 			</div>
 		</div>

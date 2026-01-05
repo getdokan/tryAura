@@ -10,7 +10,8 @@ const EnhanceButton = () => {
 	const [ attachmentIds, setAttachmentIds ] = useState< number[] >( [] );
 	const [ loading, setLoading ] = useState( false );
 	const modalContainerRef = useRef< HTMLDivElement | null >( null );
-	const [ portalContainer, setPortalContainer ] = useState< HTMLDivElement | null >( null );
+	const [ portalContainer, setPortalContainer ] =
+		useState< HTMLDivElement | null >( null );
 
 	const handleClick = () => {
 		setLoading( true );

@@ -2,6 +2,8 @@
 
 namespace Dokan\TryAura;
 
+use Dokan\TryAura\Database\UsageManager;
+
 /**
  * Installer class.
  */
@@ -20,7 +22,7 @@ class Installer {
 	public static function create_tables() {
 		global $wpdb;
 
-		$table_name      = $wpdb->prefix . 'tryaura';
+		$table_name      = UsageManager::get_table_name();
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$sql = "CREATE TABLE $table_name (

@@ -415,6 +415,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 							generatedUrl={ generatedUrl }
 							message={ message }
 							isBusy={ isBusy }
+							status={ status }
 						/>
 					</div>
 					{ /* Actions */ }

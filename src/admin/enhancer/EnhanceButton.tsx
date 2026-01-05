@@ -2,7 +2,7 @@ import PreviewModal from './PreviewModal';
 import { __ } from '@wordpress/i18n';
 import { useEffect, useRef, useState, createPortal } from '@wordpress/element';
 import { applyFilters, doAction } from '@wordpress/hooks';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 const EnhanceButton = () => {
 	const [ open, setOpen ] = useState( false );
@@ -35,7 +35,7 @@ const EnhanceButton = () => {
 				)
 				.filter( ( j: any ) => j && j.url && j.id );
 			if ( ! items.length ) {
-				window.alert(
+				toast.error(
 					__( 'Please select at least one image.', 'try-aura' )
 				);
 				return;
@@ -59,7 +59,7 @@ const EnhanceButton = () => {
 		} catch ( e ) {
 			// eslint-disable-next-line no-console
 			console.error( e );
-			window.alert(
+			toast.error(
 				__( 'Unable to read current selection.', 'try-aura' )
 			);
 
@@ -138,6 +138,8 @@ const EnhanceButton = () => {
 					/>,
 					portalContainer
 				) }
+
+			{ ! open && <Toaster position="bottom-right" /> }
 		</div>
 	);
 };

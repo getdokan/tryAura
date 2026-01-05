@@ -328,6 +328,24 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				setGeneratedUrl( dataUrl );
 				setStatus( 'done' );
 				setMessage( __( 'Done', 'try-aura' ) );
+
+				const usage = data.usage;
+				apiFetch( {
+					path: '/try-aura/v1/log-usage',
+					method: 'POST',
+					data: {
+						type: 'image',
+						model: 'gemini-2.5-flash-image',
+						prompt: promptText,
+						input_tokens: usage?.promptTokenCount,
+						output_tokens: usage?.candidatesTokenCount || usage?.responseTokenCount,
+						total_tokens: usage?.totalTokenCount,
+						generated_from: 'tryon',
+						status: 'success',
+					},
+				} ).catch( () => {
+					// ignore logging errors
+				} );
 			} else {
 				throw new Error( __( 'Model did not return an image.', 'try-aura' ) );
 			}

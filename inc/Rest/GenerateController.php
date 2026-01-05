@@ -108,7 +108,14 @@ class GenerateController {
 		}
 
 		$image = $data['candidates'][0]['content']['parts'][0]['inlineData']['data'] ?? null;
-		return new WP_REST_Response( array( 'image' => $image ), 200 );
+		$usage = $data['usageMetadata'] ?? null;
+		return new WP_REST_Response(
+			array(
+				'image' => $image,
+				'usage' => $usage,
+			),
+			200
+		);
 	}
 
 	/**

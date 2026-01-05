@@ -1,4 +1,5 @@
 import { useEffect } from '@wordpress/element';
+import apiFetch from '@wordpress/api-fetch';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { STORE_NAME } from './store';
 import { GoogleGenAI } from '@google/genai';
@@ -275,6 +276,24 @@ const PreviewModal = ( {
 			setStatus( 'done' );
 			setMessage( 'Done' );
 			setError( null );
+
+			const usage = response?.usageMetadata;
+			apiFetch( {
+				path: '/try-aura/v1/log-usage',
+				method: 'POST',
+				data: {
+					type: 'image',
+					model: 'gemini-2.5-flash-image-preview',
+					prompt: promptText,
+					input_tokens: usage?.promptTokenCount,
+					output_tokens: usage?.responseTokenCount,
+					total_tokens: usage?.totalTokenCount,
+					generated_from: 'admin',
+					status: 'success',
+				},
+			} ).catch( () => {
+				// ignore logging errors
+			} );
 		} catch ( e: any ) {
 			setError( e?.message || 'Generation failed.' );
 			setStatus( 'error' );
@@ -566,21 +585,18 @@ const PreviewModal = ( {
 			}
 
 			// Console log token costs
-			if ( operation.metadata && ( operation.metadata as any ).usage ) {
-				console.log(
-					'Video generation token costs:',
-					( operation.metadata as any ).usage
-				);
-			} else if (
-				operation.response &&
-				( operation.response as any ).usageMetadata
-			) {
-				console.log(
-					'Video generation token costs:',
-					( operation.response as any ).usageMetadata
-				);
+			const usage =
+				( operation.metadata as any )?.usage ||
+				( operation.response as any )?.usageMetadata ||
+				( operation.response as any )?.generateVideoResponse
+					?.usageMetadata ||
+				( operation.metadata as any )?.usageMetadata ||
+				( operation.response as any )?.usage;
+
+			if ( usage ) {
+				console.log( 'Video generation token costs:', usage );
 			} else {
-				console.log( 'Video generation metadata:', operation.metadata );
+				console.log( 'Video generation operation:', operation );
 			}
 
 			const uri = applyFilters(
@@ -627,6 +643,25 @@ const PreviewModal = ( {
 			setVideoStatus( 'done' );
 			setVideoMessage( 'Done' );
 			setVideoError( null );
+
+			const video = document.createElement( 'video' );
+			video.src = objectUrl;
+			video.onloadedmetadata = () => {
+				apiFetch( {
+					path: '/try-aura/v1/log-usage',
+					method: 'POST',
+					data: {
+						type: 'video',
+						model: 'veo-3.0-fast-generate-001',
+						prompt: videoPromptText,
+						video_seconds: video.duration,
+						generated_from: 'admin',
+						status: 'success',
+					},
+				} ).catch( () => {
+					// ignore logging errors
+				} );
+			};
 
 			doAction( 'tryaura.video_generation_done', videoBlob );
 		} catch ( e: any ) {

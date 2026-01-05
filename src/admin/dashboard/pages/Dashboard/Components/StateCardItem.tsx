@@ -1,4 +1,5 @@
 import { twMerge } from 'tailwind-merge';
+import { Tooltip } from '@wordpress/components';
 
 type Props = {
 	Icon: React.ComponentType;
@@ -37,13 +38,16 @@ function StateCardItem( {
 				className
 			) }
 		>
+			{ /*@ts-ignore*/ }
 			<Icon size={ 36 } color={ iconColor } strokeWidth={ 1 } />
 			<p className="font-[500] text-[14px] text-[rgba(99,99,99,1)] p-0 m-0">
 				{ title }
 			</p>
-			<p className="font-[500] text-[24px] leading-[32px] text-[rgba(51,51,51,1)] p-0 m-0">
-				{ value }
-			</p>
+			<Tooltip text={ value.toString() } placement="bottom-start">
+				<span className="font-[500] text-[24px] leading-[32px] text-[rgba(51,51,51,1)] p-0 m-0">
+					{ value }
+				</span>
+			</Tooltip>
 		</div>
 	);
 }

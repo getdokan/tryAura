@@ -40,7 +40,7 @@ class Assets {
 		if ( file_exists( $css_path ) ) {
 			$styles['try-aura-admin'] = array(
 				'src'     => $asset_url . 'build/admin/dashboard/style-index.css',
-				'deps'    => array(),
+				'deps'    => array( 'wp-components' ),
 				'version' => filemtime( $css_path ),
 			);
 		}

@@ -36,6 +36,7 @@ class Assets {
 		$config = array(
 			'google' => array(
 				'veo-3.0-fast-generate-001' => array(
+					'label'        => __( 'veo-3.0-fast-generate-001', 'try-aura' ),
 					'identity'     => 'video',
 					'supported'    => true,
 					'locked'       => false,

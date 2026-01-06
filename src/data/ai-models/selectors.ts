@@ -13,9 +13,53 @@ export function getProvider(
 
 export function getProviderModels(
 	state: AIStoreState,
-	providerId: string
+	providerId: string,
+	filters?: {
+		supported?: boolean;
+		locked?: boolean;
+		identity?: string;
+	}
 ): Record< string, Model > | undefined {
-	return state[ providerId ];
+	const models = state[ providerId ];
+
+	if ( ! models || ! filters ) {
+		return models;
+	}
+
+	const filteredModels: Record< string, Model > = {};
+
+	for ( const [ modelId, model ] of Object.entries( models ) ) {
+		let matches = true;
+
+		if (
+			filters.supported !== undefined &&
+			model.supported !== filters.supported
+		) {
+			matches = false;
+		}
+
+		if (
+			matches &&
+			filters.locked !== undefined &&
+			model.locked !== filters.locked
+		) {
+			matches = false;
+		}
+
+		if (
+			matches &&
+			filters.identity !== undefined &&
+			model.identity !== filters.identity
+		) {
+			matches = false;
+		}
+
+		if ( matches ) {
+			filteredModels[ modelId ] = model;
+		}
+	}
+
+	return filteredModels;
 }
 
 export function getModel(

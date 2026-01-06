@@ -1,10 +1,11 @@
-import Settings from './pages/Settings';
 import { applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import { withRouter } from '../../utils/router';
 import Layout from './Layout/Layout';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
+import Settings from './pages/Settings';
 import Dashboard from './pages/Dashboard';
+import GeminIntegrationSettings from "./pages/Settings/components/GeminIntegrationSettings";
 
 export type TryAuraAdminRoute = {
 	id: string;
@@ -24,6 +25,11 @@ const getAdminRoutes = () => {
 			id: 'settings',
 			element: <Settings />,
 			path: '/settings',
+		},
+		{
+			id: 'settings/gemini',
+			element: <GeminIntegrationSettings />,
+			path: '/settings/gemini',
 		},
 	];
 

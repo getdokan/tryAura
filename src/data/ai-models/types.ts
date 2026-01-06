@@ -20,6 +20,7 @@ export interface Parameter {
 }
 
 export interface Model {
+	label: string;
 	identity: string;
 	supported: boolean;
 	locked: boolean;

@@ -34,5 +34,8 @@ export interface Provider {
 }
 
 export interface AIStoreState {
-	[ providerId: string ]: Provider;
+	aiProviders: Record< string, Provider >;
+	defaultProvider: string;
+	defaultImageModel: string;
+	defaultVideoModel: string;
 }

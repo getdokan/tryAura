@@ -1,5 +1,5 @@
 import ImagePreview from './ImagePreview';
-import { __ } from "@wordpress/i18n";
+import { __ } from '@wordpress/i18n';
 
 function UseCamera( {
 	cameraActive,

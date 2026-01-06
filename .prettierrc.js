@@ -1,5 +1,5 @@
-const defaultConfig = require('@wordpress/prettier-config');
+const defaultConfig = require( '@wordpress/prettier-config' );
 
 module.exports = {
-  ...defaultConfig,
-}
+	...defaultConfig,
+};

@@ -199,13 +199,23 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		}
 		Promise.all( readers )
 			.then( ( results ) => {
-				doAction( 'try-aura.photo_selected_before', { files, results } );
+				doAction( 'try-aura.photo_selected_before', {
+					files,
+					results,
+				} );
 				setUserImages( results );
-				setMessage( __( 'Photo(s) selected. Click Try to generate.', 'try-aura' ) );
+				setMessage(
+					__(
+						'Photo(s) selected. Click Try to generate.',
+						'try-aura'
+					)
+				);
 				doAction( 'try-aura.photo_selected_after', { files, results } );
 			} )
 			.catch( () => {
-				setError( __( 'Failed to read one or more files.', 'try-aura' ) );
+				setError(
+					__( 'Failed to read one or more files.', 'try-aura' )
+				);
 			} );
 		try {
 			if ( e?.target ) {
@@ -245,7 +255,10 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			const data = comma >= 0 ? img.substring( comma + 1 ) : img;
 			return { mimeType, data };
 		}
-		const resp = await apiFetch( { url: img, parse: false } ) as Response;
+		const resp = ( await apiFetch( {
+			url: img,
+			parse: false,
+		} ) ) as Response;
 		const blob = await resp.blob();
 		const mimeType = blob.type || 'image/png';
 		const base64 = await new Promise< string >( ( resolve, reject ) => {
@@ -311,6 +324,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				);
 			}
 
+			// @ts-ignore
+			const productId = window?.tryAura?.productId;
+
 			const data = ( await apiFetch( {
 				url: `${ restUrl.replace( /\/?$/, '/' ) }generate/v1/image`,
 				method: 'POST',
@@ -320,6 +336,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				data: {
 					prompt: promptText,
 					images,
+					object_id: productId,
+					object_type: 'product',
+					generated_from: 'tryon',
 				},
 			} ) ) as any;
 
@@ -329,7 +348,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				setStatus( 'done' );
 				setMessage( __( 'Done', 'try-aura' ) );
 			} else {
-				throw new Error( __( 'Model did not return an image.', 'try-aura' ) );
+				throw new Error(
+					__( 'Model did not return an image.', 'try-aura' )
+				);
 			}
 		} catch ( e: any ) {
 			setError( e?.message || __( 'Generation failed.', 'try-aura' ) );
@@ -340,9 +361,15 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 
 	const addToCart = () => {
 		// @ts-ignore
-		const productId = applyFilters( 'tryaura.tryon.product_id', window?.tryAura?.productId );
+		const productId = applyFilters(
+			'tryaura.tryon.product_id',
+			window?.tryAura?.productId
+		);
 		if ( productId ) {
-			window.location.href = applyFilters( 'tryaura.tryon.add_to_cart_url', `?add-to-cart=${ productId }` );
+			window.location.href = applyFilters(
+				'tryaura.tryon.add_to_cart_url',
+				`?add-to-cart=${ productId }`
+			);
 		}
 	};
 
@@ -354,7 +381,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 	return (
 		<>
 			<div className="ai-enhancer-modal fixed inset-[0px] bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[200000]">
-				<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto">
+				<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto max-h-[90vh] overflow-y-auto">
 					<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] p-[16px_24px]">
 						<h2 className="m-0 font-[700] font-bold text-[18px] text-[#25252D]">
 							{ __( 'Try-On Product', 'try-aura' ) }
@@ -368,7 +395,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 						</button>
 					</div>
 
-					<div className="flex flex-row gap-[24px] mt-[24px] pl-[24px] pr-[24px]">
+					<div className="flex flex-col sm:flex-row gap-[24px] mt-[24px] pl-[24px] pr-[24px]">
 						<UserImageSection
 							onFileChange={ onFileChange }
 							userImages={ userImages }
@@ -394,12 +421,13 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 							generatedUrl={ generatedUrl }
 							message={ message }
 							isBusy={ isBusy }
+							status={ status }
 						/>
 					</div>
 					{ /* Actions */ }
 					<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
 						<button
-							className="bg-[#000000] text-white px-[50px] py-[10px] cursor-pointer font-[500] text-[14px]"
+							className="bg-[#000000] text-white px-[10px] sm:px-[50px] py-[10px] cursor-pointer font-[500] text-[14px]"
 							onClick={ doTry }
 							disabled={
 								isBusy ||
@@ -412,7 +440,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 								: __( 'Try On', 'try-aura' ) }
 						</button>
 						<button
-							className="bg-white text-black px-[50px] py-[10px] cursor-pointer border border-[#E9E9E9] font-[500] text-[14px]"
+							className="bg-white text-black px-[10px] sm:px-[50px] py-[10px] cursor-pointer border border-[#E9E9E9] font-[500] text-[14px]"
 							onClick={ addToCart }
 						>
 							{ __( 'Add to Cart', 'try-aura' ) }

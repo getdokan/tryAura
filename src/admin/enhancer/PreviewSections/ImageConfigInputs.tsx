@@ -1,3 +1,5 @@
+import { useSelect, useDispatch } from '@wordpress/data';
+import { STORE_NAME } from '../store';
 import { Button, ModernSelect } from '../../../components';
 import { __ } from '@wordpress/i18n';
 import {
@@ -12,18 +14,30 @@ import {
 	RectangleHorizontal,
 	RectangleVertical,
 } from 'lucide-react';
-import ConfigFooter from "./ConfigFooter";
+import ConfigFooter from './ConfigFooter';
 
-function ImageConfigInputs( {
-	isBlockEditorPage,
-	isWoocommerceProductPage,
-	imageConfigData,
-	setImageConfigData,
-	generatedUrl,
-	doGenerate,
-	isBusy,
-	uploading,
-} ) {
+function ImageConfigInputs( { doGenerate } ) {
+	const {
+		isBlockEditorPage,
+		isWoocommerceProductPage,
+		imageConfigData,
+		generatedUrl,
+		isBusy,
+		uploading,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return {
+			isBlockEditorPage: store.getIsBlockEditorPage(),
+			isWoocommerceProductPage: store.getIsWoocommerceProductPage(),
+			imageConfigData: store.getImageConfigData(),
+			generatedUrl: store.getGeneratedUrl(),
+			isBusy: store.isBusy(),
+			uploading: store.getUploading(),
+		};
+	}, [] );
+
+	const { setImageConfigData } = useDispatch( STORE_NAME );
+
 	return (
 		<>
 			{ /* Controls */ }
@@ -33,7 +47,6 @@ function ImageConfigInputs( {
 						value={ imageConfigData?.backgroundType ?? '' }
 						onChange={ ( val ) =>
 							setImageConfigData( {
-								...imageConfigData,
 								backgroundType: val,
 							} )
 						}
@@ -66,7 +79,6 @@ function ImageConfigInputs( {
 						value={ imageConfigData?.styleType ?? '' }
 						onChange={ ( val ) =>
 							setImageConfigData( {
-								...imageConfigData,
 								styleType: val,
 							} )
 						}
@@ -98,7 +110,6 @@ function ImageConfigInputs( {
 					variant="list"
 					onChange={ ( val ) =>
 						setImageConfigData( {
-							...imageConfigData,
 							imageSize: val,
 						} )
 					}
@@ -131,20 +142,26 @@ function ImageConfigInputs( {
 				} }
 			>
 				<span className="w-[500] text-[14px] mb-[8px]">
-					{ __( 'Prompt (Optional)' ) }
+					{ __(
+						isBlockEditorPage
+							? 'Prompt'
+							: 'Prompt (Optional)'
+						) }
 				</span>
 				<textarea
 					className="border border-[#E9E9E9] placeholder-[#A5A5AA]"
+					required
 					value={ imageConfigData?.optionalPrompt ?? '' }
 					onChange={ ( e: any ) =>
 						setImageConfigData( {
-							...imageConfigData,
 							optionalPrompt: e.target.value,
 						} )
 					}
 					rows={ 3 }
 					placeholder={ __(
-						'Add any specific instructions (optional)',
+						isBlockEditorPage
+							? 'Add any specific instructions'
+							: 'Add any specific instructions (optional)',
 						'tryaura'
 					) }
 				/>
@@ -156,6 +173,8 @@ function ImageConfigInputs( {
 				isBusy={ isBusy }
 				uploading={ uploading }
 				downloadName="enhanced.png"
+				isBlockEditorPage = {isBlockEditorPage}
+				optionalPrompt = {imageConfigData?.optionalPrompt ?? ''}
 			/>
 		</>
 	);

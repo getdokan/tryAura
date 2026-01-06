@@ -1,4 +1,7 @@
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
+import apiFetch from '@wordpress/api-fetch';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { STORE_NAME } from './store';
 import { GoogleGenAI } from '@google/genai';
 import { Button } from '../../components';
 import { __ } from '@wordpress/i18n';
@@ -7,6 +10,7 @@ import OriginalImage from './PreviewSections/OriginalImage';
 import ConfigSettings from './PreviewSections/ConfigSettings';
 import Output from './PreviewSections/Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
+import toast, { Toaster } from 'react-hot-toast';
 
 declare const wp: any;
 
@@ -54,44 +58,56 @@ const PreviewModal = ( {
 	onClose,
 	supportsVideo,
 }: PreviewProps ) => {
-	const [ isBlockEditorPage, setIsBlockEditorPage ] = useState( false );
-	const [ isWoocommerceProductPage, setIsWoocommerceProductPage ] =
-		useState( false );
-	const [ status, setStatus ] = useState<
-		'idle' | 'fetching' | 'generating' | 'parsing' | 'done' | 'error'
-	>( 'idle' );
-	const [ message, setMessage ] = useState< string >(
-		__( 'Ready to generate', 'try-aura' )
+	const {
+		generatedUrl,
+		uploading,
+		videoUrl,
+		videoUploading,
+		videoConfigData,
+		imageConfigData,
+		activeTab,
+		isBusy,
+		isVideoBusy,
+		videoSource,
+		selectedImageIndices,
+		selectedVideoIndices,
+	} = useSelect(
+		( select ) => {
+			const store = select( STORE_NAME );
+			return {
+				generatedUrl: store.getGeneratedUrl(),
+				uploading: store.getUploading(),
+				videoUrl: store.getVideoUrl(),
+				videoUploading: store.getVideoUploading(),
+				videoConfigData: store.getVideoConfigData(),
+				imageConfigData: store.getImageConfigData(),
+				activeTab: store.getActiveTab(),
+				isBusy: store.isBusy(),
+				isVideoBusy: store.isVideoBusy(),
+				videoSource: store.getVideoSource(),
+				selectedImageIndices: store.getSelectedImageIndices(),
+				selectedVideoIndices: store.getSelectedVideoIndices(),
+			};
+		},
+		[ STORE_NAME ]
 	);
-	const [ generatedUrl, setGeneratedUrl ] = useState< string | null >( null );
-	const [ error, setError ] = useState< string | null >( null );
-	const [ uploading, setUploading ] = useState< boolean >( false );
-	// Video generation state
-	const [ videoStatus, setVideoStatus ] = useState<
-		'idle' | 'generating' | 'polling' | 'downloading' | 'done' | 'error'
-	>( 'idle' );
-	const [ videoMessage, setVideoMessage ] = useState< string >(
-		__( 'Ready to generate video', 'try-aura' )
-	);
-	const [ videoUrl, setVideoUrl ] = useState< string | null >( null );
-	const [ videoError, setVideoError ] = useState< string | null >( null );
-	const [ videoUploading, setVideoUploading ] = useState< boolean >( false );
-	const [ videoConfigData, setVideoConfigData ] = useState( {
-		styles: 'studio',
-		cameraMotion: 'zoom in',
-		aspectRatio: '1:1',
-		duration: '5 sec',
-		optionalPrompt: '',
-	} );
-	const [ imageConfigData, setImageConfigData ] = useState( {
-		imageSize: '1:1',
-		backgroundType: 'studio',
-		styleType: 'photo-realistic',
-		optionalPrompt: '',
-	} );
-	const [ activeTab, setActiveTab ] = useState< 'image' | 'video' >(
-		'image'
-	);
+
+	const {
+		setIsBlockEditorPage,
+		setIsWoocommerceProductPage,
+		setStatus,
+		setMessage,
+		setGeneratedUrl,
+		setError,
+		setUploading,
+		setVideoStatus,
+		setVideoMessage,
+		setVideoUrl,
+		setVideoError,
+		setVideoUploading,
+		resetState,
+	} = useDispatch( STORE_NAME );
+
 	const multiple = imageUrls.length > 1;
 
 	useEffect( () => {
@@ -128,22 +144,13 @@ const PreviewModal = ( {
 
 	// Reset state when image changes
 	useEffect( () => {
-		setStatus( 'idle' );
-		setMessage( __( 'Ready to generate', 'try-aura' ) );
-		setGeneratedUrl( null );
-		setError( null );
-		// Reset video state too when images change
-		setVideoStatus( 'idle' );
-		setVideoMessage( __( 'Ready to generate video', 'try-aura' ) );
 		if ( videoUrl && videoUrl.startsWith( 'blob:' ) ) {
 			try {
 				URL.revokeObjectURL( videoUrl );
 			} catch {}
 		}
-		setVideoUrl( null );
-		setVideoError( null );
-		setActiveTab( 'image' );
-	}, [ imageUrls ] );
+		resetState();
+	}, [ imageUrls, resetState ] );
 
 	// Revoke video blob URL on unmount/change to free memory
 	useEffect( () => {
@@ -158,6 +165,17 @@ const PreviewModal = ( {
 
 	const doGenerate = async () => {
 		try {
+			setError( null );
+			const selectedUrls = imageUrls.filter( ( _, idx ) =>
+				selectedImageIndices.includes( idx )
+			);
+
+			if ( selectedUrls.length === 0 ) {
+				throw new Error(
+					__( 'Please select at least one image.', 'try-aura' )
+				);
+			}
+
 			const apiKey = await resolveApiKey();
 			if ( ! apiKey ) {
 				throw new Error(
@@ -171,7 +189,7 @@ const PreviewModal = ( {
 			setStatus( 'fetching' );
 			setMessage( __( 'Fetching images…', 'try-aura' ) );
 			const encodedImages = await Promise.all(
-				imageUrls.map( async ( url ) => {
+				selectedUrls.map( async ( url ) => {
 					const resp = await fetch( url, {
 						credentials: 'same-origin',
 					} );
@@ -207,7 +225,7 @@ const PreviewModal = ( {
 					? `\n\nAdditional instruction from user: ${ imageConfigData?.optionalPrompt.trim() }`
 					: '';
 			const multiHint =
-				imageUrls.length > 1
+				selectedUrls.length > 1
 					? applyFilters(
 							'tryaura.ai_enhance_multi_image_hint',
 							'\n\nNote: Multiple input images provided. If a person/model photo and separate product images are present, compose the result with the model wearing/using the product(s) while keeping the background as requested.'
@@ -258,6 +276,29 @@ const PreviewModal = ( {
 			setStatus( 'done' );
 			setMessage( 'Done' );
 			setError( null );
+
+			const usage = response?.usageMetadata;
+			const postId = window?.tryAura?.postId;
+			const postType = window?.tryAura?.postType;
+
+			apiFetch( {
+				path: '/try-aura/v1/log-usage',
+				method: 'POST',
+				data: {
+					type: 'image',
+					model: 'gemini-2.5-flash-image-preview',
+					prompt: promptText,
+					input_tokens: usage?.promptTokenCount,
+					output_tokens: usage?.responseTokenCount,
+					total_tokens: usage?.totalTokenCount,
+					generated_from: 'admin',
+					object_id: postId,
+					object_type: postType,
+					status: 'success',
+				},
+			} ).catch( () => {
+				// ignore logging errors
+			} );
 		} catch ( e: any ) {
 			setError( e?.message || 'Generation failed.' );
 			setStatus( 'error' );
@@ -418,12 +459,29 @@ const PreviewModal = ( {
 
 	const doGenerateVideo = async () => {
 		try {
-			if ( ! generatedUrl ) {
-				setVideoError(
-					__( 'Please generate an image first.', 'try-aura' )
-				);
-				return;
+			let sourceUrl = '';
+			if ( videoSource === 'generated-image' ) {
+				if ( ! generatedUrl ) {
+					setVideoError(
+						__( 'Please generate an image first.', 'try-aura' )
+					);
+					return;
+				}
+				sourceUrl = generatedUrl;
+			} else {
+				if ( ! selectedVideoIndices || ! selectedVideoIndices.length ) {
+					setVideoError(
+						__(
+							'Please select at least one original image.',
+							'try-aura'
+						)
+					);
+					return;
+				}
+				// Use the first selected original image as the reference
+				sourceUrl = imageUrls[ selectedVideoIndices[ 0 ] ];
 			}
+
 			setVideoError( null );
 			setVideoStatus( 'generating' );
 			setVideoMessage( __( 'Starting video generation…', 'try-aura' ) );
@@ -445,33 +503,32 @@ const PreviewModal = ( {
 					? `\n\nAdditional instruction from user: ${ videoConfigData?.optionalPrompt.trim() }`
 					: ''
 			);
-			const { styles, cameraMotion, aspectRatio, duration } =
-				videoConfigData;
+			const { styles, cameraMotion, aspectRatio } = videoConfigData;
 			const videoPromptText = applyFilters(
 				'tryaura.video_generation_prompt',
-				`Create a smooth ${ duration } product showcase video based on the generated try-on image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`
+				videoSource === 'generated-image'
+					? `Create a smooth product showcase video based on the generated try-on image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`
+					: `Create a smooth product showcase video based on the provided original image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`
 			);
-			// Extract base64 from the generated data URL to avoid stack overflow from large buffers
-			let generatedImageByteBase64 = '';
-			let generatedImageMime = 'image/png';
-			if ( generatedUrl.startsWith( 'data:' ) ) {
-				const commaIdx = generatedUrl.indexOf( ',' );
-				const header = generatedUrl.substring(
+			// Extract base64 from the source URL
+			let sourceImageByteBase64 = '';
+			let sourceImageMime = 'image/png';
+			if ( sourceUrl.startsWith( 'data:' ) ) {
+				const commaIdx = sourceUrl.indexOf( ',' );
+				const header = sourceUrl.substring(
 					0,
 					Math.max( 0, commaIdx )
 				);
 				const match = /^data:([^;]+)/.exec( header );
-				generatedImageMime =
+				sourceImageMime =
 					match && match[ 1 ] ? match[ 1 ] : 'image/png';
-				generatedImageByteBase64 =
+				sourceImageByteBase64 =
 					commaIdx >= 0
-						? generatedUrl.substring( commaIdx + 1 )
-						: generatedUrl;
+						? sourceUrl.substring( commaIdx + 1 )
+						: sourceUrl;
 			} else {
-				const blob = await fetch( generatedUrl ).then( ( r ) =>
-					r.blob()
-				);
-				generatedImageMime = blob.type || 'image/png';
+				const blob = await fetch( sourceUrl ).then( ( r ) => r.blob() );
+				sourceImageMime = blob.type || 'image/png';
 				const dataUrl: string = await new Promise(
 					( resolve, reject ) => {
 						const reader = new FileReader();
@@ -482,57 +539,53 @@ const PreviewModal = ( {
 					}
 				);
 				const commaIdx2 = dataUrl.indexOf( ',' );
-				generatedImageByteBase64 =
+				sourceImageByteBase64 =
 					commaIdx2 >= 0
 						? dataUrl.substring( commaIdx2 + 1 )
 						: dataUrl;
 			}
-			// Start long-running video generation operation via REST API
-			const BASE_URL = applyFilters(
-				'tryaura.video_generation_base_url',
-				'https://generativelanguage.googleapis.com/v1beta'
-			);
-			const startRes = await fetch(
-				applyFilters(
-					'tryaura.video_generation_start_url',
-					`${ BASE_URL }/models/veo-3.0-fast-generate-001:predictLongRunning`
-				),
-				applyFilters( 'tryaura.video_generation_start_fetch_options', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'x-goog-api-key': apiKey,
+			// Start long-running video generation operation via @google/genai SDK
+			const ai = new GoogleGenAI( { apiKey } );
+			let operation: any = await ( ai as any ).models.generateVideos(
+				applyFilters( 'tryaura.video_generation_params', {
+					model: 'veo-3.0-fast-generate-001',
+					source: {
+						prompt: videoPromptText,
+						image: {
+							imageBytes: sourceImageByteBase64,
+							mimeType: sourceImageMime,
+						},
 					},
-					body: JSON.stringify( {
-						instances: [
-							{
-								prompt: videoPromptText,
-								image: {
-									bytesBase64Encoded:
-										generatedImageByteBase64,
-									mimeType: generatedImageMime,
-								},
-							},
-						],
-					} ),
+					config: {
+						// aspectRatio,
+						// ASPECT RATIO: '16:9' or '9:16'
+						aspectRatio,
+
+						// RESOLUTION: '720p' or '1080p'
+						// resolution: '720p',
+
+						// DURATION: Supported 5s or 10s (model dependent, typically 8s for Veo 3)
+						// durationSeconds: 8,
+
+						// FPS: Fixed at 24 for this model
+						// fps: 24,
+
+						// NEGATIVE PROMPT: Elements to exclude
+						negativePrompt: 'blurry, low quality, distorted faces',
+
+						// SEED: For deterministic output (0 to 4,294,967,295)
+						// seed: 12345,
+
+						// SAFETY: Person generation settings
+						// personGeneration: 'allow_adult', // options: 'allow_adult', 'disallow'
+
+						// RESULTS: Number of videos to generate (1-4)
+						numberOfVideos: 1,
+					},
 				} )
 			);
-			doAction( 'tryaura.video_generation_start', startRes );
-			if ( ! startRes.ok ) {
-				const t = await startRes.text();
-				doAction( 'tryaura.video_generation_start_failed', startRes );
-				throw new Error( t || 'Failed to start video generation.' );
-			}
-			const startJson = await startRes.json();
-			const operationName = startJson?.name;
-			if ( ! operationName ) {
-				doAction( 'tryaura.video_generation_start_failed', startJson );
-				throw new Error(
-					'No operation name returned from video generation.'
-				);
-			}
 
-			doAction( 'tryaura.video_generation_start_success', startJson );
+			doAction( 'tryaura.video_generation_start', operation );
 
 			setVideoStatus( 'polling' );
 			setVideoMessage(
@@ -541,33 +594,19 @@ const PreviewModal = ( {
 					'try-aura'
 				)
 			);
-			let finalJson: any = null;
+
 			for ( let i = 0; i < 60; i++ ) {
-				// up to ~10 minutes
-				await new Promise( ( r ) => setTimeout( r, 10000 ) );
-				const statusRes = await fetch(
-					`${ BASE_URL }/${ operationName }`,
-					{
-						headers: { 'x-goog-api-key': apiKey },
-					}
-				);
-				if ( ! statusRes.ok ) {
-					const t = await statusRes.text();
-					throw new Error(
-						t ||
-							__(
-								'Failed to poll video generation status.',
-								'try-aura'
-							)
-					);
-				}
-				const json = await statusRes.json();
-				if ( json?.done ) {
-					finalJson = json;
+				if ( operation.done ) {
 					break;
 				}
+				// up to ~10 minutes
+				await new Promise( ( r ) => setTimeout( r, 10000 ) );
+				operation = await ( ai as any ).operations.getVideosOperation( {
+					operation,
+				} );
 			}
-			if ( ! finalJson ) {
+
+			if ( ! operation.done ) {
 				throw new Error(
 					__( 'Timed out waiting for video generation.', 'try-aura' )
 				);
@@ -575,10 +614,10 @@ const PreviewModal = ( {
 
 			const uri = applyFilters(
 				'tryaura.video_generation_download_uri',
-				finalJson?.response?.generateVideoResponse
+				operation.response?.generateVideoResponse
 					?.generatedSamples?.[ 0 ]?.video?.uri ||
-					finalJson?.response?.generatedVideos?.[ 0 ]?.video?.uri ||
-					finalJson?.response?.generatedVideos?.[ 0 ]?.uri
+					operation.response?.generatedVideos?.[ 0 ]?.video?.uri ||
+					operation.response?.generatedVideos?.[ 0 ]?.uri
 			);
 
 			if ( ! uri ) {
@@ -617,6 +656,30 @@ const PreviewModal = ( {
 			setVideoStatus( 'done' );
 			setVideoMessage( 'Done' );
 			setVideoError( null );
+
+			const video = document.createElement( 'video' );
+			video.src = objectUrl;
+			video.onloadedmetadata = () => {
+				const postId = window?.tryAura?.postId;
+				const postType = window?.tryAura?.postType;
+
+				apiFetch( {
+					path: '/try-aura/v1/log-usage',
+					method: 'POST',
+					data: {
+						type: 'video',
+						model: 'veo-3.0-fast-generate-001',
+						prompt: videoPromptText,
+						video_seconds: video.duration,
+						generated_from: 'admin',
+						object_id: postId,
+						object_type: postType,
+						status: 'success',
+					},
+				} ).catch( () => {
+					// ignore logging errors
+				} );
+			};
 
 			doAction( 'tryaura.video_generation_done', videoBlob );
 		} catch ( e: any ) {
@@ -690,43 +753,14 @@ const PreviewModal = ( {
 				);
 			}
 
+			toast.success( __( 'Video added to Media Library.', 'try-aura' ) );
+
 			doAction(
 				'tryaura.video_generation_upload_success',
 				filename,
 				blob,
 				newId
 			);
-
-			// Select it in the media frame (do not set featured image for videos)
-			try {
-				const frameObj =
-					wp?.media?.frame ||
-					( wp?.media?.featuredImage?.frame
-						? wp.media.featuredImage.frame()
-						: null );
-				if ( frameObj ) {
-					const state =
-						typeof frameObj.state === 'function'
-							? frameObj.state()
-							: null;
-					const selection = state?.get?.( 'selection' );
-					if ( selection ) {
-						const att = wp?.media?.model?.Attachment?.get
-							? wp.media.model.Attachment.get( newId )
-							: null;
-						if ( att?.fetch ) {
-							try {
-								await att.fetch();
-							} catch {}
-						}
-						if ( att ) {
-							selection.reset( [ att ] );
-						}
-					}
-				}
-			} catch {}
-
-			onClose();
 		} catch ( e: any ) {
 			setVideoError(
 				e?.message || 'Failed to add video to Media Library.'
@@ -736,21 +770,12 @@ const PreviewModal = ( {
 		}
 	};
 
-	const isBusy =
-		status === 'fetching' ||
-		status === 'generating' ||
-		status === 'parsing';
-	const isVideoBusy =
-		videoStatus === 'generating' ||
-		videoStatus === 'polling' ||
-		videoStatus === 'downloading';
-
 	const disabledImageAddToMedia = isBusy || uploading || ! generatedUrl;
 	const disabledVideoAddToMedia = isVideoBusy || videoUploading || ! videoUrl;
 
 	return (
-		<div className="ai-enhancer-modal fixed inset-[0px] bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[200000]">
-			<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto">
+		<div className="ai-enhancer-modal fixed inset-[0px] bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[160000]">
+			<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto max-h-[90vh] overflow-y-auto">
 				<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] pt-[16px] pl-[24px] pr-[24px]">
 					<h2 className="mt-0">
 						{ __( 'AI Product Image Generation', 'try-aura' ) }
@@ -764,45 +789,21 @@ const PreviewModal = ( {
 					</button>
 				</div>
 
-				<div className="flex flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
+				<div className="flex flex-col sm:flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
 					<OriginalImage
 						imageUrls={ imageUrls }
 						multiple={ multiple }
 					/>
 					<ConfigSettings
 						supportsVideo={ supportsVideo }
-						activeTab={ activeTab }
-						setActiveTab={ setActiveTab }
-						isBlockEditorPage={ isBlockEditorPage }
-						isWoocommerceProductPage={ isWoocommerceProductPage }
-						generatedUrl={ generatedUrl }
-						videoUrl={ videoUrl }
 						doGenerate={ doGenerate }
-						isBusy={ isBusy }
 						doGenerateVideo={ doGenerateVideo }
-						isVideoBusy={ isVideoBusy }
-						uploading={ uploading }
-						videoUploading={ videoUploading }
-						videoConfigData={ videoConfigData }
-						setVideoConfigData={ setVideoConfigData }
-						imageConfigData={ imageConfigData }
-						setImageConfigData={ setImageConfigData }
 					/>
-					<Output
-						generatedUrl={ generatedUrl }
-						supportsVideo={ supportsVideo }
-						activeTab={ activeTab }
-						setActiveTab={ setActiveTab }
-						message={ message }
-						videoUrl={ videoUrl }
-						videoMessage={ videoMessage }
-						videoError={ videoError }
-						error={ error }
-					/>
+					<Output supportsVideo={ supportsVideo } />
 				</div>
 				{ /* Actions */ }
 				<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
-					{ generatedUrl && (
+					{ ( generatedUrl || videoUrl ) && (
 						<Button
 							onClick={
 								activeTab === 'image'
@@ -834,6 +835,8 @@ const PreviewModal = ( {
 					</Button>
 				</div>
 			</div>
+
+			<Toaster position="bottom-right" />
 		</div>
 	);
 };

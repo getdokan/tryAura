@@ -199,13 +199,23 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		}
 		Promise.all( readers )
 			.then( ( results ) => {
-				doAction( 'try-aura.photo_selected_before', { files, results } );
+				doAction( 'try-aura.photo_selected_before', {
+					files,
+					results,
+				} );
 				setUserImages( results );
-				setMessage( __( 'Photo(s) selected. Click Try to generate.', 'try-aura' ) );
+				setMessage(
+					__(
+						'Photo(s) selected. Click Try to generate.',
+						'try-aura'
+					)
+				);
 				doAction( 'try-aura.photo_selected_after', { files, results } );
 			} )
 			.catch( () => {
-				setError( __( 'Failed to read one or more files.', 'try-aura' ) );
+				setError(
+					__( 'Failed to read one or more files.', 'try-aura' )
+				);
 			} );
 		try {
 			if ( e?.target ) {
@@ -245,7 +255,10 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			const data = comma >= 0 ? img.substring( comma + 1 ) : img;
 			return { mimeType, data };
 		}
-		const resp = await apiFetch( { url: img, parse: false } ) as Response;
+		const resp = ( await apiFetch( {
+			url: img,
+			parse: false,
+		} ) ) as Response;
 		const blob = await resp.blob();
 		const mimeType = blob.type || 'image/png';
 		const base64 = await new Promise< string >( ( resolve, reject ) => {
@@ -311,6 +324,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				);
 			}
 
+			// @ts-ignore
+			const productId = window?.tryAura?.productId;
+
 			const data = ( await apiFetch( {
 				url: `${ restUrl.replace( /\/?$/, '/' ) }generate/v1/image`,
 				method: 'POST',
@@ -320,6 +336,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				data: {
 					prompt: promptText,
 					images,
+					object_id: productId,
+					object_type: 'product',
+					generated_from: 'tryon',
 				},
 			} ) ) as any;
 
@@ -329,7 +348,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				setStatus( 'done' );
 				setMessage( __( 'Done', 'try-aura' ) );
 			} else {
-				throw new Error( __( 'Model did not return an image.', 'try-aura' ) );
+				throw new Error(
+					__( 'Model did not return an image.', 'try-aura' )
+				);
 			}
 		} catch ( e: any ) {
 			setError( e?.message || __( 'Generation failed.', 'try-aura' ) );
@@ -340,9 +361,15 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 
 	const addToCart = () => {
 		// @ts-ignore
-		const productId = applyFilters( 'tryaura.tryon.product_id', window?.tryAura?.productId );
+		const productId = applyFilters(
+			'tryaura.tryon.product_id',
+			window?.tryAura?.productId
+		);
 		if ( productId ) {
-			window.location.href = applyFilters( 'tryaura.tryon.add_to_cart_url', `?add-to-cart=${ productId }` );
+			window.location.href = applyFilters(
+				'tryaura.tryon.add_to_cart_url',
+				`?add-to-cart=${ productId }`
+			);
 		}
 	};
 
@@ -394,6 +421,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 							generatedUrl={ generatedUrl }
 							message={ message }
 							isBusy={ isBusy }
+							status={ status }
 						/>
 					</div>
 					{ /* Actions */ }

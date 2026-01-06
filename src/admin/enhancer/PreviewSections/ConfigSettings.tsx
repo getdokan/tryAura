@@ -1,28 +1,22 @@
+import { useSelect, useDispatch } from '@wordpress/data';
+import { STORE_NAME } from '../store';
 import GroupButton from '../../../components/GroupButton';
 import { __ } from '@wordpress/i18n';
-import { Button } from '../../../components';
 import ImageConfigInputs from './ImageConfigInputs';
 import VideoConfigInputs from './VideoConfigInputs';
 
-function ConfigSettings( {
-	supportsVideo,
-	activeTab,
-	setActiveTab,
-	isBlockEditorPage,
-	isWoocommerceProductPage,
-	generatedUrl,
-	videoUrl,
-	doGenerate,
-	isBusy,
-	doGenerateVideo,
-	isVideoBusy,
-	uploading,
-	videoUploading,
-	videoConfigData,
-	setVideoConfigData,
-	imageConfigData,
-	setImageConfigData,
-} ) {
+function ConfigSettings( { supportsVideo, doGenerate, doGenerateVideo } ) {
+	const { activeTab, isBusy, isVideoBusy } = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return {
+			activeTab: store.getActiveTab(),
+			isBusy: store.isBusy(),
+			isVideoBusy: store.isVideoBusy(),
+		};
+	}, [] );
+
+	const { setActiveTab } = useDispatch( STORE_NAME );
+
 	return (
 		<div className="w-full flex flex-col gap-[32px]">
 			{ /* Tabs for Generated content */ }
@@ -47,26 +41,9 @@ function ConfigSettings( {
 
 			<div className="flex flex-col gap-[12px]">
 				{ activeTab === 'image' ? (
-					<ImageConfigInputs
-						isBlockEditorPage={ isBlockEditorPage }
-						isWoocommerceProductPage={ isWoocommerceProductPage }
-						imageConfigData={ imageConfigData }
-						setImageConfigData={ setImageConfigData }
-						generatedUrl={ generatedUrl }
-						doGenerate={ doGenerate }
-						isBusy={ isBusy }
-						uploading={ uploading }
-					/>
+					<ImageConfigInputs doGenerate={ doGenerate } />
 				) : (
-					<VideoConfigInputs
-						videoConfigData={ videoConfigData }
-						setVideoConfigData={ setVideoConfigData }
-						doGenerateVideo={ doGenerateVideo }
-						isVideoBusy={ isVideoBusy }
-						videoUploading={ videoUploading }
-						videoUrl={ videoUrl }
-						isBlockEditorPage = { isBlockEditorPage }
-					/>
+					<VideoConfigInputs doGenerateVideo={ doGenerateVideo } />
 				) }
 			</div>
 		</div>

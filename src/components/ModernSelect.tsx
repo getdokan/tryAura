@@ -94,9 +94,11 @@ const ModernSelect = ( {
 									className={ twMerge(
 										'text-[#828282] h-auto rounded-[3px] flex gap-[4px] hover:text-primary hover:bg-[#EFEAFF] cursor-pointer',
 										opt.value === value
-										? 'bg-neutral-100'
-										: 'bg-white',
-										variant === 'list' ? 'w-full flex-row p-[8px_12px]' : 'w-[78.25px] p-[12px] flex-col items-center justify-center border border-transparent hover:border-primary'
+											? 'bg-neutral-100'
+											: 'bg-white',
+										variant === 'list'
+											? 'w-full flex-row p-[8px_12px]'
+											: 'w-[78.25px] p-[12px] flex-col items-center justify-center border border-transparent hover:border-primary'
 									) }
 									onClick={ () => handleSelect( opt.value ) }
 								>

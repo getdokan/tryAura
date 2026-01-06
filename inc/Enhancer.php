@@ -29,14 +29,20 @@ class Enhancer {
 			return;
 		}
 
+		global $post;
+		$post_id   = $post ? $post->ID : 0;
+		$post_type = $post ? $post->post_type : '';
+
 		// Pass settings (API key, REST URL, nonce) to the enhancer UI.
 		wp_localize_script(
 			'try-aura-enhancer',
 			'tryAura',
 			array(
-				'restUrl' => esc_url_raw( rest_url() ),
-				'nonce'   => wp_create_nonce( 'wp_rest' ),
-				'apiKey'  => get_option( 'try_aura_api_key', '' ),
+				'restUrl'  => esc_url_raw( rest_url() ),
+				'nonce'    => wp_create_nonce( 'wp_rest' ),
+				'apiKey'   => get_option( 'try_aura_api_key', '' ),
+				'postId'   => $post_id,
+				'postType' => $post_type,
 			)
 		);
 

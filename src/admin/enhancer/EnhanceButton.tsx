@@ -1,7 +1,8 @@
 import PreviewModal from './PreviewModal';
 import { __ } from '@wordpress/i18n';
-import { createRoot, useEffect, useRef, useState } from '@wordpress/element';
+import { useEffect, useRef, useState, createPortal } from '@wordpress/element';
 import { applyFilters, doAction } from '@wordpress/hooks';
+import toast, { Toaster } from 'react-hot-toast';
 
 const EnhanceButton = () => {
 	const [ open, setOpen ] = useState( false );
@@ -9,7 +10,8 @@ const EnhanceButton = () => {
 	const [ attachmentIds, setAttachmentIds ] = useState< number[] >( [] );
 	const [ loading, setLoading ] = useState( false );
 	const modalContainerRef = useRef< HTMLDivElement | null >( null );
-	const modalRootRef = useRef< any >( null );
+	const [ portalContainer, setPortalContainer ] =
+		useState< HTMLDivElement | null >( null );
 
 	const handleClick = () => {
 		setLoading( true );
@@ -33,7 +35,7 @@ const EnhanceButton = () => {
 				)
 				.filter( ( j: any ) => j && j.url && j.id );
 			if ( ! items.length ) {
-				window.alert(
+				toast.error(
 					__( 'Please select at least one image.', 'try-aura' )
 				);
 				return;
@@ -57,7 +59,7 @@ const EnhanceButton = () => {
 		} catch ( e ) {
 			// eslint-disable-next-line no-console
 			console.error( e );
-			window.alert(
+			toast.error(
 				__( 'Unable to read current selection.', 'try-aura' )
 			);
 
@@ -72,12 +74,9 @@ const EnhanceButton = () => {
 		if ( ! open || previewUrls.length === 0 ) {
 			// cleanup if exists
 			if ( modalContainerRef.current ) {
-				try {
-					modalRootRef.current?.unmount?.();
-				} catch {}
 				modalContainerRef.current.remove();
 				modalContainerRef.current = null;
-				modalRootRef.current = null;
+				setPortalContainer( null );
 			}
 			return;
 		}
@@ -92,6 +91,7 @@ const EnhanceButton = () => {
 			);
 			document.body.appendChild( container );
 			modalContainerRef.current = container;
+			setPortalContainer( container );
 
 			doAction(
 				'tryaura.media_frame_modal_container_created',
@@ -99,38 +99,12 @@ const EnhanceButton = () => {
 				modalContainerRef
 			);
 		}
-
-		const container = modalContainerRef.current!;
-		if ( ! modalRootRef.current ) {
-			modalRootRef.current = ( createRoot as any )( container );
-		}
-		modalRootRef.current.render(
-			<PreviewModal
-				imageUrls={ previewUrls }
-				attachmentIds={ attachmentIds }
-				onClose={ () => {
-					setOpen( false );
-					doAction( 'tryaura.media_frame_modal_closed' );
-				} }
-				supportsVideo={ applyFilters(
-					'tryaura.media_frame_modal_supports_video',
-					true
-				) }
-			/>
-		);
-
-		return () => {
-			// On deps change or unmount, we re-render on next effect; do not remove here unless closing
-		};
 	}, [ open, previewUrls, attachmentIds ] );
 
 	useEffect( () => {
 		return () => {
 			// Ensure cleanup on component unmount
 			if ( modalContainerRef.current ) {
-				try {
-					modalRootRef.current?.unmount?.();
-				} catch {}
 				modalContainerRef.current.remove();
 				modalContainerRef.current = null;
 			}
@@ -146,6 +120,26 @@ const EnhanceButton = () => {
 			>
 				{ __( 'Enhance with AI', 'try-aura' ) }
 			</button>
+			{ open &&
+				previewUrls.length > 0 &&
+				portalContainer &&
+				createPortal(
+					<PreviewModal
+						imageUrls={ previewUrls }
+						attachmentIds={ attachmentIds }
+						onClose={ () => {
+							setOpen( false );
+							doAction( 'tryaura.media_frame_modal_closed' );
+						} }
+						supportsVideo={ applyFilters(
+							'tryaura.media_frame_modal_supports_video',
+							true
+						) }
+					/>,
+					portalContainer
+				) }
+
+			{ ! open && <Toaster position="bottom-right" /> }
 		</div>
 	);
 };

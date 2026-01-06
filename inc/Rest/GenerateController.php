@@ -4,6 +4,7 @@ namespace Dokan\TryAura\Rest;
 
 use WP_REST_Request;
 use WP_REST_Response;
+use Dokan\TryAura\Database\UsageManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -108,7 +109,32 @@ class GenerateController {
 		}
 
 		$image = $data['candidates'][0]['content']['parts'][0]['inlineData']['data'] ?? null;
-		return new WP_REST_Response( array( 'image' => $image ), 200 );
+		$usage = $data['usageMetadata'] ?? null;
+
+		if ( $image ) {
+			( new UsageManager() )->log_usage(
+				array(
+					'type'           => 'image',
+					'model'          => $model,
+					'prompt'         => $prompt,
+					'input_tokens'   => $usage['promptTokenCount'] ?? 0,
+					'output_tokens'  => $usage['candidatesTokenCount'] ?? $usage['responseTokenCount'] ?? 0,
+					'total_tokens'   => $usage['totalTokenCount'] ?? 0,
+					'generated_from' => $params['generated_from'] ?? 'tryon',
+					'object_id'      => $params['object_id'] ?? null,
+					'object_type'    => $params['object_type'] ?? null,
+					'status'         => 'success',
+				)
+			);
+		}
+
+		return new WP_REST_Response(
+			array(
+				'image' => $image,
+				'usage' => $usage,
+			),
+			200
+		);
 	}
 
 	/**

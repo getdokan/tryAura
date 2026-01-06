@@ -58,7 +58,7 @@ class GenerateController {
 		$settings = get_option( 'try_aura_settings', array() );
 		$api_key  = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
 
-		$model = isset( $settings['google']['imageModel'] ) && ! empty( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : 'gemini-2.5-flash-image';
+		$model   = isset( $settings['google']['imageModel'] ) && ! empty( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : 'gemini-2.5-flash-image';
 		$api_url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$api_key}";
 
 		$prepared_images = array();

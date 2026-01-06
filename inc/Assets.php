@@ -22,8 +22,157 @@ class Assets {
 
 		$this->register_styles( $styles );
 		$this->register_scripts( $scripts );
+		$this->localize_scripts();
 
 		do_action( 'tryaura_register_scripts' );
+	}
+
+	/**
+	 * Localize scripts with necessary data
+	 *
+	 * @return void
+	 */
+	public function localize_scripts() {
+		$config = array(
+			'google' => array(
+				'veo-3.0-fast-generate-001' => array(
+					'identity'     => 'video',
+					'supported'    => true,
+					'locked'       => false,
+					'capabilities' => array(
+						'image'        => array(
+							'supported' => true,
+							'locked'    => false,
+						),
+						'imageToVideo' => array(
+							'supported' => true,
+							'locked'    => false,
+						),
+						'prompt'       => array(
+							'supported' => true,
+							'locked'    => false,
+						),
+					),
+					'parameters'   => array(
+						'aspectRatio'      => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '16:9',
+							'values'    => array(
+								array(
+									'label'  => '16:9',
+									'value'  => '16:9',
+									'locked' => false,
+								),
+								array(
+									'label'  => '9:16',
+									'value'  => '9:16',
+									'locked' => false,
+								),
+							),
+						),
+						'resolution'       => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '720',
+							'values'    => array(
+								array(
+									'label'  => '720p',
+									'value'  => '720',
+									'locked' => false,
+								),
+								array(
+									'label'  => '1080p',
+									'value'  => '1080',
+									'locked' => false,
+								),
+							),
+						),
+						'durationSeconds'  => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '8',
+							'values'    => array(
+								array(
+									'label'  => '8 seconds',
+									'value'  => '8',
+									'locked' => false,
+								),
+								array(
+									'label'  => '6 seconds',
+									'value'  => '6',
+									'locked' => false,
+								),
+								array(
+									'label'  => '4 seconds',
+									'value'  => '4',
+									'locked' => false,
+								),
+							),
+						),
+						'fps'              => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '24',
+							'values'    => array(
+								array(
+									'label'  => '24 fps',
+									'value'  => '24',
+									'locked' => false,
+								),
+							),
+						),
+						'negativePrompt'   => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => 'blurry, low quality, distorted faces',
+							'values'    => array(
+								'blurry, low quality, distorted faces',
+							),
+						),
+						'seed'             => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '0',
+							'values'    => array(
+								'0',
+							),
+						),
+						'personGeneration' => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => 'allow_adult',
+							'values'    => array(
+								array(
+									'label'  => 'Allow Adult',
+									'value'  => 'allow_adult',
+									'locked' => false,
+								),
+								array(
+									'label'  => 'Disallow',
+									'value'  => 'disallow',
+									'locked' => false,
+								),
+							),
+						),
+						'numberOfVideos'   => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '1',
+							'values'    => array(
+								array(
+									'label'  => '1 video',
+									'value'  => '1',
+									'locked' => false,
+								),
+							),
+						),
+					),
+				),
+			),
+		);
+
+		wp_localize_script( 'try-aura-ai-models', 'tryAuraAiProviderModels', apply_filters( 'tryaura_ai_models', $config ) );
 	}
 
 	/**
@@ -124,6 +273,19 @@ class Assets {
 			$scripts['try-aura-enhancer'] = array(
 				'version' => $version,
 				'src'     => $asset_url . 'build/admin/enhancer/index.js',
+				'deps'    => $deps,
+			);
+		}
+
+		$asset_file = $asset_path . 'build/data/ai-models.asset.php';
+		if ( file_exists( $asset_file ) ) {
+			$asset   = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			$deps    = $asset['dependencies'] ?? array( 'wp-data' );
+			$version = $asset['version'] ?? '1.0.0';
+
+			$scripts['try-aura-ai-models'] = array(
+				'version' => $version,
+				'src'     => $asset_url . 'build/data/ai-models.js',
 				'deps'    => $deps,
 			);
 		}

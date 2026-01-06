@@ -48,6 +48,7 @@ class Enhancer {
 
 		wp_enqueue_style( 'try-aura-components' );
 		wp_enqueue_style( 'try-aura-enhancer' );
+		wp_enqueue_script( 'try-aura-ai-models' );
 		wp_enqueue_script( 'try-aura-components' );
 		wp_enqueue_script( 'try-aura-enhancer' );
 	}

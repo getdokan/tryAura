@@ -1,0 +1,6 @@
+export const SET_PROVIDERS = 'SET_PROVIDERS';
+export const ADD_PROVIDER = 'ADD_PROVIDER';
+export const UPDATE_MODEL = 'UPDATE_MODEL';
+export const ADD_MODEL = 'ADD_MODEL';
+export const UPDATE_CAPABILITY = 'UPDATE_CAPABILITY';
+export const UPDATE_PARAMETER = 'UPDATE_PARAMETER';

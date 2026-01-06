@@ -142,10 +142,15 @@ function ImageConfigInputs( { doGenerate } ) {
 				} }
 			>
 				<span className="w-[500] text-[14px] mb-[8px]">
-					{ __( 'Prompt (Optional)' ) }
+					{ __(
+						isBlockEditorPage
+							? 'Prompt'
+							: 'Prompt (Optional)'
+						) }
 				</span>
 				<textarea
 					className="border border-[#E9E9E9] placeholder-[#A5A5AA]"
+					required
 					value={ imageConfigData?.optionalPrompt ?? '' }
 					onChange={ ( e: any ) =>
 						setImageConfigData( {
@@ -154,7 +159,9 @@ function ImageConfigInputs( { doGenerate } ) {
 					}
 					rows={ 3 }
 					placeholder={ __(
-						'Add any specific instructions (optional)',
+						isBlockEditorPage
+							? 'Add any specific instructions'
+							: 'Add any specific instructions (optional)',
 						'tryaura'
 					) }
 				/>
@@ -166,6 +173,8 @@ function ImageConfigInputs( { doGenerate } ) {
 				isBusy={ isBusy }
 				uploading={ uploading }
 				downloadName="enhanced.png"
+				isBlockEditorPage = {isBlockEditorPage}
+				optionalPrompt = {imageConfigData?.optionalPrompt ?? ''}
 			/>
 		</>
 	);

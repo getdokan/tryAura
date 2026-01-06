@@ -1,13 +1,7 @@
 import { Button } from '../../../components';
 import { __ } from '@wordpress/i18n';
 
-function ConfigFooter( {
-	generatedUrl,
-	doGenerate,
-	isBusy,
-	uploading,
-	downloadName,
-} ) {
+function ConfigFooter( { generatedUrl, doGenerate, isBusy, uploading, downloadName, isBlockEditorPage = false, optionalPrompt = '' } ) {
 	return (
 		<div className="flex flex-row gap-[12px]">
 			{ generatedUrl ? (
@@ -37,7 +31,7 @@ function ConfigFooter( {
 					</Button>
 				</>
 			) : (
-				<Button onClick={ doGenerate } disabled={ isBusy || uploading }>
+				<Button onClick={ doGenerate } disabled={ isBusy || uploading || (isBlockEditorPage && optionalPrompt.trim() === '')}>
 					{ isBusy
 						? __( 'Generating…', 'try-aura' )
 						: __( 'Generate', 'try-aura' ) }

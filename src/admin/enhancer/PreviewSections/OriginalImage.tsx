@@ -176,7 +176,7 @@ function OriginalImage( {
 	}
 
 	return (
-		<div className="w-[500px] max-h-[533px] overflow-auto">
+		<div className="w-[250px] sm:w-[500px] max-h-[533px] overflow-auto">
 			<div className="text-[14px] mb-[8px]">{ sectionTitle }</div>
 			{ content }
 		</div>

@@ -78,18 +78,22 @@ class Admin {
 			return;
 		}
 
-		$settings = get_option( $this->option_key, array() );
-		$api_key  = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
+		$settings    = get_option( $this->option_key, array() );
+		$api_key     = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
+		$image_model = isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '';
+		$video_model = isset( $settings['google']['videoModel'] ) ? $settings['google']['videoModel'] : '';
 
 		// Localize data for the app.
 		wp_localize_script(
 			'try-aura-admin',
 			'tryAura',
 			array(
-				'restUrl'   => esc_url_raw( rest_url() ),
-				'nonce'     => wp_create_nonce( 'wp_rest' ),
-				'apiKey'    => $api_key,
-				'optionKey' => $this->option_key,
+				'restUrl'    => esc_url_raw( rest_url() ),
+				'nonce'      => wp_create_nonce( 'wp_rest' ),
+				'apiKey'     => $api_key,
+				'imageModel' => $image_model,
+				'videoModel' => $video_model,
+				'optionKey'  => $this->option_key,
 			)
 		);
 

@@ -21,20 +21,30 @@ type PreviewProps = {
 	supportsVideo?: boolean;
 };
 
-async function resolveApiKey(): Promise< string | null > {
+async function resolveSettings(): Promise< {
+	apiKey: string | null;
+	imageModel: string | null;
+	videoModel: string | null;
+} > {
 	try {
-		const key = window?.tryAura?.apiKey;
-		if ( key && key.length > 0 ) {
-			return key;
-		}
+		const aura = ( window as any )?.tryAura;
 		const data = ( await apiFetch( {
 			path: '/try-aura/v1/settings',
 		} ) ) as any;
 		const settings = data && data.try_aura_settings;
-		const opt = settings && settings.google && settings.google.apiKey;
-		return opt && opt.length > 0 ? opt : null;
+		const google = settings && settings.google;
+		return {
+			apiKey: google?.apiKey || aura?.apiKey || null,
+			imageModel: google?.imageModel || aura?.imageModel || null,
+			videoModel: google?.videoModel || aura?.videoModel || null,
+		};
 	} catch {
-		return null;
+		const aura = ( window as any )?.tryAura;
+		return {
+			apiKey: aura?.apiKey || null,
+			imageModel: aura?.imageModel || null,
+			videoModel: aura?.videoModel || null,
+		};
 	}
 }
 
@@ -57,9 +67,12 @@ const PreviewModal = ( {
 		videoSource,
 		selectedImageIndices,
 		selectedVideoIndices,
+		defaultImageModel,
+		defaultVideoModel,
 	} = useSelect(
 		( select ) => {
 			const store = select( STORE_NAME );
+			const aiModelsStore = select( 'try-aura/ai-models' );
 			return {
 				generatedUrl: store.getGeneratedUrl(),
 				uploading: store.getUploading(),
@@ -73,6 +86,8 @@ const PreviewModal = ( {
 				videoSource: store.getVideoSource(),
 				selectedImageIndices: store.getSelectedImageIndices(),
 				selectedVideoIndices: store.getSelectedVideoIndices(),
+				defaultImageModel: aiModelsStore.getDefaultImageModel(),
+				defaultVideoModel: aiModelsStore.getDefaultVideoModel(),
 			};
 		},
 		[ STORE_NAME ]
@@ -162,7 +177,7 @@ const PreviewModal = ( {
 				);
 			}
 
-			const apiKey = await resolveApiKey();
+			const { apiKey, imageModel: savedImageModel } = await resolveSettings();
 			if ( ! apiKey ) {
 				throw new Error(
 					__(
@@ -171,6 +186,11 @@ const PreviewModal = ( {
 					)
 				);
 			}
+
+			const imageModel =
+				savedImageModel ||
+				defaultImageModel ||
+				'gemini-2.5-flash-image-preview';
 
 			setStatus( 'fetching' );
 			setMessage( __( 'Fetching images…', 'try-aura' ) );
@@ -234,13 +254,13 @@ const PreviewModal = ( {
 			doAction( 'tryaura.ai_enhance_prompt_before_generate', prompt );
 			const response: any = await ( ai as any ).models.generateContent(
 				applyFilters( 'tryaura.ai_enhance_model_content', {
-					model: 'gemini-2.5-flash-image-preview',
+					model: imageModel,
 					contents: prompt,
 					config: {
 						responseModalities: [ 'IMAGE' ],
 						candidateCount: 1,
 						imageConfig: {
-								aspectRatio: '1:1',
+							aspectRatio: '1:1',
 						},
 					},
 				} )
@@ -271,15 +291,15 @@ const PreviewModal = ( {
 			setError( null );
 
 			const usage = response?.usageMetadata;
-			const postId = window?.tryAura?.postId;
-			const postType = window?.tryAura?.postType;
+			const postId = ( window as any )?.tryAura?.postId;
+			const postType = ( window as any )?.tryAura?.postType;
 
 			apiFetch( {
 				path: '/try-aura/v1/log-usage',
 				method: 'POST',
 				data: {
 					type: 'image',
-					model: 'gemini-2.5-flash-image-preview',
+					model: imageModel,
 					prompt: promptText,
 					input_tokens: usage?.promptTokenCount,
 					output_tokens: usage?.responseTokenCount,
@@ -475,7 +495,7 @@ const PreviewModal = ( {
 			setVideoStatus( 'generating' );
 			setVideoMessage( __( 'Starting video generation…', 'try-aura' ) );
 
-			const apiKey = await resolveApiKey();
+			const { apiKey, videoModel: savedVideoModel } = await resolveSettings();
 			if ( ! apiKey ) {
 				throw new Error(
 					__(
@@ -484,6 +504,11 @@ const PreviewModal = ( {
 					)
 				);
 			}
+
+			const videoModel =
+				savedVideoModel ||
+				defaultVideoModel ||
+				'veo-3.0-fast-generate-001';
 
 			const extras = applyFilters(
 				'tryaura.video_generation_extras',
@@ -537,7 +562,7 @@ const PreviewModal = ( {
 			const ai = new GoogleGenAI( { apiKey } );
 			let operation: any = await ( ai as any ).models.generateVideos(
 				applyFilters( 'tryaura.video_generation_params', {
-					model: 'veo-3.0-fast-generate-001',
+					model: videoModel,
 					source: {
 						prompt: videoPromptText,
 						image: {
@@ -638,15 +663,15 @@ const PreviewModal = ( {
 			const video = document.createElement( 'video' );
 			video.src = objectUrl;
 			video.onloadedmetadata = () => {
-				const postId = window?.tryAura?.postId;
-				const postType = window?.tryAura?.postType;
+				const postId = ( window as any )?.tryAura?.postId;
+				const postType = ( window as any )?.tryAura?.postType;
 
 				apiFetch( {
 					path: '/try-aura/v1/log-usage',
 					method: 'POST',
 					data: {
 						type: 'video',
-						model: 'veo-3.0-fast-generate-001',
+						model: videoModel,
 						prompt: videoPromptText,
 						video_seconds: video.duration,
 						generated_from: 'admin',

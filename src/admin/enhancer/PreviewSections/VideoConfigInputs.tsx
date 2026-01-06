@@ -22,6 +22,7 @@ import ConfigFooter from './ConfigFooter';
 
 function VideoConfigInputs( { doGenerateVideo } ) {
 	const {
+		isBlockEditorPage,
 		videoConfigData,
 		videoUrl,
 		isVideoBusy,
@@ -31,6 +32,7 @@ function VideoConfigInputs( { doGenerateVideo } ) {
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
+			isBlockEditorPage: store.getIsBlockEditorPage(),
 			videoConfigData: store.getVideoConfigData(),
 			videoUrl: store.getVideoUrl(),
 			isVideoBusy: store.isVideoBusy(),
@@ -171,11 +173,7 @@ function VideoConfigInputs( { doGenerateVideo } ) {
 				htmlFor="try-aura-video-optional-prompt"
 			>
 				<span className="w-[500] text-[14px] mb-[8px]">
-					{ __(
-						isBlockEditorPage
-							? 'Prompt'
-							: 'Prompt (Optional)'
-						) }
+					{ __( isBlockEditorPage ? 'Prompt' : 'Prompt (Optional)' ) }
 				</span>
 				<textarea
 					className="border border-[#E9E9E9]"
@@ -202,8 +200,8 @@ function VideoConfigInputs( { doGenerateVideo } ) {
 				isBusy={ isVideoBusy }
 				uploading={ videoUploading }
 				downloadName="enhanced-video.mp4"
-				optionalPrompt = {videoConfigData?.optionalPrompt ?? ''}
-
+				isBlockEditorPage={ isBlockEditorPage }
+				optionalPrompt={ videoConfigData?.optionalPrompt ?? '' }
 			/>
 		</>
 	);

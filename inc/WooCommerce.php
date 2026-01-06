@@ -75,8 +75,8 @@ class WooCommerce {
 		}
 
 		$enabled = get_post_meta( $product_id, self::TRY_ON_META_KEY, true );
-		// Default to enabled if not set.
-		if ( '' === $enabled ) {
+		// Default to disabled if not set.
+		if ( empty( $enabled ) ) {
 			$enabled = 'no';
 		}
 

@@ -28,8 +28,8 @@ class TryOn {
 		}
 
 		$enabled = get_post_meta( $product_id, WooCommerce::TRY_ON_META_KEY, true );
-		// Default to enabled if not set.
-		if ( 'no' === $enabled || '' === $enabled ) {
+		// Default to disabled if not set.
+		if ( 'no' === $enabled || empty( $enabled ) ) {
 			return;
 		}
 

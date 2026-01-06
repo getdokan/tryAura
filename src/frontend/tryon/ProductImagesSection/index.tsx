@@ -12,7 +12,7 @@ function Index( {
 	onToggleImage: ( url: string ) => void;
 } ) {
 	return (
-		<div className="w-1/3">
+		<div className="w-full sm:w-1/3">
 			<div className="font-[500] text-[14px] text-[#25252D] mb-[20px]">
 				{ __( 'Product Images', 'try-aura' ) }
 			</div>

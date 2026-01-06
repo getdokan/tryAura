@@ -19,7 +19,7 @@ function Index( {
 	error,
 } ) {
 	return (
-		<div className="w-1/3 max-h-[533px] overflow-auto">
+		<div className="w-full sm:w-1/3 max-h-[533px] overflow-auto">
 			<div className="font-[500] text-[14px] text-[#25252D] mb-[20px]">
 				{ __( 'Your Image', 'try-aura' ) }
 			</div>

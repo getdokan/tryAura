@@ -557,22 +557,11 @@ const PreviewModal = ( {
 						},
 					},
 					config: {
-						// aspectRatio,
-						// ASPECT RATIO: '16:9' or '9:16'
 						aspectRatio,
-
-						// RESOLUTION: '720p' or '1080p'
 						// resolution: '720p',
-
-						// DURATION: Supported 5s or 10s (model dependent, typically 8s for Veo 3)
 						// durationSeconds: 8,
-
-						// FPS: Fixed at 24 for this model
 						// fps: 24,
-
-						// NEGATIVE PROMPT: Elements to exclude
 						negativePrompt: 'blurry, low quality, distorted faces',
-
 						// SEED: For deterministic output (0 to 4,294,967,295)
 						// seed: 12345,
 

@@ -16,6 +16,13 @@ module.exports = {
 		},
 		'admin/dashboard/index': './src/admin/dashboard/index.tsx',
 		'admin/enhancer/index': './src/admin/enhancer/index.tsx',
+		'data/ai-models': {
+			import: './src/data/ai-models/index.ts',
+			library: {
+				name: [ 'tryaura', 'aiProvidersStore' ],
+				type: 'window',
+			},
+		},
 		'frontend/tryon/index': './src/frontend/tryon/index.tsx',
 		'admin/woocommerce-products-list':
 			'./src/admin/woocommerce-products-list/index.tsx',

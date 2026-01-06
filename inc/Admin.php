@@ -96,6 +96,7 @@ class Admin {
 			wp_enqueue_style( 'wp-components' );
 		}
 
+		wp_enqueue_script( 'try-aura-ai-models' );
 		wp_enqueue_script( 'try-aura-admin' );
 		wp_enqueue_style( 'try-aura-admin' );
 	}

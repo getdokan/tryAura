@@ -2,8 +2,13 @@
 
 namespace Dokan\TryAura;
 
+/**
+ * Assets class.
+ */
 class Assets {
-
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'register_all_scripts' ), 10 );
 	}
@@ -21,15 +26,20 @@ class Assets {
 		do_action( 'tryaura_register_scripts' );
 	}
 
+	/**
+	 * Get styles.
+	 *
+	 * @return array
+	 */
 	private function get_styles() {
 		$asset_url  = plugin_dir_url( __DIR__ );
 		$asset_path = plugin_dir_path( __DIR__ );
 		$styles     = array();
 
-		$css_path = $asset_path . 'build/admin/settings/style-index.css';
+		$css_path = $asset_path . 'build/admin/dashboard/style-index.css';
 		if ( file_exists( $css_path ) ) {
 			$styles['try-aura-admin'] = array(
-				'src'     => $asset_url . 'build/admin/settings/style-index.css',
+				'src'     => $asset_url . 'build/admin/dashboard/style-index.css',
 				'deps'    => array(),
 				'version' => filemtime( $css_path ),
 			);
@@ -65,12 +75,17 @@ class Assets {
 		return $styles;
 	}
 
+	/**
+	 * Get scripts.
+	 *
+	 * @return array
+	 */
 	public function get_scripts() {
 		$asset_url  = plugin_dir_url( __DIR__ );
 		$asset_path = plugin_dir_path( __DIR__ );
 		$scripts    = array();
 
-		$asset_file = $asset_path . 'build/admin/settings/index.asset.php';
+		$asset_file = $asset_path . 'build/admin/dashboard/index.asset.php';
 		if ( file_exists( $asset_file ) ) {
 			$asset   = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			$deps    = $asset['dependencies'] ?? array( 'wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n', 'wp-api' );
@@ -78,7 +93,7 @@ class Assets {
 
 			$scripts['try-aura-admin'] = array(
 				'version' => $version,
-				'src'     => $asset_url . 'build/admin/settings/index.js',
+				'src'     => $asset_url . 'build/admin/dashboard/index.js',
 				'deps'    => $deps,
 			);
 		}
@@ -117,6 +132,7 @@ class Assets {
 		if ( file_exists( $asset_file ) ) {
 			$asset   = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
 			$deps    = array_merge( $asset['dependencies'] ?? array(), array( 'wp-element' ) );
+			$deps    = array_merge( $deps, array( 'wp-data', 'wp-core-data', 'wp-api-fetch' ) );
 			$version = $asset['version'] ?? '1.0.0';
 
 			$scripts['try-aura-tryon'] = array(
@@ -132,7 +148,7 @@ class Assets {
 	/**
 	 * Register styles
 	 *
-	 * @param array $styles
+	 * @param array $styles Assets to register.
 	 *
 	 * @return void
 	 */
@@ -148,7 +164,7 @@ class Assets {
 	/**
 	 * Register scripts
 	 *
-	 * @param array $scripts
+	 * @param array $scripts Assets to register.
 	 *
 	 * @return void
 	 */
@@ -166,7 +182,7 @@ class Assets {
 	/**
 	 * Enqueue the scripts
 	 *
-	 * @param array $scripts
+	 * @param array $scripts Assets to enqueue.
 	 *
 	 * @return void
 	 */

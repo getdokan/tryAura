@@ -3,6 +3,7 @@
 namespace Dokan\TryAura;
 
 use Dokan\TryAura\Rest\SettingsController;
+use Dokan\TryAura\Rest\GenerateController;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -44,8 +45,9 @@ class Plugin {
 	public function init_plugin(): void {
 		// Register custom REST endpoints.
 		new SettingsController( 'try_aura_api_key' );
+		new GenerateController();
 
-		// Register assets
+		// Register assets.
 		new Assets();
 
 		// WooCommerce integrations.

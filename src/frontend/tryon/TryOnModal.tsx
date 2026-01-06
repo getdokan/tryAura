@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
-import { GoogleGenAI } from '@google/genai';
+import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import { X } from 'lucide-react';
 import UserImageSection from './UserImageSection';
@@ -75,49 +75,6 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			setError( e?.message || 'Unable to access camera.' );
 		}
 	};
-
-	async function resolveApiKey(): Promise< string | null > {
-		try {
-			// @ts-ignore
-			const key = window?.tryAura?.apiKey;
-			if ( key && key.length > 0 ) {
-				return key;
-			}
-			// @ts-ignore
-			const rest = window?.tryAura?.restUrl;
-			// @ts-ignore
-			const nonce = window?.tryAura?.nonce;
-			if ( ! rest || ! nonce ) {
-				return null;
-			}
-			doAction( 'try-aura.before_api_key_fetch', { rest, nonce } );
-			const res = await fetch(
-				applyFilters(
-					'tryaura.tryon.api_key_fetch_url',
-					rest.replace( /\/?$/, '/' ) + 'try-aura/v1/settings'
-				),
-				applyFilters( 'tryaura.tryon.api_key_fetch_options', {
-					headers: { 'X-WP-Nonce': nonce },
-					credentials: 'same-origin',
-				} )
-			);
-			if ( ! res.ok ) {
-				return null;
-			}
-
-			doAction( 'try-aura.after_api_key_fetch', res );
-			const data = applyFilters(
-				'tryaura.tryon.api_key_fetch_data',
-				await res.json()
-			);
-			const opt = ( data && ( data as any ).try_aura_api_key ) as
-				| string
-				| undefined;
-			return opt && opt.length > 0 ? opt : null;
-		} catch {
-			return null;
-		}
-	}
 
 	const stopCamera = () => {
 		try {
@@ -288,7 +245,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			const data = comma >= 0 ? img.substring( comma + 1 ) : img;
 			return { mimeType, data };
 		}
-		const resp = await fetch( img, { credentials: 'same-origin' } );
+		const resp = await apiFetch( { url: img, parse: false } ) as Response;
 		const blob = await resp.blob();
 		const mimeType = blob.type || 'image/png';
 		const base64 = await new Promise< string >( ( resolve, reject ) => {
@@ -306,29 +263,34 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 
 	const doTry = async () => {
 		if ( userImages.length === 0 ) {
-			setError( __( 'Please select or capture your photo first.', 'try-aura' ) );
+			setError(
+				__( 'Please select or capture your photo first.', 'try-aura' )
+			);
 			return;
 		}
 		if ( selectedProductImages.length === 0 ) {
-			setError( __( 'Please select at least one product image.', 'try-aura' ) );
+			setError(
+				__( 'Please select at least one product image.', 'try-aura' )
+			);
 			return;
 		}
 		try {
 			setError( null );
 			setStatus( 'fetching' );
 			setMessage( __( 'Preparing images…', 'try-aura' ) );
-			const apiKey = await resolveApiKey();
-			if ( ! apiKey ) {
-				throw new Error(
-					__( 'Missing API key. Please configure TryAura settings.', 'try-aura' )
-				);
-			}
 
-			const primaryUserImage = userImages[ 0 ]; // Use first selected/captured photo as the user image
+			const primaryUserImage = userImages[ 0 ];
 			const userInline = await toInlineData( primaryUserImage );
 			const productInlineList = await Promise.all(
 				selectedProductImages.map( toInlineData )
 			);
+
+			const images = [
+				`data:${ userInline.mimeType };base64,${ userInline.data }`,
+				...productInlineList.map(
+					( p ) => `data:${ p.mimeType };base64,${ p.data }`
+				),
+			];
 
 			setStatus( 'generating' );
 			setMessage( __( 'Generating try-on preview…', 'try-aura' ) );
@@ -337,51 +299,38 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				'tryaura.tryon.prompt_text',
 				'Create a realistic virtual try-on image. The first image is the user/customer photo. The subsequent image(s) are the product to wear/use. Put the product on the person naturally with correct proportions, lighting, and perspective. Keep a neutral background suitable for eCommerce.'
 			);
-			const contents: any[] = [
-				{ text: promptText },
-				{
-					inlineData: {
-						mimeType: userInline.mimeType,
-						data: userInline.data,
-					},
+
+			// @ts-ignore
+			const restUrl = window?.tryAura?.restUrl;
+			// @ts-ignore
+			const nonce = window?.tryAura?.nonce;
+
+			if ( ! restUrl || ! nonce ) {
+				throw new Error(
+					__( 'REST API not configured properly.', 'try-aura' )
+				);
+			}
+
+			const data = ( await apiFetch( {
+				url: `${ restUrl.replace( /\/?$/, '/' ) }generate/v1/image`,
+				method: 'POST',
+				headers: {
+					'X-WP-Nonce': nonce,
 				},
-			];
-			for ( const p of productInlineList ) {
-				contents.push( {
-					inlineData: { mimeType: p.mimeType, data: p.data },
-				} );
-			}
+				data: {
+					prompt: promptText,
+					images,
+				},
+			} ) ) as any;
 
-			doAction( 'try-aura.before_model_generation', { contents } );
-			const ai = new GoogleGenAI( { apiKey } );
-			const response: any = await ( ai as any ).models.generateContent(
-				applyFilters( 'tryaura.tryon_content_generation_options', {
-					model: 'gemini-2.5-flash-image-preview',
-					contents,
-				} )
-			);
-			doAction( 'try-aura.after_model_generation', response );
-
-			setStatus( 'parsing' );
-			setMessage( __( 'Processing result…', 'try-aura' ) );
-			const parts = response?.candidates?.[ 0 ]?.content?.parts || [];
-			let data64: string | null = null;
-			let outMime: string = 'image/png';
-			for ( const part of parts ) {
-				if ( part.inlineData ) {
-					data64 = part.inlineData.data;
-					outMime = part.inlineData.mimeType || outMime;
-					break;
-				}
+			if ( data.image ) {
+				const dataUrl = `data:image/png;base64,${ data.image }`;
+				setGeneratedUrl( dataUrl );
+				setStatus( 'done' );
+				setMessage( __( 'Done', 'try-aura' ) );
+			} else {
+				throw new Error( __( 'Model did not return an image.', 'try-aura' ) );
 			}
-
-			if ( ! data64 ) {
-				throw new Error( 'Model did not return an image.' );
-			}
-			const dataUrl = `data:${ outMime };base64,${ data64 }`;
-			setGeneratedUrl( dataUrl );
-			setStatus( 'done' );
-			setMessage( __( 'Done', 'try-aura' ) );
 		} catch ( e: any ) {
 			setError( e?.message || __( 'Generation failed.', 'try-aura' ) );
 			setStatus( 'error' );

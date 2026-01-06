@@ -250,6 +250,12 @@ const PreviewModal = ( {
 				applyFilters( 'tryaura.ai_enhance_model_content', {
 					model: 'gemini-2.5-flash-image-preview',
 					contents: prompt,
+					config: {
+						candidateCount: 1,
+						// imageConfig: {
+						// 	aspectRatio: '16:9',
+						// },
+					},
 				} )
 			);
 			doAction( 'tryaura.ai_enhance_prompt_after_generate', response );
@@ -350,7 +356,7 @@ const PreviewModal = ( {
 			const uploadRes = await fetch(
 				applyFilters(
 					'tryaura.media_upload_rest_api',
-					`${ restBase }'wp/v2/media'`
+					`${ restBase }'wp/v2/media`
 				),
 				{
 					method: 'POST',

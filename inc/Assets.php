@@ -35,9 +35,11 @@ class Assets {
 	public function localize_scripts() {
 		$config = array(
 			'google' => array(
-				'veo-3.0-fast-generate-001' => array(
+				'veo-3.0-fast-generate-001'      => array(
 					'label'        => __( 'veo-3.0-fast-generate-001', 'try-aura' ),
 					'identity'     => 'video',
+					'inputTypes'   => array( 'text', 'image' ),
+					'outputTypes'  => array( 'video' ),
 					'supported'    => true,
 					'locked'       => false,
 					'capabilities' => array(
@@ -163,6 +165,261 @@ class Assets {
 							'values'    => array(
 								array(
 									'label'  => '1 video',
+									'value'  => '1',
+									'locked' => false,
+								),
+							),
+						),
+						'enhancePrompt'    => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '',
+							'values'    => array(),
+						),
+						'generateAudio'    => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => false,
+							'type'      => 'boolean',
+						),
+					),
+				),
+				'gemini-2.5-flash-image-preview' => array(
+					'label'        => __( 'gemini-2.5-flash-image-preview', 'try-aura' ),
+					'identity'     => 'image',
+					'inputTypes'   => array( 'text', 'image' ),
+					'outputTypes'  => array( 'image' ),
+					'supported'    => true,
+					'locked'       => false,
+					'capabilities' => array(
+						'image'  => array(
+							'supported' => true,
+							'locked'    => false,
+						),
+						'prompt' => array(
+							'supported' => true,
+							'locked'    => false,
+						),
+					),
+					'parameters'   => array(
+						'aspectRatio'      => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '1:1',
+							'values'    => array(
+								array(
+									'label'  => __( '1:1', 'try-aura' ),
+									'value'  => '1:1',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( '16:9', 'try-aura' ),
+									'value'  => '16:9',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( '9:16', 'try-aura' ),
+									'value'  => '9:16',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( '4:3', 'try-aura' ),
+									'value'  => '4:3',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( '3:4', 'try-aura' ),
+									'value'  => '3:4',
+									'locked' => false,
+								),
+							),
+						),
+						'personGeneration' => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => 'allow_adult',
+							'values'    => array(
+								array(
+									'label'  => __( 'Allow Adult', 'try-aura' ),
+									'value'  => 'allow_adult',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( 'Disallow', 'try-aura' ),
+									'value'  => 'disallow',
+									'locked' => false,
+								),
+							),
+						),
+						'candidateCount'   => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '1',
+							'values'    => array(
+								array(
+									'label'  => __( '1 image', 'try-aura' ),
+									'value'  => '1',
+									'locked' => false,
+								),
+							),
+						),
+					),
+				),
+				'gemini-2.5-flash-image'         => array(
+					'label'        => __( 'gemini-2.5-flash-image', 'try-aura' ),
+					'identity'     => 'image',
+					'inputTypes'   => array( 'text', 'image' ),
+					'outputTypes'  => array( 'image' ),
+					'supported'    => true,
+					'locked'       => false,
+					'capabilities' => array(
+						'image'  => array(
+							'supported' => true,
+							'locked'    => false,
+						),
+						'prompt' => array(
+							'supported' => true,
+							'locked'    => false,
+						),
+					),
+					'parameters'   => array(
+						'aspectRatio'      => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '1:1',
+							'values'    => array(
+								array(
+									'label'  => __( '1:1', 'try-aura' ),
+									'value'  => '1:1',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( '16:9', 'try-aura' ),
+									'value'  => '16:9',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( '9:16', 'try-aura' ),
+									'value'  => '9:16',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( '4:3', 'try-aura' ),
+									'value'  => '4:3',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( '3:4', 'try-aura' ),
+									'value'  => '3:4',
+									'locked' => false,
+								),
+							),
+						),
+						'personGeneration' => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => 'allow_adult',
+							'values'    => array(
+								array(
+									'label'  => __( 'Allow Adult', 'try-aura' ),
+									'value'  => 'allow_adult',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( 'Disallow', 'try-aura' ),
+									'value'  => 'disallow',
+									'locked' => false,
+								),
+							),
+						),
+						'candidateCount'   => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '1',
+							'values'    => array(
+								array(
+									'label'  => __( '1 image', 'try-aura' ),
+									'value'  => '1',
+									'locked' => false,
+								),
+							),
+						),
+					),
+				),
+				'gemini-3-pro-image-preview'     => array(
+					'label'        => __( 'gemini-3-pro-image-preview', 'try-aura' ),
+					'identity'     => 'image',
+					'inputTypes'   => array( 'text', 'image' ),
+					'outputTypes'  => array( 'image' ),
+					'supported'    => true,
+					'locked'       => false,
+					'capabilities' => array(
+						'image'  => array(
+							'supported' => true,
+							'locked'    => false,
+						),
+						'prompt' => array(
+							'supported' => true,
+							'locked'    => false,
+						),
+					),
+					'parameters'   => array(
+						'aspectRatio'      => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '1:1',
+							'values'    => array(
+								array(
+									'label'  => __( '1:1', 'try-aura' ),
+									'value'  => '1:1',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( '16:9', 'try-aura' ),
+									'value'  => '16:9',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( '9:16', 'try-aura' ),
+									'value'  => '9:16',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( '4:3', 'try-aura' ),
+									'value'  => '4:3',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( '3:4', 'try-aura' ),
+									'value'  => '3:4',
+									'locked' => false,
+								),
+							),
+						),
+						'personGeneration' => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => 'allow_adult',
+							'values'    => array(
+								array(
+									'label'  => __( 'Allow Adult', 'try-aura' ),
+									'value'  => 'allow_adult',
+									'locked' => false,
+								),
+								array(
+									'label'  => __( 'Disallow', 'try-aura' ),
+									'value'  => 'disallow',
+									'locked' => false,
+								),
+							),
+						),
+						'candidateCount'   => array(
+							'supported' => true,
+							'locked'    => false,
+							'default'   => '1',
+							'values'    => array(
+								array(
+									'label'  => __( '1 image', 'try-aura' ),
 									'value'  => '1',
 									'locked' => false,
 								),

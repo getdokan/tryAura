@@ -10,8 +10,11 @@ import {
 } from '@wordpress/components';
 
 
-const GeminiIntegrationSettings = ({ isSettingsMainPage,
-    setIsSettingsMainPage
+const GeminiIntegrationSettings = ({
+    isSettingsMainPage,
+    setIsSettingsMainPage,
+    apiKey,
+    setApiKey
  }) => {
 
     const data = window.tryAura!;
@@ -23,7 +26,6 @@ const GeminiIntegrationSettings = ({ isSettingsMainPage,
 	}, [] );
     const [selectedImageModel, setSelectedImageModel] = useState<string>("");
     const [selectedVideoModel, setSelectedVideoModel] = useState<string>("");
-	const [ apiKey, setApiKey ] = useState< string >( data.apiKey || '' );
 
     const [ saving, setSaving ] = useState< boolean >( false );
 	const [ saved, setSaved ] = useState< boolean >( false );
@@ -86,7 +88,7 @@ const GeminiIntegrationSettings = ({ isSettingsMainPage,
         <>        
         <div>
             <div className='border-b border-solid border-[#f0e5e5]'>
-                <div className='inline-flex items-center gap-1.5 m-[22px]'
+                <div className='inline-flex items-center gap-1.5 m-[22px] hover:cursor-pointer'
                 onClick={
                     () => {
                         setIsSettingsMainPage(true)
@@ -113,10 +115,12 @@ const GeminiIntegrationSettings = ({ isSettingsMainPage,
                             <div className="font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[5px]">
                                 Gemini Integration
                             </div>
-                            <div className="text-sm text-gray-600">
+                            <div className="text-[14px] text-gray-600/70">
                             Connect your Gemini account with an API key. Need help finding your <a 
-                            href="#" 
-                            className="text-blue-600 underline hover:text-blue-700" >
+                                href="https://aistudio.google.com/api-keys" 
+                                className="text-blue-600 underline hover:text-blue-700"
+                                target="_blank"
+                            >
                                 API key
                             </a> ?
                             </div>

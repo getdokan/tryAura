@@ -8,7 +8,7 @@ export default function ApiKeyInput({apiKey, setApiKey}) {
   return (
     <div className="flex flex-col w-full">
       {/* Label */}
-      <label className="font-medium text-[14px] leading-[150%] tracking-normal align-middle">
+      <label className="text-[14px] font-semibold mb-[10px]">
         Gemini API KEY
       </label>
 
@@ -19,7 +19,7 @@ export default function ApiKeyInput({apiKey, setApiKey}) {
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
           placeholder="Enter your API key"
-          className="w-full pr-16 border border-gray-300 rounded-md px-3 py-2"
+          className="w-full pr-16 border border-[#E9E9E9] rounded-[5px] px-3 py-1"
         />
 
         {/* Show/Hide button */}
@@ -31,7 +31,7 @@ export default function ApiKeyInput({apiKey, setApiKey}) {
           {isHidden ? 'Show' : 'Hide'}
         </button>
       </div>
-        <p className='text-sm text-gray-600'>Paste the API key provided by Gemini.</p>
+        <p className='text-sm text-gray-600 text-gray-600 opacity-70'>Paste the API key provided by Gemini.</p>
     </div>
   );
 }

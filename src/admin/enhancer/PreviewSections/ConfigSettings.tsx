@@ -65,6 +65,7 @@ function ConfigSettings( {
 						isVideoBusy={ isVideoBusy }
 						videoUploading={ videoUploading }
 						videoUrl={ videoUrl }
+						isBlockEditorPage = { isBlockEditorPage }
 					/>
 				) }
 			</div>

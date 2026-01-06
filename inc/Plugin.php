@@ -47,7 +47,7 @@ class Plugin {
 	 */
 	public function init_plugin(): void {
 		// Register custom REST endpoints.
-		new SettingsController( 'try_aura_api_key' );
+		new SettingsController( 'try_aura_settings' );
 		new GenerateController();
 		new DashboardController();
 

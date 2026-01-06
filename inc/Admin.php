@@ -15,7 +15,7 @@ class Admin {
 	 *
 	 * @var string
 	 */
-	private string $option_key = 'try_aura_api_key';
+	private string $option_key = 'try_aura_settings';
 
 	/**
 	 * Bootstrap admin hooks.
@@ -57,14 +57,13 @@ class Admin {
 			'try_aura',
 			$this->option_key,
 			array(
-				'type'              => 'string',
-				'sanitize_callback' => 'sanitize_text_field',
-				'default'           => '',
-				'show_in_rest'      => array(
+				'type'          => 'object',
+				'default'       => array(),
+				'show_in_rest'  => array(
 					'name'   => $this->option_key,
-					'schema' => array( 'type' => 'string' ),
+					'schema' => array( 'type' => 'object' ),
 				),
-				'auth_callback'     => function () {
+				'auth_callback' => function () {
 					return current_user_can( 'manage_options' );
 				},
 			)
@@ -79,6 +78,9 @@ class Admin {
 			return;
 		}
 
+		$settings = get_option( $this->option_key, array() );
+		$api_key  = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
+
 		// Localize data for the app.
 		wp_localize_script(
 			'try-aura-admin',
@@ -86,7 +88,7 @@ class Admin {
 			array(
 				'restUrl'   => esc_url_raw( rest_url() ),
 				'nonce'     => wp_create_nonce( 'wp_rest' ),
-				'apiKey'    => get_option( $this->option_key, '' ),
+				'apiKey'    => $api_key,
 				'optionKey' => $this->option_key,
 			)
 		);

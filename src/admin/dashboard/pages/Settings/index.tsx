@@ -33,18 +33,26 @@ const Index = () => {
 					<div className="flex flex-col justify-center">
 						<div className="flex mb-[10px] items-center">
 							<div className="font-semibold text-base leading-[22.88px] tracking-normal">
-								Gemin API
+								{ __( 'Gemini API', 'try-aura' ) }
 							</div>
 							<div className="ml-[12px]">
-								<p className="bg-green-100 text-green-700 rounded m-0 py-1 px-3">
-									Connected
-								</p>
+								{ window.tryAura?.apiKey ? (
+									<p className="bg-green-100 text-green-700 rounded m-0 py-1 px-3">
+										{ __( 'Connected', 'try-aura' ) }
+									</p>
+								) : (
+									<p className="bg-red-100 text-red-700 rounded m-0 py-1 px-3">
+										{ __( 'Disconnected', 'try-aura' ) }
+									</p>
+								) }
 							</div>
 						</div>
 
 						<div className=" text-[14px] text-gray-600 opacity-70">
-							This key authenticates requests between your
-							store and TryAura services.
+							{ __(
+								'This key authenticates requests between your store and TryAura services.',
+								'try-aura'
+							) }
 						</div>
 					</div>
 				</div>

@@ -9,39 +9,41 @@ import { useNavigate } from 'react-router-dom';
 import { useSelect } from '@wordpress/data';
 
 const GeminiIntegrationSettings = () => {
-	const { videoModels, imageModels } = useSelect( ( select ) => {
-		const models =
-			select( 'try-aura/ai-models' ).getProviderModels( 'google' );
+	const { videoModels, imageModels, defaultImageModel, defaultVideoModel } =
+		useSelect( ( select ) => {
+			const models =
+				select( 'try-aura/ai-models' ).getProviderModels( 'google' ) ||
+				{};
 
-		const videoModels = [];
-		const imageModels = [];
+			const vModels: any[] = [];
+			const iModels: any[] = [];
 
-		Object.keys( models ).forEach( ( key ) => {
-			const model = {
-				label: models[ key ].label,
-				value: key,
+			Object.keys( models ).forEach( ( key ) => {
+				const model = {
+					label: models[ key ].label,
+					value: key,
+				};
+
+				if ( models[ key ].identity === 'video' ) {
+					vModels.push( model );
+				} else if ( models[ key ].identity === 'image' ) {
+					iModels.push( model );
+				}
+			} );
+
+			return {
+				videoModels: vModels,
+				imageModels: iModels,
+				defaultImageModel:
+					select( 'try-aura/ai-models' ).getDefaultImageModel(),
+				defaultVideoModel:
+					select( 'try-aura/ai-models' ).getDefaultVideoModel(),
 			};
-
-			if ( models[ key ].identity === 'video' ) {
-				videoModels.push( model );
-			} else if ( models[ key ].identity === 'image' ) {
-				imageModels.push( model );
-			}
-		} );
-
-		return {
-			videoModels,
-			imageModels,
-		};
-	} );
-
-	console.log( videoModels, imageModels );
+		}, [] );
 
 	const navigate = useNavigate();
 	const data = window.tryAura!;
-	const [ isSettingsMainPage, setIsSettingsMainPage ] =
-		useState< boolean >( true );
-	const [ apiKey, setApiKey ] = useState< string >( data.apiKey || '' );
+	const [ apiKey, setApiKey ] = useState< string >( '' );
 
 	useEffect( () => {
 		// Attach REST middlewares: root + nonce for admin context.
@@ -63,11 +65,25 @@ const GeminiIntegrationSettings = () => {
 		( async () => {
 			try {
 				const res = await apiFetch( { path: '/try-aura/v1/settings' } );
-				const current = ( res as Record< string, unknown > )[
+				const current = ( res as Record< string, any > )[
 					data.optionKey
 				];
-				if ( ! cancelled && typeof current === 'string' ) {
-					setApiKey( current );
+				if (
+					! cancelled &&
+					current &&
+					typeof current === 'object' &&
+					current.google
+				) {
+					setApiKey( current.google.apiKey || '' );
+					setSelectedImageModel(
+						current.google.imageModel || defaultImageModel
+					);
+					setSelectedVideoModel(
+						current.google.videoModel || defaultVideoModel
+					);
+				} else if ( ! cancelled ) {
+					setSelectedImageModel( defaultImageModel );
+					setSelectedVideoModel( defaultVideoModel );
 				}
 			} catch ( e ) {
 				// Ignore fetch errors here; the field will fallback to localized value.
@@ -76,7 +92,7 @@ const GeminiIntegrationSettings = () => {
 		return () => {
 			cancelled = true;
 		};
-	}, [ data.optionKey ] );
+	}, [ data.optionKey, defaultImageModel, defaultVideoModel ] );
 
 	const onSave = async () => {
 		setSaving( true );
@@ -87,15 +103,27 @@ const GeminiIntegrationSettings = () => {
 			const res = await apiFetch( {
 				path: '/try-aura/v1/settings',
 				method: 'POST',
-				data: { [ data.optionKey ]: apiKey },
+				data: {
+					[ data.optionKey ]: {
+						google: {
+							apiKey,
+							imageModel: selectedImageModel,
+							videoModel: selectedVideoModel,
+						},
+					},
+				},
 			} );
 			// Update local state with returned value (mirrors saved setting)
-			const newValue = ( res as Record< string, unknown > )[
-				data.optionKey
-			];
-			setApiKey(
-				( typeof newValue === 'string' ? newValue : apiKey ) as string
-			);
+			const newValue = ( res as Record< string, any > )[ data.optionKey ];
+			if ( newValue && newValue.google ) {
+				setApiKey( newValue.google.apiKey || '' );
+				setSelectedImageModel(
+					newValue.google.imageModel || defaultImageModel
+				);
+				setSelectedVideoModel(
+					newValue.google.videoModel || defaultVideoModel
+				);
+			}
 			setSaved( true );
 		} catch ( e: unknown ) {
 			const msg =
@@ -151,29 +179,32 @@ const GeminiIntegrationSettings = () => {
 						</div>
 					</div>
 					<ApiKeyInput apiKey={ apiKey } setApiKey={ setApiKey } />
-					<div>
-						<ModernSelect
-							value={ selectedImageModel }
-							label="Select Image Model"
-							onChange={ ( val ) => {
-								console.log( val );
-								setSelectedImageModel( val );
-							} }
-							options={ imageModels }
-							variant="list"
-						/>
-					</div>
-					<div>
-						<ModernSelect
-							value={ selectedVideoModel }
-							label="Select Video Model"
-							onChange={ ( val ) => {
-								setSelectedVideoModel( val );
-							} }
-							options={ videoModels }
-							variant="list"
-						/>
-					</div>
+					{ apiKey && (
+						<>
+							<div>
+								<ModernSelect
+									value={ selectedImageModel }
+									label="Select Image Model"
+									onChange={ ( val ) => {
+										setSelectedImageModel( val );
+									} }
+									options={ imageModels }
+									variant="list"
+								/>
+							</div>
+							<div>
+								<ModernSelect
+									value={ selectedVideoModel }
+									label="Select Video Model"
+									onChange={ ( val ) => {
+										setSelectedVideoModel( val );
+									} }
+									options={ videoModels }
+									variant="list"
+								/>
+							</div>
+						</>
+					) }
 				</div>
 			</div>
 

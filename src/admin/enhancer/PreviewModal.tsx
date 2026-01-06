@@ -30,7 +30,8 @@ async function resolveApiKey(): Promise< string | null > {
 		const data = ( await apiFetch( {
 			path: '/try-aura/v1/settings',
 		} ) ) as any;
-		const opt = ( data && data.try_aura_api_key ) as string | undefined;
+		const settings = data && data.try_aura_settings;
+		const opt = settings && settings.google && settings.google.apiKey;
 		return opt && opt.length > 0 ? opt : null;
 	} catch {
 		return null;

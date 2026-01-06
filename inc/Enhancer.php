@@ -33,6 +33,9 @@ class Enhancer {
 		$post_id   = $post ? $post->ID : 0;
 		$post_type = $post ? $post->post_type : '';
 
+		$settings = get_option( 'try_aura_settings', array() );
+		$api_key  = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
+
 		// Pass settings (API key, REST URL, nonce) to the enhancer UI.
 		wp_localize_script(
 			'try-aura-enhancer',
@@ -40,7 +43,7 @@ class Enhancer {
 			array(
 				'restUrl'  => esc_url_raw( rest_url() ),
 				'nonce'    => wp_create_nonce( 'wp_rest' ),
-				'apiKey'   => get_option( 'try_aura_api_key', '' ),
+				'apiKey'   => $api_key,
 				'postId'   => $post_id,
 				'postType' => $post_type,
 			)

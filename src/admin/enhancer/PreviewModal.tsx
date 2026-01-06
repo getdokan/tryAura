@@ -607,21 +607,6 @@ const PreviewModal = ( {
 				);
 			}
 
-			// Console log token costs
-			const usage =
-				( operation.metadata as any )?.usage ||
-				( operation.response as any )?.usageMetadata ||
-				( operation.response as any )?.generateVideoResponse
-					?.usageMetadata ||
-				( operation.metadata as any )?.usageMetadata ||
-				( operation.response as any )?.usage;
-
-			if ( usage ) {
-				console.log( 'Video generation token costs:', usage );
-			} else {
-				console.log( 'Video generation operation:', operation );
-			}
-
 			const uri = applyFilters(
 				'tryaura.video_generation_download_uri',
 				operation.response?.generateVideoResponse

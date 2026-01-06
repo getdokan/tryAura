@@ -1,13 +1,14 @@
 import { useState } from 'react';
 
-export default function ApiKeyInput() {
-  const [apiKey, setApiKey] = useState('');
+export default function ApiKeyInput({apiKey, setApiKey}) {
   const [isHidden, setIsHidden] = useState(true);
+
+  
 
   return (
     <div className="flex flex-col w-full">
       {/* Label */}
-      <label className="font-inter font-medium text-[14px] leading-[150%] tracking-normal align-middle">
+      <label className="font-medium text-[14px] leading-[150%] tracking-normal align-middle">
         Gemini API KEY
       </label>
 

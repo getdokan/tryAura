@@ -1,5 +1,4 @@
 import { useEffect, useState } from '@wordpress/element';
-import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import geminiLogo from './assets/geminiLogo.svg';
 import {Button} from '../../../components'
@@ -17,78 +16,19 @@ declare global {
 }
 
 const Settings = () => {
-	const data = window.tryAura!;
 
-	useEffect( () => {
-		// Attach REST middlewares: root + nonce for admin context.
-		apiFetch.use( apiFetch.createRootURLMiddleware( data.restUrl ) );
-		apiFetch.use( apiFetch.createNonceMiddleware( data.nonce ) );
-	}, [] );
 
-	const [ apiKey, setApiKey ] = useState< string >( data.apiKey || '' );
-	const [ saving, setSaving ] = useState< boolean >( false );
-	const [ saved, setSaved ] = useState< boolean >( false );
-	const [ error, setError ] = useState< string | null >( null );
 
 	const [ isSettingsMainPage, setIsSettingsMainPage ] = useState< boolean >( true);
 
 
-	// On mount, fetch the current saved value to ensure persistence across reloads.
-	useEffect( () => {
-		let cancelled = false;
-		( async () => {
-			try {
-				const res = await apiFetch( { path: '/try-aura/v1/settings' } );
-				const current = ( res as Record< string, unknown > )[
-					data.optionKey
-				];
-				if ( ! cancelled && typeof current === 'string' ) {
-					setApiKey( current );
-				}
-			} catch ( e ) {
-				// Ignore fetch errors here; the field will fallback to localized value.
-			}
-		} )();
-		return () => {
-			cancelled = true;
-		};
-	}, [ data.optionKey ] );
-
-	const onSave = async () => {
-		setSaving( true );
-		setSaved( false );
-		setError( null );
-		try {
-			// Update via WP Settings REST endpoint; our option is exposed via register_setting.
-			const res = await apiFetch( {
-				path: '/try-aura/v1/settings',
-				method: 'POST',
-				data: { [ data.optionKey ]: apiKey },
-			} );
-			// Update local state with returned value (mirrors saved setting)
-			const newValue = ( res as Record< string, unknown > )[
-				data.optionKey
-			];
-			setApiKey(
-				( typeof newValue === 'string' ? newValue : apiKey ) as string
-			);
-			setSaved( true );
-		} catch ( e: unknown ) {
-			const msg =
-				e && typeof e === 'object' && 'message' in e
-					? String( ( e as any ).message )
-					: __( 'Something went wrong', 'try-aura' );
-			setError( msg );
-		} finally {
-			setSaving( false );
-		}
-	};
+	
 
 	return (
 		<>
 			{isSettingsMainPage && (
 				<div>
-					<div className='font-inter font-semibold text-[20px] leading-[28px] align-middle mb-[30px]'>
+					<div className='font-semibold text-[20px] leading-[28px] align-middle mb-[30px]'>
 						Settings
 					</div>
 
@@ -99,7 +39,7 @@ const Settings = () => {
 							</div>
 							<div className='flex flex-col justify-center'>
 								<div className='flex mb-[10px]'>
-									<div className="font-sans font-semibold text-base leading-[22.88px] tracking-normal">
+									<div className="font-semibold text-base leading-[22.88px] tracking-normal">
 										Gemin API
 									</div>
 									<div className='ml-[12px]'>

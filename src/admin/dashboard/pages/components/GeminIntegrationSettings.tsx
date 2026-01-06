@@ -3,16 +3,83 @@ import geminiLogo from '../assets/geminiLogo.svg';
 import ApiKeyInput from './ApiKeyInput';
 import { ModernSelect } from '../../../../components';
 import {Button} from '../../../../components';
-
-import { useState } from '@wordpress/element';
-
+import apiFetch from '@wordpress/api-fetch';
+import { useEffect, useState } from '@wordpress/element';
+import {
+	Spinner,
+} from '@wordpress/components';
 
 
 const GeminiIntegrationSettings = ({ isSettingsMainPage,
     setIsSettingsMainPage
  }) => {
+
+    const data = window.tryAura!;
+
+	useEffect( () => {
+		// Attach REST middlewares: root + nonce for admin context.
+		apiFetch.use( apiFetch.createRootURLMiddleware( data.restUrl ) );
+		apiFetch.use( apiFetch.createNonceMiddleware( data.nonce ) );
+	}, [] );
     const [selectedImageModel, setSelectedImageModel] = useState<string>("");
-    const [selectedVideoModel, setSelectedVideoModel] = useState<string>("")
+    const [selectedVideoModel, setSelectedVideoModel] = useState<string>("");
+	const [ apiKey, setApiKey ] = useState< string >( data.apiKey || '' );
+
+    const [ saving, setSaving ] = useState< boolean >( false );
+	const [ saved, setSaved ] = useState< boolean >( false );
+	const [ error, setError ] = useState< string | null >( null );
+
+
+    // On mount, fetch the current saved value to ensure persistence across reloads.
+        useEffect( () => {
+            let cancelled = false;
+            ( async () => {
+                try {
+                    const res = await apiFetch( { path: '/try-aura/v1/settings' } );
+                    const current = ( res as Record< string, unknown > )[
+                        data.optionKey
+                    ];
+                    if ( ! cancelled && typeof current === 'string' ) {
+                        setApiKey( current );
+                    }
+                } catch ( e ) {
+                    // Ignore fetch errors here; the field will fallback to localized value.
+                }
+            } )();
+            return () => {
+                cancelled = true;
+            };
+        }, [ data.optionKey ] );
+    
+        const onSave = async () => {
+            setSaving( true );
+            setSaved( false );
+            setError( null );
+            try {
+                // Update via WP Settings REST endpoint; our option is exposed via register_setting.
+                const res = await apiFetch( {
+                    path: '/try-aura/v1/settings',
+                    method: 'POST',
+                    data: { [ data.optionKey ]: apiKey },
+                } );
+                // Update local state with returned value (mirrors saved setting)
+                const newValue = ( res as Record< string, unknown > )[
+                    data.optionKey
+                ];
+                setApiKey(
+                    ( typeof newValue === 'string' ? newValue : apiKey ) as string
+                );
+                setSaved( true );
+            } catch ( e: unknown ) {
+                const msg =
+                    e && typeof e === 'object' && 'message' in e
+                        ? String( ( e as any ).message )
+                        : __( 'Something went wrong', 'try-aura' );
+                setError( msg );
+            } finally {
+                setSaving( false );
+            }
+        };
 
 
     return (
@@ -29,7 +96,7 @@ const GeminiIntegrationSettings = ({ isSettingsMainPage,
                     <ArrowLeft 
                         className='w-4 h-4 rotate-0 opacity-100'
                     /> 
-                    <div className="font-inter font-medium text-[14px] leading-[20px] tracking-normal text-center align-middle">
+                    <div className="font-medium text-[14px] leading-[20px] tracking-normal text-center align-middle">
                         Back to Settings
                 </div>
                 </div>
@@ -43,10 +110,10 @@ const GeminiIntegrationSettings = ({ isSettingsMainPage,
                             <img src={geminiLogo} />
                         </div>
                         <div>
-                            <div className="font-['Inter'] font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[5px]">
+                            <div className="font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[5px]">
                                 Gemini Integration
                             </div>
-                            <div className="text-sm text-gray-600 font-inter">
+                            <div className="text-sm text-gray-600">
                             Connect your Gemini account with an API key. Need help finding your <a 
                             href="#" 
                             className="text-blue-600 underline hover:text-blue-700" >
@@ -55,7 +122,10 @@ const GeminiIntegrationSettings = ({ isSettingsMainPage,
                             </div>
                         </div>
                     </div>
-                    <ApiKeyInput />
+                    <ApiKeyInput 
+                    apiKey = {apiKey}
+                    setApiKey={setApiKey}
+                    />
                     <div>
                         <ModernSelect
                             value={selectedImageModel}
@@ -93,17 +163,23 @@ const GeminiIntegrationSettings = ({ isSettingsMainPage,
             </div>
 
             <div className='flex gap-[10px] justify-end border-t border-solid border-[#f0e5e5] p-[22px]'>
-                            <Button
-                                className='py-3 px-7'
-                            >
-                                Connect
-                            </Button>
-                            <Button
-                                className='py-3 px-7'
-                                variant='outline'
-                            >
-                                Cancel
-                            </Button>
+                <Button
+                    className='py-3 px-7'
+                    onClick={onSave}
+					disabled={ saving }
+                    
+                >
+                    Connect
+                </Button>
+                <Button
+                    className='py-3 px-7'
+                    variant='outline'
+                    onClick={()=> {
+                        setIsSettingsMainPage(true);
+                    }}
+                >
+                    Cancel
+                </Button>
             </div>
         </>
     )

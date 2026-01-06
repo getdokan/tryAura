@@ -324,6 +324,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				);
 			}
 
+			// @ts-ignore
+			const productId = window?.tryAura?.productId;
+
 			const data = ( await apiFetch( {
 				url: `${ restUrl.replace( /\/?$/, '/' ) }generate/v1/image`,
 				method: 'POST',
@@ -333,6 +336,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				data: {
 					prompt: promptText,
 					images,
+					object_id: productId,
+					object_type: 'product',
+					generated_from: 'tryon',
 				},
 			} ) ) as any;
 

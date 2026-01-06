@@ -21,6 +21,8 @@ use Dokan\TryAura\Abstracts\Model;
  * @property int          $output_count
  * @property string       $status
  * @property string       $error_message
+ * @property int          $object_id
+ * @property string       $object_type
  * @property string|array $meta
  * @property string       $created_at
  */

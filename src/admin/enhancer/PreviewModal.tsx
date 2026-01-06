@@ -278,6 +278,9 @@ const PreviewModal = ( {
 			setError( null );
 
 			const usage = response?.usageMetadata;
+			const postId = window?.tryAura?.postId;
+			const postType = window?.tryAura?.postType;
+
 			apiFetch( {
 				path: '/try-aura/v1/log-usage',
 				method: 'POST',
@@ -289,6 +292,8 @@ const PreviewModal = ( {
 					output_tokens: usage?.responseTokenCount,
 					total_tokens: usage?.totalTokenCount,
 					generated_from: 'admin',
+					object_id: postId,
+					object_type: postType,
 					status: 'success',
 				},
 			} ).catch( () => {
@@ -655,6 +660,9 @@ const PreviewModal = ( {
 			const video = document.createElement( 'video' );
 			video.src = objectUrl;
 			video.onloadedmetadata = () => {
+				const postId = window?.tryAura?.postId;
+				const postType = window?.tryAura?.postType;
+
 				apiFetch( {
 					path: '/try-aura/v1/log-usage',
 					method: 'POST',
@@ -664,6 +672,8 @@ const PreviewModal = ( {
 						prompt: videoPromptText,
 						video_seconds: video.duration,
 						generated_from: 'admin',
+						object_id: postId,
+						object_type: postType,
 						status: 'success',
 					},
 				} ).catch( () => {

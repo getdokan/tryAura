@@ -27,25 +27,10 @@ async function resolveApiKey(): Promise< string | null > {
 		if ( key && key.length > 0 ) {
 			return key;
 		}
-		const rest = window?.tryAura?.restUrl;
-		const nonce = window?.tryAura?.nonce;
-		if ( ! rest || ! nonce ) {
-			return null;
-		}
-		const res = await fetch(
-			rest.replace( /\/?$/, '/' ) + 'try-aura/v1/settings',
-			{
-				headers: { 'X-WP-Nonce': nonce },
-				credentials: 'same-origin',
-			}
-		);
-		if ( ! res.ok ) {
-			return null;
-		}
-		const data = await res.json();
-		const opt = ( data && ( data as any ).try_aura_api_key ) as
-			| string
-			| undefined;
+		const data = ( await apiFetch( {
+			path: '/try-aura/v1/settings',
+		} ) ) as any;
+		const opt = ( data && data.try_aura_api_key ) as string | undefined;
 		return opt && opt.length > 0 ? opt : null;
 	} catch {
 		return null;
@@ -251,10 +236,11 @@ const PreviewModal = ( {
 					model: 'gemini-2.5-flash-image-preview',
 					contents: prompt,
 					config: {
+						responseModalities: [ 'IMAGE' ],
 						candidateCount: 1,
-						// imageConfig: {
-						// 	aspectRatio: '16:9',
-						// },
+						imageConfig: {
+								aspectRatio: '1:1',
+						},
 					},
 				} )
 			);
@@ -353,33 +339,29 @@ const PreviewModal = ( {
 				nonce,
 				restBase
 			);
-			const uploadRes = await fetch(
-				applyFilters(
+			const uploadRes = await apiFetch( {
+				url: applyFilters(
 					'tryaura.media_upload_rest_api',
-					`${ restBase }'wp/v2/media`
+					`${ restBase }wp/v2/media`
 				),
-				{
-					method: 'POST',
-					headers: {
-						'X-WP-Nonce': nonce,
-						'Content-Disposition': `attachment; filename="${ filename }"`,
-						'Content-Type': mime,
-					},
-					credentials: 'same-origin',
-					body: blob,
-				}
-			);
-			if ( ! uploadRes.ok ) {
-				const text = await uploadRes.text();
+				method: 'POST',
+				headers: {
+					'Content-Disposition': `attachment; filename="${ filename }"`,
+					'Content-Type': mime,
+				},
+				body: blob,
+			} ).catch( ( e: any ) => {
+				const text = e?.message || 'Upload failed.';
 				doAction(
 					'tryaura.ai_enhance_upload_failed',
 					filename,
 					blob,
 					text
 				);
-				throw new Error( text || 'Upload failed.' );
-			}
-			const json = await uploadRes.json();
+				throw new Error( text );
+			} );
+
+			const json: any = uploadRes;
 			const newId = json?.id;
 			if ( ! newId ) {
 				doAction( 'tryaura.ai_enhance_upload_failed', filename, blob );
@@ -714,33 +696,31 @@ const PreviewModal = ( {
 				? `enhanced-video-${ primaryAttachmentId }-${ Date.now() }.${ ext }`
 				: `enhanced-video-${ Date.now() }.${ ext }`;
 
-			const uploadRes = await fetch(
-				applyFilters(
-					'tryaura.video_generation_upload',
-					restBase + 'wp/v2/media'
-				),
+			const uploadRes = await apiFetch(
 				applyFilters( 'tryaura.video_generation_upload_options', {
+					url: applyFilters(
+						'tryaura.video_generation_upload',
+						restBase + 'wp/v2/media'
+					),
 					method: 'POST',
 					headers: {
-						'X-WP-Nonce': nonce,
 						'Content-Disposition': `attachment; filename="${ filename }"`,
 						'Content-Type': mime,
 					},
-					credentials: 'same-origin',
 					body: blob,
 				} )
-			);
-			if ( ! uploadRes.ok ) {
-				const text = await uploadRes.text();
+			).catch( ( e: any ) => {
+				const text = e?.message || __( 'Upload failed.', 'try-aura' );
 				doAction(
 					'tryaura.video_generation_upload_failed',
 					filename,
 					blob,
 					text
 				);
-				throw new Error( text || __( 'Upload failed.', 'try-aura' ) );
-			}
-			const json = await uploadRes.json();
+				throw new Error( text );
+			} );
+
+			const json: any = uploadRes;
 			const newId = json?.id;
 			if ( ! newId ) {
 				throw new Error(

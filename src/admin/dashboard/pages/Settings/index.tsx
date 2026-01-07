@@ -1,9 +1,6 @@
-import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import geminiLogo from './assets/geminiLogo.svg';
 import { Button } from '../../../../components';
-import GeminiIntegrationSettings from './components/GeminIntegrationSettings';
-import apiFetch from '@wordpress/api-fetch';
 import { useNavigate } from "react-router-dom";
 
 declare global {
@@ -22,10 +19,10 @@ const Index = () => {
 	const navigate = useNavigate();
 	return (
 		<div>
-			<div className="font-semibold text-[20px] leading-[28px] align-middle mb-[30px]">
-				Settings
-			</div>
-			<div className="flex justify-between bg-[#FFFFFF] border-2 border-[#FFFFFF] p-7 rounded-[20px]">
+			<h1 className="font-[600] font-semibold text-[20px] leading-[28px] text-[rgba(51,51,51,0.8)]">
+				{ __( 'Settings', 'try-aura' ) }
+			</h1>
+			<div className="mt-[20px] flex justify-between bg-[#FFFFFF] border-2 border-[#FFFFFF] p-7 rounded-[16px]">
 				<div className="flex">
 					<div className="mr-[14px]">
 						<img src={ geminiLogo } alt="gemini logo" />

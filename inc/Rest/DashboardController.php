@@ -27,10 +27,41 @@ class DashboardController {
 			'callback'            => array( $this, 'log_usage' ),
 			'permission_callback' => array( $this, 'permissions_check' ),
 		) );
+
+		register_rest_route( $this->namespace, '/activities', array(
+			'methods'             => 'GET',
+			'callback'            => array( $this, 'get_activities' ),
+			'permission_callback' => array( $this, 'permissions_check' ),
+			'args'                => array(
+				'limit' => array(
+					'default'           => 5,
+					'sanitize_callback' => 'absint',
+					'schema'            => array(
+						'type'    => 'integer',
+						'default' => 5,
+					),
+				),
+				'type'  => array(
+					'default'           => '',
+					'sanitize_callback' => 'sanitize_text_field',
+					'schema'            => array(
+						'type' => 'string',
+						'enum' => array( '', 'image', 'video', 'tryon' ),
+					),
+				),
+			),
+		) );
 	}
 
 	public function permissions_check() {
 		return current_user_can( 'manage_options' );
+	}
+
+	public function get_activities( WP_REST_Request $request ) {
+		$params     = $request->get_params();
+		$activities = $this->manager->get_recent_activities( $params );
+
+		return new WP_REST_Response( $activities, 200 );
 	}
 
 	public function get_stats( WP_REST_Request $request ) {

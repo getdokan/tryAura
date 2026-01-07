@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import StateCardItem from './Components/StateCardItem';
+import RecentActivity from './Components/RecentActivity';
 import { Image, Video, Sparkles, Clock, Eye } from 'lucide-react';
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
@@ -102,6 +103,8 @@ function Index() {
 					loading={ loading }
 				/>
 			</div>
+
+			<RecentActivity />
 		</div>
 	);
 }

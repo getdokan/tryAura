@@ -113,4 +113,48 @@ class UsageManager {
 			'video_seconds' => (float) $video_seconds,
 		);
 	}
+
+	/**
+	 * Get recent activities.
+	 *
+	 * @param array $args Filter arguments.
+	 *
+	 * @return array
+	 */
+	public function get_recent_activities( array $args = array() ): array {
+		global $wpdb;
+		$table = self::get_table_name();
+
+		$limit = isset( $args['limit'] ) ? (int) $args['limit'] : 5;
+		$type  = $args['type'] ?? null;
+
+		$where  = "WHERE status = 'success'";
+		$params = array();
+
+		if ( $type ) {
+			if ( $type === 'tryon' ) {
+				$where .= " AND generated_from = 'tryon'";
+			} else {
+				$where   .= ' AND type = %s';
+				$params[] = $type;
+			}
+		}
+
+		$sql = "SELECT * FROM $table $where ORDER BY created_at DESC LIMIT $limit";
+		if ( ! empty( $params ) ) {
+			$sql = $wpdb->prepare( $sql, $params );
+		}
+
+		$results = $wpdb->get_results( $sql, ARRAY_A );
+
+		foreach ( $results as &$result ) {
+			$result['object_name'] = '';
+			if ( ! empty( $result['object_id'] ) ) {
+				$result['object_name'] = get_the_title( $result['object_id'] );
+			}
+			$result['human_time_diff'] = human_time_diff( strtotime( $result['created_at'] ), current_time( 'timestamp' ) ) . ' ' . __( 'ago', 'try-aura' );
+		}
+
+		return $results;
+	}
 }

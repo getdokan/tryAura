@@ -11,7 +11,7 @@ const tabs = [
 	{ id: 'tryon', label: __( 'Try Ons', 'try-aura' ) },
 ];
 
-function RecentActivity() {
+function RecentActivity( { className = '' } ) {
 	const [ activeTab, setActiveTab ] = useState( '' );
 	const [ activities, setActivities ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
@@ -65,7 +65,7 @@ function RecentActivity() {
 	};
 
 	return (
-		<div className="bg-white rounded-[16px] border border-[rgba(230,230,230,1)] p-[24px] h-full w-full">
+		<div className={ className }>
 			<div className="flex flex-row flex-wrap justify-between gap-[24px] mb-[24px]">
 				<h2 className="text-[18px] font-[600] text-[rgba(51,51,51,1)] m-0">
 					{ __( 'Recent Activity', 'try-aura' ) }

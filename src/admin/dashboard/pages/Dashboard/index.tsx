@@ -105,9 +105,9 @@ function Index() {
 				/>
 			</div>
 
-			<div className="mt-[32px] flex flex-col md:flex-row gap-[32px]">
-				<RecentActivity />
-				<TryAuraConfiguration />
+			<div className="mt-[32px] grid grid-cols-1 lg:grid-cols-3 gap-[32px]">
+				<RecentActivity className="bg-white lg:col-span-2 rounded-[16px] border border-[rgba(230,230,230,1)] p-[24px] h-full w-full flex flex-col" />
+				<TryAuraConfiguration className="bg-white lg:col-span-1 rounded-[16px] border border-[rgba(230,230,230,1)] p-[24px] flex flex-col items-center justify-center text-center h-full w-full" />
 			</div>
 		</div>
 	);

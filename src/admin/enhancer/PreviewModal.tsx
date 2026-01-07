@@ -871,6 +871,7 @@ const PreviewModal = ( {
 						className="w-[16px] h-[16px] cursor-pointer"
 						onClick={ onClose }
 						aria-label="Close modal"
+						disabled={ isBusy || isVideoBusy }
 					>
 						<X size={ 16 } />
 					</button>

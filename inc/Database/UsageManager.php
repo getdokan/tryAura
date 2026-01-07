@@ -101,17 +101,21 @@ class UsageManager {
 
 		$image_count   = $wpdb->get_var( $sql_image );
 		$video_count   = $wpdb->get_var( $sql_video );
-		$tryon_count   = $wpdb->get_var( $sql_tryon );
 		$total_tokens  = $wpdb->get_var( $sql_tokens );
 		$video_seconds = $wpdb->get_var( $sql_seconds );
 
-		return array(
+		$stats = array(
 			'image_count'   => (int) $image_count,
 			'video_count'   => (int) $video_count,
-			'tryon_count'   => (int) $tryon_count,
 			'total_tokens'  => (int) $total_tokens,
 			'video_seconds' => (float) $video_seconds,
 		);
+
+		if ( class_exists( 'WooCommerce' ) ) {
+			$stats['tryon_count'] = (int) $wpdb->get_var( $sql_tryon );
+		}
+
+		return $stats;
 	}
 
 	/**
@@ -133,11 +137,18 @@ class UsageManager {
 
 		if ( $type ) {
 			if ( $type === 'tryon' ) {
+				if ( ! class_exists( 'WooCommerce' ) ) {
+					return array();
+				}
 				$where .= " AND generated_from = 'tryon'";
 			} else {
 				$where   .= ' AND type = %s';
 				$params[] = $type;
 			}
+		}
+
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			$where .= " AND generated_from != 'tryon'";
 		}
 
 		$sql = "SELECT * FROM $table $where ORDER BY created_at DESC LIMIT $limit";

@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import StateCardItem from './Components/StateCardItem';
 import RecentActivity from './Components/RecentActivity';
+import TryAuraConfiguration from './Components/TryAuraConfiguration';
 import { Image, Video, Sparkles, Clock, Eye } from 'lucide-react';
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
@@ -66,7 +67,7 @@ function Index() {
 				</div>
 			</div>
 
-			<div className="mt-[16px] flex flex-row gap-[32px] flex-wrap">
+			<div className="mt-[16px] flex flex-col md:flex-row gap-[32px] flex-wrap">
 				<StateCardItem
 					title={ __( 'Images Generated', 'try-aura' ) }
 					value={ stats.image_count }
@@ -104,7 +105,10 @@ function Index() {
 				/>
 			</div>
 
-			<RecentActivity />
+			<div className="mt-[32px] flex flex-col md:flex-row gap-[32px]">
+				<RecentActivity />
+				<TryAuraConfiguration />
+			</div>
 		</div>
 	);
 }

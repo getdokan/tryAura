@@ -560,14 +560,49 @@ const PreviewModal = ( {
 					: ''
 			);
 			const { styles, cameraMotion, aspectRatio } = videoConfigData;
-			let videoPromptText = '';
-			if ( isBlockPage ) {
-				videoPromptText = `Create a smooth high-quality video based on the provided image and the following user instructions: ${ videoConfigData?.optionalPrompt?.trim() }. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. ${ safetyInstruction }`;
-			} else if ( videoSource === 'generated-image' ) {
-				videoPromptText = `Create a smooth product showcase video based on the generated try-on image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras } ${ safetyInstruction }`;
-			} else {
-				videoPromptText = `Create a smooth product showcase video based on the provided original image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras } ${ safetyInstruction }`;
+
+			const cameraMotionText =
+				cameraMotion && cameraMotion !== 'none'
+					? `Apply a '${ cameraMotion }' camera motion, ensuring the subject or product remains centered in the frame at all times.`
+					: '';
+
+			let styleText = '';
+			if ( styles && styles !== 'none' ) {
+				if ( styles === 'natural' ) {
+					styleText =
+						'Ensure the lighting and environment look natural and realistic.';
+				} else if ( styles === 'studio' ) {
+					styleText =
+						'Use professional studio lighting with a clean, high-end look.';
+				} else if ( styles === 'cinematic' ) {
+					styleText =
+						'Apply cinematic lighting and color grading for a dramatic, movie-like quality.';
+				} else {
+					styleText = `Keep the scene aligned with ${ styles } preferences.`;
+				}
 			}
+
+			const baseInstruction = isBlockPage
+				? `Create a smooth high-quality video based on the provided image and the following user instructions: ${ videoConfigData?.optionalPrompt?.trim() }.`
+				: `Create a smooth product showcase video based on the ${
+						videoSource === 'generated-image'
+							? 'generated try-on image'
+							: 'provided original image'
+				  }.`;
+
+			const modelInstruction = ! isBlockPage
+				? `make the model walk relaxed.${ extras }`
+				: '';
+
+			let videoPromptText = [
+				baseInstruction,
+				cameraMotionText,
+				styleText,
+				modelInstruction,
+				safetyInstruction,
+			]
+				.filter( Boolean )
+				.join( ' ' );
 
 			videoPromptText = applyFilters(
 				'tryaura.video_generation_prompt',

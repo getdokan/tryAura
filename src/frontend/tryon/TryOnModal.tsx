@@ -390,6 +390,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 							className="w-[16px] h-[16px] cursor-pointer p-0 m-0 bg-transparent"
 							onClick={ onClose }
 							aria-label="Close modal"
+							disabled={ isBusy }
 						>
 							<X size={ 16 } />
 						</button>

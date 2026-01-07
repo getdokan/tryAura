@@ -62,5 +62,30 @@ class Plugin {
 			// Register the Featured Image Enhancer UI assets.
 			new Enhancer();
 		}
+
+		add_filter( 'rest_post_dispatch', array( $this, 'add_wc_existence_header' ), 10, 3 );
+	}
+
+	/**
+	 * Add WooCommerce existence header to plugin REST responses.
+	 *
+	 * @param mixed $response The response object.
+	 * @param mixed $server   Server instance.
+	 * @param mixed $request  The request object.
+	 *
+	 * @return mixed
+	 */
+	public function add_wc_existence_header( $response, $server, $request ) {
+		if ( ! ( $response instanceof \WP_REST_Response ) ) {
+			return $response;
+		}
+
+		$route = $request->get_route();
+
+		if ( strpos( $route, 'try-aura/v1' ) !== false || strpos( $route, 'generate/v1' ) !== false ) {
+			$response->header( 'X-Try-Aura-WC-Exists', class_exists( 'WooCommerce' ) ? 'true' : 'false' );
+		}
+
+		return $response;
 	}
 }

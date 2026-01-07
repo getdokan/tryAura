@@ -11,10 +11,23 @@ const tabs = [
 	{ id: 'tryon', label: __( 'Try Ons', 'try-aura' ) },
 ];
 
-function RecentActivity( { className = '' } ) {
+function RecentActivity( {
+	className = '',
+	wcExists = false,
+}: {
+	className?: string;
+	wcExists?: boolean;
+} ) {
 	const [ activeTab, setActiveTab ] = useState( '' );
 	const [ activities, setActivities ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
+
+	const filteredTabs = tabs.filter( ( tab ) => {
+		if ( tab.id === 'tryon' ) {
+			return wcExists;
+		}
+		return true;
+	} );
 
 	useEffect( () => {
 		setLoading( true );
@@ -71,7 +84,7 @@ function RecentActivity( { className = '' } ) {
 					{ __( 'Recent Activity', 'try-aura' ) }
 				</h2>
 				<div className="flex flex-row gap-[8px]">
-					{ tabs.map( ( tab ) => (
+					{ filteredTabs.map( ( tab ) => (
 						<button
 							key={ tab.id }
 							onClick={ () => setActiveTab( tab.id ) }

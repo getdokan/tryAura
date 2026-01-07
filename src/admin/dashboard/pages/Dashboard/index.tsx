@@ -26,6 +26,7 @@ function Index() {
 		video_seconds: 0,
 	} );
 	const [ loading, setLoading ] = useState( true );
+	const [ wcExists, setWcExists ] = useState( false );
 
 	const formatDateForApi = ( date?: Date ) => {
 		if ( ! date ) {
@@ -47,7 +48,21 @@ function Index() {
 		}
 
 		setLoading( true );
-		apiFetch( { path: addQueryArgs( '/try-aura/v1/stats', params ) } )
+		apiFetch( {
+			path: addQueryArgs( '/try-aura/v1/stats', params ),
+			parse: false,
+		} )
+			.then( ( response: any ) => {
+				setWcExists(
+					response.headers.get( 'X-Try-Aura-WC-Exists' ) === 'true'
+				);
+				if ( ! response.ok ) {
+					return response.json().then( ( err: any ) => {
+						throw err;
+					} );
+				}
+				return response.json();
+			} )
 			.then( ( data: any ) => {
 				setStats( data );
 				setLoading( false );
@@ -82,13 +97,15 @@ function Index() {
 					Icon={ Video }
 					loading={ loading }
 				/>
-				<StateCardItem
-					title={ __( 'Virtual Try-Ons', 'try-aura' ) }
-					value={ stats.tryon_count.toLocaleString() }
-					iconColor="#0ea5e9"
-					Icon={ Eye }
-					loading={ loading }
-				/>
+				{ wcExists && (
+					<StateCardItem
+						title={ __( 'Virtual Try-Ons', 'try-aura' ) }
+						value={ stats.tryon_count?.toLocaleString() || 0 }
+						iconColor="#0ea5e9"
+						Icon={ Eye }
+						loading={ loading }
+					/>
+				) }
 				<StateCardItem
 					title={ __( 'API Token Counts', 'try-aura' ) }
 					value={ stats.total_tokens.toLocaleString() }
@@ -106,7 +123,10 @@ function Index() {
 			</div>
 
 			<div className="mt-[32px] grid grid-cols-1 lg:grid-cols-3 gap-[32px]">
-				<RecentActivity className="bg-white lg:col-span-2 rounded-[16px] border border-[rgba(230,230,230,1)] p-[24px] h-full w-full flex flex-col" />
+				<RecentActivity
+					wcExists={ wcExists }
+					className="bg-white lg:col-span-2 rounded-[16px] border border-[rgba(230,230,230,1)] p-[24px] h-full w-full flex flex-col"
+				/>
 				<TryAuraConfiguration className="bg-white lg:col-span-1 rounded-[16px] border border-[rgba(230,230,230,1)] p-[24px] flex flex-col items-center justify-center text-center h-full w-full" />
 			</div>
 		</div>

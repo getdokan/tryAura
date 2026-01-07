@@ -56,6 +56,7 @@ const PreviewModal = ( {
 }: PreviewProps ) => {
 	const {
 		isBlockEditorPage,
+		isWoocommerceProductPage,
 		generatedUrl,
 		uploading,
 		videoUrl,
@@ -76,6 +77,7 @@ const PreviewModal = ( {
 			const aiModelsStore = select( 'try-aura/ai-models' );
 			return {
 				isBlockEditorPage: store.getIsBlockEditorPage(),
+				isWoocommerceProductPage: store.getIsWoocommerceProductPage(),
 				generatedUrl: store.getGeneratedUrl(),
 				uploading: store.getUploading(),
 				videoUrl: store.getVideoUrl(),
@@ -228,6 +230,19 @@ const PreviewModal = ( {
 			setMessage( 'Thinking and generating…' );
 			const ai = new GoogleGenAI( { apiKey } );
 
+			const isBlockPage = isBlockEditorPage && ! isWoocommerceProductPage;
+			const safetyInstruction =
+				'Do not generate any nudity, harassment, or abuse.';
+
+			if ( isBlockPage && ! imageConfigData?.optionalPrompt?.trim() ) {
+				throw new Error(
+					__(
+						'Please provide a prompt for the image generation.',
+						'try-aura'
+					)
+				);
+			}
+
 			const extras =
 				imageConfigData?.optionalPrompt &&
 				imageConfigData?.optionalPrompt.trim().length
@@ -241,14 +256,17 @@ const PreviewModal = ( {
 					  )
 					: '';
 
-			let promptText: string = `Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output.${ extras }${ multiHint }`;
+			let promptText: string = isBlockPage
+				? `Generate a high-quality AI image based on the provided image(s) and user instructions.\n\nInstructions: ${ imageConfigData?.optionalPrompt?.trim() }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }`
+				: `Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ extras }${ multiHint }`;
 			promptText = applyFilters(
 				'tryaura.ai_enhance_prompt_text',
 				promptText,
 				imageConfigData,
 				extras,
 				multiHint,
-				isBlockEditorPage
+				isBlockEditorPage,
+				isWoocommerceProductPage
 			);
 			const prompt = applyFilters( 'tryaura.ai_enhance_prompt', [
 				{ text: promptText },
@@ -521,6 +539,19 @@ const PreviewModal = ( {
 				defaultVideoModel ||
 				'veo-3.0-fast-generate-001';
 
+			const isBlockPage = isBlockEditorPage && ! isWoocommerceProductPage;
+			const safetyInstruction =
+				'Do not generate any nudity, harassment, or abuse.';
+
+			if ( isBlockPage && ! videoConfigData?.optionalPrompt?.trim() ) {
+				throw new Error(
+					__(
+						'Please provide a prompt for the video generation.',
+						'try-aura'
+					)
+				);
+			}
+
 			const extras = applyFilters(
 				'tryaura.video_generation_extras',
 				videoConfigData?.optionalPrompt &&
@@ -529,11 +560,20 @@ const PreviewModal = ( {
 					: ''
 			);
 			const { styles, cameraMotion, aspectRatio } = videoConfigData;
-			const videoPromptText = applyFilters(
+			let videoPromptText = '';
+			if ( isBlockPage ) {
+				videoPromptText = `Create a smooth high-quality video based on the provided image and the following user instructions: ${ videoConfigData?.optionalPrompt?.trim() }. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. ${ safetyInstruction }`;
+			} else if ( videoSource === 'generated-image' ) {
+				videoPromptText = `Create a smooth product showcase video based on the generated try-on image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras } ${ safetyInstruction }`;
+			} else {
+				videoPromptText = `Create a smooth product showcase video based on the provided original image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras } ${ safetyInstruction }`;
+			}
+
+			videoPromptText = applyFilters(
 				'tryaura.video_generation_prompt',
-				videoSource === 'generated-image'
-					? `Create a smooth product showcase video based on the generated try-on image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`
-					: `Create a smooth product showcase video based on the provided original image. Use '${ cameraMotion }' camera motion and keep the scene aligned with ${ styles } preferences. Aspect ratio: ${ aspectRatio }. make the model walk relaxed.${ extras }`
+				videoPromptText,
+				isBlockEditorPage,
+				isWoocommerceProductPage
 			);
 			// Extract base64 from the source URL
 			let sourceImageByteBase64 = '';

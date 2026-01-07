@@ -23,6 +23,7 @@ import ConfigFooter from './ConfigFooter';
 function VideoConfigInputs( { doGenerateVideo } ) {
 	const {
 		isBlockEditorPage,
+		isWoocommerceProductPage,
 		videoConfigData,
 		videoUrl,
 		isVideoBusy,
@@ -33,6 +34,7 @@ function VideoConfigInputs( { doGenerateVideo } ) {
 		const store = select( STORE_NAME );
 		return {
 			isBlockEditorPage: store.getIsBlockEditorPage(),
+			isWoocommerceProductPage: store.getIsWoocommerceProductPage(),
 			videoConfigData: store.getVideoConfigData(),
 			videoUrl: store.getVideoUrl(),
 			isVideoBusy: store.isVideoBusy(),
@@ -173,7 +175,9 @@ function VideoConfigInputs( { doGenerateVideo } ) {
 				htmlFor="try-aura-video-optional-prompt"
 			>
 				<span className="w-[500] text-[14px] mb-[8px]">
-					{ __( isBlockEditorPage ? 'Prompt' : 'Prompt (Optional)' ) }
+					{ isBlockEditorPage && ! isWoocommerceProductPage
+						? __( 'Prompt', 'try-aura' )
+						: __( 'Prompt (Optional)', 'try-aura' ) }
 				</span>
 				<textarea
 					className="border border-[#E9E9E9]"
@@ -184,12 +188,14 @@ function VideoConfigInputs( { doGenerateVideo } ) {
 						} )
 					}
 					rows={ 3 }
-					placeholder={ __(
-						isBlockEditorPage
-							? 'Add any specific instructions'
-							: 'Add any specific instructions (optional)',
-						'tryaura'
-					) }
+					placeholder={
+						isBlockEditorPage && ! isWoocommerceProductPage
+							? __( 'Add any specific instructions', 'try-aura' )
+							: __(
+									'Add any specific instructions (optional)',
+									'try-aura'
+							  )
+					}
 					id="try-aura-video-optional-prompt"
 				/>
 			</label>
@@ -200,7 +206,7 @@ function VideoConfigInputs( { doGenerateVideo } ) {
 				isBusy={ isVideoBusy }
 				uploading={ videoUploading }
 				downloadName="enhanced-video.mp4"
-				isBlockEditorPage={ isBlockEditorPage }
+				isBlockEditorPage={ isBlockEditorPage && ! isWoocommerceProductPage }
 				optionalPrompt={ videoConfigData?.optionalPrompt ?? '' }
 			/>
 		</>

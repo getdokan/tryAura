@@ -41,7 +41,7 @@ function ImageConfigInputs( { doGenerate } ) {
 	return (
 		<>
 			{ /* Controls */ }
-			{ ! isBlockEditorPage && isWoocommerceProductPage && (
+			{ isWoocommerceProductPage && (
 				<>
 					<ModernSelect
 						value={ imageConfigData?.backgroundType ?? '' }
@@ -142,11 +142,9 @@ function ImageConfigInputs( { doGenerate } ) {
 				} }
 			>
 				<span className="w-[500] text-[14px] mb-[8px]">
-					{ __(
-						isBlockEditorPage
-							? 'Prompt'
-							: 'Prompt (Optional)'
-						) }
+					{ isBlockEditorPage && ! isWoocommerceProductPage
+						? __( 'Prompt', 'try-aura' )
+						: __( 'Prompt (Optional)', 'try-aura' ) }
 				</span>
 				<textarea
 					className="border border-[#E9E9E9] placeholder-[#A5A5AA]"
@@ -158,12 +156,14 @@ function ImageConfigInputs( { doGenerate } ) {
 						} )
 					}
 					rows={ 3 }
-					placeholder={ __(
-						isBlockEditorPage
-							? 'Add any specific instructions'
-							: 'Add any specific instructions (optional)',
-						'tryaura'
-					) }
+					placeholder={
+						isBlockEditorPage && ! isWoocommerceProductPage
+							? __( 'Add any specific instructions', 'try-aura' )
+							: __(
+									'Add any specific instructions (optional)',
+									'try-aura'
+							  )
+					}
 				/>
 			</label>
 
@@ -173,8 +173,10 @@ function ImageConfigInputs( { doGenerate } ) {
 				isBusy={ isBusy }
 				uploading={ uploading }
 				downloadName="enhanced.png"
-				isBlockEditorPage = {isBlockEditorPage}
-				optionalPrompt = {imageConfigData?.optionalPrompt ?? ''}
+				isBlockEditorPage={
+					isBlockEditorPage && ! isWoocommerceProductPage
+				}
+				optionalPrompt={ imageConfigData?.optionalPrompt ?? '' }
 			/>
 		</>
 	);

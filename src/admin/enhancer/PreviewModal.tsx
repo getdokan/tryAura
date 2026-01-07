@@ -55,6 +55,7 @@ const PreviewModal = ( {
 	supportsVideo,
 }: PreviewProps ) => {
 	const {
+		isBlockEditorPage,
 		generatedUrl,
 		uploading,
 		videoUrl,
@@ -74,6 +75,7 @@ const PreviewModal = ( {
 			const store = select( STORE_NAME );
 			const aiModelsStore = select( 'try-aura/ai-models' );
 			return {
+				isBlockEditorPage: store.getIsBlockEditorPage(),
 				generatedUrl: store.getGeneratedUrl(),
 				uploading: store.getUploading(),
 				videoUrl: store.getVideoUrl(),
@@ -177,7 +179,8 @@ const PreviewModal = ( {
 				);
 			}
 
-			const { apiKey, imageModel: savedImageModel } = await resolveSettings();
+			const { apiKey, imageModel: savedImageModel } =
+				await resolveSettings();
 			if ( ! apiKey ) {
 				throw new Error(
 					__(
@@ -237,12 +240,15 @@ const PreviewModal = ( {
 							'\n\nNote: Multiple input images provided. If a person/model photo and separate product images are present, compose the result with the model wearing/using the product(s) while keeping the background as requested.'
 					  )
 					: '';
-			const promptText = applyFilters(
+
+			let promptText: string = `Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output.${ extras }${ multiHint }`;
+			promptText = applyFilters(
 				'tryaura.ai_enhance_prompt_text',
-				`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output.${ extras }${ multiHint }`,
+				promptText,
 				imageConfigData,
 				extras,
-				multiHint
+				multiHint,
+				isBlockEditorPage
 			);
 			const prompt = applyFilters( 'tryaura.ai_enhance_prompt', [
 				{ text: promptText },
@@ -252,18 +258,22 @@ const PreviewModal = ( {
 			] );
 
 			doAction( 'tryaura.ai_enhance_prompt_before_generate', prompt );
-			const response: any = await ( ai as any ).models.generateContent(
-				applyFilters( 'tryaura.ai_enhance_model_content', {
-					model: imageModel,
-					contents: prompt,
-					config: {
-						responseModalities: [ 'IMAGE' ],
-						candidateCount: 1,
-						imageConfig: {
-							aspectRatio: '1:1',
-						},
+			const contentParams = {
+				model: imageModel,
+				contents: prompt,
+				config: {
+					responseModalities: [ 'IMAGE' ],
+					candidateCount: 1,
+					imageConfig: {
+						aspectRatio: imageConfigData?.imageSize || '1:1',
 					},
-				} )
+				},
+			};
+			const response: any = await ( ai as any ).models.generateContent(
+				applyFilters(
+					'tryaura.ai_enhance_model_content',
+					contentParams
+				)
 			);
 			doAction( 'tryaura.ai_enhance_prompt_after_generate', response );
 
@@ -495,7 +505,8 @@ const PreviewModal = ( {
 			setVideoStatus( 'generating' );
 			setVideoMessage( __( 'Starting video generation…', 'try-aura' ) );
 
-			const { apiKey, videoModel: savedVideoModel } = await resolveSettings();
+			const { apiKey, videoModel: savedVideoModel } =
+				await resolveSettings();
 			if ( ! apiKey ) {
 				throw new Error(
 					__(

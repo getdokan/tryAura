@@ -2,7 +2,12 @@ import * as actionTypes from './action-types';
 import { AIStoreState } from './types';
 
 // @ts-ignore
-const initialState: AIStoreState = window?.tryAuraAiProviderModels ?? {};
+const initialState: AIStoreState = window?.tryAuraAiProviderModels ?? {
+	aiProviders: {},
+	defaultProvider: '',
+	defaultImageModel: '',
+	defaultVideoModel: '',
+};
 
 export default function reducer(
 	state = initialState,
@@ -15,29 +20,39 @@ export default function reducer(
 		case actionTypes.ADD_PROVIDER:
 			return {
 				...state,
-				[ action.providerId ]: {
-					...action.providerData,
-					...( state[ action.providerId ] || {} ),
+				aiProviders: {
+					...state.aiProviders,
+					[ action.providerId ]: {
+						...action.providerData,
+						...( state.aiProviders[ action.providerId ] || {} ),
+					},
 				},
 			};
 
 		case actionTypes.ADD_MODEL:
 			return {
 				...state,
-				[ action.providerId ]: {
-					...( state[ action.providerId ] || {} ),
-					[ action.modelId ]: action.modelData,
+				aiProviders: {
+					...state.aiProviders,
+					[ action.providerId ]: {
+						...( state.aiProviders[ action.providerId ] || {} ),
+						[ action.modelId ]: action.modelData,
+					},
 				},
 			};
 
 		case actionTypes.UPDATE_MODEL:
 			return {
 				...state,
-				[ action.providerId ]: {
-					...( state[ action.providerId ] || {} ),
-					[ action.modelId ]: {
-						...( state[ action.providerId ]?.[ action.modelId ] || {} ),
-						...action.modelData,
+				aiProviders: {
+					...state.aiProviders,
+					[ action.providerId ]: {
+						...( state.aiProviders[ action.providerId ] || {} ),
+						[ action.modelId ]: {
+							...( state.aiProviders[ action.providerId ]?.[ action.modelId ] ||
+								{} ),
+							...action.modelData,
+						},
 					},
 				},
 			};
@@ -45,17 +60,23 @@ export default function reducer(
 		case actionTypes.UPDATE_CAPABILITY:
 			return {
 				...state,
-				[ action.providerId ]: {
-					...( state[ action.providerId ] || {} ),
-					[ action.modelId ]: {
-						...( state[ action.providerId ]?.[ action.modelId ] || {} ),
-						capabilities: {
-							...( state[ action.providerId ]?.[ action.modelId ]?.capabilities || {} ),
-							[ action.capabilityId ]: {
-								...( state[ action.providerId ]?.[ action.modelId ]?.capabilities?.[
-									action.capabilityId
-								] || {} ),
-								...action.capabilityData,
+				aiProviders: {
+					...state.aiProviders,
+					[ action.providerId ]: {
+						...( state.aiProviders[ action.providerId ] || {} ),
+						[ action.modelId ]: {
+							...( state.aiProviders[ action.providerId ]?.[ action.modelId ] ||
+								{} ),
+							capabilities: {
+								...( state.aiProviders[ action.providerId ]?.[
+									action.modelId
+								]?.capabilities || {} ),
+								[ action.capabilityId ]: {
+									...( state.aiProviders[ action.providerId ]?.[
+										action.modelId
+									]?.capabilities?.[ action.capabilityId ] || {} ),
+									...action.capabilityData,
+								},
 							},
 						},
 					},
@@ -65,21 +86,45 @@ export default function reducer(
 		case actionTypes.UPDATE_PARAMETER:
 			return {
 				...state,
-				[ action.providerId ]: {
-					...( state[ action.providerId ] || {} ),
-					[ action.modelId ]: {
-						...( state[ action.providerId ]?.[ action.modelId ] || {} ),
-						parameters: {
-							...( state[ action.providerId ]?.[ action.modelId ]?.parameters || {} ),
-							[ action.parameterId ]: {
-								...( state[ action.providerId ]?.[ action.modelId ]?.parameters?.[
-									action.parameterId
-								] || {} ),
-								...action.parameterData,
+				aiProviders: {
+					...state.aiProviders,
+					[ action.providerId ]: {
+						...( state.aiProviders[ action.providerId ] || {} ),
+						[ action.modelId ]: {
+							...( state.aiProviders[ action.providerId ]?.[ action.modelId ] ||
+								{} ),
+							parameters: {
+								...( state.aiProviders[ action.providerId ]?.[
+									action.modelId
+								]?.parameters || {} ),
+								[ action.parameterId ]: {
+									...( state.aiProviders[ action.providerId ]?.[
+										action.modelId
+									]?.parameters?.[ action.parameterId ] || {} ),
+									...action.parameterData,
+								},
 							},
 						},
 					},
 				},
+			};
+
+		case actionTypes.SET_DEFAULT_PROVIDER:
+			return {
+				...state,
+				defaultProvider: action.providerId,
+			};
+
+		case actionTypes.SET_DEFAULT_IMAGE_MODEL:
+			return {
+				...state,
+				defaultImageModel: action.modelId,
+			};
+
+		case actionTypes.SET_DEFAULT_VIDEO_MODEL:
+			return {
+				...state,
+				defaultVideoModel: action.modelId,
 			};
 
 		default:

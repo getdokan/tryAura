@@ -310,7 +310,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 
 			const promptText = applyFilters(
 				'tryaura.tryon.prompt_text',
-				'Create a realistic virtual try-on image. The first image is the user/customer photo. The subsequent image(s) are the product to wear/use. Put the product on the person naturally with correct proportions, lighting, and perspective. Keep a neutral background suitable for eCommerce.'
+				'Create a realistic virtual try-on image. The first image is the model/user/customer photo. The subsequent image(s) are the product to wear/use. Put the product on the person naturally with correct proportions, lighting, and perspective. Keep a neutral background suitable for eCommerce. Do not change the model/user/customer face appearance'
 			);
 
 			// @ts-ignore

@@ -67,3 +67,24 @@ export function updateParameter(
 		parameterData,
 	};
 }
+
+export function setDefaultProvider( providerId: string ) {
+	return {
+		type: actionTypes.SET_DEFAULT_PROVIDER,
+		providerId,
+	};
+}
+
+export function setDefaultImageModel( modelId: string ) {
+	return {
+		type: actionTypes.SET_DEFAULT_IMAGE_MODEL,
+		modelId,
+	};
+}
+
+export function setDefaultVideoModel( modelId: string ) {
+	return {
+		type: actionTypes.SET_DEFAULT_VIDEO_MODEL,
+		modelId,
+	};
+}

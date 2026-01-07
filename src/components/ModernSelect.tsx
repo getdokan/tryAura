@@ -39,7 +39,9 @@ const ModernSelect = ( {
 			ref={ contentRef }
 		>
 			{ label && (
-				<span className="w-[500] text-[14px] mb-[8px]">{ label }</span>
+				<span className="w-[500] text-[14px] mb-[8px] font-[500] text-[rgba(37,37,45,1)]">
+					{ label }
+				</span>
 			) }
 			<div>
 				<button

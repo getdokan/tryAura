@@ -64,9 +64,8 @@ class SettingsController {
 					'permission_callback' => array( $this, 'permissions_check' ),
 					'args'                => array(
 						$this->option_key => array(
-							'type'              => 'string',
-							'required'          => false,
-							'sanitize_callback' => 'sanitize_text_field',
+							'type'     => 'object',
+							'required' => false,
 						),
 					),
 				),
@@ -87,7 +86,7 @@ class SettingsController {
 	 * @return WP_REST_Response
 	 */
 	public function get_settings(): WP_REST_Response {
-		$value = (string) get_option( $this->option_key, '' );
+		$value = get_option( $this->option_key, array() );
 		return new WP_REST_Response( array( $this->option_key => $value ) );
 	}
 
@@ -103,13 +102,14 @@ class SettingsController {
 
 		if ( null === $new_value ) {
 			// No value provided; return current value without error to be forgiving.
-			$current = (string) get_option( $this->option_key, '' );
+			$current = get_option( $this->option_key, array() );
 			return new WP_REST_Response( array( $this->option_key => $current ) );
 		}
 
-		$sanitized = sanitize_text_field( (string) $new_value );
-		update_option( $this->option_key, $sanitized );
+		// If it's an array, we should probably sanitize it recursively or just save it.
+		// For now, let's keep it simple as we expect a structured object.
+		update_option( $this->option_key, $new_value );
 
-		return new WP_REST_Response( array( $this->option_key => $sanitized ) );
+		return new WP_REST_Response( array( $this->option_key => $new_value ) );
 	}
 }

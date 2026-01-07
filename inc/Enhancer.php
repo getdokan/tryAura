@@ -33,16 +33,23 @@ class Enhancer {
 		$post_id   = $post ? $post->ID : 0;
 		$post_type = $post ? $post->post_type : '';
 
+		$settings    = get_option( 'try_aura_settings', array() );
+		$api_key     = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
+		$image_model = isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '';
+		$video_model = isset( $settings['google']['videoModel'] ) ? $settings['google']['videoModel'] : '';
+
 		// Pass settings (API key, REST URL, nonce) to the enhancer UI.
 		wp_localize_script(
 			'try-aura-enhancer',
 			'tryAura',
 			array(
-				'restUrl'  => esc_url_raw( rest_url() ),
-				'nonce'    => wp_create_nonce( 'wp_rest' ),
-				'apiKey'   => get_option( 'try_aura_api_key', '' ),
-				'postId'   => $post_id,
-				'postType' => $post_type,
+				'restUrl'    => esc_url_raw( rest_url() ),
+				'nonce'      => wp_create_nonce( 'wp_rest' ),
+				'apiKey'     => $api_key,
+				'imageModel' => $image_model,
+				'videoModel' => $video_model,
+				'postId'     => $post_id,
+				'postType'   => $post_type,
 			)
 		);
 

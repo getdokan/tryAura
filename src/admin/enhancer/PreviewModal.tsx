@@ -21,34 +21,30 @@ type PreviewProps = {
 	supportsVideo?: boolean;
 };
 
-async function resolveApiKey(): Promise< string | null > {
+async function resolveSettings(): Promise< {
+	apiKey: string | null;
+	imageModel: string | null;
+	videoModel: string | null;
+} > {
 	try {
-		const key = window?.tryAura?.apiKey;
-		if ( key && key.length > 0 ) {
-			return key;
-		}
-		const rest = window?.tryAura?.restUrl;
-		const nonce = window?.tryAura?.nonce;
-		if ( ! rest || ! nonce ) {
-			return null;
-		}
-		const res = await fetch(
-			rest.replace( /\/?$/, '/' ) + 'try-aura/v1/settings',
-			{
-				headers: { 'X-WP-Nonce': nonce },
-				credentials: 'same-origin',
-			}
-		);
-		if ( ! res.ok ) {
-			return null;
-		}
-		const data = await res.json();
-		const opt = ( data && ( data as any ).try_aura_api_key ) as
-			| string
-			| undefined;
-		return opt && opt.length > 0 ? opt : null;
+		const aura = ( window as any )?.tryAura;
+		const data = ( await apiFetch( {
+			path: '/try-aura/v1/settings',
+		} ) ) as any;
+		const settings = data && data.try_aura_settings;
+		const google = settings && settings.google;
+		return {
+			apiKey: google?.apiKey || aura?.apiKey || null,
+			imageModel: google?.imageModel || aura?.imageModel || null,
+			videoModel: google?.videoModel || aura?.videoModel || null,
+		};
 	} catch {
-		return null;
+		const aura = ( window as any )?.tryAura;
+		return {
+			apiKey: aura?.apiKey || null,
+			imageModel: aura?.imageModel || null,
+			videoModel: aura?.videoModel || null,
+		};
 	}
 }
 
@@ -71,9 +67,12 @@ const PreviewModal = ( {
 		videoSource,
 		selectedImageIndices,
 		selectedVideoIndices,
+		defaultImageModel,
+		defaultVideoModel,
 	} = useSelect(
 		( select ) => {
 			const store = select( STORE_NAME );
+			const aiModelsStore = select( 'try-aura/ai-models' );
 			return {
 				generatedUrl: store.getGeneratedUrl(),
 				uploading: store.getUploading(),
@@ -87,6 +86,8 @@ const PreviewModal = ( {
 				videoSource: store.getVideoSource(),
 				selectedImageIndices: store.getSelectedImageIndices(),
 				selectedVideoIndices: store.getSelectedVideoIndices(),
+				defaultImageModel: aiModelsStore.getDefaultImageModel(),
+				defaultVideoModel: aiModelsStore.getDefaultVideoModel(),
 			};
 		},
 		[ STORE_NAME ]
@@ -176,7 +177,7 @@ const PreviewModal = ( {
 				);
 			}
 
-			const apiKey = await resolveApiKey();
+			const { apiKey, imageModel: savedImageModel } = await resolveSettings();
 			if ( ! apiKey ) {
 				throw new Error(
 					__(
@@ -185,6 +186,11 @@ const PreviewModal = ( {
 					)
 				);
 			}
+
+			const imageModel =
+				savedImageModel ||
+				defaultImageModel ||
+				'gemini-2.5-flash-image-preview';
 
 			setStatus( 'fetching' );
 			setMessage( __( 'Fetching images…', 'try-aura' ) );
@@ -248,8 +254,15 @@ const PreviewModal = ( {
 			doAction( 'tryaura.ai_enhance_prompt_before_generate', prompt );
 			const response: any = await ( ai as any ).models.generateContent(
 				applyFilters( 'tryaura.ai_enhance_model_content', {
-					model: 'gemini-2.5-flash-image-preview',
+					model: imageModel,
 					contents: prompt,
+					config: {
+						responseModalities: [ 'IMAGE' ],
+						candidateCount: 1,
+						imageConfig: {
+							aspectRatio: '1:1',
+						},
+					},
 				} )
 			);
 			doAction( 'tryaura.ai_enhance_prompt_after_generate', response );
@@ -278,15 +291,15 @@ const PreviewModal = ( {
 			setError( null );
 
 			const usage = response?.usageMetadata;
-			const postId = window?.tryAura?.postId;
-			const postType = window?.tryAura?.postType;
+			const postId = ( window as any )?.tryAura?.postId;
+			const postType = ( window as any )?.tryAura?.postType;
 
 			apiFetch( {
 				path: '/try-aura/v1/log-usage',
 				method: 'POST',
 				data: {
 					type: 'image',
-					model: 'gemini-2.5-flash-image-preview',
+					model: imageModel,
 					prompt: promptText,
 					input_tokens: usage?.promptTokenCount,
 					output_tokens: usage?.responseTokenCount,
@@ -347,33 +360,29 @@ const PreviewModal = ( {
 				nonce,
 				restBase
 			);
-			const uploadRes = await fetch(
-				applyFilters(
+			const uploadRes = await apiFetch( {
+				url: applyFilters(
 					'tryaura.media_upload_rest_api',
-					`${ restBase }'wp/v2/media'`
+					`${ restBase }wp/v2/media`
 				),
-				{
-					method: 'POST',
-					headers: {
-						'X-WP-Nonce': nonce,
-						'Content-Disposition': `attachment; filename="${ filename }"`,
-						'Content-Type': mime,
-					},
-					credentials: 'same-origin',
-					body: blob,
-				}
-			);
-			if ( ! uploadRes.ok ) {
-				const text = await uploadRes.text();
+				method: 'POST',
+				headers: {
+					'Content-Disposition': `attachment; filename="${ filename }"`,
+					'Content-Type': mime,
+				},
+				body: blob,
+			} ).catch( ( e: any ) => {
+				const text = e?.message || 'Upload failed.';
 				doAction(
 					'tryaura.ai_enhance_upload_failed',
 					filename,
 					blob,
 					text
 				);
-				throw new Error( text || 'Upload failed.' );
-			}
-			const json = await uploadRes.json();
+				throw new Error( text );
+			} );
+
+			const json: any = uploadRes;
 			const newId = json?.id;
 			if ( ! newId ) {
 				doAction( 'tryaura.ai_enhance_upload_failed', filename, blob );
@@ -486,7 +495,7 @@ const PreviewModal = ( {
 			setVideoStatus( 'generating' );
 			setVideoMessage( __( 'Starting video generation…', 'try-aura' ) );
 
-			const apiKey = await resolveApiKey();
+			const { apiKey, videoModel: savedVideoModel } = await resolveSettings();
 			if ( ! apiKey ) {
 				throw new Error(
 					__(
@@ -495,6 +504,11 @@ const PreviewModal = ( {
 					)
 				);
 			}
+
+			const videoModel =
+				savedVideoModel ||
+				defaultVideoModel ||
+				'veo-3.0-fast-generate-001';
 
 			const extras = applyFilters(
 				'tryaura.video_generation_extras',
@@ -548,7 +562,7 @@ const PreviewModal = ( {
 			const ai = new GoogleGenAI( { apiKey } );
 			let operation: any = await ( ai as any ).models.generateVideos(
 				applyFilters( 'tryaura.video_generation_params', {
-					model: 'veo-3.0-fast-generate-001',
+					model: videoModel,
 					source: {
 						prompt: videoPromptText,
 						image: {
@@ -649,15 +663,15 @@ const PreviewModal = ( {
 			const video = document.createElement( 'video' );
 			video.src = objectUrl;
 			video.onloadedmetadata = () => {
-				const postId = window?.tryAura?.postId;
-				const postType = window?.tryAura?.postType;
+				const postId = ( window as any )?.tryAura?.postId;
+				const postType = ( window as any )?.tryAura?.postType;
 
 				apiFetch( {
 					path: '/try-aura/v1/log-usage',
 					method: 'POST',
 					data: {
 						type: 'video',
-						model: 'veo-3.0-fast-generate-001',
+						model: videoModel,
 						prompt: videoPromptText,
 						video_seconds: video.duration,
 						generated_from: 'admin',
@@ -708,33 +722,31 @@ const PreviewModal = ( {
 				? `enhanced-video-${ primaryAttachmentId }-${ Date.now() }.${ ext }`
 				: `enhanced-video-${ Date.now() }.${ ext }`;
 
-			const uploadRes = await fetch(
-				applyFilters(
-					'tryaura.video_generation_upload',
-					restBase + 'wp/v2/media'
-				),
+			const uploadRes = await apiFetch(
 				applyFilters( 'tryaura.video_generation_upload_options', {
+					url: applyFilters(
+						'tryaura.video_generation_upload',
+						restBase + 'wp/v2/media'
+					),
 					method: 'POST',
 					headers: {
-						'X-WP-Nonce': nonce,
 						'Content-Disposition': `attachment; filename="${ filename }"`,
 						'Content-Type': mime,
 					},
-					credentials: 'same-origin',
 					body: blob,
 				} )
-			);
-			if ( ! uploadRes.ok ) {
-				const text = await uploadRes.text();
+			).catch( ( e: any ) => {
+				const text = e?.message || __( 'Upload failed.', 'try-aura' );
 				doAction(
 					'tryaura.video_generation_upload_failed',
 					filename,
 					blob,
 					text
 				);
-				throw new Error( text || __( 'Upload failed.', 'try-aura' ) );
-			}
-			const json = await uploadRes.json();
+				throw new Error( text );
+			} );
+
+			const json: any = uploadRes;
 			const newId = json?.id;
 			if ( ! newId ) {
 				throw new Error(

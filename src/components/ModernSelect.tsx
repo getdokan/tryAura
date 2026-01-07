@@ -1,6 +1,6 @@
-import { Popover } from '@wordpress/components';
+import { Popover, Tooltip } from '@wordpress/components';
 import { useRef, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Lock } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { twMerge } from 'tailwind-merge';
 const ModernSelect = ( {
@@ -15,7 +15,7 @@ const ModernSelect = ( {
 	value: string;
 	label?: string;
 	onChange: ( val: string ) => void;
-	options: { label: string; value: string; icon?: any }[];
+	options: { label: string; value: string; icon?: any; locked?: boolean }[];
 	placeholder?: string;
 	className?: string;
 	variant?: 'grid' | 'list';
@@ -87,29 +87,59 @@ const ModernSelect = ( {
 								padding: variant === 'list' ? '8px 0px' : '8px',
 							} }
 						>
-							{ options.map( ( opt ) => (
-								<button
-									key={ opt.value }
-									type="button"
-									role="option"
-									aria-selected={ opt.value === value }
-									className={ twMerge(
-										'text-[#828282] h-auto rounded-[3px] flex gap-[4px] hover:text-primary hover:bg-[#EFEAFF] cursor-pointer',
-										opt.value === value
-											? 'bg-neutral-100'
-											: 'bg-white',
-										variant === 'list'
-											? 'w-full flex-row p-[8px_12px]'
-											: 'w-[78.25px] p-[12px] flex-col items-center justify-center border border-transparent hover:border-primary'
-									) }
-									onClick={ () => handleSelect( opt.value ) }
-								>
-									{ opt.icon ?? '' }
-									<span className="text-sm">
-										{ opt.label }
-									</span>
-								</button>
-							) ) }
+							{ options.map( ( opt ) => {
+								const button = (
+									<button
+										key={ opt.value }
+										type="button"
+										role="option"
+										aria-selected={ opt.value === value }
+										className={ twMerge(
+											'relative text-[#828282] h-auto rounded-[3px] flex gap-[4px] transition-all duration-200',
+											opt.locked
+												? 'cursor-not-allowed opacity-60 hover:opacity-100 hover:bg-gray-50'
+												: 'cursor-pointer hover:text-primary hover:bg-[#EFEAFF]',
+											opt.value === value
+												? 'bg-neutral-100'
+												: 'bg-white',
+											variant === 'list'
+												? 'w-full flex-row p-[8px_12px]'
+												: 'w-[78.25px] p-[12px] flex-col items-center justify-center border border-transparent',
+											variant === 'grid' &&
+												( opt.locked
+													? 'hover:border-gray-200'
+													: 'hover:border-primary' )
+										) }
+										onClick={ () =>
+											! opt.locked &&
+											handleSelect( opt.value )
+										}
+									>
+										{ opt.locked && (
+											<div className="absolute top-1 right-1">
+												<Lock size={ 10 } />
+											</div>
+										) }
+										{ opt.icon ?? '' }
+										<span className="text-sm">
+											{ opt.label }
+										</span>
+									</button>
+								);
+
+								if ( opt.locked ) {
+									return (
+										<Tooltip
+											key={ opt.value }
+											text={ __( 'Locked', 'try-aura' ) }
+										>
+											{ button }
+										</Tooltip>
+									);
+								}
+
+								return button;
+							} ) }
 						</div>
 					</Popover>
 				) : null }

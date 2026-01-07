@@ -22,14 +22,14 @@ const Index = () => {
 			<h1 className="font-[600] font-semibold text-[20px] leading-[28px] text-[rgba(51,51,51,0.8)]">
 				{ __( 'Settings', 'try-aura' ) }
 			</h1>
-			<div className="mt-[20px] flex justify-between bg-[#FFFFFF] border-2 border-[#FFFFFF] p-7 rounded-[16px]">
+			<div className="mt-[20px] flex justify-between flex-wrap bg-[#FFFFFF] border-2 border-[#FFFFFF] p-[24px] rounded-[16px]">
 				<div className="flex">
 					<div className="mr-[14px]">
 						<img src={ geminiLogo } alt="gemini logo" />
 					</div>
 					<div className="flex flex-col justify-center">
 						<div className="flex mb-[10px] items-center">
-							<div className="font-semibold text-base leading-[22.88px] tracking-normal">
+							<div className="font-[600] text-[16px] leading-[22px] text-[rgba(37,37,45,1)]">
 								{ __( 'Gemini API', 'try-aura' ) }
 							</div>
 							<div className="ml-[12px]">
@@ -45,7 +45,7 @@ const Index = () => {
 							</div>
 						</div>
 
-						<div className=" text-[14px] text-gray-600 opacity-70">
+						<div className="font-[400] text-[14px] leading-[18px] text-[rgba(99,99,99,1)]">
 							{ __(
 								'This key authenticates requests between your store and TryAura services.',
 								'try-aura'

@@ -22,15 +22,15 @@
 			return $wrapper;
 		};
 
-		const getFirstMainImage = () => {
-			const $wrapper = getMainWrapper();
-			let $img = $wrapper.find(
-				'.woocommerce-product-gallery__image:not(.try-aura-video-thumbnail)'
-			);
-			if ( ! $img.length ) {
-				$img = $wrapper.find( 'img' ).first();
+		const removeVideo = () => {
+			const $container = $( '.try-aura-video-player-container' );
+			if ( $container.length ) {
+				$container.remove();
+				// Restore visibility to all images that might have been hidden
+				$gallery
+					.find( '.woocommerce-product-gallery__image, img' )
+					.css( 'visibility', '' );
 			}
-			return $img.first();
 		};
 
 		$( document ).on( 'click', '.try-aura-video-thumbnail', function ( e ) {
@@ -46,17 +46,16 @@
 			e.preventDefault();
 			e.stopPropagation();
 
-			const $mainWrapper = getMainWrapper();
-			const $mainImage = getFirstMainImage();
+			// Remove any existing video before starting new one
+			removeVideo();
 
-			// Remove existing video player if any
-			$mainWrapper.find( '.try-aura-video-player-container' ).remove();
+			const $mainWrapper = getMainWrapper();
 
 			let videoHtml = '';
 			if ( videoPlatform === 'youtube' ) {
 				const videoId = getYoutubeId( videoUrl );
 				if ( videoId ) {
-					videoHtml = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ videoId }?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+					videoHtml = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ videoId }?autoplay=1&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
 				}
 			} else {
 				videoHtml = `<video width="100%" height="auto" controls autoplay><source src="${ videoUrl }" type="video/mp4">Your browser does not support the video tag.</video>`;
@@ -67,37 +66,43 @@
 					'<div class="try-aura-video-player-container"></div>'
 				).html( videoHtml );
 
-				// If we are in a slider, we might want to overlay the current visible area
-				if ( $gallery.find( '.flex-viewport' ).length ) {
-					$gallery.find( '.flex-viewport' ).append( $container );
+				// If we are in a slider, we want to overlay the viewport
+				const $viewport = $gallery.find( '.flex-viewport' );
+				if ( $viewport.length ) {
+					$viewport.append( $container );
 				} else {
 					$mainWrapper.prepend( $container );
 				}
 
-				$mainImage.css( 'visibility', 'hidden' );
+				// Hide images to show video
+				$mainWrapper
+					.find( '.woocommerce-product-gallery__image, img' )
+					.css( 'visibility', 'hidden' );
 			}
 		} );
 
 		// Handle clicking other thumbnails or navigation to remove video
-		$( document ).on(
-			'click',
-			'.woocommerce-product-gallery__image:not(.try-aura-video-thumbnail), .flex-control-nav li, .woocommerce-product-gallery__trigger',
-			function () {
-				const $mainWrapper = getMainWrapper();
-				const $container = $mainWrapper.find(
-					'.try-aura-video-player-container'
-				);
-				if ( $container.length ) {
-					$container.remove();
-					getFirstMainImage().css( 'visibility', 'visible' );
-				}
-			}
-		);
+		const cleanupSelectors = [
+			'.woocommerce-product-gallery__image:not(.try-aura-video-thumbnail)',
+			'.flex-control-nav li',
+			'.flex-control-nav img',
+			'.woocommerce-product-gallery__trigger',
+			'.flex-direction-nav a',
+			'.woocommerce-product-gallery__wrapper .zoomImg',
+		].join( ', ' );
+
+		$( document ).on( 'click', cleanupSelectors, function () {
+			removeVideo();
+		} );
+
+		// WooCommerce Flexslider specific events
+		$gallery.on( 'flexslider_before', function () {
+			removeVideo();
+		} );
 
 		// Support for themes using Swiper or other sliders that trigger events
 		$( document ).on( 'found_variation', function () {
-			$( '.try-aura-video-player-container' ).remove();
-			getFirstMainImage().css( 'visibility', 'visible' );
+			removeVideo();
 		} );
 
 		function getYoutubeId( url ) {

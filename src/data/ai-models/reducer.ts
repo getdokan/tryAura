@@ -49,8 +49,9 @@ export default function reducer(
 					[ action.providerId ]: {
 						...( state.aiProviders[ action.providerId ] || {} ),
 						[ action.modelId ]: {
-							...( state.aiProviders[ action.providerId ]?.[ action.modelId ] ||
-								{} ),
+							...( state.aiProviders[ action.providerId ]?.[
+								action.modelId
+							] || {} ),
 							...action.modelData,
 						},
 					},
@@ -65,16 +66,19 @@ export default function reducer(
 					[ action.providerId ]: {
 						...( state.aiProviders[ action.providerId ] || {} ),
 						[ action.modelId ]: {
-							...( state.aiProviders[ action.providerId ]?.[ action.modelId ] ||
-								{} ),
+							...( state.aiProviders[ action.providerId ]?.[
+								action.modelId
+							] || {} ),
 							capabilities: {
 								...( state.aiProviders[ action.providerId ]?.[
 									action.modelId
 								]?.capabilities || {} ),
 								[ action.capabilityId ]: {
-									...( state.aiProviders[ action.providerId ]?.[
-										action.modelId
-									]?.capabilities?.[ action.capabilityId ] || {} ),
+									...( state.aiProviders[
+										action.providerId
+									]?.[ action.modelId ]?.capabilities?.[
+										action.capabilityId
+									] || {} ),
 									...action.capabilityData,
 								},
 							},
@@ -91,16 +95,19 @@ export default function reducer(
 					[ action.providerId ]: {
 						...( state.aiProviders[ action.providerId ] || {} ),
 						[ action.modelId ]: {
-							...( state.aiProviders[ action.providerId ]?.[ action.modelId ] ||
-								{} ),
+							...( state.aiProviders[ action.providerId ]?.[
+								action.modelId
+							] || {} ),
 							parameters: {
 								...( state.aiProviders[ action.providerId ]?.[
 									action.modelId
 								]?.parameters || {} ),
 								[ action.parameterId ]: {
-									...( state.aiProviders[ action.providerId ]?.[
-										action.modelId
-									]?.parameters?.[ action.parameterId ] || {} ),
+									...( state.aiProviders[
+										action.providerId
+									]?.[ action.modelId ]?.parameters?.[
+										action.parameterId
+									] || {} ),
 									...action.parameterData,
 								},
 							},

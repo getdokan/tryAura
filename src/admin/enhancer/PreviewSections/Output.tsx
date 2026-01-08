@@ -20,7 +20,7 @@ function Output( { supportsVideo, className = '' } ) {
 		isVideoBusy,
 		status,
 		videoStatus,
-		isThumbnailMode
+		isThumbnailMode,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {

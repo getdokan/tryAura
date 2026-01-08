@@ -874,7 +874,10 @@ const PreviewModal = ( {
 				<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] pt-[16px] pl-[24px] pr-[24px]">
 					<h2 className="mt-0">
 						{ isThumbnailMode
-							? __( 'AI Product Video Thumbnail Generation', 'try-aura' )
+							? __(
+									'AI Product Video Thumbnail Generation',
+									'try-aura'
+							  )
 							: __( 'AI Product Image Generation', 'try-aura' ) }
 					</h2>
 					<button

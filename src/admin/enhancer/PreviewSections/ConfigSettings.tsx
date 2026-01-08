@@ -11,15 +11,18 @@ function ConfigSettings( {
 	doGenerateVideo,
 	className = '',
 } ) {
-	const { activeTab, isBusy, isVideoBusy, isThumbnailMode } = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		return {
-			activeTab: store.getActiveTab(),
-			isBusy: store.isBusy(),
-			isVideoBusy: store.isVideoBusy(),
-			isThumbnailMode: store.isThumbnailMode(),
-		};
-	}, [] );
+	const { activeTab, isBusy, isVideoBusy, isThumbnailMode } = useSelect(
+		( select ) => {
+			const store = select( STORE_NAME );
+			return {
+				activeTab: store.getActiveTab(),
+				isBusy: store.isBusy(),
+				isVideoBusy: store.isVideoBusy(),
+				isThumbnailMode: store.isThumbnailMode(),
+			};
+		},
+		[]
+	);
 
 	const { setActiveTab } = useDispatch( STORE_NAME );
 

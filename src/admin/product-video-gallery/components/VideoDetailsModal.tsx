@@ -79,7 +79,9 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 		>
 			<div className="space-y-6">
 				<h2 className="mt-0">
-					{ __( 'Add Video From URL', 'try-aura' ) }
+					{ initialData
+						? __( 'Edit Video', 'try-aura' )
+						: __( 'Add Video From URL', 'try-aura' ) }
 				</h2>
 				<div>
 					<span className="block text-sm font-medium text-gray-700 mb-2">

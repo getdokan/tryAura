@@ -56,39 +56,47 @@ class ProductVideoGallery {
 
 		$video_data = get_post_meta( $product->get_id(), AdminProductVideo::VIDEO_META_KEY, true );
 
-		if ( empty( $video_data ) || empty( $video_data['url'] ) ) {
+		if ( empty( $video_data ) ) {
 			return;
 		}
 
-		$thumbnail_url = ! empty( $video_data['thumbnailUrl'] ) ? $video_data['thumbnailUrl'] : '';
+		$videos = is_array( $video_data ) && ( empty( $video_data ) || isset( $video_data[0] ) ) ? $video_data : array( $video_data );
 
-		if ( empty( $thumbnail_url ) && 'youtube' === $video_data['platform'] ) {
-			$video_id      = $this->get_youtube_id( $video_data['url'] );
-			$thumbnail_url = $video_id ? "https://img.youtube.com/vi/{$video_id}/hqdefault.jpg" : '';
+		foreach ( $videos as $video ) {
+			if ( empty( $video['url'] ) ) {
+				continue;
+			}
+
+			$thumbnail_url = ! empty( $video['thumbnailUrl'] ) ? $video['thumbnailUrl'] : '';
+
+			if ( empty( $thumbnail_url ) && 'youtube' === $video['platform'] ) {
+				$video_id      = $this->get_youtube_id( $video['url'] );
+				$thumbnail_url = $video_id ? "https://img.youtube.com/vi/{$video_id}/hqdefault.jpg" : '';
+			}
+
+			if ( empty( $thumbnail_url ) ) {
+				$thumbnail_url = wc_placeholder_img_src();
+			}
+
+			$html = sprintf(
+				'<div class="woocommerce-product-gallery__image try-aura-video-thumbnail" data-video-url="%s" data-video-platform="%s">',
+				esc_url( $video['url'] ),
+				esc_attr( $video['platform'] )
+			);
+			$html .= sprintf(
+				'<a href="%s">',
+				esc_url( $thumbnail_url )
+			);
+			$html .= sprintf(
+				'<img src="%s" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="%s">',
+				esc_url( $thumbnail_url ),
+				__( 'Product Video', 'try-aura' )
+			);
+			$html .= '<div class="try-aura-video-icon-overlay"><svg viewBox="0 0 24 24" width="48" height="48" fill="white"><path d="M8 5v14l11-7z"/></svg></div>';
+			$html .= '</a></div>';
+
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
-
-		if ( empty( $thumbnail_url ) ) {
-			$thumbnail_url = wc_placeholder_img_src();
-		}
-
-		$html = sprintf(
-			'<div class="woocommerce-product-gallery__image try-aura-video-thumbnail" data-video-url="%s" data-video-platform="%s">',
-			esc_url( $video_data['url'] ),
-			esc_attr( $video_data['platform'] )
-		);
-		$html .= sprintf(
-			'<a href="%s">',
-			esc_url( $thumbnail_url )
-		);
-		$html .= sprintf(
-			'<img src="%s" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="%s">',
-			esc_url( $thumbnail_url ),
-			__( 'Product Video', 'try-aura' )
-		);
-		$html .= '<div class="try-aura-video-icon-overlay"><svg viewBox="0 0 24 24" width="48" height="48" fill="white"><path d="M8 5v14l11-7z"/></svg></div>';
-		$html .= '</a></div>';
-
-		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**

@@ -24,6 +24,7 @@ function ImageConfigInputs( { doGenerate } ) {
 		generatedUrl,
 		isBusy,
 		uploading,
+		isThumbnailMode,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
@@ -33,6 +34,7 @@ function ImageConfigInputs( { doGenerate } ) {
 			generatedUrl: store.getGeneratedUrl(),
 			isBusy: store.isBusy(),
 			uploading: store.getUploading(),
+			isThumbnailMode: store.isThumbnailMode(),
 		};
 	}, [] );
 
@@ -130,6 +132,20 @@ function ImageConfigInputs( { doGenerate } ) {
 							value: '9:16',
 							icon: <RectangleVertical />,
 						},
+					] }
+				/>
+			) }
+
+			{ isThumbnailMode && (
+				<ModernSelect
+					label={ __( 'Video Platforms', 'try-aura' ) }
+					value={ imageConfigData.videoPlatform || 'youtube' }
+					onChange={ ( val: any ) =>
+						setImageConfigData( { videoPlatform: val } )
+					}
+					options={ [
+						{ label: 'Youtube', value: 'youtube' },
+						{ label: 'Instagram', value: 'instagram' },
 					] }
 				/>
 			) }

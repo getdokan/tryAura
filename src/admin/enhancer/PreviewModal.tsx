@@ -69,6 +69,7 @@ const PreviewModal = ( {
 		videoSource,
 		selectedImageIndices,
 		selectedVideoIndices,
+		isThumbnailMode,
 		defaultImageModel,
 		defaultVideoModel,
 	} = useSelect(
@@ -90,6 +91,7 @@ const PreviewModal = ( {
 				videoSource: store.getVideoSource(),
 				selectedImageIndices: store.getSelectedImageIndices(),
 				selectedVideoIndices: store.getSelectedVideoIndices(),
+				isThumbnailMode: store.isThumbnailMode(),
 				defaultImageModel: aiModelsStore.getDefaultImageModel(),
 				defaultVideoModel: aiModelsStore.getDefaultVideoModel(),
 			};
@@ -258,7 +260,13 @@ const PreviewModal = ( {
 
 			let promptText: string = isBlockPage
 				? `Generate a high-quality AI image based on the provided image(s) and user instructions.\n\nInstructions: ${ imageConfigData?.optionalPrompt?.trim() }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }`
-				: `Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ extras }${ multiHint }`;
+				: `Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n${
+						isThumbnailMode
+							? `- Video Platform: ${
+									imageConfigData?.videoPlatform || 'youtube'
+							  }\n`
+							: ''
+				  }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ extras }${ multiHint }`;
 			promptText = applyFilters(
 				'tryaura.ai_enhance_prompt_text',
 				promptText,
@@ -865,7 +873,9 @@ const PreviewModal = ( {
 			<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto max-h-[90vh] overflow-y-auto overflow-x-hidden">
 				<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] pt-[16px] pl-[24px] pr-[24px]">
 					<h2 className="mt-0">
-						{ __( 'AI Product Image Generation', 'try-aura' ) }
+						{ isThumbnailMode
+							? __( 'AI Product Video Thumbnail Generation', 'try-aura' )
+							: __( 'AI Product Image Generation', 'try-aura' ) }
 					</h2>
 					<button
 						className="w-[16px] h-[16px] cursor-pointer"

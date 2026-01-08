@@ -25,6 +25,8 @@ export const getSelectedImageIndices = ( state: EnhancerState ) =>
 	state.selectedImageIndices;
 export const getSelectedVideoIndices = ( state: EnhancerState ) =>
 	state.selectedVideoIndices;
+export const isThumbnailMode = ( state: EnhancerState ) =>
+	state.isThumbnailMode;
 
 export const isBusy = ( state: EnhancerState ) =>
 	state.status === 'fetching' ||

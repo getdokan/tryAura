@@ -1,0 +1,15 @@
+@import "../../base-tailwind.css";
+
+.try-aura-product-video-gallery {
+	margin-top: 15px;
+}
+
+.product-video-thumbnail-container {
+	.relative {
+		display: inline-block;
+	}
+}
+
+.ai-enhancer-modal {
+	z-index: 160000;
+}

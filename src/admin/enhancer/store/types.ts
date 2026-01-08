@@ -20,6 +20,7 @@ export interface ImageConfigData {
 	backgroundType: string;
 	styleType: string;
 	optionalPrompt: string;
+	videoPlatform?: string;
 }
 
 export interface VideoConfigData {
@@ -48,4 +49,5 @@ export interface EnhancerState {
 	videoSource: VideoSource;
 	selectedImageIndices: number[];
 	selectedVideoIndices: number[];
+	isThumbnailMode?: boolean;
 }

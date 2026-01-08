@@ -5,7 +5,12 @@ import { __ } from '@wordpress/i18n';
 import ImageConfigInputs from './ImageConfigInputs';
 import VideoConfigInputs from './VideoConfigInputs';
 
-function ConfigSettings( { supportsVideo, doGenerate, doGenerateVideo } ) {
+function ConfigSettings( {
+	supportsVideo,
+	doGenerate,
+	doGenerateVideo,
+	className = '',
+} ) {
 	const { activeTab, isBusy, isVideoBusy } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
@@ -18,7 +23,7 @@ function ConfigSettings( { supportsVideo, doGenerate, doGenerateVideo } ) {
 	const { setActiveTab } = useDispatch( STORE_NAME );
 
 	return (
-		<div className="w-full flex flex-col gap-[32px]">
+		<div className={ className }>
 			{ /* Tabs for Generated content */ }
 			{ supportsVideo && (
 				<GroupButton

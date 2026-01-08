@@ -6,7 +6,7 @@ import { Button } from '../../../components';
 import Star from '../../../images/star.gif';
 import Congrats from '../../../images/congrats.gif';
 
-function Output( { supportsVideo } ) {
+function Output( { supportsVideo, className = '' } ) {
 	const [ showCongrats, setShowCongrats ] = useState( false );
 	const {
 		generatedUrl,
@@ -81,7 +81,7 @@ function Output( { supportsVideo } ) {
 	}, [ isBusy, isVideoBusy ] );
 
 	return (
-		<div className="w-full">
+		<div className={ className }>
 			<div className="w-[500] text-[14px] mb-[8px]">
 				{ __( 'Generated Output', 'try-aura' ) }
 			</div>

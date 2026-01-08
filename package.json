@@ -11,9 +11,9 @@
 		"format": "wp-scripts format",
 		"packages-update": "wp-scripts packages-update",
 		"makepot": "wp i18n make-pot --domain='try-aura' --include='build,inc,lib,templates,try-aura.php' . --headers='{\"Report-Msgid-Bugs-To\":\"https://dokan.co/contact/\"}' --file-comment=\"Copyright (c) $(date +'%Y') Dokan Inc. All Rights Reserved.\" languages/try-aura.pot",
-		"zip": "rm -rf try-aura try-aura.zip && mkdir try-aura && cp -r build inc templates vendor try-aura.php try-aura/ && zip -r try-aura.zip try-aura && rm -rf try-aura",
-		"plugin-zip": "wp-scripts plugin-zip",
-		"version": "node bin/version-replace"
+		"zip": "node bin/make-zip.js",
+		"version": "node bin/version-replace",
+		"release": "composer install --no-dev && npm install && npm run build && npm run makepot && npm run version && npm run zip"
 	},
 	"author": "WeDevs",
 	"license": "MIT",
@@ -22,7 +22,9 @@
 		"@wordpress/prettier-config": "^4.36.0",
 		"@wordpress/scripts": "^31.1.0",
 		"@wordpress/stylelint-config": "^23.28.0",
+		"archiver": "^7.0.1",
 		"fs-extra": "^11.3.3",
+		"globby": "^16.1.0",
 		"replace-in-file": "^8.4.0",
 		"typescript": "^5.6.2"
 	},

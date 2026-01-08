@@ -16,7 +16,9 @@ declare const jQuery: any;
 
 		let $btnContainer = $( '#try-aura-add-video-container' );
 		if ( ! $btnContainer.length ) {
-			$btnContainer = $( '<div id="try-aura-add-video-container" class="tryaura"></div>' );
+			$btnContainer = $(
+				'<div id="try-aura-add-video-container" class="tryaura"></div>'
+			);
 			if ( $addBtn.length ) {
 				$addBtn.after( $btnContainer );
 			} else {

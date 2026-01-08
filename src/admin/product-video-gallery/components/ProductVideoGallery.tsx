@@ -88,7 +88,10 @@ const ProductVideoGallery = () => {
 											type="button"
 											onClick={ () => openModal( index ) }
 											className="p-1 bg-white rounded-full text-blue-600 hover:text-blue-800"
-											title={ __( 'Edit Video', 'try-aura' ) }
+											title={ __(
+												'Edit Video',
+												'try-aura'
+											) }
 										>
 											<Edit2 size={ 14 } />
 										</button>

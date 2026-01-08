@@ -102,6 +102,7 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 								icon: <Video size={ 18 } />,
 							},
 						] }
+						variant="list"
 					/>
 				</div>
 

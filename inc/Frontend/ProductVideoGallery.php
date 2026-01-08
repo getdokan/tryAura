@@ -79,18 +79,21 @@ class ProductVideoGallery {
 			}
 
 			$html = sprintf(
-				'<div class="woocommerce-product-gallery__image try-aura-video-thumbnail" data-video-url="%s" data-video-platform="%s">',
+				'<div class="woocommerce-product-gallery__image try-aura-video-thumbnail" data-thumb="%s" data-video-url="%s" data-video-platform="%s">',
+				esc_url( $thumbnail_url ),
 				esc_url( $video['url'] ),
 				esc_attr( $video['platform'] )
 			);
 			$html .= sprintf(
-				'<a href="%s">',
+				'<a href="%s" class="try-aura-video-link">',
 				esc_url( $thumbnail_url )
 			);
 			$html .= sprintf(
-				'<img src="%s" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="%s">',
+				'<img src="%s" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="%s" data-src="%s" data-large_image="%s" data-large_image_width="1000" data-large_image_height="1000">',
 				esc_url( $thumbnail_url ),
-				__( 'Product Video', 'try-aura' )
+				__( 'Product Video', 'try-aura' ),
+				esc_url( $thumbnail_url ),
+				esc_url( $thumbnail_url )
 			);
 			$html .= '<div class="try-aura-video-icon-overlay"><svg viewBox="0 0 24 24" width="48" height="48" fill="white"><path d="M8 5v14l11-7z"/></svg></div>';
 			$html .= '</a></div>';

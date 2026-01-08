@@ -1,11 +1,10 @@
 @layer theme, base, components, utilities;
 
 @import "tailwindcss/theme.css" layer(theme);
+
 .tryaura {
-  @import "tailwindcss/utilities.css" layer(utilities) source(none) important;
-  @layer base {
-    @import "tailwindcss/preflight.css";
-  }
+  @import "tailwindcss/preflight.css" layer(base);
+  @import "tailwindcss/utilities.css" layer(utilities) important;
 }
 
 @theme {

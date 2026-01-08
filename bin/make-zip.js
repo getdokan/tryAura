@@ -4,15 +4,15 @@
  *
  * Usage: node bin/make-zip.js
  * - Reads version from package.json
- * - Updates class-plug-version-switcher.php header Version and PLUGVESW_PLUGIN_VERSION
- * - Creates dist/plug-version-switcher-<version>.zip with a curated file list
+ * - Updates try-aura.php header Version and public $version in inc/Plugin.php
+ * - Creates dist/tryAura-<version>.zip with a curated file list
  */
 
 const path = require( 'path' );
 const fs = require( 'fs-extra' );
 const archiver = require( 'archiver' );
 // globby is ESM-only in v14+. We'll import it dynamically in the async IIFE.
-const replaceInFile = require( 'replace-in-file' );
+const { replaceInFile } = require( 'replace-in-file' );
 
 ( async () => {
 	try {
@@ -27,32 +27,41 @@ const replaceInFile = require( 'replace-in-file' );
 			throw new Error( 'package.json missing version' );
 		}
 
-		// 2) Update Version header and PLUGVESW_PLUGIN_VERSION in main plugin file
-		const mainFile = path.join( root, 'class-plug-version-switcher.php' );
+		// 2) Update Version header in main plugin file and public $version in inc/Plugin.php
+		const mainFile = path.join( root, 'try-aura.php' );
+		const pluginFile = path.join( root, 'inc/Plugin.php' );
+
 		if ( ! ( await fs.pathExists( mainFile ) ) ) {
 			throw new Error( `Main plugin file not found: ${ mainFile }` );
 		}
 
-		const replaceResults = await replaceInFile( {
+		await replaceInFile( {
 			files: mainFile,
-			from: [
-				/(\n\s*\*\s*Version:\s*)([^\r\n]+)/im, // header Version: x.y.z
-				/(define\(\s*'PLUGVESW_PLUGIN_VERSION'\s*,\s*')[^']+('\s*\)\s*;)/m, // constant
-			],
-			to: [ `$1${ version }`, `$1${ version }$2` ],
+			from: /(\n\s*\*\s*Version:\s*)([^\r\n]+)/im, // header Version: x.y.z
+			to: `$1${ version }`,
 		} );
 
-		// Optional: also keep readme Stable tag in sync if present
-		const readmePath = path.join( root, 'readme.txt' );
-		if ( await fs.pathExists( readmePath ) ) {
-			try {
-				await replaceInFile( {
-					files: readmePath,
-					from: /(\nStable tag:\s*)([^\r\n]+)/i,
-					to: `$1${ version }`,
-				} );
-			} catch ( e ) {
-				// non-fatal if pattern not found
+		if ( await fs.pathExists( pluginFile ) ) {
+			await replaceInFile( {
+				files: pluginFile,
+				from: /(public\s+\$version\s*=\s*')[^']+('\s*;)/m,
+				to: `$1${ version }$2`,
+			} );
+		}
+
+		// Optional: also keep readme.txt Stable tag in sync if present
+		const readmePaths = [ path.join( root, 'readme.txt' ) ];
+		for ( const readmePath of readmePaths ) {
+			if ( await fs.pathExists( readmePath ) ) {
+				try {
+					await replaceInFile( {
+						files: readmePath,
+						from: /(\nStable tag:\s*)([^\r\n]+)/i,
+						to: `$1${ version }`,
+					} );
+				} catch ( e ) {
+					// non-fatal if pattern not found
+				}
 			}
 		}
 
@@ -66,17 +75,16 @@ const replaceInFile = require( 'replace-in-file' );
 
 		// 4) Build include globs and exclusions (mirrors PHP script intent)
 		const includeGlobs = [
-			'assets/**',
 			'build/**',
-			'includes/**',
+			'inc/**',
+			'languages/**',
 			'templates/**',
 			'vendor/**',
-			'languages/**',
 			'*.php', // root PHP files
 			'readme.txt',
 			'license',
 			'license.txt',
-			'composer.json', // Todo: plugin rel del
+			'composer.json',
 		];
 
 		const ignoreGlobs = [
@@ -88,11 +96,7 @@ const replaceInFile = require( 'replace-in-file' );
 			'test/**',
 			'.idea/**',
 			'.vscode/**',
-			// Exclude GitHub-specific functionality from published ZIP for now
-			'includes/App/GitHubApi.php',
-			'templates/github-page.php',
-			'assets/js/github-page.js',
-			// 'composer.json', // Todo: plugin rel del
+			'src/**', // exclude source files
 			'composer.lock',
 			'package.json',
 			'package-lock.json',

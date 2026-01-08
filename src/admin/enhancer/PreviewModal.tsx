@@ -862,7 +862,7 @@ const PreviewModal = ( {
 
 	return (
 		<div className="ai-enhancer-modal fixed inset-[0px] bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[160000]">
-			<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto max-h-[90vh] overflow-y-auto">
+			<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto max-h-[90vh] overflow-y-auto overflow-x-hidden">
 				<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] pt-[16px] pl-[24px] pr-[24px]">
 					<h2 className="mt-0">
 						{ __( 'AI Product Image Generation', 'try-aura' ) }

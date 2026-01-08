@@ -877,17 +877,22 @@ const PreviewModal = ( {
 					</button>
 				</div>
 
-				<div className="flex flex-col sm:flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
+				<div className="grid grid-cols-1 md:grid-cols-11 md:flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
 					<OriginalImage
 						imageUrls={ imageUrls }
 						multiple={ multiple }
+						className="col-span-1 md:col-span-3 max-h-[533px] overflow-auto"
 					/>
 					<ConfigSettings
 						supportsVideo={ supportsVideo }
 						doGenerate={ doGenerate }
 						doGenerateVideo={ doGenerateVideo }
+						className="col-span-1 md:col-span-4 flex flex-col gap-[32px]"
 					/>
-					<Output supportsVideo={ supportsVideo } />
+					<Output
+						supportsVideo={ supportsVideo }
+						className="col-span-1 md:col-span-4"
+					/>
 				</div>
 				{ /* Actions */ }
 				<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">

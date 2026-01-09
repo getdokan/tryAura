@@ -70,45 +70,34 @@ const ProductVideoGallery = () => {
 								key={ index }
 								className="relative inline-block group"
 							>
-								<div className="w-20 h-20 border border-gray-300 rounded overflow-hidden bg-gray-100 flex items-center justify-center">
-									{ video.thumbnailUrl ? (
+								<div
+									className="w-20 h-20 border border-gray-300 rounded overflow-hidden bg-gray-100 flex items-center justify-center"
+								>
+									{ video.thumbnailUrl && (
 										<img
 											src={ video.thumbnailUrl }
 											alt="Video Thumbnail"
 											className="w-full h-full object-cover"
 										/>
-									) : (
-										<VideoIcon
-											size={ 32 }
-											className="text-gray-400"
-										/>
 									) }
-									<div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-										<button
-											type="button"
-											onClick={ () => openModal( index ) }
-											className="p-1 bg-white rounded-full text-blue-600 hover:text-blue-800"
-											title={ __(
-												'Edit Video',
-												'try-aura'
-											) }
-										>
-											<Edit2 size={ 14 } />
-										</button>
-										<button
-											type="button"
-											onClick={ () =>
-												removeVideo( index )
-											}
-											className="p-1 bg-white rounded-full text-red-600 hover:text-red-800"
-											title={ __(
-												'Remove Video',
-												'try-aura'
-											) }
-										>
-											<X size={ 14 } />
-										</button>
-									</div>
+
+									<VideoIcon
+										size={ 32 }
+										className="text-black absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer bg-indigo-200 rounded-full p-2"
+										onClick={ () => openModal( index ) }
+									/>
+
+									<button
+										type="button"
+										onClick={ () => removeVideo( index ) }
+										className="p-1 bg-red-50 rounded-full text-red-600 hover:text-red-800 absolute -top-2 -right-1 group-hover:bg-red-100 transition-colors z-20 cursor-pointer"
+										title={ __(
+											'Remove Video',
+											'try-aura'
+										) }
+									>
+										<X size={ 10 } />
+									</button>
 								</div>
 							</div>
 						) ) }

@@ -77,6 +77,7 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 			className="tryaura tryaura-add-video-modal-url"
 			__experimentalHideHeader
 			size="medium"
+			style={ { maxHeight: '90vh', overflowY: 'auto' } }
 		>
 			<div>
 				<div className="border-b border-[rgba(233,233,233,1)] p-[16px_24px] flex justify-between items-center gap-1">
@@ -193,11 +194,11 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 								</Button>
 
 								{ thumbnailUrl && (
-									<div className="relative w-full aspect-video rounded-lg overflow-hidden border border-gray-200">
+									<div className="rounded-lg border border-gray-200 w-50 h-50 overflow-hidden mt-8">
 										<img
 											src={ thumbnailUrl }
 											alt="Thumbnail preview"
-											className="w-full h-full object-cover"
+											className="object-fill h-full w-full"
 										/>
 									</div>
 								) }

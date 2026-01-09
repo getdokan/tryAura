@@ -6,6 +6,10 @@
 }
 .ai-enhancer-preview-modal {
 	border-radius: 3px;
+	width: 100%;
+	max-width: 1000px;
+	height: auto;
+	max-height: 90vh;
 
 	.components-modal__content {
 		padding: 0;

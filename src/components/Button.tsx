@@ -1,8 +1,7 @@
 import { forwardRef } from '@wordpress/element';
 import { twMerge } from 'tailwind-merge';
-import { LoaderCircle } from 'lucide-react';
 
-type Variant = 'solid' | 'outline';
+type Variant = 'solid' | 'outline' | 'outline-primary';
 type Color = 'primary';
 
 export interface ButtonProps
@@ -30,10 +29,19 @@ const Button = forwardRef< HTMLButtonElement, ButtonProps >( function Button(
 		classNames =
 			'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-white px-3 py-2 text-[14px] text-gray-900 inset-ring inset-ring-gray-300 hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 	}
+
+	if ( variant === 'outline-primary' ) {
+		classNames =
+			'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-white px-3 py-2 text-[14px] text-primary inset-ring inset-ring-primary hover:bg-primary/5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
+	}
 	const Tag = type === 'link' ? 'a' : 'button';
 
 	return (
-		<Tag className={ twMerge( classNames, className ) } { ...rest }>
+		<Tag
+			ref={ ref }
+			className={ twMerge( classNames, className ) }
+			{ ...rest }
+		>
 			<svg
 				className={ `transition-[width,margin] ease-out animate-spin h-4 ${
 					loading ? 'w-4 mr-3' : 'w-0'

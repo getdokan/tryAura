@@ -1,7 +1,7 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Modal } from '@wordpress/components';
-import { Button, Checkbox, ModernSelect } from "../../../components";
+import { Button, Checkbox, ModernSelect } from '../../../components';
 import { Youtube, Video, Upload, X } from 'lucide-react';
 
 declare const wp: any;
@@ -99,9 +99,9 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 
 				<div className="p-[27px_24px] border-b border-[rgba(233,233,233,1)] flex flex-col gap-3">
 					<div>
-					<span className="block text-sm font-medium text-gray-700 mb-2">
-						{ __( 'Video Platforms', 'try-aura' ) }
-					</span>
+						<span className="block text-sm font-medium text-gray-700 mb-2">
+							{ __( 'Video Platforms', 'try-aura' ) }
+						</span>
 						<ModernSelect
 							value={ platform }
 							onChange={ ( val: any ) => setPlatform( val ) }
@@ -112,7 +112,10 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 									icon: <Youtube size={ 18 } />,
 								},
 								{
-									label: __( 'Site stored Video', 'try-aura' ),
+									label: __(
+										'Site stored Video',
+										'try-aura'
+									),
 									value: 'site_stored',
 									icon: <Video size={ 18 } />,
 								},
@@ -132,7 +135,7 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 							<input
 								id="try-aura-video-url"
 								type="text"
-								className="flex-1 border border-gray-300 rounded-md px-3 py-2"
+								className="flex-1 border rounded-md p-[10px_16px] leading-0 border-[#E9E9E9]"
 								placeholder={
 									platform === 'youtube'
 										? 'e.g. https://www.youtube.com/watch?v=...'
@@ -143,7 +146,7 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 							/>
 							{ platform === 'site_stored' && (
 								<Button
-									variant="outline"
+									variant="outline-primary"
 									onClick={ openMediaModal }
 								>
 									<Upload size={ 18 } />
@@ -176,14 +179,17 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 						{ useCustomThumbnail && (
 							<div className="">
 								<Button
-									variant="outline"
+									variant="outline-primary"
 									className="w-full justify-center"
 									onClick={ ( e ) => {
 										e.preventDefault();
 										openThumbnailModal();
 									} }
 								>
-									{ __( 'Select Video Thumbnail', 'try-aura' ) }
+									{ __(
+										'Select Video Thumbnail',
+										'try-aura'
+									) }
 								</Button>
 
 								{ thumbnailUrl && (
@@ -204,10 +210,7 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 					<Button variant="outline" onClick={ onClose }>
 						{ __( 'Cancel', 'try-aura' ) }
 					</Button>
-					<Button
-						className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white"
-						onClick={ handleSave }
-					>
+					<Button onClick={ handleSave }>
 						{ initialData
 							? __( 'Update Video', 'try-aura' )
 							: __( 'Add Video', 'try-aura' ) }

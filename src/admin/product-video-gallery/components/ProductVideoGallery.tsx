@@ -118,7 +118,7 @@ const ProductVideoGallery = () => {
 
 			<Button
 				variant="primary"
-				className="w-full justify-center gap-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white py-3 rounded-lg flex items-center"
+				className="w-full"
 				onClick={ ( e ) => {
 					e.preventDefault();
 					openModal( null );

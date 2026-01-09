@@ -1,8 +1,8 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Modal } from '@wordpress/components';
-import { Button, ModernSelect } from '../../../components';
-import { Youtube, Video, Upload } from 'lucide-react';
+import { Button, Checkbox, ModernSelect } from "../../../components";
+import { Youtube, Video, Upload, X } from 'lucide-react';
 
 declare const wp: any;
 
@@ -76,111 +76,131 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 			onRequestClose={ onClose }
 			className="tryaura tryaura-add-video-modal-url"
 			__experimentalHideHeader
+			size="medium"
 		>
-			<div className="space-y-6">
-				<h2 className="mt-0">
-					{ initialData
-						? __( 'Edit Video', 'try-aura' )
-						: __( 'Add Video From URL', 'try-aura' ) }
-				</h2>
-				<div>
+			<div>
+				<div className="border-b border-[rgba(233,233,233,1)] p-[16px_24px] flex justify-between items-center gap-1">
+					<h2 className="m-0">
+						{ initialData
+							? __( 'Edit Video', 'try-aura' )
+							: __( 'Add Video From URL', 'try-aura' ) }
+					</h2>
+
+					<button
+						onClick={ ( e ) => {
+							e.preventDefault();
+							onClose();
+						} }
+						className="cursor-pointer text-[rgba(130,130,130,1)]"
+					>
+						<X size={ 20 } />
+					</button>
+				</div>
+
+				<div className="p-[27px_24px] border-b border-[rgba(233,233,233,1)] flex flex-col gap-3">
+					<div>
 					<span className="block text-sm font-medium text-gray-700 mb-2">
 						{ __( 'Video Platforms', 'try-aura' ) }
 					</span>
-					<ModernSelect
-						value={ platform }
-						onChange={ ( val: any ) => setPlatform( val ) }
-						options={ [
-							{
-								label: __( 'Youtube Video', 'try-aura' ),
-								value: 'youtube',
-								icon: <Youtube size={ 18 } />,
-							},
-							{
-								label: __( 'Site stored Video', 'try-aura' ),
-								value: 'site_stored',
-								icon: <Video size={ 18 } />,
-							},
-						] }
-						variant="list"
-					/>
-				</div>
-
-				<div>
-					<label
-						htmlFor="try-aura-video-url"
-						className="block text-sm font-medium text-gray-700 mb-2"
-					>
-						{ __( 'Video URL', 'try-aura' ) }
-					</label>
-					<div className="flex gap-2">
-						<input
-							id="try-aura-video-url"
-							type="text"
-							className="flex-1 border border-gray-300 rounded-md px-3 py-2"
-							placeholder={
-								platform === 'youtube'
-									? 'e.g. https://www.youtube.com/watch?v=...'
-									: __( 'Video URL', 'try-aura' )
-							}
-							value={ url }
-							onChange={ ( e ) => setUrl( e.target.value ) }
+						<ModernSelect
+							value={ platform }
+							onChange={ ( val: any ) => setPlatform( val ) }
+							options={ [
+								{
+									label: __( 'Youtube Video', 'try-aura' ),
+									value: 'youtube',
+									icon: <Youtube size={ 18 } />,
+								},
+								{
+									label: __( 'Site stored Video', 'try-aura' ),
+									value: 'site_stored',
+									icon: <Video size={ 18 } />,
+								},
+							] }
+							variant="list"
 						/>
-						{ platform === 'site_stored' && (
-							<Button
-								variant="outline"
-								onClick={ openMediaModal }
-							>
-								<Upload size={ 18 } />
-							</Button>
-						) }
 					</div>
-				</div>
 
-				<div className="flex items-center gap-2">
-					<input
-						type="checkbox"
-						id="useCustomThumbnail"
-						checked={ useCustomThumbnail }
-						onChange={ ( e ) =>
-							setUseCustomThumbnail( e.target.checked )
-						}
-						className="rounded border-gray-300 text-primary hover:border-primary"
-					/>
-					<label
-						htmlFor="useCustomThumbnail"
-						className="text-sm text-gray-700"
-					>
-						{ __( 'Use Custom video Thumbnail?', 'try-aura' ) }
-					</label>
-				</div>
-
-				{ useCustomThumbnail && (
-					<div className="space-y-4">
-						<Button
-							variant="outline"
-							className="w-full justify-center"
-							onClick={ ( e ) => {
-								e.preventDefault();
-								openThumbnailModal();
-							} }
+					<div>
+						<label
+							htmlFor="try-aura-video-url"
+							className="block text-sm font-medium text-gray-700 mb-2"
 						>
-							{ __( 'Select Video Thumbnail', 'try-aura' ) }
-						</Button>
+							{ __( 'Video URL', 'try-aura' ) }
+						</label>
+						<div className="flex gap-2">
+							<input
+								id="try-aura-video-url"
+								type="text"
+								className="flex-1 border border-gray-300 rounded-md px-3 py-2"
+								placeholder={
+									platform === 'youtube'
+										? 'e.g. https://www.youtube.com/watch?v=...'
+										: __( 'Video URL', 'try-aura' )
+								}
+								value={ url }
+								onChange={ ( e ) => setUrl( e.target.value ) }
+							/>
+							{ platform === 'site_stored' && (
+								<Button
+									variant="outline"
+									onClick={ openMediaModal }
+								>
+									<Upload size={ 18 } />
+								</Button>
+							) }
+						</div>
+					</div>
 
-						{ thumbnailUrl && (
-							<div className="relative w-full aspect-video rounded-lg overflow-hidden border border-gray-200">
-								<img
-									src={ thumbnailUrl }
-									alt="Thumbnail preview"
-									className="w-full h-full object-cover"
-								/>
+					<div className="flex flex-col gap-[32px]">
+						<Checkbox
+							id="useCustomThumbnail"
+							checked={ useCustomThumbnail }
+							onChange={ ( e ) =>
+								setUseCustomThumbnail(
+									( e.target as HTMLInputElement ).checked
+								)
+							}
+						>
+							<label
+								htmlFor="useCustomThumbnail"
+								className="text-sm text-gray-700 cursor-pointer"
+							>
+								{ __(
+									'Use Custom video Thumbnail?',
+									'try-aura'
+								) }
+							</label>
+						</Checkbox>
+
+						{ useCustomThumbnail && (
+							<div className="">
+								<Button
+									variant="outline"
+									className="w-full justify-center"
+									onClick={ ( e ) => {
+										e.preventDefault();
+										openThumbnailModal();
+									} }
+								>
+									{ __( 'Select Video Thumbnail', 'try-aura' ) }
+								</Button>
+
+								{ thumbnailUrl && (
+									<div className="relative w-full aspect-video rounded-lg overflow-hidden border border-gray-200">
+										<img
+											src={ thumbnailUrl }
+											alt="Thumbnail preview"
+											className="w-full h-full object-cover"
+										/>
+									</div>
+								) }
 							</div>
 						) }
 					</div>
-				) }
+				</div>
 
-				<div className="flex justify-end gap-3 pt-4 border-t">
+				<div className="flex justify-end gap-3 p-[20px_24px]">
 					<Button variant="outline" onClick={ onClose }>
 						{ __( 'Cancel', 'try-aura' ) }
 					</Button>

@@ -1,6 +1,7 @@
 import { createRoot } from '@wordpress/element';
 import './style.scss';
 import ProductVideoGallery from './components/ProductVideoGallery';
+import { Toaster } from 'react-hot-toast';
 
 declare const jQuery: any;
 
@@ -27,6 +28,14 @@ declare const jQuery: any;
 		}
 
 		const root = createRoot( $btnContainer[ 0 ] );
-		root.render( <ProductVideoGallery /> );
+		root.render(
+			<>
+				<ProductVideoGallery />
+				<Toaster
+					position="bottom-right"
+					containerClassName="tryaura-toast-root"
+				/>
+			</>
+		);
 	} );
 } )( jQuery );

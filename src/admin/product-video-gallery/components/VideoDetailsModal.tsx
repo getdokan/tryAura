@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { Modal } from '@wordpress/components';
 import { Button, Checkbox, ModernSelect } from '../../../components';
 import { Youtube, Video, Upload, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 declare const wp: any;
 
@@ -62,6 +63,19 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 	};
 
 	const handleSave = () => {
+		if ( ! platform ) {
+			toast.error( __( 'Please select a video platform.', 'try-aura' ) );
+			return;
+		}
+		if ( ! url ) {
+			toast.error( __( 'Please enter a valid video URL.', 'try-aura' ) );
+			return;
+		}
+		if ( ! thumbnailUrl && useCustomThumbnail ) {
+			toast.error( __( 'Please select a video thumbnail.', 'try-aura' ) );
+			return;
+		}
+
 		onSave( {
 			platform,
 			url,

@@ -11,6 +11,7 @@ import ConfigSettings from './PreviewSections/ConfigSettings';
 import Output from './PreviewSections/Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
 import toast, { Toaster } from 'react-hot-toast';
+import { Modal } from '@wordpress/components';
 
 declare const wp: any;
 
@@ -869,8 +870,13 @@ const PreviewModal = ( {
 	const disabledVideoAddToMedia = isVideoBusy || videoUploading || ! videoUrl;
 
 	return (
-		<div className="ai-enhancer-modal fixed inset-[0px] bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[160000]">
-			<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto max-h-[90vh] overflow-y-auto overflow-x-hidden">
+		<Modal
+			onRequestClose={ onClose }
+			className="tryaura ai-enhancer-preview-modal"
+			__experimentalHideHeader
+		>
+			<div className="ai-enhancer-modal__content">
+			{/*<div className="ai-enhancer-modal__content max-w-[1000px] w-[90vw] h-auto max-h-[90vh] overflow-y-auto overflow-x-hidden">*/}
 				<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] pt-[16px] pl-[24px] pr-[24px]">
 					<h2 className="mt-0">
 						{ isThumbnailMode
@@ -945,7 +951,7 @@ const PreviewModal = ( {
 			</div>
 
 			<Toaster position="bottom-right" />
-		</div>
+		</Modal>
 	);
 };
 

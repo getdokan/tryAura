@@ -11,7 +11,6 @@ export const getVideoConfigData = ( state: EnhancerProState ) =>
 export const getVideoSource = ( state: EnhancerProState ) => state.videoSource;
 export const getSelectedVideoIndices = ( state: EnhancerProState ) =>
 	state.selectedVideoIndices;
-
 export const isVideoBusy = ( state: EnhancerProState ) =>
 	state.videoStatus === 'generating' ||
 	state.videoStatus === 'polling' ||

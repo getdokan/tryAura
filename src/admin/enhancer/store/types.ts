@@ -5,7 +5,7 @@ export type Status =
 	| 'parsing'
 	| 'done'
 	| 'error';
-export type ActiveTab = 'image' | 'video';
+export type ActiveTab = string;
 
 export interface ImageConfigData {
 	imageSize: string;

@@ -12,27 +12,28 @@ function ConfigSettings( {
 	isVideoBusy,
 	className = '',
 } ) {
-	const { activeTab, isBusy, isThumbnailMode } = useSelect(
-		( select ) => {
-			const store = select( STORE_NAME );
-			return {
-				activeTab: store.getActiveTab(),
-				isBusy: store.isBusy(),
-				isThumbnailMode: store.isThumbnailMode(),
-			};
-		},
-		[]
-	);
+	const { activeTab, isBusy, isThumbnailMode } = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return {
+			activeTab: store.getActiveTab(),
+			isBusy: store.isBusy(),
+			isThumbnailMode: store.isThumbnailMode(),
+		};
+	}, [] );
 
 	const { setActiveTab } = useDispatch( STORE_NAME );
 
-	const tabs = applyFilters( 'tryaura.enhancer.tabs', [
-		{
-			label: __( 'Generate Image', 'tryaura' ),
-			value: 'image',
-			disabled: isBusy || isVideoBusy,
-		},
-	], { isBusy, isVideoBusy, isThumbnailMode, supportsVideo } );
+	const tabs = applyFilters(
+		'tryaura.enhancer.tabs',
+		[
+			{
+				label: __( 'Generate Image', 'tryaura' ),
+				value: 'image',
+				disabled: isBusy || isVideoBusy,
+			},
+		],
+		{ isBusy, isVideoBusy, isThumbnailMode, supportsVideo }
+	);
 
 	return (
 		<div className={ className }>

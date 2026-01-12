@@ -3,11 +3,32 @@ import { __ } from '@wordpress/i18n';
 import { useState, useEffect, useRef } from '@wordpress/element';
 import VideoConfigInputs from './PreviewSections/VideoConfigInputs';
 import { useVideoLogic } from './useVideoLogic';
-import { Button } from '../../../components';
+import { Button, ModernSelect } from '../../../components';
 import StarIcon from '../../../images/star.gif';
 import CongratsIcon from '../../../images/congrats.gif';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { PRO_STORE_NAME } from './store';
+
+// Original image props filter
+addFilter(
+	'tryaura.enhancer.original_image_props',
+	'tryaura/enhancer-pro/original-image-props',
+	( props, { activeTab, videoSource, selectedVideoIndices, setSelectedVideoIndices } ) => {
+		if ( activeTab === 'video' ) {
+			return {
+				...props,
+				selectedIndices: selectedVideoIndices,
+				setSelectedIndices: setSelectedVideoIndices,
+				showSelection: videoSource === 'original-image',
+				showGeneratedImage: videoSource === 'generated-image',
+				limits: { min: 1, max: 1 },
+			};
+		}
+		return props;
+	}
+);
+
+declare const wp: any;
 
 // Add the "Generate Video" tab
 addFilter(

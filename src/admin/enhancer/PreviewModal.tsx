@@ -10,7 +10,7 @@ import ConfigSettings from './PreviewSections/ConfigSettings';
 import Output from './PreviewSections/Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
 import { Modal } from '@wordpress/components';
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from '@google/genai';
 
 declare const wp: any;
 
@@ -93,6 +93,7 @@ const PreviewModal = ( {
 		setGeneratedUrl,
 		setError,
 		setUploading,
+		setSelectedImageIndices,
 	} = useDispatch( STORE_NAME );
 
 	const multiple = imageUrls.length > 1;
@@ -101,25 +102,13 @@ const PreviewModal = ( {
 		'tryaura.enhancer.use_video_logic',
 		null
 	);
-	const {
-		doGenerateVideo,
-		setVideoInMediaSelection,
-		videoUrl,
-		videoUploading,
-		isVideoBusy,
-		videoSource,
-		selectedVideoIndices,
-		setSelectedVideoIndices,
-	} = ( useVideoLogicHook as any )?.( { imageUrls, attachmentIds } ) ?? {
-		doGenerateVideo: () => {},
-		setVideoInMediaSelection: () => {},
-		videoUrl: null,
-		videoUploading: false,
-		isVideoBusy: false,
-		videoSource: 'original-image',
-		selectedVideoIndices: [ 0 ],
-		setSelectedVideoIndices: () => {},
-	};
+	const videoLogic =
+		( useVideoLogicHook as any )?.( {
+			imageUrls,
+			attachmentIds,
+		} ) ?? {};
+
+	const { doGenerateVideo = () => {}, isVideoBusy = false } = videoLogic;
 
 	useEffect( () => {
 		setIsBlockEditorPage(
@@ -152,26 +141,6 @@ const PreviewModal = ( {
 				)
 			);
 	}, [] );
-
-	// Reset state when image changes
-	useEffect( () => {
-		if ( videoUrl && videoUrl.startsWith( 'blob:' ) ) {
-			try {
-				URL.revokeObjectURL( videoUrl );
-			} catch {}
-		}
-	}, [ imageUrls ] );
-
-	// Revoke video blob URL on unmount/change to free memory
-	useEffect( () => {
-		return () => {
-			if ( videoUrl && videoUrl.startsWith( 'blob:' ) ) {
-				try {
-					URL.revokeObjectURL( videoUrl );
-				} catch {}
-			}
-		};
-	}, [ videoUrl ] );
 
 	const doGenerate = async () => {
 		try {
@@ -263,13 +232,17 @@ const PreviewModal = ( {
 
 			let promptText: string = isBlockPage
 				? `Generate a high-quality AI image based on the provided image(s) and user instructions.\n\nInstructions: ${ imageConfigData?.optionalPrompt?.trim() }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }`
-				: `Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n${
-						isThumbnailMode
-							? `- Video Platform: ${
-									imageConfigData?.videoPlatform || 'youtube'
-							  }\n`
-							: ''
-				  }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ extras }${ multiHint }`;
+				: applyFilters(
+						'tryaura.ai_enhance_image_prompt_base',
+						`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ extras }${ multiHint }`,
+						{
+							imageConfigData,
+							safetyInstruction,
+							extras,
+							multiHint,
+							isThumbnailMode,
+						}
+				  );
 			promptText = applyFilters(
 				'tryaura.ai_enhance_prompt_text',
 				promptText,
@@ -505,11 +478,7 @@ const PreviewModal = ( {
 		}
 	};
 
-
 	const disabledImageAddToMedia = isBusy || uploading || ! generatedUrl;
-	const disabledVideoAddToMedia = isVideoBusy || videoUploading || ! videoUrl;
-
-
 
 	return (
 		<Modal
@@ -521,12 +490,11 @@ const PreviewModal = ( {
 			<div className="ai-enhancer-modal__content">
 				<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] pt-[16px] pl-[24px] pr-[24px]">
 					<h2 className="mt-0">
-						{ isThumbnailMode
-							? __(
-									'AI Product Video Thumbnail Generation',
-									'try-aura'
-							  )
-							: __( 'AI Product Image Generation', 'try-aura' ) }
+						{ applyFilters(
+							'tryaura.enhancer.modal_title',
+							__( 'AI Product Image Generation', 'try-aura' ),
+							{ isThumbnailMode }
+						) }
 					</h2>
 					<button
 						className="w-[16px] h-[16px] cursor-pointer"
@@ -542,9 +510,20 @@ const PreviewModal = ( {
 					<OriginalImage
 						imageUrls={ imageUrls }
 						multiple={ multiple }
-						videoSource={ videoSource }
-						selectedVideoIndices={ selectedVideoIndices }
-						setSelectedVideoIndices={ setSelectedVideoIndices }
+						{ ...applyFilters(
+							'tryaura.enhancer.original_image_props',
+							{
+								selectedIndices: selectedImageIndices,
+								setSelectedIndices: setSelectedImageIndices,
+								showSelection: true,
+								showGeneratedImage: false,
+								limits:
+									activeTab === 'image'
+										? { min: 1, max: 3 }
+										: { min: 1, max: 1 },
+							},
+							{ activeTab, ...videoLogic }
+						) }
 						className="col-span-1 md:col-span-3 max-h-[533px] overflow-auto"
 					/>
 					<ConfigSettings
@@ -573,16 +552,10 @@ const PreviewModal = ( {
 						</Button>
 					) }
 
-					{ applyFilters(
-						'tryaura.enhancer.footer_actions',
-						[],
-						{
-							activeTab,
-							disabledVideoAddToMedia,
-							videoUploading,
-							setVideoInMediaSelection,
-						}
-					) }
+					{ applyFilters( 'tryaura.enhancer.footer_actions', [], {
+						activeTab,
+						...videoLogic,
+					} ) }
 
 					<Button
 						variant="outline"

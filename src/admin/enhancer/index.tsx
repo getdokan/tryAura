@@ -4,7 +4,7 @@ import { applyFilters, doAction } from '@wordpress/hooks';
 import EnhanceButton from './EnhanceButton';
 import { dispatch } from '@wordpress/data';
 import { STORE_NAME } from './store';
-
+import './filters';
 import './pro';
 
 declare const wp: any;

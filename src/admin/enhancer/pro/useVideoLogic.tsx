@@ -6,6 +6,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { GoogleGenAI } from '@google/genai';
 import { applyFilters, doAction } from '@wordpress/hooks';
 import toast from 'react-hot-toast';
+import { useEffect } from '@wordpress/element';
 
 async function resolveSettings(): Promise< {
 	apiKey: string | null;
@@ -79,6 +80,26 @@ export function useVideoLogic( { imageUrls, attachmentIds } ) {
 		setVideoSource,
 		setSelectedVideoIndices,
 	} = useDispatch( PRO_STORE_NAME );
+
+	// Reset state when image changes
+	useEffect( () => {
+		if ( videoUrl && videoUrl.startsWith( 'blob:' ) ) {
+			try {
+				URL.revokeObjectURL( videoUrl );
+			} catch {}
+		}
+	}, [ imageUrls ] );
+
+	// Revoke video blob URL on unmount/change to free memory
+	useEffect( () => {
+		return () => {
+			if ( videoUrl && videoUrl.startsWith( 'blob:' ) ) {
+				try {
+					URL.revokeObjectURL( videoUrl );
+				} catch {}
+			}
+		};
+	}, [ videoUrl ] );
 
 	const doGenerateVideo = async () => {
 		try {

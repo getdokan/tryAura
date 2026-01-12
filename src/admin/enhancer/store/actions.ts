@@ -62,6 +62,21 @@ export const setIsThumbnailMode = ( isThumbnailMode: boolean ) => ( {
 	isThumbnailMode,
 } );
 
+export const setImageUrls = ( imageUrls: string[] ) => ( {
+	type: TYPES.SET_IMAGE_URLS,
+	imageUrls,
+} );
+
+export const setAttachmentIds = ( attachmentIds: number[] ) => ( {
+	type: TYPES.SET_ATTACHMENT_IDS,
+	attachmentIds,
+} );
+
+export const setSupportsVideo = ( supportsVideo: boolean ) => ( {
+	type: TYPES.SET_SUPPORTS_VIDEO,
+	supportsVideo,
+} );
+
 export const resetState = () => ( {
 	type: TYPES.RESET_STATE,
 } );

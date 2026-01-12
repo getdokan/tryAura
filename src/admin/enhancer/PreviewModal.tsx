@@ -94,6 +94,9 @@ const PreviewModal = ( {
 		setError,
 		setUploading,
 		setSelectedImageIndices,
+		setImageUrls,
+		setAttachmentIds,
+		setSupportsVideo,
 	} = useDispatch( STORE_NAME );
 
 	const multiple = imageUrls.length > 1;
@@ -103,12 +106,15 @@ const PreviewModal = ( {
 		null
 	);
 	const videoLogic =
-		( useVideoLogicHook as any )?.( {
-			imageUrls,
-			attachmentIds,
-		} ) ?? {};
+		( useVideoLogicHook as any )?.() ?? {};
 
 	const { doGenerateVideo = () => {}, isVideoBusy = false } = videoLogic;
+
+	useEffect( () => {
+		setImageUrls( imageUrls );
+		setAttachmentIds( attachmentIds );
+		setSupportsVideo( !! supportsVideo );
+	}, [ imageUrls, attachmentIds, supportsVideo ] );
 
 	useEffect( () => {
 		setIsBlockEditorPage(
@@ -521,8 +527,7 @@ const PreviewModal = ( {
 									activeTab === 'image'
 										? { min: 1, max: 3 }
 										: { min: 1, max: 1 },
-							},
-							{ activeTab, ...videoLogic }
+							}
 						) }
 						className="col-span-1 md:col-span-3 max-h-[533px] overflow-auto"
 					/>
@@ -552,10 +557,7 @@ const PreviewModal = ( {
 						</Button>
 					) }
 
-					{ applyFilters( 'tryaura.enhancer.footer_actions', [], {
-						activeTab,
-						...videoLogic,
-					} ) }
+					{ applyFilters( 'tryaura.enhancer.footer_actions', [] ) }
 
 					<Button
 						variant="outline"

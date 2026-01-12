@@ -1,6 +1,7 @@
 import { useSelect, useDispatch } from '@wordpress/data';
 import { STORE_NAME } from '../../store';
 import { PRO_STORE_NAME } from '../store';
+import { useVideoLogic } from '../useVideoLogic';
 import { ModernSelect } from '../../../../components';
 import { __ } from '@wordpress/i18n';
 import {
@@ -19,7 +20,7 @@ import {
 } from 'lucide-react';
 import ConfigFooter from '../../PreviewSections/ConfigFooter';
 
-function VideoConfigInputs( { doGenerateVideo } ) {
+function VideoConfigInputs() {
 	const {
 		isBlockEditorPage,
 		isWoocommerceProductPage,
@@ -51,6 +52,7 @@ function VideoConfigInputs( { doGenerateVideo } ) {
 	}, [] );
 
 	const { setVideoConfigData, setVideoSource } = useDispatch( PRO_STORE_NAME );
+	const { doGenerateVideo } = useVideoLogic();
 
 	return (
 		<>

@@ -6,8 +6,9 @@ import { useVideoLogic } from './useVideoLogic';
 import { Button } from '../../../components';
 import StarIcon from '../../../images/star.gif';
 import CongratsIcon from '../../../images/congrats.gif';
-import { useSelect } from '@wordpress/data';
+import { useSelect, select, dispatch } from '@wordpress/data';
 import { PRO_STORE_NAME } from './store';
+import { STORE_NAME } from '../store';
 import domReady from '@wordpress/dom-ready';
 
 domReady( () => {
@@ -15,22 +16,18 @@ domReady( () => {
 	addFilter(
 		'tryaura.enhancer.original_image_props',
 		'tryaura/enhancer-pro/original-image-props',
-		(
-			props,
-			{
-				activeTab,
-				videoSource,
-				selectedVideoIndices,
-				setSelectedVideoIndices,
-			}
-		) => {
+		( props ) => {
+			const activeTab = select( STORE_NAME ).getActiveTab();
 			if ( activeTab === 'video' ) {
+				const proStore = select( PRO_STORE_NAME );
 				return {
 					...props,
-					selectedIndices: selectedVideoIndices,
-					setSelectedIndices: setSelectedVideoIndices,
-					showSelection: videoSource === 'original-image',
-					showGeneratedImage: videoSource === 'generated-image',
+					selectedIndices: proStore.getSelectedVideoIndices(),
+					setSelectedIndices: dispatch( PRO_STORE_NAME )
+						.setSelectedVideoIndices,
+					showSelection: proStore.getVideoSource() === 'original-image',
+					showGeneratedImage:
+						proStore.getVideoSource() === 'generated-image',
 					limits: { min: 1, max: 1 },
 				};
 			}
@@ -38,14 +35,18 @@ domReady( () => {
 		}
 	);
 
-	declare const wp: any;
-
 	// Add the "Generate Video" tab
 	addFilter(
 		'tryaura.enhancer.tabs',
 		'tryaura/enhancer-pro/tabs',
-		( tabs, { isBusy, isVideoBusy, isThumbnailMode, supportsVideo } ) => {
+		( tabs ) => {
+			const liteStore = select( STORE_NAME );
+			const supportsVideo = liteStore.getSupportsVideo();
+			const isThumbnailMode = liteStore.isThumbnailMode();
+
 			if ( supportsVideo && ! isThumbnailMode ) {
+				const isBusy = liteStore.isBusy();
+				const isVideoBusy = select( PRO_STORE_NAME ).isVideoBusy();
 				tabs.push( {
 					label: __( 'Generate Video', 'tryaura' ),
 					value: 'video',
@@ -60,11 +61,10 @@ domReady( () => {
 	addFilter(
 		'tryaura.enhancer.config_inputs',
 		'tryaura/enhancer-pro/config-inputs',
-		( content, activeTab, { doGenerateVideo } ) => {
+		( content ) => {
+			const activeTab = select( STORE_NAME ).getActiveTab();
 			if ( activeTab === 'video' ) {
-				return (
-					<VideoConfigInputs doGenerateVideo={ doGenerateVideo } />
-				);
+				return <VideoConfigInputs />;
 			}
 			return content;
 		}
@@ -74,14 +74,20 @@ domReady( () => {
 	addFilter(
 		'tryaura.enhancer.after_image_output',
 		'tryaura/enhancer-pro/after-image-output',
-		( content, { supportsVideo, isThumbnailMode, setActiveTab } ) => {
+		( content ) => {
+			const liteStore = select( STORE_NAME );
+			const supportsVideo = liteStore.getSupportsVideo();
+			const isThumbnailMode = liteStore.isThumbnailMode();
+
 			if ( supportsVideo && ! isThumbnailMode ) {
 				return (
 					<div className="flex justify-center">
 						<Button
 							variant="solid"
 							className="border border-primary text-primary bg-white"
-							onClick={ () => setActiveTab( 'video' ) }
+							onClick={ () =>
+								dispatch( STORE_NAME ).setActiveTab( 'video' )
+							}
 						>
 							{ __( 'Generate Video', 'tryaura' ) }
 						</Button>
@@ -95,17 +101,25 @@ domReady( () => {
 	// Add the video output
 	const VideoOutput = () => {
 		const [ showCongrats, setShowCongrats ] = useState( false );
-		const { videoUrl, isVideoBusy, videoMessage, videoError, videoStatus } =
-			useSelect( ( select ) => {
-				const store = select( PRO_STORE_NAME );
-				return {
-					videoUrl: store.getVideoUrl(),
-					isVideoBusy: store.isVideoBusy(),
-					videoMessage: store.getVideoMessage(),
-					videoError: store.getVideoError(),
-					videoStatus: store.getVideoStatus(),
-				};
-			}, [] );
+		const {
+			videoUrl,
+			isVideoBusy,
+			videoMessage,
+			videoError,
+			videoStatus,
+			activeTab,
+		} = useSelect( ( sel ) => {
+			const proStore = sel( PRO_STORE_NAME );
+			const liteStore = sel( STORE_NAME );
+			return {
+				videoUrl: proStore.getVideoUrl(),
+				isVideoBusy: proStore.isVideoBusy(),
+				videoMessage: proStore.getVideoMessage(),
+				videoError: proStore.getVideoError(),
+				videoStatus: proStore.getVideoStatus(),
+				activeTab: liteStore.getActiveTab(),
+			};
+		}, [] );
 
 		const prevIsVideoBusy = useRef( isVideoBusy );
 
@@ -132,6 +146,10 @@ domReady( () => {
 				setShowCongrats( false );
 			}
 		}, [ isVideoBusy ] );
+
+		if ( activeTab !== 'video' ) {
+			return null;
+		}
 
 		return (
 			<div>
@@ -176,7 +194,8 @@ domReady( () => {
 	addFilter(
 		'tryaura.enhancer.video_output',
 		'tryaura/enhancer-pro/video-output',
-		( content, { activeTab } ) => {
+		( content ) => {
+			const activeTab = select( STORE_NAME ).getActiveTab();
 			if ( activeTab === 'video' ) {
 				return <VideoOutput />;
 			}
@@ -185,18 +204,24 @@ domReady( () => {
 	);
 
 	// Footer actions for video
-	const VideoFooterActions = ( {
-		activeTab,
-		disabledVideoAddToMedia,
-		videoUploading,
-		setVideoInMediaSelection,
-	} ) => {
-		const { videoUrl } = useSelect( ( select ) => {
-			const store = select( PRO_STORE_NAME );
+	const VideoFooterActions = () => {
+		const {
+			videoUrl,
+			activeTab,
+			videoUploading,
+			isVideoBusy,
+		} = useSelect( ( sel ) => {
+			const proStore = sel( PRO_STORE_NAME );
+			const liteStore = sel( STORE_NAME );
 			return {
-				videoUrl: store.getVideoUrl(),
+				videoUrl: proStore.getVideoUrl(),
+				activeTab: liteStore.getActiveTab(),
+				videoUploading: proStore.getVideoUploading(),
+				isVideoBusy: proStore.isVideoBusy(),
 			};
 		}, [] );
+
+		const { setVideoInMediaSelection } = useVideoLogic();
 
 		if ( activeTab !== 'video' || ! videoUrl ) {
 			return null;
@@ -205,7 +230,7 @@ domReady( () => {
 		return (
 			<Button
 				onClick={ setVideoInMediaSelection }
-				disabled={ disabledVideoAddToMedia }
+				disabled={ isVideoBusy || videoUploading || ! videoUrl }
 				loading={ videoUploading }
 			>
 				{ videoUploading
@@ -218,24 +243,8 @@ domReady( () => {
 	addFilter(
 		'tryaura.enhancer.footer_actions',
 		'tryaura/enhancer-pro/footer-actions',
-		(
-			actions,
-			{
-				activeTab,
-				disabledVideoAddToMedia,
-				videoUploading,
-				setVideoInMediaSelection,
-			}
-		) => {
-			actions.push(
-				<VideoFooterActions
-					key="video-footer-actions"
-					activeTab={ activeTab }
-					disabledVideoAddToMedia={ disabledVideoAddToMedia }
-					videoUploading={ videoUploading }
-					setVideoInMediaSelection={ setVideoInMediaSelection }
-				/>
-			);
+		( actions ) => {
+			actions.push( <VideoFooterActions key="video-footer-actions" /> );
 			return actions;
 		}
 	);

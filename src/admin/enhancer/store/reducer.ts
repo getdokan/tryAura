@@ -20,6 +20,9 @@ export const INITIAL_STATE: EnhancerState = {
 	activeTab: 'image',
 	selectedImageIndices: [ 0 ],
 	isThumbnailMode: false,
+	imageUrls: [],
+	attachmentIds: [],
+	supportsVideo: false,
 };
 
 const reducer = (
@@ -61,6 +64,12 @@ const reducer = (
 			return { ...state, activeTab: action.activeTab };
 		case TYPES.SET_IS_THUMBNAIL_MODE:
 			return { ...state, isThumbnailMode: action.isThumbnailMode };
+		case TYPES.SET_IMAGE_URLS:
+			return { ...state, imageUrls: action.imageUrls };
+		case TYPES.SET_ATTACHMENT_IDS:
+			return { ...state, attachmentIds: action.attachmentIds };
+		case TYPES.SET_SUPPORTS_VIDEO:
+			return { ...state, supportsVideo: action.supportsVideo };
 		case TYPES.RESET_STATE:
 			return {
 				...INITIAL_STATE,

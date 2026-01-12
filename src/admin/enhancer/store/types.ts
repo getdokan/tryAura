@@ -27,4 +27,7 @@ export interface EnhancerState {
 	activeTab: ActiveTab;
 	selectedImageIndices: number[];
 	isThumbnailMode?: boolean;
+	imageUrls: string[];
+	attachmentIds: number[];
+	supportsVideo: boolean;
 }

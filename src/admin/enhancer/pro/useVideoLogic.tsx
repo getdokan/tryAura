@@ -35,12 +35,14 @@ async function resolveSettings(): Promise< {
 	}
 }
 
-export function useVideoLogic( { imageUrls, attachmentIds } ) {
+export function useVideoLogic() {
 	const {
 		isBlockEditorPage,
 		isWoocommerceProductPage,
 		generatedUrl,
 		defaultVideoModel,
+		imageUrls,
+		attachmentIds,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const aiModelsStore = select( 'try-aura/ai-models' );
@@ -49,6 +51,8 @@ export function useVideoLogic( { imageUrls, attachmentIds } ) {
 			isWoocommerceProductPage: store.getIsWoocommerceProductPage(),
 			generatedUrl: store.getGeneratedUrl(),
 			defaultVideoModel: aiModelsStore.getDefaultVideoModel(),
+			imageUrls: store.getImageUrls(),
+			attachmentIds: store.getAttachmentIds(),
 		};
 	}, [] );
 

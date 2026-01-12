@@ -17,6 +17,10 @@ export const getSelectedImageIndices = ( state: EnhancerState ) =>
 export const isThumbnailMode = ( state: EnhancerState ) =>
 	state.isThumbnailMode;
 
+export const getImageUrls = ( state: EnhancerState ) => state.imageUrls;
+export const getAttachmentIds = ( state: EnhancerState ) => state.attachmentIds;
+export const getSupportsVideo = ( state: EnhancerState ) => state.supportsVideo;
+
 export const isBusy = ( state: EnhancerState ) =>
 	state.status === 'fetching' ||
 	state.status === 'generating' ||

@@ -1,13 +1,12 @@
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { useState, useEffect, useRef } from '@wordpress/element';
 import { STORE_NAME } from '../store';
 import { __ } from '@wordpress/i18n';
-import { Button } from '../../../components';
 import Star from '../../../images/star.gif';
 import Congrats from '../../../images/congrats.gif';
 import { applyFilters } from '@wordpress/hooks';
 
-function Output( { supportsVideo, className = '' } ) {
+function Output( { className = '' } ) {
 	const [ showCongrats, setShowCongrats ] = useState( false );
 	const {
 		generatedUrl,
@@ -16,7 +15,6 @@ function Output( { supportsVideo, className = '' } ) {
 		error,
 		isBusy,
 		status,
-		isThumbnailMode,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
@@ -26,11 +24,8 @@ function Output( { supportsVideo, className = '' } ) {
 			error: store.getError(),
 			isBusy: store.isBusy(),
 			status: store.getStatus(),
-			isThumbnailMode: store.isThumbnailMode(),
 		};
 	}, [] );
-
-	const { setActiveTab } = useDispatch( STORE_NAME );
 
 	const prevIsBusy = useRef( isBusy );
 
@@ -82,7 +77,7 @@ function Output( { supportsVideo, className = '' } ) {
 								</div>
 							) }
 						</div>
-						{ applyFilters( 'tryaura.enhancer.after_image_output', null, { supportsVideo, isThumbnailMode, setActiveTab } ) }
+						{ applyFilters( 'tryaura.enhancer.after_image_output', null ) }
 					</div>
 				) : (
 					<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1 items-center justify-center">
@@ -97,7 +92,7 @@ function Output( { supportsVideo, className = '' } ) {
 					</div>
 				)
 			) : (
-				applyFilters( 'tryaura.enhancer.video_output', null, { Star, activeTab } )
+				applyFilters( 'tryaura.enhancer.video_output', null )
 			) }
 			{ error ? (
 				<div style={ { color: 'red', marginTop: 8 } }>{ error }</div>

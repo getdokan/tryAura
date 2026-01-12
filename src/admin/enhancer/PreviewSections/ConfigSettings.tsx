@@ -6,10 +6,7 @@ import ImageConfigInputs from './ImageConfigInputs';
 import { applyFilters } from '@wordpress/hooks';
 
 function ConfigSettings( {
-	supportsVideo,
 	doGenerate,
-	doGenerateVideo,
-	isVideoBusy,
 	className = '',
 } ) {
 	const { activeTab, isBusy, isThumbnailMode } = useSelect( ( select ) => {
@@ -29,10 +26,9 @@ function ConfigSettings( {
 			{
 				label: __( 'Generate Image', 'tryaura' ),
 				value: 'image',
-				disabled: isBusy || isVideoBusy,
+				disabled: isBusy,
 			},
-		],
-		{ isBusy, isVideoBusy, isThumbnailMode, supportsVideo }
+		]
 	);
 
 	return (
@@ -52,9 +48,7 @@ function ConfigSettings( {
 				) : (
 					applyFilters(
 						'tryaura.enhancer.config_inputs',
-						null,
-						activeTab,
-						{ doGenerateVideo }
+						null
 					)
 				) }
 			</div>

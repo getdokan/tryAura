@@ -5,7 +5,6 @@ import { __ } from '@wordpress/i18n';
 import {
 	Leaf,
 	Wallpaper,
-	Square,
 	RectangleHorizontal,
 	RectangleVertical,
 	Ban,
@@ -16,7 +15,6 @@ import {
 	ArrowDown,
 	ZoomIn,
 	ZoomOut,
-	Clock9,
 } from 'lucide-react';
 import ConfigFooter from './ConfigFooter';
 

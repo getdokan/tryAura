@@ -5,6 +5,8 @@ import EnhanceButton from './EnhanceButton';
 import { dispatch } from '@wordpress/data';
 import { STORE_NAME } from './store';
 
+import './pro';
+
 declare const wp: any;
 
 declare global {

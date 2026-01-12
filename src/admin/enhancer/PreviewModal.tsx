@@ -1,4 +1,4 @@
-import { useEffect } from "@wordpress/element";
+import { useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { STORE_NAME } from './store';
@@ -869,6 +869,8 @@ const PreviewModal = ( {
 	const disabledImageAddToMedia = isBusy || uploading || ! generatedUrl;
 	const disabledVideoAddToMedia = isVideoBusy || videoUploading || ! videoUrl;
 
+
+
 	return (
 		<Modal
 			onRequestClose={ onClose }
@@ -948,7 +950,6 @@ const PreviewModal = ( {
 					</Button>
 				</div>
 			</div>
-
 		</Modal>
 	);
 };

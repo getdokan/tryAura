@@ -5,7 +5,8 @@
 	"license": "MIT",
 	"autoload": {
 		"psr-4": {
-			"Dokan\\TryAura\\": "inc/"
+			"Dokan\\TryAura\\": "inc/",
+			"Dokan\\TryAura\\ThirdParty\\Packages\\": "lib/packages/"
 		}
 	},
 	"authors": [
@@ -23,7 +24,9 @@
 		"phpcompatibility/phpcompatibility-wp": "*",
 		"wp-coding-standards/wpcs": "^3.0",
 		"squizlabs/php_codesniffer": "*",
-		"dealerdirect/phpcodesniffer-composer-installer": "*"
+		"dealerdirect/phpcodesniffer-composer-installer": "*",
+		"league/container": "^4.2",
+		"coenjacobs/mozart": "^0.7"
 	},
 	"config": {
 		"allow-plugins": {
@@ -31,6 +34,14 @@
 		}
 	},
 	"scripts": {
+		"post-install-cmd": [
+			"[ $COMPOSER_DEV_MODE -eq 0 ] || \"vendor/bin/mozart\" compose",
+			"composer dump-autoload"
+		],
+		"post-update-cmd": [
+			"[ $COMPOSER_DEV_MODE -eq 0 ] || \"vendor/bin/mozart\" compose",
+			"composer dump-autoload"
+		],
 		"phpcs": [
 			"vendor/bin/phpcs inc templates try-aura.php --standard=phpcs.xml"
 		],
@@ -40,5 +51,17 @@
 		"phpcbf": [
 			"vendor/bin/phpcbf -p"
 		]
+	},
+	"extra": {
+		"mozart": {
+			"dep_namespace": "Dokan\\TryAura\\ThirdParty\\Packages\\",
+			"dep_directory": "/lib/packages/",
+			"classmap_directory": "/lib/classes/",
+			"classmap_prefix": "Dokan_TryAura_",
+			"packages": [
+				"league/container"
+			],
+			"delete_vendor_directories": true
+		}
 	}
 }

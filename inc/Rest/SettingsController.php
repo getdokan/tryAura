@@ -33,15 +33,12 @@ class SettingsController {
 	 *
 	 * @var string option key.
 	 */
-	protected string $option_key;
+	protected string $option_key = 'try_aura_settings';
 
 	/**
 	 * Class constructor.
-	 *
-	 * @param string $option_key Option key.
 	 */
-	public function __construct( string $option_key ) {
-		$this->option_key = $option_key;
+	public function __construct() {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 	}
 

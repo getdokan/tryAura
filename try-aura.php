@@ -18,6 +18,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+// Use the necessary namespace.
+use Dokan\TryAura\DependencyManagement\Container;
+
+// Declare the $try_aura_container as global to access from the inside of the function.
+global $try_aura_container;
+
+// Instantiate the container.
+$try_aura_container = new Container();
+
+// Register the service providers.
+$try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement\Providers\ServiceProvider() );
+
+/**
+ * Get the container.
+ *
+ * @return Container The global container instance.
+ */
+function tryaura_get_container(): Container {
+	global $try_aura_container;
+
+	return $try_aura_container;
+}
+
 // Define constant for the Plugin file.
 defined( 'TRYAURA_FILE' ) || define( 'TRYAURA_FILE', __FILE__ );
 defined( 'TRYAURA_DIR' ) || define( 'TRYAURA_DIR', __DIR__ );

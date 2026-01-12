@@ -2,11 +2,6 @@
 
 namespace Dokan\TryAura;
 
-use Dokan\TryAura\Admin\ProductGalleryVideo;
-use Dokan\TryAura\Frontend\ProductVideoGallery;
-use Dokan\TryAura\Rest\SettingsController;
-use Dokan\TryAura\Rest\GenerateController;
-use Dokan\TryAura\Rest\DashboardController;
 use Dokan\TryAura\Installer;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -49,22 +44,22 @@ class Plugin {
 	 */
 	public function init_plugin(): void {
 		// Register custom REST endpoints.
-		new SettingsController( 'try_aura_settings' );
-		new GenerateController();
-		new DashboardController();
+		tryaura_get_container()->get( 'settings_controller' );
+		tryaura_get_container()->get( 'generate_controller' );
+		tryaura_get_container()->get( 'dashboard_controller' );
 
 		// Register assets.
-		new Assets();
+		tryaura_get_container()->get( 'assets' );
 
 		// WooCommerce integrations.
-		new WooCommerce();
-		new ProductVideoGallery();
+		tryaura_get_container()->get( 'woocommerce' );
+		tryaura_get_container()->get( 'product_video_gallery' );
 
 		if ( is_admin() ) {
-			new Admin();
+			tryaura_get_container()->get( 'admin' );
 			// Register the Featured Image Enhancer UI assets.
-			new Enhancer();
-			new ProductGalleryVideo();
+			tryaura_get_container()->get( 'enhancer' );
+			tryaura_get_container()->get( 'product_gallery_video' );
 		}
 
 		add_filter( 'rest_post_dispatch', array( $this, 'add_wc_existence_header' ), 10, 3 );

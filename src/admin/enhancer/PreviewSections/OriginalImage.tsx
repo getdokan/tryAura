@@ -33,10 +33,46 @@ function OriginalImage( {
 	}, [] );
 
 	useEffect( () => {
-		if ( selectedIndices.length > limits.max ) {
-			setSelectedIndices( selectedIndices.slice( 0, limits.max ) );
+		let nextIndices = [ ...selectedIndices ];
+		let changed = false;
+
+		if ( nextIndices.length > limits.max ) {
+			nextIndices = nextIndices.slice( 0, limits.max );
+			changed = true;
 		}
-	}, [ limits.max, selectedIndices, setSelectedIndices ] );
+
+		// Ensure all indices are within bounds
+		const validIndices = nextIndices.filter(
+			( idx ) => idx >= 0 && idx < imageUrls.length
+		);
+		if ( validIndices.length !== nextIndices.length ) {
+			nextIndices = validIndices;
+			changed = true;
+		}
+
+		// Ensure minimum selection if possible
+		if (
+			nextIndices.length < limits.min &&
+			imageUrls.length >= limits.min
+		) {
+			for ( let i = 0; i < limits.min; i++ ) {
+				if ( ! nextIndices.includes( i ) ) {
+					nextIndices.push( i );
+				}
+			}
+			changed = true;
+		}
+
+		if ( changed ) {
+			setSelectedIndices( nextIndices );
+		}
+	}, [
+		limits.max,
+		limits.min,
+		selectedIndices,
+		setSelectedIndices,
+		imageUrls.length,
+	] );
 
 	let displayTitle =
 		sectionTitle ||

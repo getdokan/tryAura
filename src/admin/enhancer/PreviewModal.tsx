@@ -540,7 +540,7 @@ const PreviewModal = ( {
 				</div>
 				{ /* Actions */ }
 				<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
-					{ generatedUrl && (
+					{ generatedUrl && 'image' === activeTab && (
 						<Button
 							onClick={ setInMediaSelection }
 							disabled={ disabledImageAddToMedia }

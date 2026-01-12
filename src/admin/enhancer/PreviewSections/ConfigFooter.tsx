@@ -17,6 +17,7 @@ function ConfigFooter( {
 					<Button
 						onClick={ doGenerate }
 						disabled={ isBusy || uploading }
+						loading={ isBusy }
 					>
 						{ isBusy
 							? __( 'Regenerating…', 'tryaura' )
@@ -46,6 +47,7 @@ function ConfigFooter( {
 						uploading ||
 						( isBlockEditorPage && optionalPrompt.trim() === '' )
 					}
+					loading={ isBusy }
 				>
 					{ isBusy
 						? __( 'Generating…', 'try-aura' )

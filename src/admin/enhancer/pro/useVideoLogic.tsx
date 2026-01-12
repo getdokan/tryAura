@@ -83,7 +83,11 @@ export function useVideoLogic( { imageUrls, attachmentIds } ) {
 
 	// Reset state when image changes
 	useEffect( () => {
-		if ( videoUrl && videoUrl.startsWith( 'blob:' ) ) {
+		if (
+			videoUrl &&
+			typeof videoUrl === 'string' &&
+			videoUrl.startsWith( 'blob:' )
+		) {
 			try {
 				URL.revokeObjectURL( videoUrl );
 			} catch {}
@@ -93,13 +97,42 @@ export function useVideoLogic( { imageUrls, attachmentIds } ) {
 	// Revoke video blob URL on unmount/change to free memory
 	useEffect( () => {
 		return () => {
-			if ( videoUrl && videoUrl.startsWith( 'blob:' ) ) {
+			if (
+				videoUrl &&
+				typeof videoUrl === 'string' &&
+				videoUrl.startsWith( 'blob:' )
+			) {
 				try {
 					URL.revokeObjectURL( videoUrl );
 				} catch {}
 			}
 		};
 	}, [ videoUrl ] );
+
+	// Validate selected indices when image list changes
+	useEffect( () => {
+		if (
+			selectedVideoIndices &&
+			selectedVideoIndices.length > 0 &&
+			imageUrls &&
+			imageUrls.length > 0
+		) {
+			const validIndices = selectedVideoIndices.filter(
+				( idx ) => idx >= 0 && idx < imageUrls.length
+			);
+			if ( validIndices.length === 0 ) {
+				setSelectedVideoIndices( [ 0 ] );
+			} else if ( validIndices.length !== selectedVideoIndices.length ) {
+				setSelectedVideoIndices( validIndices );
+			}
+		} else if (
+			imageUrls &&
+			imageUrls.length > 0 &&
+			( ! selectedVideoIndices || selectedVideoIndices.length === 0 )
+		) {
+			setSelectedVideoIndices( [ 0 ] );
+		}
+	}, [ imageUrls, selectedVideoIndices, setSelectedVideoIndices ] );
 
 	const doGenerateVideo = async () => {
 		try {
@@ -217,10 +250,17 @@ export function useVideoLogic( { imageUrls, attachmentIds } ) {
 				isBlockEditorPage,
 				isWoocommerceProductPage
 			);
+			if ( ! sourceUrl ) {
+				throw new Error( __( 'Source image is missing.', 'try-aura' ) );
+			}
+
 			// Extract base64 from the source URL
 			let sourceImageByteBase64 = '';
 			let sourceImageMime = 'image/png';
-			if ( sourceUrl.startsWith( 'data:' ) ) {
+			if (
+				typeof sourceUrl === 'string' &&
+				sourceUrl.startsWith( 'data:' )
+			) {
 				const commaIdx = sourceUrl.indexOf( ',' );
 				const header = sourceUrl.substring(
 					0,
@@ -343,7 +383,11 @@ export function useVideoLogic( { imageUrls, attachmentIds } ) {
 				'tryaura.video_generation_object_url',
 				URL.createObjectURL( videoBlob )
 			);
-			if ( videoUrl && videoUrl.startsWith( 'blob:' ) ) {
+			if (
+				videoUrl &&
+				typeof videoUrl === 'string' &&
+				videoUrl.startsWith( 'blob:' )
+			) {
 				try {
 					URL.revokeObjectURL( videoUrl );
 				} catch {}

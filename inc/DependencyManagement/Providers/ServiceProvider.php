@@ -22,6 +22,7 @@ class ServiceProvider extends BootableServiceProvider {
 	protected $services = [
 		'assets'                => \Dokan\TryAura\Assets::class,
 		'woocommerce'           => \Dokan\TryAura\WooCommerce::class,
+		'settings_controller'   => \Dokan\TryAura\Rest\SettingsController::class,
 		'generate_controller'   => \Dokan\TryAura\Rest\GenerateController::class,
 		'dashboard_controller'  => \Dokan\TryAura\Rest\DashboardController::class,
 		'product_video_gallery' => \Dokan\TryAura\Frontend\ProductVideoGallery::class,
@@ -31,16 +32,31 @@ class ServiceProvider extends BootableServiceProvider {
 	];
 
 	/**
+	 * Check if the service provider can provide the given service alias.
+	 *
+	 * @param string $alias
+	 *
+	 * @return bool
+	 */
+	public function provides( string $alias ): bool {
+		if ( isset( $this->services[ $alias ] ) ) {
+			return true;
+		}
+
+		return parent::provides( $alias );
+	}
+
+	/**
 	 * Register the classes.
 	 */
 	public function register(): void {
 		foreach ( $this->services as $key => $class_name ) {
-			$this->getContainer()->addShared( $key, $class_name )->addTag( self::TAG );
-		}
+			$definition = $this->getContainer()->addShared( $key, $class_name )->addTag( self::TAG );
 
-		$this->getContainer()->addShared( 'settings_controller', \Dokan\TryAura\Rest\SettingsController::class )
-			->addArgument( 'try_aura_settings' )
-			->addTag( self::TAG );
+			if ( 'settings_controller' === $key ) {
+				$definition->addArgument( 'try_aura_settings' );
+			}
+		}
 	}
 
 	/**

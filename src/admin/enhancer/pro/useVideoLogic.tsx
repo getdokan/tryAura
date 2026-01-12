@@ -35,7 +35,7 @@ async function resolveSettings(): Promise< {
 	}
 }
 
-export function useVideoLogic() {
+export function useVideoLogic( { runEffects = true } = {} ) {
 	const {
 		isBlockEditorPage,
 		isWoocommerceProductPage,
@@ -83,23 +83,22 @@ export function useVideoLogic() {
 		setVideoUploading,
 		setVideoSource,
 		setSelectedVideoIndices,
+		resetState,
 	} = useDispatch( PRO_STORE_NAME );
 
 	// Reset state when image changes
 	useEffect( () => {
-		if (
-			videoUrl &&
-			typeof videoUrl === 'string' &&
-			videoUrl.startsWith( 'blob:' )
-		) {
-			try {
-				URL.revokeObjectURL( videoUrl );
-			} catch {}
+		if ( ! runEffects ) {
+			return;
 		}
-	}, [ imageUrls ] );
+		resetState();
+	}, [ runEffects, imageUrls, resetState ] );
 
 	// Revoke video blob URL on unmount/change to free memory
 	useEffect( () => {
+		if ( ! runEffects ) {
+			return;
+		}
 		return () => {
 			if (
 				videoUrl &&
@@ -111,10 +110,13 @@ export function useVideoLogic() {
 				} catch {}
 			}
 		};
-	}, [ videoUrl ] );
+	}, [ runEffects, videoUrl ] );
 
 	// Validate selected indices when image list changes
 	useEffect( () => {
+		if ( ! runEffects ) {
+			return;
+		}
 		if (
 			selectedVideoIndices &&
 			selectedVideoIndices.length > 0 &&
@@ -136,7 +138,12 @@ export function useVideoLogic() {
 		) {
 			setSelectedVideoIndices( [ 0 ] );
 		}
-	}, [ imageUrls, selectedVideoIndices, setSelectedVideoIndices ] );
+	}, [
+		runEffects,
+		imageUrls,
+		selectedVideoIndices,
+		setSelectedVideoIndices,
+	] );
 
 	const doGenerateVideo = async () => {
 		try {

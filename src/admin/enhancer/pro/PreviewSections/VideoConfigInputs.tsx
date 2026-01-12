@@ -52,7 +52,7 @@ function VideoConfigInputs() {
 	}, [] );
 
 	const { setVideoConfigData, setVideoSource } = useDispatch( PRO_STORE_NAME );
-	const { doGenerateVideo } = useVideoLogic();
+	const { doGenerateVideo } = useVideoLogic( { runEffects: false } );
 
 	return (
 		<>

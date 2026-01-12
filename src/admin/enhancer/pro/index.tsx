@@ -23,9 +23,10 @@ domReady( () => {
 				return {
 					...props,
 					selectedIndices: proStore.getSelectedVideoIndices(),
-					setSelectedIndices: dispatch( PRO_STORE_NAME )
-						.setSelectedVideoIndices,
-					showSelection: proStore.getVideoSource() === 'original-image',
+					setSelectedIndices:
+						dispatch( PRO_STORE_NAME ).setSelectedVideoIndices,
+					showSelection:
+						proStore.getVideoSource() === 'original-image',
 					showGeneratedImage:
 						proStore.getVideoSource() === 'generated-image',
 					limits: { min: 1, max: 1 },
@@ -205,23 +206,23 @@ domReady( () => {
 
 	// Footer actions for video
 	const VideoFooterActions = () => {
-		const {
-			videoUrl,
-			activeTab,
-			videoUploading,
-			isVideoBusy,
-		} = useSelect( ( sel ) => {
-			const proStore = sel( PRO_STORE_NAME );
-			const liteStore = sel( STORE_NAME );
-			return {
-				videoUrl: proStore.getVideoUrl(),
-				activeTab: liteStore.getActiveTab(),
-				videoUploading: proStore.getVideoUploading(),
-				isVideoBusy: proStore.isVideoBusy(),
-			};
-		}, [] );
+		const { videoUrl, activeTab, videoUploading, isVideoBusy } = useSelect(
+			( sel ) => {
+				const proStore = sel( PRO_STORE_NAME );
+				const liteStore = sel( STORE_NAME );
+				return {
+					videoUrl: proStore.getVideoUrl(),
+					activeTab: liteStore.getActiveTab(),
+					videoUploading: proStore.getVideoUploading(),
+					isVideoBusy: proStore.isVideoBusy(),
+				};
+			},
+			[]
+		);
 
-		const { setVideoInMediaSelection } = useVideoLogic();
+		const { setVideoInMediaSelection } = useVideoLogic( {
+			runEffects: false,
+		} );
 
 		if ( activeTab !== 'video' || ! videoUrl ) {
 			return null;

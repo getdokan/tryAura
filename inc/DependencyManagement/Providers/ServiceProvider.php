@@ -51,11 +51,7 @@ class ServiceProvider extends BootableServiceProvider {
 	 */
 	public function register(): void {
 		foreach ( $this->services as $key => $class_name ) {
-			$definition = $this->getContainer()->addShared( $key, $class_name )->addTag( self::TAG );
-
-			if ( 'settings_controller' === $key ) {
-				$definition->addArgument( 'try_aura_settings' );
-			}
+			$this->getContainer()->addShared( $key, $class_name )->addTag( self::TAG );
 		}
 	}
 

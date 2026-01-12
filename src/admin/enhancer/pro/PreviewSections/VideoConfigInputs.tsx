@@ -1,6 +1,7 @@
 import { useSelect, useDispatch } from '@wordpress/data';
-import { STORE_NAME } from '../store';
-import { Button, ModernSelect } from '../../../components';
+import { STORE_NAME } from '../../store';
+import { PRO_STORE_NAME } from '../store';
+import { ModernSelect } from '../../../../components';
 import { __ } from '@wordpress/i18n';
 import {
 	Leaf,
@@ -16,33 +17,40 @@ import {
 	ZoomIn,
 	ZoomOut,
 } from 'lucide-react';
-import ConfigFooter from './ConfigFooter';
+import ConfigFooter from '../../PreviewSections/ConfigFooter';
 
 function VideoConfigInputs( { doGenerateVideo } ) {
 	const {
 		isBlockEditorPage,
 		isWoocommerceProductPage,
-		videoConfigData,
-		videoUrl,
-		isVideoBusy,
-		videoUploading,
 		generatedImageUrl,
-		videoSource,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
 			isBlockEditorPage: store.getIsBlockEditorPage(),
 			isWoocommerceProductPage: store.getIsWoocommerceProductPage(),
+			generatedImageUrl: store.getGeneratedUrl(),
+		};
+	}, [] );
+
+	const {
+		videoConfigData,
+		videoUrl,
+		isVideoBusy,
+		videoUploading,
+		videoSource,
+	} = useSelect( ( select ) => {
+		const store = select( PRO_STORE_NAME );
+		return {
 			videoConfigData: store.getVideoConfigData(),
 			videoUrl: store.getVideoUrl(),
 			isVideoBusy: store.isVideoBusy(),
 			videoUploading: store.getVideoUploading(),
-			generatedImageUrl: store.getGeneratedUrl(),
 			videoSource: store.getVideoSource(),
 		};
 	}, [] );
 
-	const { setVideoConfigData, setVideoSource } = useDispatch( STORE_NAME );
+	const { setVideoConfigData, setVideoSource } = useDispatch( PRO_STORE_NAME );
 
 	return (
 		<>

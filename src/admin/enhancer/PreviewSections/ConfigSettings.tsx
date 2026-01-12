@@ -3,21 +3,21 @@ import { STORE_NAME } from '../store';
 import GroupButton from '../../../components/GroupButton';
 import { __ } from '@wordpress/i18n';
 import ImageConfigInputs from './ImageConfigInputs';
-import VideoConfigInputs from './VideoConfigInputs';
+import { applyFilters } from '@wordpress/hooks';
 
 function ConfigSettings( {
 	supportsVideo,
 	doGenerate,
 	doGenerateVideo,
+	isVideoBusy,
 	className = '',
 } ) {
-	const { activeTab, isBusy, isVideoBusy, isThumbnailMode } = useSelect(
+	const { activeTab, isBusy, isThumbnailMode } = useSelect(
 		( select ) => {
 			const store = select( STORE_NAME );
 			return {
 				activeTab: store.getActiveTab(),
 				isBusy: store.isBusy(),
-				isVideoBusy: store.isVideoBusy(),
 				isThumbnailMode: store.isThumbnailMode(),
 			};
 		},
@@ -26,23 +26,20 @@ function ConfigSettings( {
 
 	const { setActiveTab } = useDispatch( STORE_NAME );
 
+	const tabs = applyFilters( 'tryaura.enhancer.tabs', [
+		{
+			label: __( 'Generate Image', 'tryaura' ),
+			value: 'image',
+			disabled: isBusy || isVideoBusy,
+		},
+	], { isBusy, isVideoBusy, isThumbnailMode, supportsVideo } );
+
 	return (
 		<div className={ className }>
 			{ /* Tabs for Generated content */ }
-			{ supportsVideo && ! isThumbnailMode && (
+			{ tabs.length > 1 && ! isThumbnailMode && (
 				<GroupButton
-					options={ [
-						{
-							label: __( 'Generate Image', 'tryaura' ),
-							value: 'image',
-							disabled: isBusy || isVideoBusy,
-						},
-						{
-							label: __( 'Generate Video', 'tryaura' ),
-							value: 'video',
-							disabled: isBusy || isVideoBusy,
-						},
-					] }
+					options={ tabs }
 					value={ activeTab }
 					onClick={ ( tab ) => setActiveTab( tab ) }
 				/>
@@ -52,7 +49,12 @@ function ConfigSettings( {
 				{ activeTab === 'image' ? (
 					<ImageConfigInputs doGenerate={ doGenerate } />
 				) : (
-					<VideoConfigInputs doGenerateVideo={ doGenerateVideo } />
+					applyFilters(
+						'tryaura.enhancer.config_inputs',
+						null,
+						activeTab,
+						{ doGenerateVideo }
+					)
 				) }
 			</div>
 		</div>

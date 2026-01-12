@@ -5,6 +5,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from '../../../components';
 import Star from '../../../images/star.gif';
 import Congrats from '../../../images/congrats.gif';
+import { applyFilters } from '@wordpress/hooks';
 
 function Output( { supportsVideo, className = '' } ) {
 	const [ showCongrats, setShowCongrats ] = useState( false );
@@ -12,14 +13,9 @@ function Output( { supportsVideo, className = '' } ) {
 		generatedUrl,
 		activeTab,
 		message,
-		videoUrl,
-		videoMessage,
-		videoError,
 		error,
 		isBusy,
-		isVideoBusy,
 		status,
-		videoStatus,
 		isThumbnailMode,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
@@ -27,14 +23,9 @@ function Output( { supportsVideo, className = '' } ) {
 			generatedUrl: store.getGeneratedUrl(),
 			activeTab: store.getActiveTab(),
 			message: store.getMessage(),
-			videoUrl: store.getVideoUrl(),
-			videoMessage: store.getVideoMessage(),
-			videoError: store.getVideoError(),
 			error: store.getError(),
 			isBusy: store.isBusy(),
-			isVideoBusy: store.isVideoBusy(),
 			status: store.getStatus(),
-			videoStatus: store.getVideoStatus(),
 			isThumbnailMode: store.isThumbnailMode(),
 		};
 	}, [] );
@@ -42,7 +33,6 @@ function Output( { supportsVideo, className = '' } ) {
 	const { setActiveTab } = useDispatch( STORE_NAME );
 
 	const prevIsBusy = useRef( isBusy );
-	const prevIsVideoBusy = useRef( isVideoBusy );
 
 	useEffect( () => {
 		let timer: any;
@@ -59,28 +49,10 @@ function Output( { supportsVideo, className = '' } ) {
 	}, [ isBusy, status ] );
 
 	useEffect( () => {
-		let timer: any;
-		if (
-			prevIsVideoBusy.current &&
-			! isVideoBusy &&
-			videoStatus === 'done'
-		) {
-			setShowCongrats( true );
-			timer = setTimeout( () => setShowCongrats( false ), 2200 );
-		}
-		prevIsVideoBusy.current = isVideoBusy;
-		return () => {
-			if ( timer ) {
-				clearTimeout( timer );
-			}
-		};
-	}, [ isVideoBusy, videoStatus ] );
-
-	useEffect( () => {
-		if ( isBusy || isVideoBusy ) {
+		if ( isBusy ) {
 			setShowCongrats( false );
 		}
-	}, [ isBusy, isVideoBusy ] );
+	}, [ isBusy ] );
 
 	return (
 		<div className={ className }>
@@ -110,17 +82,7 @@ function Output( { supportsVideo, className = '' } ) {
 								</div>
 							) }
 						</div>
-						{ supportsVideo && ! isThumbnailMode && (
-							<div className="flex justify-center">
-								<Button
-									variant="solid"
-									className="border border-primary text-primary bg-white"
-									onClick={ () => setActiveTab( 'video' ) }
-								>
-									{ __( 'Generate Video', 'tryaura' ) }
-								</Button>
-							</div>
-						) }
+						{ applyFilters( 'tryaura.enhancer.after_image_output', null, { supportsVideo, isThumbnailMode, setActiveTab } ) }
 					</div>
 				) : (
 					<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1 items-center justify-center">
@@ -135,45 +97,7 @@ function Output( { supportsVideo, className = '' } ) {
 					</div>
 				)
 			) : (
-				<div>
-					{ videoUrl && ! isVideoBusy ? (
-						<div className="relative w-full h-auto">
-							<video
-								src={ videoUrl }
-								controls
-								className="w-full h-auto block rounded-[8px] bg-[#000]"
-							/>
-							{ showCongrats && (
-								<div className="absolute inset-0 flex flex-col items-center justify-end pointer-events-none z-10">
-									<img
-										src={ Congrats }
-										className="w-full h-auto"
-										alt={ __(
-											'Congratulations',
-											'try-aura'
-										) }
-									/>
-								</div>
-							) }
-						</div>
-					) : (
-						<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1  items-center justify-center">
-							{ isVideoBusy && (
-								<img
-									src={ Star }
-									className="w-8 h-8"
-									alt={ __( 'Video loading', 'try-aura' ) }
-								/>
-							) }
-							<span>{ videoMessage }</span>
-						</div>
-					) }
-					{ videoError && (
-						<div style={ { color: 'red', marginTop: 8 } }>
-							{ videoError }
-						</div>
-					) }
-				</div>
+				applyFilters( 'tryaura.enhancer.video_output', null, { Star, activeTab } )
 			) }
 			{ error ? (
 				<div style={ { color: 'red', marginTop: 8 } }>{ error }</div>

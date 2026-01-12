@@ -8,30 +8,30 @@ function OriginalImage( {
 	imageUrls,
 	multiple = false,
 	className = '',
+	videoSource = 'original-image',
+	selectedVideoIndices = [ 0 ],
+	setSelectedVideoIndices = () => {},
 }: {
 	imageUrls: string[];
 	multiple?: boolean;
 	className?: string;
+	videoSource?: string;
+	selectedVideoIndices?: number[];
+	setSelectedVideoIndices?: ( indices: number[] ) => void;
 } ) {
-	const {
-		activeTab,
-		videoSource,
-		selectedImageIndices,
-		selectedVideoIndices,
-		generatedUrl,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		return {
-			activeTab: store.getActiveTab(),
-			videoSource: store.getVideoSource(),
-			selectedImageIndices: store.getSelectedImageIndices(),
-			selectedVideoIndices: store.getSelectedVideoIndices(),
-			generatedUrl: store.getGeneratedUrl(),
-		};
-	}, [] );
+	const { activeTab, selectedImageIndices, generatedUrl } = useSelect(
+		( select ) => {
+			const store = select( STORE_NAME );
+			return {
+				activeTab: store.getActiveTab(),
+				selectedImageIndices: store.getSelectedImageIndices(),
+				generatedUrl: store.getGeneratedUrl(),
+			};
+		},
+		[]
+	);
 
-	const { setSelectedImageIndices, setSelectedVideoIndices } =
-		useDispatch( STORE_NAME );
+	const { setSelectedImageIndices } = useDispatch( STORE_NAME );
 
 	const selectedOriginalIndices =
 		activeTab === 'image' ? selectedImageIndices : selectedVideoIndices;

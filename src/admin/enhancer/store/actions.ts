@@ -1,5 +1,5 @@
 import * as TYPES from './constants';
-import { Status, VideoStatus, ActiveTab, VideoSource } from './types';
+import { Status, ActiveTab } from './types';
 
 const actions = {};
 
@@ -42,53 +42,14 @@ export const setUploading = ( uploading: boolean ) => ( {
 	uploading,
 } );
 
-export const setVideoStatus = ( videoStatus: VideoStatus ) => ( {
-	type: TYPES.SET_VIDEO_STATUS,
-	videoStatus,
-} );
-
-export const setVideoMessage = ( videoMessage: string ) => ( {
-	type: TYPES.SET_VIDEO_MESSAGE,
-	videoMessage,
-} );
-
-export const setVideoUrl = ( videoUrl: string | null ) => ( {
-	type: TYPES.SET_VIDEO_URL,
-	videoUrl,
-} );
-
-export const setVideoError = ( videoError: string | null ) => ( {
-	type: TYPES.SET_VIDEO_ERROR,
-	videoError,
-} );
-
-export const setVideoUploading = ( videoUploading: boolean ) => ( {
-	type: TYPES.SET_VIDEO_UPLOADING,
-	videoUploading,
-} );
-
-export const setVideoConfigData = ( data: any ) => ( {
-	type: TYPES.SET_VIDEO_CONFIG_DATA,
-	data,
-} );
-
 export const setImageConfigData = ( data: any ) => ( {
 	type: TYPES.SET_IMAGE_CONFIG_DATA,
 	data,
 } );
 
-export const setVideoSource = ( videoSource: VideoSource ) => ( {
-	type: TYPES.SET_VIDEO_SOURCE,
-	videoSource,
-} );
 export const setSelectedImageIndices = ( selectedImageIndices: number[] ) => ( {
 	type: TYPES.SET_SELECTED_IMAGE_INDICES,
 	selectedImageIndices,
-} );
-
-export const setSelectedVideoIndices = ( selectedVideoIndices: number[] ) => ( {
-	type: TYPES.SET_SELECTED_VIDEO_INDICES,
-	selectedVideoIndices,
 } );
 
 export const setActiveTab = ( activeTab: ActiveTab ) => ( {

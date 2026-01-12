@@ -1,4 +1,4 @@
-import { createPortal, useEffect } from "@wordpress/element";
+import { useEffect } from "@wordpress/element";
 import apiFetch from '@wordpress/api-fetch';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { STORE_NAME } from './store';
@@ -10,7 +10,7 @@ import OriginalImage from './PreviewSections/OriginalImage';
 import ConfigSettings from './PreviewSections/ConfigSettings';
 import Output from './PreviewSections/Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { Modal } from '@wordpress/components';
 
 declare const wp: any;
@@ -869,16 +869,6 @@ const PreviewModal = ( {
 	const disabledImageAddToMedia = isBusy || uploading || ! generatedUrl;
 	const disabledVideoAddToMedia = isVideoBusy || videoUploading || ! videoUrl;
 
-	const ToasterPortal = () => {
-		return createPortal(
-			<Toaster
-				position="bottom-right"
-				containerClassName="tryaura-toast-root"
-			/>,
-			document.body // Target: renders directly at the end of the <body>
-		);
-	};
-
 	return (
 		<Modal
 			onRequestClose={ onClose }
@@ -959,7 +949,6 @@ const PreviewModal = ( {
 				</div>
 			</div>
 
-			<ToasterPortal />
 		</Modal>
 	);
 };

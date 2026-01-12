@@ -1,6 +1,6 @@
 import PreviewModal from './PreviewModal';
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { createPortal, useState } from '@wordpress/element';
 import { applyFilters, doAction } from '@wordpress/hooks';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -66,6 +66,16 @@ const EnhanceButton = () => {
 		}
 	};
 
+	const ToasterPortal = () => {
+		return createPortal(
+			<Toaster
+				position="bottom-right"
+				containerClassName="tryaura-toast-root"
+			/>,
+			document.body // Target: renders directly at the end of the <body>
+		);
+	};
+
 	return (
 		<div>
 			<button
@@ -90,7 +100,7 @@ const EnhanceButton = () => {
 				/>
 			) }
 
-			{ ! open && <Toaster position="bottom-right" /> }
+			<ToasterPortal />
 		</div>
 	);
 };

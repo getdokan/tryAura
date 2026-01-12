@@ -143,17 +143,17 @@ function ImageConfigInputs( { doGenerate } ) {
 					label={ __( 'Image Size', 'try-aura' ) }
 					options={ [
 						{
-							label: __( '1:1', 'try-aura' ),
+							label: __( 'Square (1:1)', 'try-aura' ),
 							value: '1:1',
 							icon: <Square />,
 						},
 						{
-							label: __( '16:9', 'try-aura' ),
+							label: __( 'Landscape (16:9)', 'try-aura' ),
 							value: '16:9',
 							icon: <RectangleHorizontal />,
 						},
 						{
-							label: __( '9:16', 'try-aura' ),
+							label: __( 'Portrait (9:16)', 'try-aura' ),
 							value: '9:16',
 							icon: <RectangleVertical />,
 						},

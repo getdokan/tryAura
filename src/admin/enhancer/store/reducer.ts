@@ -26,11 +26,13 @@ export const INITIAL_STATE: EnhancerState = {
 		backgroundType: 'studio',
 		styleType: 'photo-realistic',
 		optionalPrompt: '',
+		videoPlatform: 'youtube',
 	},
 	activeTab: 'image',
 	videoSource: 'original-image',
 	selectedImageIndices: [ 0 ],
 	selectedVideoIndices: [ 0 ],
+	isThumbnailMode: false,
 };
 
 const reducer = (
@@ -95,11 +97,14 @@ const reducer = (
 			};
 		case TYPES.SET_ACTIVE_TAB:
 			return { ...state, activeTab: action.activeTab };
+		case TYPES.SET_IS_THUMBNAIL_MODE:
+			return { ...state, isThumbnailMode: action.isThumbnailMode };
 		case TYPES.RESET_STATE:
 			return {
 				...INITIAL_STATE,
 				isBlockEditorPage: state.isBlockEditorPage,
 				isWoocommerceProductPage: state.isWoocommerceProductPage,
+				isThumbnailMode: state.isThumbnailMode,
 				imageConfigData: state.imageConfigData,
 				videoConfigData: state.videoConfigData,
 			};

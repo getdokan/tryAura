@@ -2,6 +2,8 @@ import { createRoot } from '@wordpress/element';
 import './style.scss';
 import { applyFilters, doAction } from '@wordpress/hooks';
 import EnhanceButton from './EnhanceButton';
+import { dispatch } from '@wordpress/data';
+import { STORE_NAME } from './store';
 
 declare const wp: any;
 
@@ -77,6 +79,10 @@ function addEnhancerButton( toolbar ) {
 		wp.media.view.Modal.prototype.open = function ( ...args ) {
 			// Call original open first so the DOM exists
 			const ret = origOpen.apply( this, args );
+
+			const isThumbnailMode =
+				this.controller?.options?.tryAuraContext === 'video_thumbnail';
+			dispatch( STORE_NAME ).setIsThumbnailMode( isThumbnailMode );
 
 			const toolBar = $( this.controller.el )
 				.find( '.media-frame-toolbar' )

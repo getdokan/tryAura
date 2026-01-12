@@ -20,6 +20,7 @@ function Output( { supportsVideo, className = '' } ) {
 		isVideoBusy,
 		status,
 		videoStatus,
+		isThumbnailMode,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
@@ -34,6 +35,7 @@ function Output( { supportsVideo, className = '' } ) {
 			isVideoBusy: store.isVideoBusy(),
 			status: store.getStatus(),
 			videoStatus: store.getVideoStatus(),
+			isThumbnailMode: store.isThumbnailMode(),
 		};
 	}, [] );
 
@@ -108,7 +110,7 @@ function Output( { supportsVideo, className = '' } ) {
 								</div>
 							) }
 						</div>
-						{ supportsVideo && (
+						{ supportsVideo && ! isThumbnailMode && (
 							<div className="flex justify-center">
 								<Button
 									variant="solid"

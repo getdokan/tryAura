@@ -24,6 +24,7 @@ function ImageConfigInputs( { doGenerate } ) {
 		generatedUrl,
 		isBusy,
 		uploading,
+		isThumbnailMode,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
@@ -33,6 +34,7 @@ function ImageConfigInputs( { doGenerate } ) {
 			generatedUrl: store.getGeneratedUrl(),
 			isBusy: store.isBusy(),
 			uploading: store.getUploading(),
+			isThumbnailMode: store.isThumbnailMode(),
 		};
 	}, [] );
 
@@ -43,64 +45,89 @@ function ImageConfigInputs( { doGenerate } ) {
 			{ /* Controls */ }
 			{ isWoocommerceProductPage && (
 				<>
-					<ModernSelect
-						value={ imageConfigData?.backgroundType ?? '' }
-						onChange={ ( val ) =>
-							setImageConfigData( {
-								backgroundType: val,
-							} )
-						}
-						label={ __( 'Background preference', 'try-aura' ) }
-						options={ [
-							{
-								label: __( 'Plain', 'try-aura' ),
-								value: 'plain',
-								icon: <Circle />,
-							},
-							{
-								label: __( 'Natural', 'try-aura' ),
-								value: 'natural',
-								icon: <Leaf />,
-							},
-							{
-								label: __( 'Studio', 'try-aura' ),
-								value: 'studio',
-								icon: <Wallpaper />,
-							},
-							{
-								label: __( 'Custom', 'try-aura' ),
-								value: 'custom',
-								icon: <Settings />,
-							},
-						] }
-					/>
+					{ isThumbnailMode ? (
+						<ModernSelect
+							label={ __( 'Video Platforms', 'try-aura' ) }
+							value={ imageConfigData.videoPlatform || 'youtube' }
+							onChange={ ( val: any ) =>
+								setImageConfigData( { videoPlatform: val } )
+							}
+							options={ [
+								{ label: 'Youtube', value: 'youtube' },
+							] }
+							variant="list"
+						/>
+					) : (
+						<>
+							<ModernSelect
+								value={ imageConfigData?.backgroundType ?? '' }
+								onChange={ ( val ) =>
+									setImageConfigData( {
+										backgroundType: val,
+									} )
+								}
+								label={ __(
+									'Background preference',
+									'try-aura'
+								) }
+								options={ [
+									{
+										label: __( 'Plain', 'try-aura' ),
+										value: 'plain',
+										icon: <Circle />,
+									},
+									{
+										label: __( 'Natural', 'try-aura' ),
+										value: 'natural',
+										icon: <Leaf />,
+									},
+									{
+										label: __( 'Studio', 'try-aura' ),
+										value: 'studio',
+										icon: <Wallpaper />,
+									},
+									{
+										label: __( 'Custom', 'try-aura' ),
+										value: 'custom',
+										icon: <Settings />,
+									},
+								] }
+							/>
 
-					<ModernSelect
-						value={ imageConfigData?.styleType ?? '' }
-						onChange={ ( val ) =>
-							setImageConfigData( {
-								styleType: val,
-							} )
-						}
-						label={ __( 'Output style', 'try-aura' ) }
-						options={ [
-							{
-								label: __( 'Photo realistic', 'try-aura' ),
-								value: 'photo-realistic',
-								icon: <Image />,
-							},
-							{
-								label: __( 'Studio mockup', 'try-aura' ),
-								value: 'studio mockup',
-								icon: <Shirt />,
-							},
-							{
-								label: __( 'Model shoot', 'try-aura' ),
-								value: 'model shoot',
-								icon: <User />,
-							},
-						] }
-					/>
+							<ModernSelect
+								value={ imageConfigData?.styleType ?? '' }
+								onChange={ ( val ) =>
+									setImageConfigData( {
+										styleType: val,
+									} )
+								}
+								label={ __( 'Output style', 'try-aura' ) }
+								options={ [
+									{
+										label: __(
+											'Photo realistic',
+											'try-aura'
+										),
+										value: 'photo-realistic',
+										icon: <Image />,
+									},
+									{
+										label: __(
+											'Studio mockup',
+											'try-aura'
+										),
+										value: 'studio mockup',
+										icon: <Shirt />,
+									},
+									{
+										label: __( 'Model shoot', 'try-aura' ),
+										value: 'model shoot',
+										icon: <User />,
+									},
+								] }
+							/>
+						</>
+					) }
 				</>
 			) }
 
@@ -116,17 +143,17 @@ function ImageConfigInputs( { doGenerate } ) {
 					label={ __( 'Image Size', 'try-aura' ) }
 					options={ [
 						{
-							label: __( '1:1', 'try-aura' ),
+							label: __( 'Square (1:1)', 'try-aura' ),
 							value: '1:1',
 							icon: <Square />,
 						},
 						{
-							label: __( '16:9', 'try-aura' ),
+							label: __( 'Landscape (16:9)', 'try-aura' ),
 							value: '16:9',
 							icon: <RectangleHorizontal />,
 						},
 						{
-							label: __( '9:16', 'try-aura' ),
+							label: __( 'Portrait (9:16)', 'try-aura' ),
 							value: '9:16',
 							icon: <RectangleVertical />,
 						},

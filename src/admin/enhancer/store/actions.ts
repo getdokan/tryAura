@@ -96,6 +96,11 @@ export const setActiveTab = ( activeTab: ActiveTab ) => ( {
 	activeTab,
 } );
 
+export const setIsThumbnailMode = ( isThumbnailMode: boolean ) => ( {
+	type: TYPES.SET_IS_THUMBNAIL_MODE,
+	isThumbnailMode,
+} );
+
 export const resetState = () => ( {
 	type: TYPES.RESET_STATE,
 } );

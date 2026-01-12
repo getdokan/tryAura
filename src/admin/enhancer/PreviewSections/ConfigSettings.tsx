@@ -11,21 +11,25 @@ function ConfigSettings( {
 	doGenerateVideo,
 	className = '',
 } ) {
-	const { activeTab, isBusy, isVideoBusy } = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		return {
-			activeTab: store.getActiveTab(),
-			isBusy: store.isBusy(),
-			isVideoBusy: store.isVideoBusy(),
-		};
-	}, [] );
+	const { activeTab, isBusy, isVideoBusy, isThumbnailMode } = useSelect(
+		( select ) => {
+			const store = select( STORE_NAME );
+			return {
+				activeTab: store.getActiveTab(),
+				isBusy: store.isBusy(),
+				isVideoBusy: store.isVideoBusy(),
+				isThumbnailMode: store.isThumbnailMode(),
+			};
+		},
+		[]
+	);
 
 	const { setActiveTab } = useDispatch( STORE_NAME );
 
 	return (
 		<div className={ className }>
 			{ /* Tabs for Generated content */ }
-			{ supportsVideo && (
+			{ supportsVideo && ! isThumbnailMode && (
 				<GroupButton
 					options={ [
 						{

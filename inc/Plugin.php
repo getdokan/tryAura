@@ -2,6 +2,8 @@
 
 namespace Dokan\TryAura;
 
+use Dokan\TryAura\Admin\ProductGalleryVideo;
+use Dokan\TryAura\Frontend\ProductVideoGallery;
 use Dokan\TryAura\Rest\SettingsController;
 use Dokan\TryAura\Rest\GenerateController;
 use Dokan\TryAura\Rest\DashboardController;
@@ -56,11 +58,13 @@ class Plugin {
 
 		// WooCommerce integrations.
 		new WooCommerce();
+		new ProductVideoGallery();
 
 		if ( is_admin() ) {
 			new Admin();
 			// Register the Featured Image Enhancer UI assets.
 			new Enhancer();
+			new ProductGalleryVideo();
 		}
 
 		add_filter( 'rest_post_dispatch', array( $this, 'add_wc_existence_header' ), 10, 3 );

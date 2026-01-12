@@ -26,5 +26,7 @@ module.exports = {
 		'frontend/tryon/index': './src/frontend/tryon/index.tsx',
 		'admin/woocommerce-products-list':
 			'./src/admin/woocommerce-products-list/index.tsx',
+		'admin/product-video-gallery/index':
+			'./src/admin/product-video-gallery/index.tsx',
 	},
 };

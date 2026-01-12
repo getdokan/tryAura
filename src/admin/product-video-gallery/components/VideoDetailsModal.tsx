@@ -1,7 +1,7 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Modal } from '@wordpress/components';
-import { Button, Checkbox, ModernSelect } from '../../../components';
+import { Button, Checkbox, ModernSelect, WpBtn } from "../../../components";
 import { Youtube, Video, Upload, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -158,6 +158,8 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 								}
 								value={ url }
 								onChange={ ( e ) => setUrl( e.target.value ) }
+								readOnly={ platform === 'site_stored' }
+								disabled={ platform === 'site_stored' }
 							/>
 							{ platform === 'site_stored' && (
 								<Button

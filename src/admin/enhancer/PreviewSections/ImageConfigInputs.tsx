@@ -54,7 +54,6 @@ function ImageConfigInputs( { doGenerate } ) {
 							}
 							options={ [
 								{ label: 'Youtube', value: 'youtube' },
-								{ label: 'Instagram', value: 'instagram' },
 							] }
 							variant="list"
 						/>

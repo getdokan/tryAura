@@ -1,11 +1,12 @@
 import './style.scss';
 import Button from './Button';
+import WpBtn from './WpBtn';
 import ModernSelect from './ModernSelect';
 import GroupButton from './GroupButton';
 import DateRangePicker from './DateRangePicker';
 import Checkbox from './Checkbox';
 
-export { Button };
+export { Button, WpBtn };
 export { ModernSelect };
 export { GroupButton };
 export { DateRangePicker };

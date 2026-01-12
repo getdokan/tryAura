@@ -943,7 +943,6 @@ const PreviewModal = ( {
 						variant="outline"
 						onClick={ onClose }
 						disabled={ isBusy || isVideoBusy }
-						loading={ isBusy || isVideoBusy }
 					>
 						{ __( 'Close', 'try-aura' ) }
 					</Button>

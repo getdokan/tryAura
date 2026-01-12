@@ -1,4 +1,4 @@
-import { useEffect } from '@wordpress/element';
+import { createPortal, useEffect } from "@wordpress/element";
 import apiFetch from '@wordpress/api-fetch';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { STORE_NAME } from './store';
@@ -869,6 +869,16 @@ const PreviewModal = ( {
 	const disabledImageAddToMedia = isBusy || uploading || ! generatedUrl;
 	const disabledVideoAddToMedia = isVideoBusy || videoUploading || ! videoUrl;
 
+	const ToasterPortal = () => {
+		return createPortal(
+			<Toaster
+				position="bottom-right"
+				containerClassName="tryaura-toast-root"
+			/>,
+			document.body // Target: renders directly at the end of the <body>
+		);
+	};
+
 	return (
 		<Modal
 			onRequestClose={ onClose }
@@ -949,7 +959,7 @@ const PreviewModal = ( {
 				</div>
 			</div>
 
-			<Toaster position="bottom-right" />
+			<ToasterPortal />
 		</Modal>
 	);
 };

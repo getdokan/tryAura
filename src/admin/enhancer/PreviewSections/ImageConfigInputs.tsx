@@ -138,6 +138,7 @@ function ImageConfigInputs( { doGenerate } ) {
 				</>
 			) }
 
+			{/* This should be in product */}
 			{ isBlockEditorPage && ! isWoocommerceProductPage && (
 				<ModernSelect
 					value={ imageConfigData?.imageSize ?? '' }

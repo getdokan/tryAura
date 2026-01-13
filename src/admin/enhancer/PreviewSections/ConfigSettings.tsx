@@ -6,7 +6,12 @@ import ImageConfigInputs from './ImageConfigInputs';
 import { applyFilters } from '@wordpress/hooks';
 import ConfigFooter from './ConfigFooter';
 
-function ConfigSettings( { doGenerate, className = '' } ) {
+import { Slot } from '@wordpress/components';
+
+function ConfigSettings( {
+	doGenerate,
+	className = '',
+} ) {
 	const { activeTab, isBusy, isThumbnailMode } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
@@ -41,11 +46,14 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 				{ activeTab === 'image' ? (
 					<ImageConfigInputs doGenerate={ doGenerate } />
 				) : (
-					applyFilters(
-						'tryaura.enhancer.config_inputs',
-						null,
-						ConfigFooter
-					)
+					<>
+						<Slot
+							name="TryAuraEnhancerConfig"
+							fillProps={ {
+								ConfigFooter,
+							} }
+						/>
+					</>
 				) }
 			</div>
 		</div>

@@ -30,4 +30,5 @@ export interface EnhancerState {
 	imageUrls: string[];
 	attachmentIds: number[];
 	supportsVideo: boolean;
+	isVideoBusy: boolean;
 }

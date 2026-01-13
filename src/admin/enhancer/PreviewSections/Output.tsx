@@ -5,6 +5,7 @@ import { __ } from '@wordpress/i18n';
 import Star from '../../../images/star.gif';
 import Congrats from '../../../images/congrats.gif';
 import { applyFilters } from '@wordpress/hooks';
+import { Slot } from '@wordpress/components';
 
 function Output( { className = '' } ) {
 	const [ showCongrats, setShowCongrats ] = useState( false );
@@ -55,8 +56,17 @@ function Output( { className = '' } ) {
 				{ __( 'Generated Output', 'try-aura' ) }
 			</div>
 			{ /* eslint-disable-next-line no-nested-ternary */ }
-			{ activeTab === 'image' ? (
-				generatedUrl && ! isBusy ? (
+			{ isBusy ? (
+				<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1 items-center justify-center">
+					<img
+						src={ Star }
+						className="w-8 h-8"
+						alt={ __( 'Loading…', 'try-aura' ) }
+					/>
+					<span>{ message }</span>
+				</div>
+			) : activeTab === 'image' ? (
+				generatedUrl ? (
 					<div className="flex flex-col gap-[20px]">
 						<div className="relative w-full h-auto">
 							<img
@@ -77,22 +87,20 @@ function Output( { className = '' } ) {
 								</div>
 							) }
 						</div>
-						{ applyFilters( 'tryaura.enhancer.after_image_output', null ) }
+						{ applyFilters(
+							'tryaura.enhancer.after_image_output',
+							null
+						) }
 					</div>
 				) : (
 					<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1 items-center justify-center">
-						{ isBusy && (
-							<img
-								src={ Star }
-								className="w-8 h-8"
-								alt={ __( 'Image loading', 'try-aura' ) }
-							/>
-						) }
 						<span>{ message }</span>
 					</div>
 				)
 			) : (
-				applyFilters( 'tryaura.enhancer.video_output', null )
+				<>
+					<Slot name="TryAuraEnhancerOutput" />
+				</>
 			) }
 			{ error ? (
 				<div style={ { color: 'red', marginTop: 8 } }>{ error }</div>

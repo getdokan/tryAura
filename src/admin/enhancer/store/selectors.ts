@@ -20,8 +20,10 @@ export const isThumbnailMode = ( state: EnhancerState ) =>
 export const getImageUrls = ( state: EnhancerState ) => state.imageUrls;
 export const getAttachmentIds = ( state: EnhancerState ) => state.attachmentIds;
 export const getSupportsVideo = ( state: EnhancerState ) => state.supportsVideo;
+export const getIsVideoBusy = ( state: EnhancerState ) => state.isVideoBusy;
 
 export const isBusy = ( state: EnhancerState ) =>
 	state.status === 'fetching' ||
 	state.status === 'generating' ||
-	state.status === 'parsing';
+	state.status === 'parsing' ||
+	state.isVideoBusy;

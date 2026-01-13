@@ -2,15 +2,15 @@ import { useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { STORE_NAME } from './store';
-import { Button } from "../../components";
-import { toast } from "@tryaura/components";
+import { Button } from '../../components';
 import { __ } from '@wordpress/i18n';
 import { X } from 'lucide-react';
 import OriginalImage from './PreviewSections/OriginalImage';
 import ConfigSettings from './PreviewSections/ConfigSettings';
 import Output from './PreviewSections/Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
-import { Modal } from '@wordpress/components';
+import { Modal, Slot, SlotFillProvider } from '@wordpress/components';
+import { PluginArea } from '@wordpress/plugins';
 import { GoogleGenAI } from '@google/genai';
 
 declare const wp: any;
@@ -98,15 +98,6 @@ const PreviewModal = ( {
 	} = useDispatch( STORE_NAME );
 
 	const multiple = imageUrls.length > 1;
-
-	const useVideoLogicHook = applyFilters(
-		'tryaura.enhancer.use_video_logic',
-		null
-	);
-	const videoLogic =
-		( useVideoLogicHook as any )?.() ?? {};
-
-	const { doGenerateVideo = () => {}, isVideoBusy = false } = videoLogic;
 
 	useEffect( () => {
 		setImageUrls( imageUrls );
@@ -491,81 +482,83 @@ const PreviewModal = ( {
 			__experimentalHideHeader
 			shouldCloseOnClickOutside={ false }
 		>
-			<div className="ai-enhancer-modal__content">
-				<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] pt-[16px] pl-[24px] pr-[24px]">
-					<h2 className="mt-0">
-						{ applyFilters(
-							'tryaura.enhancer.modal_title',
-							__( 'AI Product Image Generation', 'try-aura' ),
-							{ isThumbnailMode }
-						) }
-					</h2>
-					<button
-						className="w-[16px] h-[16px] cursor-pointer"
-						onClick={ onClose }
-						aria-label="Close modal"
-						disabled={ isBusy || isVideoBusy }
-					>
-						<X size={ 16 } />
-					</button>
-				</div>
-
-				<div className="grid grid-cols-1 md:grid-cols-11 md:flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
-					<OriginalImage
-						imageUrls={ imageUrls }
-						multiple={ multiple }
-						{ ...applyFilters(
-							'tryaura.enhancer.original_image_props',
-							{
-								selectedIndices: selectedImageIndices,
-								setSelectedIndices: setSelectedImageIndices,
-								showSelection: true,
-								showGeneratedImage: false,
-								limits:
-									activeTab === 'image'
-										? { min: 1, max: 3 }
-										: { min: 1, max: 1 },
-							}
-						) }
-						className="col-span-1 md:col-span-3 max-h-[533px] overflow-auto"
-					/>
-					<ConfigSettings
-						supportsVideo={ supportsVideo }
-						doGenerate={ doGenerate }
-						doGenerateVideo={ doGenerateVideo }
-						isVideoBusy={ isVideoBusy }
-						className="col-span-1 md:col-span-4 flex flex-col gap-[32px]"
-					/>
-					<Output
-						supportsVideo={ supportsVideo }
-						className="col-span-1 md:col-span-4"
-					/>
-				</div>
-				{ /* Actions */ }
-				<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
-					{ generatedUrl && 'image' === activeTab && (
-						<Button
-							onClick={ setInMediaSelection }
-							disabled={ disabledImageAddToMedia }
-							loading={ uploading }
+			<SlotFillProvider>
+				<div className="ai-enhancer-modal__content">
+					<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] pt-[16px] pl-[24px] pr-[24px]">
+						<h2 className="mt-0">
+							{ applyFilters(
+								'tryaura.enhancer.modal_title',
+								__( 'AI Product Image Generation', 'try-aura' ),
+								{ isThumbnailMode }
+							) }
+						</h2>
+						<button
+							className="w-[16px] h-[16px] cursor-pointer"
+							onClick={ onClose }
+							aria-label="Close modal"
+							disabled={ isBusy }
 						>
-							{ uploading
-								? __( 'Adding…' )
-								: __( 'Add to Media Library', 'try-aura' ) }
+							<X size={ 16 } />
+						</button>
+					</div>
+
+					<div className="grid grid-cols-1 md:grid-cols-11 md:flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
+						<OriginalImage
+							imageUrls={ imageUrls }
+							multiple={ multiple }
+							{ ...applyFilters(
+								'tryaura.enhancer.original_image_props',
+								{
+									selectedIndices: selectedImageIndices,
+									setSelectedIndices: setSelectedImageIndices,
+									showSelection: true,
+									showGeneratedImage: false,
+									limits:
+										activeTab === 'image'
+											? { min: 1, max: 3 }
+											: { min: 1, max: 1 },
+								}
+							) }
+							className="col-span-1 md:col-span-3 max-h-[533px] overflow-auto"
+						/>
+						<ConfigSettings
+							supportsVideo={ supportsVideo }
+							doGenerate={ doGenerate }
+							className="col-span-1 md:col-span-4 flex flex-col gap-[32px]"
+						/>
+						<Output
+							supportsVideo={ supportsVideo }
+							className="col-span-1 md:col-span-4"
+						/>
+					</div>
+					{ /* Actions */ }
+					<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
+						{ generatedUrl && 'image' === activeTab && (
+							<Button
+								onClick={ setInMediaSelection }
+								disabled={ disabledImageAddToMedia }
+								loading={ uploading }
+							>
+								{ uploading
+									? __( 'Adding…' )
+									: __( 'Add to Media Library', 'try-aura' ) }
+							</Button>
+						) }
+
+						<Slot name="TryAuraEnhancerFooterActions" />
+
+						<PluginArea scope="tryaura-enhancer" />
+
+						<Button
+							variant="outline"
+							onClick={ onClose }
+							disabled={ isBusy }
+						>
+							{ __( 'Close', 'try-aura' ) }
 						</Button>
-					) }
-
-					{ applyFilters( 'tryaura.enhancer.footer_actions', [], toast ) }
-
-					<Button
-						variant="outline"
-						onClick={ onClose }
-						disabled={ isBusy || isVideoBusy }
-					>
-						{ __( 'Close', 'try-aura' ) }
-					</Button>
+					</div>
 				</div>
-			</div>
+			</SlotFillProvider>
 		</Modal>
 	);
 };

@@ -42,10 +42,10 @@ class TryOn {
 			'try-aura-tryon',
 			'tryAura',
 			array(
-				'restUrl'   => esc_url_raw( rest_url() ),
-				'nonce'     => wp_create_nonce( 'wp_rest' ),
-				'productId' => $product_id,
-				'loginUrl'  => $this->get_login_url(),
+				'restUrl'    => esc_url_raw( rest_url() ),
+				'tryonNonce' => wp_create_nonce( 'tryon_nonce' ),
+				'productId'  => $product_id,
+				'loginUrl'   => $this->get_login_url(),
 			)
 		);
 

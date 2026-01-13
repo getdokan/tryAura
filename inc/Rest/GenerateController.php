@@ -51,7 +51,13 @@ class GenerateController {
 	 * @return WP_REST_Response
 	 */
 	public function handle_generation( WP_REST_Request $request ) {
-		$params     = $request->get_json_params();
+		$params = $request->get_json_params();
+		$nonce  = $params['tryonNonce'] ?? '';
+
+		if( ! wp_verify_nonce( $nonce, 'tryon_nonce' ) ) {
+			return new WP_REST_Response( array( 'error' => 'unauthorized' ), 401 );
+		}
+
 		$prompt     = $params['prompt'] ?? '';
 		$ref_images = $params['images'] ?? array();
 

@@ -78,7 +78,7 @@ function Output( { className = '' } ) {
 						) }
 					</div>
 
-					<Slot name="TryAuraEnhancerOutput" />
+					<Slot name="TryAuraEnhancerAfterImageOutput" />
 				</div>
 			) : (
 				<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1 items-center justify-center">

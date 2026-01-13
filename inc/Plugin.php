@@ -63,6 +63,13 @@ class Plugin {
 		}
 
 		add_filter( 'rest_post_dispatch', array( $this, 'add_wc_existence_header' ), 10, 3 );
+
+		/**
+		 * Action to signal that WooCommerce has finished loading.
+		 *
+		 * @since PLUGIN_SINCE
+		 */
+		do_action( 'tryaura_loaded' );
 	}
 
 	/**

@@ -2,7 +2,8 @@ import { useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { STORE_NAME } from './store';
-import { Button } from '../../components';
+import { Button } from "../../components";
+import { toast } from "@tryaura/components";
 import { __ } from '@wordpress/i18n';
 import { X } from 'lucide-react';
 import OriginalImage from './PreviewSections/OriginalImage';
@@ -557,7 +558,7 @@ const PreviewModal = ( {
 						</Button>
 					) }
 
-					{ applyFilters( 'tryaura.enhancer.footer_actions', [] ) }
+					{ applyFilters( 'tryaura.enhancer.footer_actions', [], toast ) }
 
 					<Button
 						variant="outline"

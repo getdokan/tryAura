@@ -1,13 +1,13 @@
 import { ArrowLeft } from 'lucide-react';
 import geminiLogo from './assets/geminiLogo.svg';
 import ApiKeyInput from './components/ApiKeyInput';
-import { ModernSelect, Button } from '../../../../components';
+import { ModernSelect, Button } from "../../../../components";
+import { toast } from "@tryaura/components";
 import apiFetch from '@wordpress/api-fetch';
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useNavigate } from 'react-router-dom';
 import { useSelect } from '@wordpress/data';
-import toast, { Toaster } from 'react-hot-toast';
 
 const InitialLoader = () => {
 	return (
@@ -274,8 +274,6 @@ const GeminiIntegrationSettings = () => {
 					</>
 				) }
 			</div>
-
-			<Toaster position="bottom-right" />
 		</div>
 	);
 };

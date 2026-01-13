@@ -4,12 +4,9 @@ import GroupButton from '../../../components/GroupButton';
 import { __ } from '@wordpress/i18n';
 import ImageConfigInputs from './ImageConfigInputs';
 import { applyFilters } from '@wordpress/hooks';
-import ConfigFooter from "./ConfigFooter";
+import ConfigFooter from './ConfigFooter';
 
-function ConfigSettings( {
-	doGenerate,
-	className = '',
-} ) {
+function ConfigSettings( { doGenerate, className = '' } ) {
 	const { activeTab, isBusy, isThumbnailMode } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
@@ -21,16 +18,13 @@ function ConfigSettings( {
 
 	const { setActiveTab } = useDispatch( STORE_NAME );
 
-	const tabs = applyFilters(
-		'tryaura.enhancer.tabs',
-		[
-			{
-				label: __( 'Generate Image', 'tryaura' ),
-				value: 'image',
-				disabled: isBusy,
-			},
-		]
-	);
+	const tabs = applyFilters( 'tryaura.enhancer.tabs', [
+		{
+			label: __( 'Generate Image', 'tryaura' ),
+			value: 'image',
+			disabled: isBusy,
+		},
+	] );
 
 	return (
 		<div className={ className }>

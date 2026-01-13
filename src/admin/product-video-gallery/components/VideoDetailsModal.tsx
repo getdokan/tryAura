@@ -1,9 +1,9 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Modal } from '@wordpress/components';
-import { Button, Checkbox, ModernSelect, WpBtn } from "../../../components";
+import { Button, Checkbox, ModernSelect } from '../../../components';
+import { toast } from '@tryaura/components';
 import { Youtube, Video, Upload, X } from 'lucide-react';
-import toast from 'react-hot-toast';
 
 declare const wp: any;
 

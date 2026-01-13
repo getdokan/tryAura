@@ -316,7 +316,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			// @ts-ignore
 			const restUrl = window?.tryAura?.restUrl;
 			// @ts-ignore
-			const nonce = window?.tryAura?.nonce;
+			const nonce = window?.tryAura?.tryonNonce;
 
 			if ( ! restUrl || ! nonce ) {
 				throw new Error(
@@ -339,6 +339,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 					object_id: productId,
 					object_type: 'product',
 					generated_from: 'tryon',
+					tryonNonce: nonce,
 				},
 			} ) ) as any;
 

@@ -25,7 +25,6 @@ type PreviewProps = {
 async function resolveSettings(): Promise< {
 	apiKey: string | null;
 	imageModel: string | null;
-	videoModel: string | null;
 } > {
 	try {
 		const aura = ( window as any )?.tryAura;
@@ -37,14 +36,12 @@ async function resolveSettings(): Promise< {
 		return {
 			apiKey: google?.apiKey || aura?.apiKey || null,
 			imageModel: google?.imageModel || aura?.imageModel || null,
-			videoModel: google?.videoModel || aura?.videoModel || null,
 		};
 	} catch {
 		const aura = ( window as any )?.tryAura;
 		return {
 			apiKey: aura?.apiKey || null,
 			imageModel: aura?.imageModel || null,
-			videoModel: aura?.videoModel || null,
 		};
 	}
 }

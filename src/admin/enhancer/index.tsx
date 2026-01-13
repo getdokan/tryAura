@@ -19,10 +19,7 @@ declare global {
 	}
 }
 
-const tryauramediaroot = applyFilters(
-	'tryaura.media_root_name',
-	'tryauramediaroot'
-);
+const tryauramediaroot = 'tryauramediaroot';
 
 function addEnhancerButton( toolbar ) {
 	toolbar = toolbar[ 0 ] ?? null;

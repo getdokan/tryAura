@@ -526,10 +526,15 @@ const PreviewModal = ( {
 							doGenerate={ doGenerate }
 							className="col-span-1 md:col-span-4 flex flex-col gap-[32px]"
 						/>
-						<Output
-							supportsVideo={ supportsVideo }
-							className="col-span-1 md:col-span-4"
-						/>
+
+						{ activeTab === 'image' && (
+							<Output
+								supportsVideo={ supportsVideo }
+								className="col-span-1 md:col-span-4"
+							/>
+						) }
+
+						<Slot name="TryAuraEnhancerOutput" />
 					</div>
 					{ /* Actions */ }
 					<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">

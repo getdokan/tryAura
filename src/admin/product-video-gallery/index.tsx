@@ -31,10 +31,6 @@ declare const jQuery: any;
 		root.render(
 			<>
 				<ProductVideoGallery />
-				<Toaster
-					position="bottom-right"
-					containerClassName="tryaura-toast-root"
-				/>
 			</>
 		);
 	} );

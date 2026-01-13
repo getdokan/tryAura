@@ -23,6 +23,7 @@ export const INITIAL_STATE: EnhancerState = {
 	imageUrls: [],
 	attachmentIds: [],
 	supportsVideo: false,
+	isVideoBusy: false,
 };
 
 const reducer = (
@@ -70,6 +71,8 @@ const reducer = (
 			return { ...state, attachmentIds: action.attachmentIds };
 		case TYPES.SET_SUPPORTS_VIDEO:
 			return { ...state, supportsVideo: action.supportsVideo };
+		case TYPES.SET_IS_VIDEO_BUSY:
+			return { ...state, isVideoBusy: action.isVideoBusy };
 		case TYPES.RESET_STATE:
 			return {
 				...INITIAL_STATE,

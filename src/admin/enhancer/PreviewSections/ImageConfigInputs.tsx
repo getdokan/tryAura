@@ -55,6 +55,7 @@ function ImageConfigInputs( { doGenerate } ) {
 					}
 					options={ [ { label: 'Youtube', value: 'youtube' } ] }
 					variant="list"
+					disabled={ isBusy }
 				/>
 			) }
 
@@ -99,6 +100,7 @@ function ImageConfigInputs( { doGenerate } ) {
 										icon: <Settings />,
 									},
 								] }
+								disabled={ isBusy }
 							/>
 
 							<ModernSelect
@@ -132,6 +134,7 @@ function ImageConfigInputs( { doGenerate } ) {
 										icon: <User />,
 									},
 								] }
+								disabled={ isBusy }
 							/>
 						</>
 					) }
@@ -164,6 +167,7 @@ function ImageConfigInputs( { doGenerate } ) {
 						icon: <RectangleVertical />,
 					},
 				] }
+				disabled={ isBusy }
 			/>
 
 			<label

@@ -4,6 +4,9 @@ import GroupButton from '../../../components/GroupButton';
 import { __ } from '@wordpress/i18n';
 import ImageConfigInputs from './ImageConfigInputs';
 import { applyFilters } from '@wordpress/hooks';
+import ConfigFooter from './ConfigFooter';
+
+import { Slot } from '@wordpress/components';
 
 function ConfigSettings( {
 	doGenerate,
@@ -20,16 +23,13 @@ function ConfigSettings( {
 
 	const { setActiveTab } = useDispatch( STORE_NAME );
 
-	const tabs = applyFilters(
-		'tryaura.enhancer.tabs',
-		[
-			{
-				label: __( 'Generate Image', 'tryaura' ),
-				value: 'image',
-				disabled: isBusy,
-			},
-		]
-	);
+	const tabs = applyFilters( 'tryaura.enhancer.tabs', [
+		{
+			label: __( 'Generate Image', 'tryaura' ),
+			value: 'image',
+			disabled: isBusy,
+		},
+	] );
 
 	return (
 		<div className={ className }>
@@ -46,10 +46,14 @@ function ConfigSettings( {
 				{ activeTab === 'image' ? (
 					<ImageConfigInputs doGenerate={ doGenerate } />
 				) : (
-					applyFilters(
-						'tryaura.enhancer.config_inputs',
-						null
-					)
+					<>
+						<Slot
+							name="TryAuraEnhancerConfig"
+							fillProps={ {
+								ConfigFooter,
+							} }
+						/>
+					</>
 				) }
 			</div>
 		</div>

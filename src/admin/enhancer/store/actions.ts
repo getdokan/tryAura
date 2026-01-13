@@ -77,6 +77,11 @@ export const setSupportsVideo = ( supportsVideo: boolean ) => ( {
 	supportsVideo,
 } );
 
+export const setIsVideoBusy = ( isVideoBusy: boolean ) => ( {
+	type: TYPES.SET_IS_VIDEO_BUSY,
+	isVideoBusy,
+} );
+
 export const resetState = () => ( {
 	type: TYPES.RESET_STATE,
 } );

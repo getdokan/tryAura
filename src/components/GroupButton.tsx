@@ -11,6 +11,7 @@ export interface GroupButtonProps {
 	onClick: ( value: string ) => void;
 	value: string;
 	className?: string;
+	disabled?: boolean;
 }
 
 const GroupButton = ( {
@@ -18,6 +19,7 @@ const GroupButton = ( {
 	onClick,
 	value,
 	className,
+	disabled = false,
 }: GroupButtonProps ) => {
 	const classNames =
 		'bg-black px-3 py-2 text-[14px] text-white hover:bg-bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer';
@@ -37,16 +39,16 @@ const GroupButton = ( {
 							index === options.length - 1
 								? 'rounded-r-[5px]'
 								: '',
-							option?.disabled
+							disabled || option?.disabled
 								? 'opacity-50 cursor-not-allowed'
 								: '',
 							option?.className ?? ''
 						) }
 						onClick={ () => onClick( option?.value ) }
 						key={ option?.value }
-						disabled={ option?.disabled ?? false }
+						disabled={ ( disabled || option?.disabled ) ?? false }
 					>
-						<div className="flex flex-row items-center justify-center gap-[8px]">
+						<div className="flex flex-row items-center justify-center gap-2">
 							{ option?.icon ?? '' }
 							<span>{ option?.label ?? '' }</span>
 						</div>

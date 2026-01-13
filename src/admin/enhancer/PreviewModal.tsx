@@ -503,24 +503,29 @@ const PreviewModal = ( {
 					</div>
 
 					<div className="grid grid-cols-1 md:grid-cols-11 md:flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
-						<OriginalImage
-							imageUrls={ imageUrls }
-							multiple={ multiple }
-							{ ...applyFilters(
-								'tryaura.enhancer.original_image_props',
-								{
-									selectedIndices: selectedImageIndices,
-									setSelectedIndices: setSelectedImageIndices,
-									showSelection: true,
-									showGeneratedImage: false,
-									limits:
-										activeTab === 'image'
-											? { min: 1, max: 3 }
-											: { min: 1, max: 1 },
-								}
-							) }
-							className="col-span-1 md:col-span-3 max-h-[533px] overflow-auto"
+						{ activeTab === 'image' && (
+							<OriginalImage
+								imageUrls={ imageUrls }
+								multiple={ multiple }
+								selectedIndices={ selectedImageIndices }
+								setSelectedIndices={ setSelectedImageIndices }
+								showSelection={ true }
+								showGeneratedImage={ false }
+								limits={ { min: 1, max: 3 } }
+								className="col-span-1 md:col-span-3 max-h-133.25 overflow-auto"
+							/>
+						) }
+						<Slot
+							name="TryAuraOriginalImage"
+							fillProps={ {
+								OriginalImage,
+								imageUrls,
+								multiple,
+								className:
+									'col-span-1 md:col-span-3 max-h-133.25 overflow-auto',
+							} }
 						/>
+
 						<ConfigSettings
 							supportsVideo={ supportsVideo }
 							doGenerate={ doGenerate }
@@ -534,7 +539,12 @@ const PreviewModal = ( {
 							/>
 						) }
 
-						<Slot name="TryAuraEnhancerOutput" />
+						<Slot
+							name="TryAuraEnhancerOutput"
+							fillProps={ {
+								className: 'col-span-1 md:col-span-4',
+							} }
+						/>
 					</div>
 					{ /* Actions */ }
 					<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">

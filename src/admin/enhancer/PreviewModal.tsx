@@ -137,6 +137,34 @@ const PreviewModal = ( {
 			);
 	}, [] );
 
+	const doTestGenerate = async () => {
+		try {
+			setError( null );
+			setStatus( 'fetching' );
+			setMessage( __( 'Fetching images…', 'try-aura' ) );
+			await new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
+
+			setStatus( 'generating' );
+			setMessage( 'Thinking and generating…' );
+			await new Promise( ( resolve ) => setTimeout( resolve, 2000 ) );
+
+			setStatus( 'parsing' );
+			setMessage( __( 'Processing results…', 'try-aura' ) );
+			await new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
+
+			// Use a placeholder image from picsum for testing
+			const placeholderImage = window?.tryAura?.testImage || '';
+			setGeneratedUrl( placeholderImage );
+			setStatus( 'done' );
+			setMessage( 'Done' );
+			setError( null );
+		} catch ( e: any ) {
+			setError( e?.message || 'Testing generation failed.' );
+			setStatus( 'error' );
+			setMessage( 'Generation failed.' );
+		}
+	};
+
 	const doGenerate = async () => {
 		try {
 			setError( null );
@@ -474,6 +502,7 @@ const PreviewModal = ( {
 	};
 
 	const disabledImageAddToMedia = isBusy || uploading || ! generatedUrl;
+	const generate = window?.tryAura?.testMode ? doTestGenerate : doGenerate;
 
 	return (
 		<Modal
@@ -528,7 +557,7 @@ const PreviewModal = ( {
 
 						<ConfigSettings
 							supportsVideo={ supportsVideo }
-							doGenerate={ doGenerate }
+							doGenerate={ generate }
 							className="col-span-1 md:col-span-4 flex flex-col gap-[32px]"
 						/>
 

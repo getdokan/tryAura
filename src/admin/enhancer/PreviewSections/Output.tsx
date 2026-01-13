@@ -4,7 +4,6 @@ import { STORE_NAME } from '../store';
 import { __ } from '@wordpress/i18n';
 import Star from '../../../images/star.gif';
 import Congrats from '../../../images/congrats.gif';
-import { applyFilters } from '@wordpress/hooks';
 import { Slot } from '@wordpress/components';
 
 function Output( { className = '' } ) {
@@ -78,10 +77,8 @@ function Output( { className = '' } ) {
 							</div>
 						) }
 					</div>
-					{ applyFilters(
-						'tryaura.enhancer.after_image_output',
-						null
-					) }
+
+					<Slot name="TryAuraEnhancerOutput" />
 				</div>
 			) : (
 				<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1 items-center justify-center">

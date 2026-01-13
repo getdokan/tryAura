@@ -55,7 +55,7 @@ class GenerateController {
 		$nonce  = $params['tryonNonce'] ?? '';
 
 		if( ! wp_verify_nonce( $nonce, 'tryon_nonce' ) ) {
-			return new WP_REST_Response( array( 'error' => 'unauthorized' ), 401 );
+			return new WP_REST_Response( array( 'message' => 'unauthorized acess' ), 401 );
 		}
 
 		$prompt     = $params['prompt'] ?? '';

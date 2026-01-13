@@ -138,36 +138,33 @@ function ImageConfigInputs( { doGenerate } ) {
 				</>
 			) }
 
-			{/* This should be in product */}
-			{ ( isBlockEditorPage || isWoocommerceProductPage ) && (
-				<ModernSelect
-					value={ imageConfigData?.imageSize ?? '' }
-					variant="list"
-					onChange={ ( val ) =>
-						setImageConfigData( {
-							imageSize: val,
-						} )
-					}
-					label={ __( 'Image Size', 'try-aura' ) }
-					options={ [
-						{
-							label: __( 'Square (1:1)', 'try-aura' ),
-							value: '1:1',
-							icon: <Square />,
-						},
-						{
-							label: __( 'Landscape (16:9)', 'try-aura' ),
-							value: '16:9',
-							icon: <RectangleHorizontal />,
-						},
-						{
-							label: __( 'Portrait (9:16)', 'try-aura' ),
-							value: '9:16',
-							icon: <RectangleVertical />,
-						},
-					] }
-				/>
-			) }
+			<ModernSelect
+				value={ imageConfigData?.imageSize ?? '' }
+				variant="list"
+				onChange={ ( val ) =>
+					setImageConfigData( {
+						imageSize: val,
+					} )
+				}
+				label={ __( 'Image Size', 'try-aura' ) }
+				options={ [
+					{
+						label: __( 'Square (1:1)', 'try-aura' ),
+						value: '1:1',
+						icon: <Square />,
+					},
+					{
+						label: __( 'Landscape (16:9)', 'try-aura' ),
+						value: '16:9',
+						icon: <RectangleHorizontal />,
+					},
+					{
+						label: __( 'Portrait (9:16)', 'try-aura' ),
+						value: '9:16',
+						icon: <RectangleVertical />,
+					},
+				] }
+			/>
 
 			<label
 				style={ {

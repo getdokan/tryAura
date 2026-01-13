@@ -4,6 +4,7 @@ import GroupButton from '../../../components/GroupButton';
 import { __ } from '@wordpress/i18n';
 import ImageConfigInputs from './ImageConfigInputs';
 import { applyFilters } from '@wordpress/hooks';
+import ConfigFooter from "./ConfigFooter";
 
 function ConfigSettings( {
 	doGenerate,
@@ -48,7 +49,8 @@ function ConfigSettings( {
 				) : (
 					applyFilters(
 						'tryaura.enhancer.config_inputs',
-						null
+						null,
+						ConfigFooter
 					)
 				) }
 			</div>

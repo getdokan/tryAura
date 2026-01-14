@@ -646,10 +646,23 @@ class Assets {
 		$asset_path = plugin_dir_path( __DIR__ );
 		$scripts    = array();
 
+		$asset_file = $asset_path . 'build/data/settings.asset.php';
+		if ( file_exists( $asset_file ) ) {
+			$asset   = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+			$deps    = $asset['dependencies'] ?? array( 'wp-data' );
+			$version = $asset['version'] ?? '1.0.0';
+
+			$scripts['try-aura-settings'] = array(
+				'version' => $version,
+				'src'     => $asset_url . 'build/data/settings.js',
+				'deps'    => $deps,
+			);
+		}
+
 		$asset_file = $asset_path . 'build/admin/dashboard/index.asset.php';
 		if ( file_exists( $asset_file ) ) {
 			$asset   = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			$deps    = $asset['dependencies'] ?? array( 'wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n', 'wp-api' );
+			$deps    = $asset['dependencies'] ?? array( 'wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n', 'wp-api', 'try-aura-settings' );
 			$version = $asset['version'] ?? '1.0.0';
 
 			$scripts['try-aura-admin'] = array(

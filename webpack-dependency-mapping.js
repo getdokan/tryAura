@@ -14,6 +14,10 @@ const requestToExternal = ( request ) => {
 		return [ 'tryaura', 'aiProvidersStore' ];
 	}
 
+	if ( request === '@tryaura/settings' ) {
+		return [ 'tryaura', 'settingsStore' ];
+	}
+
 	return undefined;
 };
 
@@ -31,6 +35,10 @@ const requestToHandle = ( request ) => {
 
 	if ( request === '@tryaura/ai-models' ) {
 		return 'try-aura-ai-models';
+	}
+
+	if ( request === '@tryaura/settings' ) {
+		return 'try-aura-settings';
 	}
 
 	return undefined;

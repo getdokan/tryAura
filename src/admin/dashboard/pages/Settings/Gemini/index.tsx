@@ -2,6 +2,9 @@ import geminiLogo from '../assets/geminiLogo.svg';
 import { Button } from '../../../../../components';
 import { useNavigate } from "react-router-dom";
 import { __ } from "@wordpress/i18n";
+import { useSelect } from '@wordpress/data';
+// @ts-ignore
+import { STORE_NAME } from '@tryaura/settings';
 
 declare global {
 	interface Window {
@@ -17,6 +20,15 @@ declare global {
 
 function Index() {
 	const navigate = useNavigate();
+	const { settings } = useSelect( ( select ) => {
+		return {
+			settings: select( STORE_NAME ).getSettings(),
+		};
+	}, [] );
+
+	const data = window.tryAura!;
+	const apiKey = settings[ data.optionKey ]?.google?.apiKey;
+
 	return (
 		<div className="flex justify-between flex-wrap bg-[#FFFFFF] border-2 border-[#FFFFFF] p-[24px] rounded-[16px]">
 			<div className="flex">
@@ -29,7 +41,7 @@ function Index() {
 							{ __( 'Gemini API', 'try-aura' ) }
 						</div>
 						<div className="ml-[12px]">
-							{ window.tryAura?.apiKey ? (
+							{ apiKey ? (
 								<p className="bg-green-100 text-green-700 rounded m-0 py-1 px-3">
 									{ __( 'Connected', 'try-aura' ) }
 								</p>

@@ -87,11 +87,14 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 
 	return (
 		<Modal
-			onRequestClose={ onClose }
+			onRequestClose={ () => {
+				return '';
+			} }
 			className="tryaura tryaura-add-video-modal-url"
 			__experimentalHideHeader
 			size="medium"
 			style={ { maxHeight: '90vh', overflowY: 'auto' } }
+			shouldCloseOnClickOutside={ false }
 		>
 			<div>
 				<div className="border-b border-[rgba(233,233,233,1)] p-[16px_24px] flex justify-between items-center gap-1">

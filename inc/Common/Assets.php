@@ -593,8 +593,8 @@ class Assets {
 	 * @return array
 	 */
 	private function get_styles() {
-		$asset_url  = plugin_dir_url( __DIR__ );
-		$asset_path = plugin_dir_path( __DIR__ );
+		$asset_url  = plugin_dir_url( TRYAURA_FILE );
+		$asset_path = TRYAURA_DIR . '/';
 		$styles     = array();
 
 		$css_path = $asset_path . 'build/admin/dashboard/style-index.css';
@@ -642,8 +642,8 @@ class Assets {
 	 * @return array
 	 */
 	public function get_scripts() {
-		$asset_url  = plugin_dir_url( __DIR__ );
-		$asset_path = plugin_dir_path( __DIR__ );
+		$asset_url  = plugin_dir_url( TRYAURA_FILE );
+		$asset_path = TRYAURA_DIR . '/';
 		$scripts    = array();
 
 		$asset_file = $asset_path . 'build/data/settings.asset.php';

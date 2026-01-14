@@ -1,6 +1,8 @@
 <?php
 
-namespace Dokan\TryAura;
+namespace Dokan\TryAura\WooCommerce;
+
+use Dokan\TryAura\WooCommerce\Frontend\TryOn;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -36,6 +38,9 @@ class WooCommerce {
 
 		// AJAX handler for the toggle.
 		add_action( 'wp_ajax_try_aura_toggle_try_on', array( $this, 'toggle_try_on_ajax' ) );
+
+		// Action Scheduler handler for bulk update.
+		add_action( 'try_aura_bulk_update_products_try_on', array( $this, 'bulk_update_products_try_on' ), 10, 2 );
 	}
 
 	/**
@@ -82,7 +87,7 @@ class WooCommerce {
 
 		$checked = 'yes' === $enabled;
 
-		$switch_template = plugin_dir_path( __DIR__ ) . 'templates/products/tryon-switch.php';
+		$switch_template = TRYAURA_DIR . '/templates/products/tryon-switch.php';
 		if ( file_exists( $switch_template ) ) {
 			include $switch_template;
 		}
@@ -103,7 +108,7 @@ class WooCommerce {
 			return;
 		}
 
-		$asset_file = plugin_dir_path( __DIR__ ) . 'build/admin/woocommerce-products-list.asset.php';
+		$asset_file = TRYAURA_DIR . '/build/admin/woocommerce-products-list.asset.php';
 		$deps       = array( 'jquery' );
 		$version    = '1.0.0';
 
@@ -113,7 +118,7 @@ class WooCommerce {
 			$version = $asset['version'] ?? $version;
 		}
 
-		$script_url = plugin_dir_url( __DIR__ ) . 'build/admin/woocommerce-products-list.js';
+		$script_url = plugins_url( 'build/admin/woocommerce-products-list.js', TRYAURA_FILE );
 		wp_enqueue_script( 'try-aura-woo-products', $script_url, $deps, $version, true );
 
 		wp_localize_script(
@@ -125,9 +130,9 @@ class WooCommerce {
 			)
 		);
 
-		$css_path = plugin_dir_path( __DIR__ ) . 'build/admin/style-woocommerce-products-list.css';
+		$css_path = TRYAURA_DIR . '/build/admin/style-woocommerce-products-list.css';
 		if ( file_exists( $css_path ) ) {
-			$css_url = plugin_dir_url( __DIR__ ) . 'build/admin/style-woocommerce-products-list.css';
+			$css_url = plugins_url( 'build/admin/style-woocommerce-products-list.css', TRYAURA_FILE );
 			wp_enqueue_style( 'try-aura-woo-products', $css_url, array(), $version );
 		}
 	}
@@ -153,5 +158,21 @@ class WooCommerce {
 		update_post_meta( $product_id, self::TRY_ON_META_KEY, $enabled );
 
 		wp_send_json_success( array( 'enabled' => $enabled ) );
+	}
+
+	/**
+	 * Bulk update products try-on visibility.
+	 *
+	 * @param array  $product_ids Array of product IDs.
+	 * @param string $enabled 'yes' or 'no'.
+	 */
+	public function bulk_update_products_try_on( array $product_ids, string $enabled ): void {
+		if ( empty( $product_ids ) ) {
+			return;
+		}
+
+		foreach ( $product_ids as $product_id ) {
+			update_post_meta( $product_id, self::TRY_ON_META_KEY, $enabled );
+		}
 	}
 }

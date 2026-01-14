@@ -1,13 +1,14 @@
 import { ArrowLeft } from 'lucide-react';
-import geminiLogo from './assets/geminiLogo.svg';
-import ApiKeyInput from './components/ApiKeyInput';
-import { ModernSelect, Button } from "../../../../components";
+import geminiLogo from '../assets/geminiLogo.svg';
+import ApiKeyInput from '../components/ApiKeyInput';
+import { ModernSelect, Button } from "../../../../../components";
 import { toast } from "@tryaura/components";
-import apiFetch from '@wordpress/api-fetch';
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useNavigate } from 'react-router-dom';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
+// @ts-ignore
+import { STORE_NAME } from '@tryaura/settings';
 
 const InitialLoader = () => {
 	return (
@@ -28,126 +29,96 @@ const InitialLoader = () => {
 	);
 };
 
-const GeminiIntegrationSettings = () => {
-	const { videoModels, imageModels, defaultImageModel, defaultVideoModel } =
-		useSelect( ( select ) => {
-			const models =
-				select( 'try-aura/ai-models' ).getProviderModels( 'google' ) ||
-				{};
+const GeminiSettings = () => {
+	const {
+		videoModels,
+		imageModels,
+		defaultImageModel,
+		defaultVideoModel,
+		settings,
+		fetching,
+		saving,
+	} = useSelect( ( select ) => {
+		const models =
+			select( 'try-aura/ai-models' ).getProviderModels( 'google' ) || {};
 
-			const vModels: any[] = [];
-			const iModels: any[] = [];
+		const vModels: any[] = [];
+		const iModels: any[] = [];
 
-			Object.keys( models ).forEach( ( key ) => {
-				const model = {
-					label: models[ key ].label,
-					value: key,
-				};
-
-				if ( models[ key ].identity === 'video' ) {
-					vModels.push( model );
-				} else if ( models[ key ].identity === 'image' ) {
-					iModels.push( model );
-				}
-			} );
-
-			return {
-				videoModels: vModels,
-				imageModels: iModels,
-				defaultImageModel:
-					select( 'try-aura/ai-models' ).getDefaultImageModel(),
-				defaultVideoModel:
-					select( 'try-aura/ai-models' ).getDefaultVideoModel(),
+		Object.keys( models ).forEach( ( key ) => {
+			const model = {
+				label: models[ key ].label,
+				value: key,
 			};
-		}, [] );
+
+			if ( models[ key ].identity === 'video' ) {
+				vModels.push( model );
+			} else if ( models[ key ].identity === 'image' ) {
+				iModels.push( model );
+			}
+		} );
+
+		return {
+			videoModels: vModels,
+			imageModels: iModels,
+			defaultImageModel:
+				select( 'try-aura/ai-models' ).getDefaultImageModel(),
+			defaultVideoModel:
+				select( 'try-aura/ai-models' ).getDefaultVideoModel(),
+			settings: select( STORE_NAME ).getSettings(),
+			fetching: select( STORE_NAME ).isFetchingSettings(),
+			saving: select( STORE_NAME ).isSavingSettings(),
+		};
+	}, [] );
+
+	const { updateSettings } = useDispatch( STORE_NAME );
 
 	const navigate = useNavigate();
 	const data = window.tryAura!;
 	const [ apiKey, setApiKey ] = useState< string >( '' );
 
-	useEffect( () => {
-		// Attach REST middlewares: root + nonce for admin context.
-		apiFetch.use( apiFetch.createRootURLMiddleware( data.restUrl ) );
-		apiFetch.use( apiFetch.createNonceMiddleware( data.nonce ) );
-	}, [] );
 	const [ selectedImageModel, setSelectedImageModel ] =
 		useState< string >( '' );
 	const [ selectedVideoModel, setSelectedVideoModel ] =
 		useState< string >( '' );
 
-	const [ saving, setSaving ] = useState< boolean >( false );
-	const [ fetching, setFetching ] = useState< boolean >( false );
-
-	// On mount, fetch the current saved value to ensure persistence across reloads.
+	// On mount or when settings change, update local state
 	useEffect( () => {
-		let cancelled = false;
-		( async () => {
-			try {
-				setFetching( true );
-				const res = await apiFetch( { path: '/try-aura/v1/settings' } );
-				const current = ( res as Record< string, any > )[
-					data.optionKey
-				];
-				if (
-					! cancelled &&
-					current &&
-					typeof current === 'object' &&
-					current.google
-				) {
-					setApiKey( current.google.apiKey || '' );
-					setSelectedImageModel(
-						current.google.imageModel || defaultImageModel
-					);
-					setSelectedVideoModel(
-						current.google.videoModel || defaultVideoModel
-					);
-				} else if ( ! cancelled ) {
-					setSelectedImageModel( defaultImageModel );
-					setSelectedVideoModel( defaultVideoModel );
-				}
-				setFetching( false );
-			} catch ( e ) {
-				// Ignore fetch errors here; the field will fallback to localized value.
-				setFetching( false );
-			}
-		} )();
-		return () => {
-			cancelled = true;
-		};
-	}, [ data.optionKey, defaultImageModel, defaultVideoModel ] );
+		const current = settings[ data.optionKey ];
+		if ( current && typeof current === 'object' && current.google ) {
+			setApiKey( current.google.apiKey || '' );
+			setSelectedImageModel(
+				current.google.imageModel || defaultImageModel
+			);
+			setSelectedVideoModel(
+				current.google.videoModel || defaultVideoModel
+			);
+		} else {
+			setSelectedImageModel( defaultImageModel );
+			setSelectedVideoModel( defaultVideoModel );
+		}
+	}, [ settings, data.optionKey, defaultImageModel, defaultVideoModel ] );
 
 	const onSave = async () => {
 		if ( ! apiKey ) {
 			toast.error( __( 'API key is required', 'try-aura' ) );
 			return;
 		}
-		setSaving( true );
 		try {
-			// Update via WP Settings REST endpoint; our option is exposed via register_setting.
-			const res = await apiFetch( {
-				path: '/try-aura/v1/settings',
-				method: 'POST',
-				data: {
-					[ data.optionKey ]: {
-						google: {
-							apiKey,
-							imageModel: selectedImageModel,
-							videoModel: selectedVideoModel,
-						},
+			const newSettings = {
+				[ data.optionKey ]: {
+					google: {
+						apiKey,
+						imageModel: selectedImageModel,
+						videoModel: selectedVideoModel,
 					},
 				},
-			} );
-			// Update local state with returned value (mirrors saved setting)
+			};
+
+			const res = await updateSettings( newSettings );
+
 			const newValue = ( res as Record< string, any > )[ data.optionKey ];
 			if ( newValue && newValue.google ) {
-				setApiKey( newValue.google.apiKey || '' );
-				setSelectedImageModel(
-					newValue.google.imageModel || defaultImageModel
-				);
-				setSelectedVideoModel(
-					newValue.google.videoModel || defaultVideoModel
-				);
-
 				window.tryAura.apiKey = newValue.google.apiKey;
 				window.tryAura.imageModel = newValue.google.imageModel;
 				window.tryAura.videoModel = newValue.google.videoModel;
@@ -163,8 +134,6 @@ const GeminiIntegrationSettings = () => {
 					: __( 'Something went wrong', 'try-aura' );
 
 			toast.error( msg );
-		} finally {
-			setSaving( false );
 		}
 	};
 
@@ -172,8 +141,9 @@ const GeminiIntegrationSettings = () => {
 		<div className="bg-white rounded-[16px]">
 			<div>
 				<div className="border-b border-solid border-[#f0e5e5]">
-					<div
-						className="inline-flex items-center gap-1.5 m-[22px] hover:cursor-pointer hover:underline"
+					<button
+						type="button"
+						className="inline-flex items-center gap-1.5 m-[22px] hover:cursor-pointer hover:underline bg-transparent border-none p-0"
 						onClick={ () => {
 							navigate( '/settings' );
 						} }
@@ -182,7 +152,7 @@ const GeminiIntegrationSettings = () => {
 						<div className="font-medium text-[14px] leading-[20px] tracking-normal text-center align-middle">
 							{ __( 'Back to Settings', 'try-aura' ) }
 						</div>
-					</div>
+					</button>
 				</div>
 			</div>
 			<div className="flex flex-col items-center justify-center m-[22px] sm:my-[100px]">
@@ -192,7 +162,7 @@ const GeminiIntegrationSettings = () => {
 					<div className="flex flex-col w-full md:w-[550px]">
 						<div className="flex flex-col gap-[24px] mb-[36px]">
 							<div>
-								<img src={ geminiLogo } />
+								<img src={ geminiLogo } alt="Gemini Logo" />
 							</div>
 							<div>
 								<div className="font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[8px]">
@@ -277,4 +247,4 @@ const GeminiIntegrationSettings = () => {
 		</div>
 	);
 };
-export default GeminiIntegrationSettings;
+export default GeminiSettings;

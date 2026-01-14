@@ -5,7 +5,7 @@ import Layout from './Layout/Layout';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import Settings from './pages/Settings';
 import Dashboard from './pages/Dashboard';
-import GeminIntegrationSettings from './pages/Settings/GeminIntegrationSettings';
+import GeminiSettings from './pages/Settings/Gemini/GeminiSettings';
 
 export type TryAuraAdminRoute = {
 	id: string;
@@ -28,7 +28,7 @@ const getAdminRoutes = () => {
 		},
 		{
 			id: 'settings/gemini',
-			element: <GeminIntegrationSettings />,
+			element: <GeminiSettings />,
 			path: '/settings/gemini',
 		},
 	];

@@ -2,7 +2,7 @@
 
 namespace Dokan\TryAura;
 
-use Dokan\TryAura\Installer;
+use Dokan\TryAura\Common\Installer;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -43,23 +43,43 @@ class Plugin {
 	 * Initialize the plugin once all plugins are loaded.
 	 */
 	public function init_plugin(): void {
+		$container = tryaura_get_container();
+
 		// Register custom REST endpoints.
-		tryaura_get_container()->get( 'settings_controller' );
-		tryaura_get_container()->get( 'generate_controller' );
-		tryaura_get_container()->get( 'dashboard_controller' );
+		if ( $container->has( 'settings_controller' ) ) {
+			$container->get( 'settings_controller' );
+		}
+		if ( $container->has( 'generate_controller' ) ) {
+			$container->get( 'generate_controller' );
+		}
+		if ( $container->has( 'dashboard_controller' ) ) {
+			$container->get( 'dashboard_controller' );
+		}
 
 		// Register assets.
-		tryaura_get_container()->get( 'assets' );
+		if ( $container->has( 'assets' ) ) {
+			$container->get( 'assets' );
+		}
 
 		// WooCommerce integrations.
-		tryaura_get_container()->get( 'woocommerce' );
-		tryaura_get_container()->get( 'product_video_gallery' );
+		if ( $container->has( 'woocommerce' ) ) {
+			$container->get( 'woocommerce' );
+		}
+		if ( $container->has( 'product_video_gallery' ) ) {
+			$container->get( 'product_video_gallery' );
+		}
 
 		if ( is_admin() ) {
-			tryaura_get_container()->get( 'admin' );
+			if ( $container->has( 'admin' ) ) {
+				$container->get( 'admin' );
+			}
 			// Register the Featured Image Enhancer UI assets.
-			tryaura_get_container()->get( 'enhancer' );
-			tryaura_get_container()->get( 'product_gallery_video' );
+			if ( $container->has( 'enhancer' ) ) {
+				$container->get( 'enhancer' );
+			}
+			if ( $container->has( 'product_gallery_video' ) ) {
+				$container->get( 'product_gallery_video' );
+			}
 		}
 
 		add_filter( 'rest_post_dispatch', array( $this, 'add_wc_existence_header' ), 10, 3 );

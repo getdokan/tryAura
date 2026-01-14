@@ -28,7 +28,11 @@ global $try_aura_container;
 $try_aura_container = new Container();
 
 // Register the service providers.
-$try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement\Providers\ServiceProvider() );
+$try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement\Providers\CommonServiceProvider() );
+$try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement\Providers\AdminServiceProvider() );
+$try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement\Providers\FrontendServiceProvider() );
+$try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement\Providers\WooCommerceServiceProvider() );
+$try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement\Providers\RestServiceProvider() );
 
 /**
  * Get the container.

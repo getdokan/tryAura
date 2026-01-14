@@ -10,17 +10,6 @@ export const INITIAL_STATE: EnhancerState = {
 	generatedUrl: null,
 	error: null,
 	uploading: false,
-	videoStatus: 'idle',
-	videoMessage: __( 'Ready to generate video', 'try-aura' ),
-	videoUrl: null,
-	videoError: null,
-	videoUploading: false,
-	videoConfigData: {
-		styles: 'studio',
-		cameraMotion: 'zoom in',
-		aspectRatio: '16:9',
-		optionalPrompt: '',
-	},
 	imageConfigData: {
 		imageSize: '1:1',
 		backgroundType: 'studio',
@@ -29,10 +18,12 @@ export const INITIAL_STATE: EnhancerState = {
 		videoPlatform: 'youtube',
 	},
 	activeTab: 'image',
-	videoSource: 'original-image',
 	selectedImageIndices: [ 0 ],
-	selectedVideoIndices: [ 0 ],
 	isThumbnailMode: false,
+	imageUrls: [],
+	attachmentIds: [],
+	supportsVideo: false,
+	isVideoBusy: false,
 };
 
 const reducer = (
@@ -55,50 +46,33 @@ const reducer = (
 			return {
 				...state,
 				generatedUrl: action.generatedUrl,
-				videoSource: action.generatedUrl
-					? 'generated-image'
-					: state.videoSource,
 			};
 		case TYPES.SET_ERROR:
 			return { ...state, error: action.error };
 		case TYPES.SET_UPLOADING:
 			return { ...state, uploading: action.uploading };
-		case TYPES.SET_VIDEO_STATUS:
-			return { ...state, videoStatus: action.videoStatus };
-		case TYPES.SET_VIDEO_MESSAGE:
-			return { ...state, videoMessage: action.videoMessage };
-		case TYPES.SET_VIDEO_URL:
-			return { ...state, videoUrl: action.videoUrl };
-		case TYPES.SET_VIDEO_ERROR:
-			return { ...state, videoError: action.videoError };
-		case TYPES.SET_VIDEO_UPLOADING:
-			return { ...state, videoUploading: action.videoUploading };
-		case TYPES.SET_VIDEO_CONFIG_DATA:
-			return {
-				...state,
-				videoConfigData: { ...state.videoConfigData, ...action.data },
-			};
 		case TYPES.SET_IMAGE_CONFIG_DATA:
 			return {
 				...state,
 				imageConfigData: { ...state.imageConfigData, ...action.data },
 			};
-		case TYPES.SET_VIDEO_SOURCE:
-			return { ...state, videoSource: action.videoSource };
 		case TYPES.SET_SELECTED_IMAGE_INDICES:
 			return {
 				...state,
 				selectedImageIndices: action.selectedImageIndices,
 			};
-		case TYPES.SET_SELECTED_VIDEO_INDICES:
-			return {
-				...state,
-				selectedVideoIndices: action.selectedVideoIndices,
-			};
 		case TYPES.SET_ACTIVE_TAB:
 			return { ...state, activeTab: action.activeTab };
 		case TYPES.SET_IS_THUMBNAIL_MODE:
 			return { ...state, isThumbnailMode: action.isThumbnailMode };
+		case TYPES.SET_IMAGE_URLS:
+			return { ...state, imageUrls: action.imageUrls };
+		case TYPES.SET_ATTACHMENT_IDS:
+			return { ...state, attachmentIds: action.attachmentIds };
+		case TYPES.SET_SUPPORTS_VIDEO:
+			return { ...state, supportsVideo: action.supportsVideo };
+		case TYPES.SET_IS_VIDEO_BUSY:
+			return { ...state, isVideoBusy: action.isVideoBusy };
 		case TYPES.RESET_STATE:
 			return {
 				...INITIAL_STATE,
@@ -106,7 +80,6 @@ const reducer = (
 				isWoocommerceProductPage: state.isWoocommerceProductPage,
 				isThumbnailMode: state.isThumbnailMode,
 				imageConfigData: state.imageConfigData,
-				videoConfigData: state.videoConfigData,
 			};
 		default:
 			return state;

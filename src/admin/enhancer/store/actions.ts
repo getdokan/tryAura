@@ -1,5 +1,5 @@
 import * as TYPES from './constants';
-import { Status, VideoStatus, ActiveTab, VideoSource } from './types';
+import { Status, ActiveTab } from './types';
 
 const actions = {};
 
@@ -42,53 +42,14 @@ export const setUploading = ( uploading: boolean ) => ( {
 	uploading,
 } );
 
-export const setVideoStatus = ( videoStatus: VideoStatus ) => ( {
-	type: TYPES.SET_VIDEO_STATUS,
-	videoStatus,
-} );
-
-export const setVideoMessage = ( videoMessage: string ) => ( {
-	type: TYPES.SET_VIDEO_MESSAGE,
-	videoMessage,
-} );
-
-export const setVideoUrl = ( videoUrl: string | null ) => ( {
-	type: TYPES.SET_VIDEO_URL,
-	videoUrl,
-} );
-
-export const setVideoError = ( videoError: string | null ) => ( {
-	type: TYPES.SET_VIDEO_ERROR,
-	videoError,
-} );
-
-export const setVideoUploading = ( videoUploading: boolean ) => ( {
-	type: TYPES.SET_VIDEO_UPLOADING,
-	videoUploading,
-} );
-
-export const setVideoConfigData = ( data: any ) => ( {
-	type: TYPES.SET_VIDEO_CONFIG_DATA,
-	data,
-} );
-
 export const setImageConfigData = ( data: any ) => ( {
 	type: TYPES.SET_IMAGE_CONFIG_DATA,
 	data,
 } );
 
-export const setVideoSource = ( videoSource: VideoSource ) => ( {
-	type: TYPES.SET_VIDEO_SOURCE,
-	videoSource,
-} );
 export const setSelectedImageIndices = ( selectedImageIndices: number[] ) => ( {
 	type: TYPES.SET_SELECTED_IMAGE_INDICES,
 	selectedImageIndices,
-} );
-
-export const setSelectedVideoIndices = ( selectedVideoIndices: number[] ) => ( {
-	type: TYPES.SET_SELECTED_VIDEO_INDICES,
-	selectedVideoIndices,
 } );
 
 export const setActiveTab = ( activeTab: ActiveTab ) => ( {
@@ -99,6 +60,26 @@ export const setActiveTab = ( activeTab: ActiveTab ) => ( {
 export const setIsThumbnailMode = ( isThumbnailMode: boolean ) => ( {
 	type: TYPES.SET_IS_THUMBNAIL_MODE,
 	isThumbnailMode,
+} );
+
+export const setImageUrls = ( imageUrls: string[] ) => ( {
+	type: TYPES.SET_IMAGE_URLS,
+	imageUrls,
+} );
+
+export const setAttachmentIds = ( attachmentIds: number[] ) => ( {
+	type: TYPES.SET_ATTACHMENT_IDS,
+	attachmentIds,
+} );
+
+export const setSupportsVideo = ( supportsVideo: boolean ) => ( {
+	type: TYPES.SET_SUPPORTS_VIDEO,
+	supportsVideo,
+} );
+
+export const setIsVideoBusy = ( isVideoBusy: boolean ) => ( {
+	type: TYPES.SET_IS_VIDEO_BUSY,
+	isVideoBusy,
 } );
 
 export const resetState = () => ( {

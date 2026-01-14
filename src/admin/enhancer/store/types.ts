@@ -5,15 +5,7 @@ export type Status =
 	| 'parsing'
 	| 'done'
 	| 'error';
-export type VideoStatus =
-	| 'idle'
-	| 'generating'
-	| 'polling'
-	| 'downloading'
-	| 'done'
-	| 'error';
-export type ActiveTab = 'image' | 'video';
-export type VideoSource = 'generated-image' | 'original-image';
+export type ActiveTab = string;
 
 export interface ImageConfigData {
 	imageSize: string;
@@ -21,13 +13,6 @@ export interface ImageConfigData {
 	styleType: string;
 	optionalPrompt: string;
 	videoPlatform?: string;
-}
-
-export interface VideoConfigData {
-	styles: string;
-	cameraMotion: string;
-	aspectRatio: string;
-	optionalPrompt: string;
 }
 
 export interface EnhancerState {
@@ -38,16 +23,12 @@ export interface EnhancerState {
 	generatedUrl: string | null;
 	error: string | null;
 	uploading: boolean;
-	videoStatus: VideoStatus;
-	videoMessage: string;
-	videoUrl: string | null;
-	videoError: string | null;
-	videoUploading: boolean;
-	videoConfigData: VideoConfigData;
 	imageConfigData: ImageConfigData;
 	activeTab: ActiveTab;
-	videoSource: VideoSource;
 	selectedImageIndices: number[];
-	selectedVideoIndices: number[];
 	isThumbnailMode?: boolean;
+	imageUrls: string[];
+	attachmentIds: number[];
+	supportsVideo: boolean;
+	isVideoBusy: boolean;
 }

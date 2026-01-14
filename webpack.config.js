@@ -1,6 +1,11 @@
 'use strict';
 
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
+const DependencyExtractionWebpackPlugin = require( '@wordpress/dependency-extraction-webpack-plugin' );
+const {
+	requestToExternal,
+	requestToHandle,
+} = require( './webpack-dependency-mapping' );
 
 // Extend the default @wordpress/scripts webpack config to support multiple entries.
 module.exports = {
@@ -29,4 +34,14 @@ module.exports = {
 		'admin/product-video-gallery/index':
 			'./src/admin/product-video-gallery/index.tsx',
 	},
+	plugins: [
+		...defaultConfig.plugins.filter(
+			( plugin ) =>
+				plugin.constructor.name !== 'DependencyExtractionWebpackPlugin'
+		),
+		new DependencyExtractionWebpackPlugin( {
+			requestToExternal,
+			requestToHandle,
+		} ),
+	],
 };

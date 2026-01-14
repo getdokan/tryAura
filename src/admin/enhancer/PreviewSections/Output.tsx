@@ -1,48 +1,28 @@
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { useState, useEffect, useRef } from '@wordpress/element';
 import { STORE_NAME } from '../store';
 import { __ } from '@wordpress/i18n';
-import { Button } from '../../../components';
 import Star from '../../../images/star.gif';
 import Congrats from '../../../images/congrats.gif';
+import { Slot } from '@wordpress/components';
 
-function Output( { supportsVideo, className = '' } ) {
+function Output( { className = '' } ) {
 	const [ showCongrats, setShowCongrats ] = useState( false );
-	const {
-		generatedUrl,
-		activeTab,
-		message,
-		videoUrl,
-		videoMessage,
-		videoError,
-		error,
-		isBusy,
-		isVideoBusy,
-		status,
-		videoStatus,
-		isThumbnailMode,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		return {
-			generatedUrl: store.getGeneratedUrl(),
-			activeTab: store.getActiveTab(),
-			message: store.getMessage(),
-			videoUrl: store.getVideoUrl(),
-			videoMessage: store.getVideoMessage(),
-			videoError: store.getVideoError(),
-			error: store.getError(),
-			isBusy: store.isBusy(),
-			isVideoBusy: store.isVideoBusy(),
-			status: store.getStatus(),
-			videoStatus: store.getVideoStatus(),
-			isThumbnailMode: store.isThumbnailMode(),
-		};
-	}, [] );
-
-	const { setActiveTab } = useDispatch( STORE_NAME );
+	const { generatedUrl, message, error, isBusy, status } = useSelect(
+		( select ) => {
+			const store = select( STORE_NAME );
+			return {
+				generatedUrl: store.getGeneratedUrl(),
+				message: store.getMessage(),
+				error: store.getError(),
+				isBusy: store.isBusy(),
+				status: store.getStatus(),
+			};
+		},
+		[]
+	);
 
 	const prevIsBusy = useRef( isBusy );
-	const prevIsVideoBusy = useRef( isVideoBusy );
 
 	useEffect( () => {
 		let timer: any;
@@ -59,28 +39,10 @@ function Output( { supportsVideo, className = '' } ) {
 	}, [ isBusy, status ] );
 
 	useEffect( () => {
-		let timer: any;
-		if (
-			prevIsVideoBusy.current &&
-			! isVideoBusy &&
-			videoStatus === 'done'
-		) {
-			setShowCongrats( true );
-			timer = setTimeout( () => setShowCongrats( false ), 2200 );
-		}
-		prevIsVideoBusy.current = isVideoBusy;
-		return () => {
-			if ( timer ) {
-				clearTimeout( timer );
-			}
-		};
-	}, [ isVideoBusy, videoStatus ] );
-
-	useEffect( () => {
-		if ( isBusy || isVideoBusy ) {
+		if ( isBusy ) {
 			setShowCongrats( false );
 		}
-	}, [ isBusy, isVideoBusy ] );
+	}, [ isBusy ] );
 
 	return (
 		<div className={ className }>
@@ -88,93 +50,42 @@ function Output( { supportsVideo, className = '' } ) {
 				{ __( 'Generated Output', 'try-aura' ) }
 			</div>
 			{ /* eslint-disable-next-line no-nested-ternary */ }
-			{ activeTab === 'image' ? (
-				generatedUrl && ! isBusy ? (
-					<div className="flex flex-col gap-[20px]">
-						<div className="relative w-full h-auto">
-							<img
-								src={ generatedUrl }
-								alt="Generated"
-								className="w-full h-auto block rounded-[8px]"
-							/>
-							{ showCongrats && (
-								<div className="absolute inset-0 flex flex-col items-center justify-end pointer-events-none z-10">
-									<img
-										src={ Congrats }
-										className="w-full h-auto"
-										alt={ __(
-											'Congratulations',
-											'try-aura'
-										) }
-									/>
-								</div>
-							) }
-						</div>
-						{ supportsVideo && ! isThumbnailMode && (
-							<div className="flex justify-center">
-								<Button
-									variant="solid"
-									className="border border-primary text-primary bg-white"
-									onClick={ () => setActiveTab( 'video' ) }
-								>
-									{ __( 'Generate Video', 'tryaura' ) }
-								</Button>
+			{ isBusy ? (
+				<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1 items-center justify-center">
+					<img
+						src={ Star }
+						className="w-8 h-8"
+						alt={ __( 'Loading…', 'try-aura' ) }
+					/>
+					<span>{ message }</span>
+				</div>
+			) : generatedUrl ? (
+				<div className="flex flex-col gap-[20px]">
+					<div className="relative w-full h-auto">
+						<img
+							src={ generatedUrl }
+							alt="Generated"
+							className="w-full h-auto block rounded-[8px]"
+						/>
+						{ showCongrats && (
+							<div className="absolute inset-0 flex flex-col items-center justify-end pointer-events-none z-10">
+								<img
+									src={ Congrats }
+									className="w-full h-auto"
+									alt={ __( 'Congratulations', 'try-aura' ) }
+								/>
 							</div>
 						) }
 					</div>
-				) : (
-					<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1 items-center justify-center">
-						{ isBusy && (
-							<img
-								src={ Star }
-								className="w-8 h-8"
-								alt={ __( 'Image loading', 'try-aura' ) }
-							/>
-						) }
-						<span>{ message }</span>
-					</div>
-				)
+
+					<Slot name="TryAuraEnhancerAfterImageOutput" />
+				</div>
 			) : (
-				<div>
-					{ videoUrl && ! isVideoBusy ? (
-						<div className="relative w-full h-auto">
-							<video
-								src={ videoUrl }
-								controls
-								className="w-full h-auto block rounded-[8px] bg-[#000]"
-							/>
-							{ showCongrats && (
-								<div className="absolute inset-0 flex flex-col items-center justify-end pointer-events-none z-10">
-									<img
-										src={ Congrats }
-										className="w-full h-auto"
-										alt={ __(
-											'Congratulations',
-											'try-aura'
-										) }
-									/>
-								</div>
-							) }
-						</div>
-					) : (
-						<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1  items-center justify-center">
-							{ isVideoBusy && (
-								<img
-									src={ Star }
-									className="w-8 h-8"
-									alt={ __( 'Video loading', 'try-aura' ) }
-								/>
-							) }
-							<span>{ videoMessage }</span>
-						</div>
-					) }
-					{ videoError && (
-						<div style={ { color: 'red', marginTop: 8 } }>
-							{ videoError }
-						</div>
-					) }
+				<div className="bg-[#F3F4F6] text-[#67686B] text-[14px] font-[400] rounded-[8px] min-h-[316px] flex flex-col gap-1 items-center justify-center">
+					<span>{ message }</span>
 				</div>
 			) }
+
 			{ error ? (
 				<div style={ { color: 'red', marginTop: 8 } }>{ error }</div>
 			) : null }

@@ -11,6 +11,7 @@ const ModernSelect = ( {
 	className = '',
 	label = '',
 	variant = 'grid',
+	disabled = false,
 }: {
 	value: string;
 	label?: string;
@@ -19,6 +20,7 @@ const ModernSelect = ( {
 	placeholder?: string;
 	className?: string;
 	variant?: 'grid' | 'list';
+	disabled?: boolean;
 } ) => {
 	const [ open, setOpen ] = useState( false );
 	const contentRef = useRef< HTMLDivElement >( null );
@@ -48,10 +50,13 @@ const ModernSelect = ( {
 					// @ts-ignore
 					ref={ setPopoverAnchor }
 					type="button"
-					className="w-full p-[10px_16px] border border-[#E9E9E9] rounded-[5px] flex items-center justify-between bg-white focus:outline-none"
+					className={ twMerge(
+						'w-full p-[10px_16px] border border-[#E9E9E9] rounded-[5px] flex items-center justify-between bg-white focus:outline-none cursor-pointer',
+						disabled && 'opacity-50 cursor-not-allowed'
+					) }
 					aria-haspopup="listbox"
 					aria-expanded={ open }
-					onClick={ () => setOpen( ( v ) => ! v ) }
+					onClick={ () => ! disabled && setOpen( ( v ) => ! v ) }
 				>
 					<span className="truncate">
 						{ current ? current.label : placeholder }
@@ -64,11 +69,11 @@ const ModernSelect = ( {
 					/>
 				</button>
 
-				{ open ? (
+				{ open && ! disabled ? (
 					<Popover
 						anchor={ popoverAnchor }
-						onClose={ () => setOpen( false ) }
-						onFocusOutside={ () => setOpen( false ) }
+						onClose={ () => ! disabled && setOpen( false ) }
+						onFocusOutside={ () => ! disabled && setOpen( false ) }
 						noArrow
 						flip={ true }
 						style={ {

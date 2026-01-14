@@ -1,4 +1,4 @@
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { STORE_NAME } from '../store';
 import { Check } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
@@ -8,68 +8,80 @@ function OriginalImage( {
 	imageUrls,
 	multiple = false,
 	className = '',
+	selectedIndices,
+	setSelectedIndices,
+	showGeneratedImage = false,
+	showSelection = true,
+	limits = { min: 1, max: 1 },
+	sectionTitle,
 }: {
 	imageUrls: string[];
 	multiple?: boolean;
 	className?: string;
+	selectedIndices: number[];
+	setSelectedIndices: ( indices: number[] ) => void;
+	showGeneratedImage?: boolean;
+	showSelection?: boolean;
+	limits?: { min: number; max: number };
+	sectionTitle?: string;
 } ) {
-	const {
-		activeTab,
-		videoSource,
-		selectedImageIndices,
-		selectedVideoIndices,
-		generatedUrl,
-	} = useSelect( ( select ) => {
+	const { generatedUrl } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
-			activeTab: store.getActiveTab(),
-			videoSource: store.getVideoSource(),
-			selectedImageIndices: store.getSelectedImageIndices(),
-			selectedVideoIndices: store.getSelectedVideoIndices(),
 			generatedUrl: store.getGeneratedUrl(),
 		};
 	}, [] );
 
-	const { setSelectedImageIndices, setSelectedVideoIndices } =
-		useDispatch( STORE_NAME );
-
-	const selectedOriginalIndices =
-		activeTab === 'image' ? selectedImageIndices : selectedVideoIndices;
-
-	const setSelectedOriginalIndices =
-		activeTab === 'image'
-			? setSelectedImageIndices
-			: setSelectedVideoIndices;
-
-	const limits =
-		activeTab === 'image' ? { min: 1, max: 3 } : { min: 1, max: 1 };
-
 	useEffect( () => {
-		if ( selectedOriginalIndices.length > limits.max ) {
-			setSelectedOriginalIndices(
-				selectedOriginalIndices.slice( 0, limits.max )
-			);
+		let nextIndices = [ ...selectedIndices ];
+		let changed = false;
+
+		if ( nextIndices.length > limits.max ) {
+			nextIndices = nextIndices.slice( 0, limits.max );
+			changed = true;
+		}
+
+		// Ensure all indices are within bounds
+		const validIndices = nextIndices.filter(
+			( idx ) => idx >= 0 && idx < imageUrls.length
+		);
+		if ( validIndices.length !== nextIndices.length ) {
+			nextIndices = validIndices;
+			changed = true;
+		}
+
+		// Ensure minimum selection if possible
+		if (
+			nextIndices.length < limits.min &&
+			imageUrls.length >= limits.min
+		) {
+			for ( let i = 0; i < limits.min; i++ ) {
+				if ( ! nextIndices.includes( i ) ) {
+					nextIndices.push( i );
+				}
+			}
+			changed = true;
+		}
+
+		if ( changed ) {
+			setSelectedIndices( nextIndices );
 		}
 	}, [
-		activeTab,
 		limits.max,
-		selectedOriginalIndices,
-		setSelectedOriginalIndices,
+		limits.min,
+		selectedIndices,
+		setSelectedIndices,
+		imageUrls.length,
 	] );
 
-	const showSelection =
-		activeTab === 'image' ||
-		( activeTab === 'video' && videoSource === 'original-image' );
-
-	const showGeneratedImage =
-		activeTab === 'video' && videoSource === 'generated-image';
-
-	let sectionTitle = multiple
-		? __( 'Original Images', 'try-aura' )
-		: __( 'Original Image', 'try-aura' );
+	let displayTitle =
+		sectionTitle ||
+		( multiple
+			? __( 'Original Images', 'try-aura' )
+			: __( 'Original Image', 'try-aura' ) );
 
 	if ( showGeneratedImage ) {
-		sectionTitle = __( 'Generated Image', 'try-aura' );
+		displayTitle = __( 'Generated Image', 'try-aura' );
 	}
 
 	const toggleSelection = ( index: number ) => {
@@ -77,7 +89,7 @@ function OriginalImage( {
 			return;
 		}
 
-		let nextIndices = [ ...selectedOriginalIndices ];
+		let nextIndices = [ ...selectedIndices ];
 		if ( nextIndices.includes( index ) ) {
 			if ( nextIndices.length > limits.min ) {
 				nextIndices = nextIndices.filter( ( i ) => i !== index );
@@ -87,7 +99,7 @@ function OriginalImage( {
 		} else if ( limits.max === 1 ) {
 			nextIndices = [ index ];
 		}
-		setSelectedOriginalIndices( nextIndices );
+		setSelectedIndices( nextIndices );
 	};
 
 	let content;
@@ -137,18 +149,17 @@ function OriginalImage( {
 							className={ `w-full h-auto block rounded-[8px]
 								${
 									showSelection &&
-									selectedOriginalIndices.includes( idx )
+									selectedIndices.includes( idx )
 										? 'border-2 border-primary'
 										: 'border-none'
 								}
 							` }
 						/>
-						{ showSelection &&
-							selectedOriginalIndices.includes( idx ) && (
-								<div className="absolute top-2 right-2 bg-primary text-white rounded-full p-0.5">
-									<Check size={ 16 } />
-								</div>
-							) }
+						{ showSelection && selectedIndices.includes( idx ) && (
+							<div className="absolute top-2 right-2 bg-primary text-white rounded-full p-0.5">
+								<Check size={ 16 } />
+							</div>
+						) }
 					</div>
 				) ) }
 			</div>
@@ -162,13 +173,13 @@ function OriginalImage( {
 					className={ `w-full h-auto block rounded-[8px]
 								${
 									showSelection &&
-									selectedOriginalIndices.includes( 0 )
+									selectedIndices.includes( 0 )
 										? 'border-2 border-primary'
 										: 'border-none'
 								}
 							` }
 				/>
-				{ showSelection && selectedOriginalIndices.includes( 0 ) && (
+				{ showSelection && selectedIndices.includes( 0 ) && (
 					<div className="absolute top-2 right-2 bg-primary text-white rounded-full p-0.5">
 						<Check size={ 16 } />
 					</div>
@@ -179,7 +190,7 @@ function OriginalImage( {
 
 	return (
 		<div className={ className }>
-			<div className="text-[14px] mb-[8px]">{ sectionTitle }</div>
+			<div className="text-[14px] mb-[8px]">{ displayTitle }</div>
 			{ content }
 		</div>
 	);

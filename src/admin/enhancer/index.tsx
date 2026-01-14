@@ -4,6 +4,7 @@ import { applyFilters, doAction } from '@wordpress/hooks';
 import EnhanceButton from './EnhanceButton';
 import { dispatch } from '@wordpress/data';
 import { STORE_NAME } from './store';
+import './filters';
 
 declare const wp: any;
 
@@ -18,10 +19,7 @@ declare global {
 	}
 }
 
-const tryauramediaroot = applyFilters(
-	'tryaura.media_root_name',
-	'tryauramediaroot'
-);
+const tryauramediaroot = 'tryauramediaroot';
 
 function addEnhancerButton( toolbar ) {
 	toolbar = toolbar[ 0 ] ?? null;

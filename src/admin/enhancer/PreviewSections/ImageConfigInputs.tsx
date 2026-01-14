@@ -1,7 +1,8 @@
 import { useSelect, useDispatch } from '@wordpress/data';
 import { STORE_NAME } from '../store';
-import { Button, ModernSelect } from '../../../components';
+import { ModernSelect } from '../../../components';
 import { __ } from '@wordpress/i18n';
+import { applyFilters } from '@wordpress/hooks';
 import {
 	Circle,
 	Leaf,
@@ -43,21 +44,28 @@ function ImageConfigInputs( { doGenerate } ) {
 	return (
 		<>
 			{ /* Controls */ }
+			{ isThumbnailMode && (
+				<ModernSelect
+					label={ __( 'Video Platforms', 'try-aura' ) }
+					value={ imageConfigData?.videoPlatform ?? 'youtube' }
+					onChange={ ( val: any ) =>
+						setImageConfigData( {
+							videoPlatform: val,
+						} )
+					}
+					options={ [ { label: 'Youtube', value: 'youtube' } ] }
+					variant="list"
+					disabled={ isBusy }
+				/>
+			) }
+
 			{ isWoocommerceProductPage && (
 				<>
-					{ isThumbnailMode ? (
-						<ModernSelect
-							label={ __( 'Video Platforms', 'try-aura' ) }
-							value={ imageConfigData.videoPlatform || 'youtube' }
-							onChange={ ( val: any ) =>
-								setImageConfigData( { videoPlatform: val } )
-							}
-							options={ [
-								{ label: 'Youtube', value: 'youtube' },
-							] }
-							variant="list"
-						/>
-					) : (
+					{ applyFilters(
+						'tryaura.enhancer.image_config_extra_inputs',
+						null,
+						{ imageConfigData, setImageConfigData }
+					) || (
 						<>
 							<ModernSelect
 								value={ imageConfigData?.backgroundType ?? '' }
@@ -92,6 +100,7 @@ function ImageConfigInputs( { doGenerate } ) {
 										icon: <Settings />,
 									},
 								] }
+								disabled={ isBusy }
 							/>
 
 							<ModernSelect
@@ -125,41 +134,41 @@ function ImageConfigInputs( { doGenerate } ) {
 										icon: <User />,
 									},
 								] }
+								disabled={ isBusy }
 							/>
 						</>
 					) }
 				</>
 			) }
 
-			{ isBlockEditorPage && ! isWoocommerceProductPage && (
-				<ModernSelect
-					value={ imageConfigData?.imageSize ?? '' }
-					variant="list"
-					onChange={ ( val ) =>
-						setImageConfigData( {
-							imageSize: val,
-						} )
-					}
-					label={ __( 'Image Size', 'try-aura' ) }
-					options={ [
-						{
-							label: __( 'Square (1:1)', 'try-aura' ),
-							value: '1:1',
-							icon: <Square />,
-						},
-						{
-							label: __( 'Landscape (16:9)', 'try-aura' ),
-							value: '16:9',
-							icon: <RectangleHorizontal />,
-						},
-						{
-							label: __( 'Portrait (9:16)', 'try-aura' ),
-							value: '9:16',
-							icon: <RectangleVertical />,
-						},
-					] }
-				/>
-			) }
+			<ModernSelect
+				value={ imageConfigData?.imageSize ?? '' }
+				variant="list"
+				onChange={ ( val ) =>
+					setImageConfigData( {
+						imageSize: val,
+					} )
+				}
+				label={ __( 'Image Size', 'try-aura' ) }
+				options={ [
+					{
+						label: __( 'Square (1:1)', 'try-aura' ),
+						value: '1:1',
+						icon: <Square />,
+					},
+					{
+						label: __( 'Landscape (16:9)', 'try-aura' ),
+						value: '16:9',
+						icon: <RectangleHorizontal />,
+					},
+					{
+						label: __( 'Portrait (9:16)', 'try-aura' ),
+						value: '9:16',
+						icon: <RectangleVertical />,
+					},
+				] }
+				disabled={ isBusy }
+			/>
 
 			<label
 				style={ {

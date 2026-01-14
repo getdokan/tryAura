@@ -633,7 +633,7 @@ class Assets {
 			);
 		}
 
-		return $styles;
+		return apply_filters( 'tryaura_styles', $styles );
 	}
 
 	/**
@@ -716,7 +716,7 @@ class Assets {
 			);
 		}
 
-		return $scripts;
+		return apply_filters( 'tryaura_scripts', $scripts );
 	}
 
 	/**

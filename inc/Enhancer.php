@@ -50,6 +50,9 @@ class Enhancer {
 				'videoModel' => $video_model,
 				'postId'     => $post_id,
 				'postType'   => $post_type,
+				'testMode'   => defined( 'TRYAURA_DEBUG' ) && TRYAURA_DEBUG,
+				'testVideo'  => defined( 'TRYAURA_TEST_VIDEO' ) ? TRYAURA_TEST_VIDEO : '',
+				'testImage'  => defined( 'TRYAURA_TEST_IMAGE' ) ? TRYAURA_TEST_IMAGE : '',
 			)
 		);
 
@@ -58,5 +61,7 @@ class Enhancer {
 		wp_enqueue_script( 'try-aura-ai-models' );
 		wp_enqueue_script( 'try-aura-components' );
 		wp_enqueue_script( 'try-aura-enhancer' );
+
+		do_action( 'tryaura_register_enhancer_assets' );
 	}
 }

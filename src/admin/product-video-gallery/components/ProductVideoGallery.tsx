@@ -124,6 +124,7 @@ const ProductVideoGallery = () => {
 						editingIndex !== null ? videos[ editingIndex ] : null
 					}
 					onClose={ () => {
+						console.log('closing....');
 						setIsModalOpen( false );
 						setEditingIndex( null );
 					} }

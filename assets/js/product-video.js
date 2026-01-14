@@ -13,9 +13,19 @@
 			let $wrapper = $gallery.find(
 				'.woocommerce-product-gallery__wrapper'
 			);
+
 			if ( ! $wrapper.length ) {
 				$wrapper = $gallery.find( '.flex-viewport' );
 			}
+
+			if ( ! $wrapper.length ) {
+				$wrapper = $gallery.find( '.swiper-wrapper' );
+			}
+
+			if ( ! $wrapper.length ) {
+				$wrapper = $gallery.find( '.owl-stage-outer' );
+			}
+
 			if ( ! $wrapper.length ) {
 				$wrapper = $gallery;
 			}
@@ -67,9 +77,9 @@
 				).html( videoHtml );
 
 				// If we are in a slider, we want to overlay the viewport
-				const $viewport = $gallery.find( '.flex-viewport' );
+				const $viewport = $gallery.find( '.flex-viewport, .swiper-container, .swiper, .owl-stage-outer' );
 				if ( $viewport.length ) {
-					$viewport.append( $container );
+					$viewport.first().append( $container );
 				} else {
 					$mainWrapper.prepend( $container );
 				}

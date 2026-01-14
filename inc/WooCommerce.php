@@ -36,6 +36,9 @@ class WooCommerce {
 
 		// AJAX handler for the toggle.
 		add_action( 'wp_ajax_try_aura_toggle_try_on', array( $this, 'toggle_try_on_ajax' ) );
+
+		// Action Scheduler handler for bulk update.
+		add_action( 'try_aura_bulk_update_products_try_on', array( $this, 'bulk_update_products_try_on' ), 10, 2 );
 	}
 
 	/**
@@ -153,5 +156,21 @@ class WooCommerce {
 		update_post_meta( $product_id, self::TRY_ON_META_KEY, $enabled );
 
 		wp_send_json_success( array( 'enabled' => $enabled ) );
+	}
+
+	/**
+	 * Bulk update products try-on visibility.
+	 *
+	 * @param array  $product_ids Array of product IDs.
+	 * @param string $enabled 'yes' or 'no'.
+	 */
+	public function bulk_update_products_try_on( array $product_ids, string $enabled ): void {
+		if ( empty( $product_ids ) ) {
+			return;
+		}
+
+		foreach ( $product_ids as $product_id ) {
+			update_post_meta( $product_id, self::TRY_ON_META_KEY, $enabled );
+		}
 	}
 }

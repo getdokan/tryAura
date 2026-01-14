@@ -78,6 +78,7 @@ const { replaceInFile } = require( 'replace-in-file' );
 			'build/**',
 			'inc/**',
 			'languages/**',
+			'lib/**',
 			'templates/**',
 			'vendor/**',
 			'*.php', // root PHP files

@@ -1,7 +1,7 @@
 import { ArrowLeft } from 'lucide-react';
-import geminiLogo from './assets/geminiLogo.svg';
-import ApiKeyInput from './components/ApiKeyInput';
-import { ModernSelect, Button } from "../../../../components";
+import geminiLogo from '../assets/geminiLogo.svg';
+import ApiKeyInput from '../components/ApiKeyInput';
+import { ModernSelect, Button } from "../../../../../components";
 import { toast } from "@tryaura/components";
 import apiFetch from '@wordpress/api-fetch';
 import { useEffect, useState } from '@wordpress/element';
@@ -28,7 +28,7 @@ const InitialLoader = () => {
 	);
 };
 
-const GeminiIntegrationSettings = () => {
+const GeminiSettings = () => {
 	const { videoModels, imageModels, defaultImageModel, defaultVideoModel } =
 		useSelect( ( select ) => {
 			const models =
@@ -65,11 +65,6 @@ const GeminiIntegrationSettings = () => {
 	const data = window.tryAura!;
 	const [ apiKey, setApiKey ] = useState< string >( '' );
 
-	useEffect( () => {
-		// Attach REST middlewares: root + nonce for admin context.
-		apiFetch.use( apiFetch.createRootURLMiddleware( data.restUrl ) );
-		apiFetch.use( apiFetch.createNonceMiddleware( data.nonce ) );
-	}, [] );
 	const [ selectedImageModel, setSelectedImageModel ] =
 		useState< string >( '' );
 	const [ selectedVideoModel, setSelectedVideoModel ] =
@@ -277,4 +272,4 @@ const GeminiIntegrationSettings = () => {
 		</div>
 	);
 };
-export default GeminiIntegrationSettings;
+export default GeminiSettings;

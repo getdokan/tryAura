@@ -1,8 +1,8 @@
 <?php
 
-namespace Dokan\TryAura\Frontend;
+namespace Dokan\TryAura\WooCommerce\Frontend;
 
-use Dokan\TryAura\Admin\ProductGalleryVideo as AdminProductVideo;
+use Dokan\TryAura\WooCommerce\Admin\ProductGalleryVideo as AdminProductVideo;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.

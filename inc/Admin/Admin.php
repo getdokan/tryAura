@@ -1,6 +1,6 @@
 <?php
 
-namespace Dokan\TryAura;
+namespace Dokan\TryAura\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dokan\TryAura;
+namespace Dokan\TryAura\Common;
 
 /**
  * Assets class.

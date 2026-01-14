@@ -1,6 +1,6 @@
 <?php
 
-namespace Dokan\TryAura\Admin;
+namespace Dokan\TryAura\WooCommerce\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.

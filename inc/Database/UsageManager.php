@@ -111,6 +111,8 @@ class UsageManager {
 			'video_seconds' => (float) $video_seconds,
 		);
 
+		$stats = apply_filters('try_aura_stats_data', $stats);
+
 		if ( class_exists( 'WooCommerce' ) ) {
 			$stats['tryon_count'] = (int) $wpdb->get_var( $sql_tryon );
 		}

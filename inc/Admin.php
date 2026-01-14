@@ -105,6 +105,8 @@ class Admin {
 		wp_enqueue_script( 'try-aura-ai-models' );
 		wp_enqueue_script( 'try-aura-admin' );
 		wp_enqueue_style( 'try-aura-admin' );
+
+		do_action( 'tryaura_register_admin_dashboard_assets' );
 	}
 
 	/**

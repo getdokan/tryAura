@@ -7,13 +7,20 @@ import { Youtube, Video, Upload, X } from 'lucide-react';
 
 declare const wp: any;
 
-const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
+const VideoDetailsModal = ( {
+	initialData,
+	onClose,
+	onSave,
+	originalImageUrl,
+} ) => {
 	const [ platform, setPlatform ] = useState(
 		initialData?.platform || 'youtube'
 	);
 	const [ url, setUrl ] = useState( initialData?.url || '' );
 	const [ useCustomThumbnail, setUseCustomThumbnail ] = useState(
-		initialData?.useCustomThumbnail || false
+		initialData?.useCustomThumbnail !== undefined
+			? initialData.useCustomThumbnail
+			: true
 	);
 	const [ thumbnailId, setThumbnailId ] = useState(
 		initialData?.thumbnailId || null
@@ -212,10 +219,12 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 									) }
 								</Button>
 
-								{ thumbnailUrl && (
+								{ ( thumbnailUrl || originalImageUrl ) && (
 									<div className="rounded-lg border border-gray-200 w-50 h-50 overflow-hidden mt-8">
 										<img
-											src={ thumbnailUrl }
+											src={
+												thumbnailUrl || originalImageUrl
+											}
 											alt="Thumbnail preview"
 											className="object-fill h-full w-full"
 										/>

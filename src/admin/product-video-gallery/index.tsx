@@ -21,7 +21,8 @@ declare const tryAuraVideo: any;
 		const renderModal = (
 			initialData = null,
 			onSave = null,
-			onClose = null
+			onClose = null,
+			originalImageUrl = null
 		) => {
 			root.render(
 				<>
@@ -30,6 +31,7 @@ declare const tryAuraVideo: any;
 						onSave={ onSave }
 						onClose={ onClose }
 						isExternalOpen={ !! initialData || !! onSave }
+						originalImageUrl={ originalImageUrl }
 					/>
 					<Toaster position="top-right" />
 				</>
@@ -67,6 +69,23 @@ declare const tryAuraVideo: any;
 						? 'dashicons-edit'
 						: 'dashicons-plus';
 
+					const dataObj =
+						tryAuraVideo.videoData &&
+						tryAuraVideo.videoData[ attachmentId ]
+							? tryAuraVideo.videoData[ attachmentId ]
+							: null;
+
+					const $img = $image.find( 'img' );
+					if ( $img.length ) {
+						if ( ! $img.data( 'original-src' ) ) {
+							$img.data( 'original-src', $img.attr( 'src' ) );
+						}
+
+						if ( dataObj?.useCustomThumbnail && dataObj?.thumbnailUrl ) {
+							$img.attr( 'src', dataObj.thumbnailUrl );
+						}
+					}
+
 					$image.append( `
 					<div class="tryaura try-aura-product-video-wrapp absolute bottom-0 left-0 right-0 z-10">
 						<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center gap-1.25 bg-primary text-white no-underline py-1.25 text-[11px] font-semibold leading-none hover:bg-primary-dark ${ buttonClass }" data-attachment-id="${ attachmentId }">
@@ -101,6 +120,23 @@ declare const tryAuraVideo: any;
 				const iconClass = videoData
 					? 'dashicons-edit'
 					: 'dashicons-plus';
+
+				const dataObj =
+					tryAuraVideo.videoData &&
+					tryAuraVideo.videoData[ mainAttachmentId ]
+						? tryAuraVideo.videoData[ mainAttachmentId ]
+						: null;
+
+				const $img = $mainImage.find( 'img' );
+				if ( $img.length ) {
+					if ( ! $img.data( 'original-src' ) ) {
+						$img.data( 'original-src', $img.attr( 'src' ) );
+					}
+
+					if ( dataObj?.useCustomThumbnail && dataObj?.thumbnailUrl ) {
+						$img.attr( 'src', dataObj.thumbnailUrl );
+					}
+				}
 
 				$mainImage.append( `
 					<div class="tryaura try-aura-product-video-wrapp absolute bottom-0 left-0 right-0 z-10">
@@ -163,6 +199,12 @@ declare const tryAuraVideo: any;
 				const $input = $wrapp.find( '.try-aura-video-data-input' );
 				const currentData = JSON.parse( $input.val() || '{}' );
 
+				const $li = $btn.closest( 'li.image' );
+				const $img = $li.length
+					? $li.find( 'img' )
+					: $( '#postimagediv .inside img' );
+				const originalImageUrl = $img.attr( 'src' );
+
 				renderModal(
 					Object.keys( currentData ).length > 0 ? currentData : null,
 					( newData ) => {
@@ -178,6 +220,11 @@ declare const tryAuraVideo: any;
 							$icon
 								.removeClass( 'dashicons-edit' )
 								.addClass( 'dashicons-plus' );
+
+							const originalSrc = $img.data( 'original-src' );
+							if ( originalSrc ) {
+								$img.attr( 'src', originalSrc );
+							}
 						} else {
 							$btn.removeClass( 'try-aura-add-video' ).addClass(
 								'try-aura-edit-video'
@@ -185,12 +232,25 @@ declare const tryAuraVideo: any;
 							$icon
 								.removeClass( 'dashicons-plus' )
 								.addClass( 'dashicons-edit' );
+
+							if (
+								newData.useCustomThumbnail &&
+								newData.thumbnailUrl
+							) {
+								$img.attr( 'src', newData.thumbnailUrl );
+							} else {
+								const originalSrc = $img.data( 'original-src' );
+								if ( originalSrc ) {
+									$img.attr( 'src', originalSrc );
+								}
+							}
 						}
 						renderModal(); // Close modal
 					},
 					() => {
 						renderModal(); // Close modal
-					}
+					},
+					originalImageUrl
 				);
 			}
 		);

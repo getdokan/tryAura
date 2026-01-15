@@ -5,6 +5,7 @@ const ProductVideoGallery = ( {
 	onSave = null,
 	onClose = null,
 	isExternalOpen = false,
+	originalImageUrl = null,
 }: any ) => {
 	if ( ! isExternalOpen ) {
 		return null;
@@ -16,6 +17,7 @@ const ProductVideoGallery = ( {
 				initialData={ editingVideo }
 				onClose={ onClose }
 				onSave={ onSave }
+				originalImageUrl={ originalImageUrl }
 			/>
 		</div>
 	);

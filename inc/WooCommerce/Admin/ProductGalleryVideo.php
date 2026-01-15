@@ -122,6 +122,7 @@ class ProductGalleryVideo {
 				'productId'  => $product_id,
 				'videoData'  => $video_data ? $video_data : null,
 				'videoText'  => __( 'Video', 'try-aura' ),
+				'addVideoText' => __( 'Add video', 'try-aura' ),
 				'apiKey'     => $api_key,
 				'imageModel' => $image_model,
 			)

@@ -183,6 +183,134 @@ declare const tryAuraVideo: any;
 
 		addVideoButtons();
 
+		const addGlobalVideoButton = () => {
+			const $container = $( '.add_product_images' );
+			if (
+				$container.length &&
+				! $( '#try-aura-add-global-video' ).length
+			) {
+				const $btnWrapper = $(
+					'<div class="tryaura try-aura-add-global-video-wrapper mt-4"></div>'
+				);
+				const $btn = $( `
+					<button type="button" id="try-aura-add-global-video" class="flex items-center justify-center gap-2 bg-[#7E49FD] text-white px-6 py-3 rounded-lg font-semibold w-full hover:bg-[#6b3ee3] transition-colors cursor-pointer">
+						<span class="dashicons dashicons-video-alt3"></span>
+						${ tryAuraVideo.addVideoText }
+					</button>
+				` );
+				$btnWrapper.append( $btn );
+				$container.append( $btnWrapper );
+
+				$btn.on( 'click', function ( e ) {
+					e.preventDefault();
+					renderModal(
+						null,
+						async ( newData ) => {
+							if ( ! newData || ! newData.url ) {
+								renderModal();
+								return;
+							}
+
+							let attachmentId = newData.thumbnailId;
+							let thumbnailUrl = newData.thumbnailUrl;
+
+							if ( ! newData.useCustomThumbnail ) {
+								// Generate thumbnail via REST API
+								try {
+									const response = await fetch(
+										`${ tryAuraVideo.restUrl }try-aura/v1/generate-thumbnail`,
+										{
+											method: 'POST',
+											headers: {
+												'Content-Type':
+													'application/json',
+												'X-WP-Nonce':
+													tryAuraVideo.nonce,
+											},
+											body: JSON.stringify( {
+												platform: newData.platform,
+												url: newData.url,
+												image: newData.generatedThumbnail,
+											} ),
+										}
+									);
+									const result = await response.json();
+									if ( result.attachment_id ) {
+										attachmentId = result.attachment_id;
+										thumbnailUrl = result.url;
+									} else {
+										// eslint-disable-next-line no-alert
+										alert(
+											result.message ||
+												'Failed to generate thumbnail'
+										);
+										return;
+									}
+								} catch ( err ) {
+									// eslint-disable-next-line no-console
+									console.error( err );
+									return;
+								}
+							}
+
+							if ( attachmentId ) {
+								// Add to WooCommerce gallery
+								const $gallery = $(
+									'#product_images_container ul.product_images'
+								);
+								const $galleryInput = $(
+									'#product_image_gallery'
+								);
+								const ids = $galleryInput
+									.val()
+									.split( ',' )
+									.filter( Boolean );
+
+								ids.push( attachmentId.toString() );
+								$galleryInput
+									.val( ids.join( ',' ) )
+									.trigger( 'change' );
+
+								// Add the item to the list so we don't have to wait for refresh
+								$gallery.append( `
+									<li class="image" data-attachment_id="${ attachmentId }">
+										<img src="${ thumbnailUrl }" />
+										<ul class="actions">
+											<li><a href="#" class="delete" title="Delete image">Delete</a></li>
+										</ul>
+									</li>
+								` );
+
+								// Save video data
+								const saveData = { ...newData };
+								delete saveData.generatedThumbnail;
+								if ( saveData.useCustomThumbnail ) {
+									delete saveData.thumbnailId;
+									delete saveData.thumbnailUrl;
+								}
+
+								if ( ! tryAuraVideo.videoData ) {
+									tryAuraVideo.videoData = {};
+								}
+								tryAuraVideo.videoData[ attachmentId ] =
+									saveData;
+
+								// Re-run addVideoButtons to add the "Video" button to the new item
+								addVideoButtons();
+							}
+
+							renderModal();
+						},
+						() => {
+							renderModal();
+						}
+					);
+				} );
+			}
+		};
+
+		addGlobalVideoButton();
+
 		const inputImage = document.querySelector(
 			'input#product_image_gallery'
 		);
@@ -194,6 +322,7 @@ declare const tryAuraVideo: any;
 						change.attributeName.includes( 'value' )
 					) {
 						addVideoButtons();
+						addGlobalVideoButton();
 					}
 				} );
 			} );
@@ -206,6 +335,7 @@ declare const tryAuraVideo: any;
 		if ( galleryList ) {
 			const observer = new MutationObserver( () => {
 				addVideoButtons();
+				addGlobalVideoButton();
 			} );
 			observer.observe( galleryList, { childList: true } );
 		}
@@ -216,6 +346,7 @@ declare const tryAuraVideo: any;
 		if ( mainImageInside ) {
 			const observer = new MutationObserver( () => {
 				addVideoButtons();
+				addGlobalVideoButton();
 			} );
 			observer.observe( mainImageInside, { childList: true } );
 		}
@@ -238,25 +369,64 @@ declare const tryAuraVideo: any;
 
 				renderModal(
 					Object.keys( currentData ).length > 0 ? currentData : null,
-					( newData ) => {
+					async ( newData ) => {
 						let attachmentId = $btn.data( 'attachment-id' );
-						const isMainImage = ! $btn.closest( 'li.image' ).length;
-						const $parentLi = $btn.closest( 'li.image' );
-						const $icon = $btn.find( '.dashicons' );
-
 						let targetId = attachmentId;
-						const thumbnailUrl = newData?.thumbnailUrl;
+						let thumbnailUrl = newData?.thumbnailUrl;
 
-						if ( newData && newData.useCustomThumbnail ) {
+						if (
+							newData &&
+							! newData.useCustomThumbnail &&
+							newData.url
+						) {
+							// Generate thumbnail via REST API
+							try {
+								const response = await fetch(
+									`${ tryAuraVideo.restUrl }try-aura/v1/generate-thumbnail`,
+									{
+										method: 'POST',
+										headers: {
+											'Content-Type': 'application/json',
+											'X-WP-Nonce': tryAuraVideo.nonce,
+										},
+										body: JSON.stringify( {
+											platform: newData.platform,
+											url: newData.url,
+											image: newData.generatedThumbnail,
+										} ),
+									}
+								);
+								const result = await response.json();
+								if ( result.attachment_id ) {
+									targetId = result.attachment_id;
+									thumbnailUrl = result.url;
+								} else {
+									// eslint-disable-next-line no-alert
+									alert(
+										result.message ||
+											'Failed to generate thumbnail'
+									);
+									return;
+								}
+							} catch ( err ) {
+								// eslint-disable-next-line no-console
+								console.error( err );
+								return;
+							}
+						} else if ( newData && newData.useCustomThumbnail ) {
 							if ( newData.thumbnailId ) {
 								targetId = newData.thumbnailId;
 							}
-						} else {
+						} else if ( newData ) {
 							const originalId = $img.data( 'original-id' );
 							if ( originalId ) {
 								targetId = originalId;
 							}
 						}
+
+						const isMainImage = ! $btn.closest( 'li.image' ).length;
+						const $parentLi = $btn.closest( 'li.image' );
+						const $icon = $btn.find( '.dashicons' );
 
 						if ( String( targetId ) !== String( attachmentId ) ) {
 							if ( isMainImage ) {

@@ -6,6 +6,7 @@ use Dokan\TryAura\DependencyManagement\BaseServiceProvider;
 use Dokan\TryAura\Rest\SettingsController;
 use Dokan\TryAura\Rest\GenerateController;
 use Dokan\TryAura\Rest\DashboardController;
+use Dokan\TryAura\Rest\VideoThumbnailController;
 
 /**
  * RestServiceProvider Class
@@ -18,9 +19,10 @@ class RestServiceProvider extends BaseServiceProvider {
 	 * @var array
 	 */
 	protected $services = [
-		'settings_controller'  => SettingsController::class,
-		'generate_controller'  => GenerateController::class,
-		'dashboard_controller' => DashboardController::class,
+		'settings_controller'        => SettingsController::class,
+		'generate_controller'        => GenerateController::class,
+		'dashboard_controller'       => DashboardController::class,
+		'video_thumbnail_controller' => VideoThumbnailController::class,
 	];
 
 	/**

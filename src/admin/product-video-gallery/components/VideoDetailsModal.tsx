@@ -1,4 +1,4 @@
-import { useState } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Modal } from '@wordpress/components';
 import { Button, Checkbox, ModernSelect } from '../../../components';
@@ -28,6 +28,63 @@ const VideoDetailsModal = ( {
 	const [ thumbnailUrl, setThumbnailUrl ] = useState(
 		initialData?.thumbnailUrl || ''
 	);
+	const [ generatedThumbnail, setGeneratedThumbnail ] = useState( '' );
+
+	useEffect( () => {
+		if ( ! useCustomThumbnail ) {
+			generateFromVideo();
+		} else {
+			setGeneratedThumbnail( '' );
+		}
+	}, [ url, platform, useCustomThumbnail ] );
+
+	const getYoutubeId = ( videoUrl: string ) => {
+		const pattern =
+			/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+		const match = videoUrl.match( pattern );
+		return match ? match[ 1 ] : null;
+	};
+
+	const generateFromVideo = async () => {
+		if ( ! url ) {
+			return;
+		}
+
+		if ( platform === 'youtube' ) {
+			const videoId = getYoutubeId( url );
+			if ( videoId ) {
+				setGeneratedThumbnail(
+					`https://img.youtube.com/vi/${ videoId }/hqdefault.jpg`
+				);
+			}
+		} else if ( platform === 'site_stored' ) {
+			try {
+				const video = document.createElement( 'video' );
+				video.src = url;
+				video.crossOrigin = 'anonymous';
+				video.currentTime = 1;
+				video.onloadeddata = () => {
+					const canvas = document.createElement( 'canvas' );
+					canvas.width = video.videoWidth;
+					canvas.height = video.videoHeight;
+					const ctx = canvas.getContext( '2d' );
+					if ( ctx ) {
+						ctx.drawImage(
+							video,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+						setGeneratedThumbnail( canvas.toDataURL( 'image/jpeg' ) );
+					}
+				};
+			} catch ( e ) {
+				// eslint-disable-next-line no-console
+				console.error( 'Error generating thumbnail', e );
+			}
+		}
+	};
 
 	const openMediaModal = () => {
 		const frame = wp.media( {
@@ -78,7 +135,11 @@ const VideoDetailsModal = ( {
 			toast.error( __( 'Please enter a valid video URL.', 'try-aura' ) );
 			return;
 		}
-		if ( ! thumbnailUrl && useCustomThumbnail ) {
+		if (
+			! thumbnailUrl &&
+			! originalImageUrl &&
+			useCustomThumbnail
+		) {
 			toast.error( __( 'Please select a video thumbnail.', 'try-aura' ) );
 			return;
 		}
@@ -89,6 +150,7 @@ const VideoDetailsModal = ( {
 			useCustomThumbnail,
 			thumbnailId,
 			thumbnailUrl,
+			generatedThumbnail,
 		} );
 	};
 
@@ -129,7 +191,10 @@ const VideoDetailsModal = ( {
 						</span>
 						<ModernSelect
 							value={ platform }
-							onChange={ ( val: any ) => setPlatform( val ) }
+							onChange={ ( val: any ) => {
+								setUrl( '' );
+								setPlatform( val );
+							} }
 							options={ [
 								{
 									label: __( 'Youtube Video', 'try-aura' ),
@@ -183,27 +248,38 @@ const VideoDetailsModal = ( {
 					</div>
 
 					<div className="flex flex-col gap-[32px]">
-						<Checkbox
-							id="useCustomThumbnail"
-							checked={ useCustomThumbnail }
-							onChange={ ( e ) =>
-								setUseCustomThumbnail(
-									( e.target as HTMLInputElement ).checked
-								)
-							}
-						>
-							<label
-								htmlFor="useCustomThumbnail"
-								className="text-sm text-gray-700 cursor-pointer"
-							>
-								{ __(
-									'Use Custom video Thumbnail?',
-									'try-aura'
-								) }
-							</label>
-						</Checkbox>
+						<div>
+							<span className="block text-sm font-medium text-gray-700 mb-2">
+								{ __( 'Thumbnail Source', 'try-aura' ) }
+							</span>
+							<ModernSelect
+								value={
+									useCustomThumbnail ? 'custom' : 'generate'
+								}
+								onChange={ ( val: any ) => {
+									setUseCustomThumbnail( val === 'custom' );
+								} }
+								options={ [
+									{
+										label: __(
+											'Select Video Thumbnail (WP Media)',
+											'try-aura'
+										),
+										value: 'custom',
+									},
+									{
+										label: __(
+											'Generate from video',
+											'try-aura'
+										),
+										value: 'generate',
+									},
+								] }
+								variant="list"
+							/>
+						</div>
 
-						{ useCustomThumbnail && (
+						{ useCustomThumbnail ? (
 							<div className="">
 								<Button
 									variant="outline-primary"
@@ -231,6 +307,24 @@ const VideoDetailsModal = ( {
 									</div>
 								) }
 							</div>
+						) : (
+							generatedThumbnail && (
+								<div className="">
+									<span className="block text-xs font-medium text-gray-500 mb-2">
+										{ __(
+											'Generated Preview:',
+											'try-aura'
+										) }
+									</span>
+									<div className="rounded-lg border border-gray-200 w-50 h-50 overflow-hidden">
+										<img
+											src={ generatedThumbnail }
+											alt="Generated thumbnail preview"
+											className="object-fill h-full w-full"
+										/>
+									</div>
+								</div>
+							)
 						) }
 					</div>
 				</div>

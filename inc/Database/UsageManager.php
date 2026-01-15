@@ -94,21 +94,15 @@ class UsageManager {
 		}
 
 		$sql_image   = $wpdb->prepare( "SELECT COUNT(*) FROM $table $where AND type = 'image'", $params );
-		$sql_video   = $wpdb->prepare( "SELECT COUNT(*) FROM $table $where AND type = 'video'", $params );
 		$sql_tryon   = $wpdb->prepare( "SELECT COUNT(*) FROM $table $where AND generated_from = 'tryon'", $params );
 		$sql_tokens  = $wpdb->prepare( "SELECT SUM(total_tokens) FROM $table $where", $params );
-		$sql_seconds = $wpdb->prepare( "SELECT SUM(video_seconds) FROM $table $where AND type = 'video'", $params );
 
 		$image_count   = $wpdb->get_var( $sql_image );
-		$video_count   = $wpdb->get_var( $sql_video );
 		$total_tokens  = $wpdb->get_var( $sql_tokens );
-		$video_seconds = $wpdb->get_var( $sql_seconds );
-
+		
 		$stats = array(
 			'image_count'   => (int) $image_count,
-			'video_count'   => (int) $video_count,
 			'total_tokens'  => (int) $total_tokens,
-			'video_seconds' => (float) $video_seconds,
 		);
 
 		$stats = apply_filters('try_aura_stats_data', $stats);

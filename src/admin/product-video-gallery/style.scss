@@ -1,17 +1,9 @@
 @import "../../base-tailwind.css";
 
-.try-aura-product-video-gallery {
-	margin-top: 15px;
-}
-
-.product-video-thumbnail-container {
-	.relative {
-		display: inline-block;
-	}
-}
-
-#try-aura-add-video-container {
-	padding: 0 9px 9px;
+/* Ensure the parent is relative */
+#postimagediv .inside,
+.woocommerce_product_images .product_images .image {
+	position: relative;
 }
 
 .tryaura-add-video-modal-url {

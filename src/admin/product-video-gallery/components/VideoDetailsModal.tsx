@@ -90,7 +90,7 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 			onRequestClose={ () => {
 				return '';
 			} }
-			className="tryaura tryaura-add-video-modal-url"
+			className="tryaura tryaura-add-video-modal-url rounded-[3px] [&_.components-modal__content]:p-0 [&_.components-modal__content]:m-0"
 			__experimentalHideHeader
 			size="medium"
 			style={ { maxHeight: '90vh', overflowY: 'auto' } }
@@ -226,15 +226,28 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 					</div>
 				</div>
 
-				<div className="flex justify-end gap-3 p-[20px_24px]">
-					<Button variant="outline" onClick={ onClose }>
-						{ __( 'Cancel', 'try-aura' ) }
-					</Button>
-					<Button onClick={ handleSave }>
-						{ initialData
-							? __( 'Update Video', 'try-aura' )
-							: __( 'Add Video', 'try-aura' ) }
-					</Button>
+				<div className="flex justify-between gap-3 p-[20px_24px]">
+					<div>
+						{ initialData && (
+							<Button
+								variant="outline"
+								className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+								onClick={ () => onSave( {} ) }
+							>
+								{ __( 'Remove Video', 'try-aura' ) }
+							</Button>
+						) }
+					</div>
+					<div className="flex gap-3">
+						<Button variant="outline" onClick={ onClose }>
+							{ __( 'Cancel', 'try-aura' ) }
+						</Button>
+						<Button onClick={ handleSave }>
+							{ initialData
+								? __( 'Update Video', 'try-aura' )
+								: __( 'Add Video', 'try-aura' ) }
+						</Button>
+					</div>
 				</div>
 			</div>
 		</Modal>

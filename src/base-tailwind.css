@@ -9,6 +9,8 @@
 
 @theme {
   --color-primary: #7047EB;
+	/* Mixes the primary color with 20% black */
+	--color-primary-dark: color-mix(in srgb, var(--color-primary), black 20%);
 }
 
 

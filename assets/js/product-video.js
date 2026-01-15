@@ -43,7 +43,7 @@
 			}
 		};
 
-		$( document ).on( 'click', '.try-aura-video-thumbnail', function ( e ) {
+		$( document ).on( 'click', '.try-aura-video-item', function ( e ) {
 			const $this = $( this );
 			const videoUrl = $this.data( 'video-url' );
 
@@ -93,7 +93,7 @@
 
 		// Handle clicking other thumbnails or navigation to remove video
 		const cleanupSelectors = [
-			'.woocommerce-product-gallery__image:not(.try-aura-video-thumbnail)',
+			'.woocommerce-product-gallery__image:not(.try-aura-video-item)',
 			'.flex-control-nav li',
 			'.flex-control-nav img',
 			'.woocommerce-product-gallery__trigger',

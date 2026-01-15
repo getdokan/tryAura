@@ -2,7 +2,7 @@ import PreviewModal from './PreviewModal';
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { applyFilters, doAction } from '@wordpress/hooks';
-import { toast } from "@tryaura/components";
+import { toast } from '@tryaura/components';
 
 const EnhanceButton = () => {
 	const [ open, setOpen ] = useState( false );
@@ -10,7 +10,9 @@ const EnhanceButton = () => {
 	const [ attachmentIds, setAttachmentIds ] = useState< number[] >( [] );
 	const [ loading, setLoading ] = useState( false );
 
-	const handleClick = () => {
+	const handleClick = ( e ) => {
+		e.preventDefault();
+		e.stopPropagation();
 		setLoading( true );
 		try {
 			// Prefer the current global media frame if available, otherwise fall back to the Featured Image frame.
@@ -53,14 +55,14 @@ const EnhanceButton = () => {
 			doAction( 'tryaura.media_frame_open_before', frameObj );
 			setOpen( true );
 			doAction( 'tryaura.media_frame_open_after', frameObj );
-		} catch ( e ) {
+		} catch ( err ) {
 			// eslint-disable-next-line no-console
-			console.error( e );
+			console.error( err );
 			toast.error(
 				__( 'Unable to read current selection.', 'try-aura' )
 			);
 
-			doAction( 'tryaura.media_frame_error', e );
+			doAction( 'tryaura.media_frame_error', err );
 		} finally {
 			setLoading( false );
 		}

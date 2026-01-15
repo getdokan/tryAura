@@ -1,6 +1,8 @@
 import { useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { useSelect, useDispatch } from '@wordpress/data';
+// @ts-ignore
+import { STORE_NAME as SETTINGS_STORE_NAME } from '@tryaura/settings';
 import { STORE_NAME } from './store';
 import { Button } from '../../components';
 import { __ } from '@wordpress/i18n';
@@ -21,30 +23,6 @@ type PreviewProps = {
 	onClose: () => void;
 	supportsVideo?: boolean;
 };
-
-async function resolveSettings(): Promise< {
-	apiKey: string | null;
-	imageModel: string | null;
-} > {
-	try {
-		const aura = ( window as any )?.tryAura;
-		const data = ( await apiFetch( {
-			path: '/try-aura/v1/settings',
-		} ) ) as any;
-		const settings = data && data.try_aura_settings;
-		const google = settings && settings.google;
-		return {
-			apiKey: google?.apiKey || aura?.apiKey || null,
-			imageModel: google?.imageModel || aura?.imageModel || null,
-		};
-	} catch {
-		const aura = ( window as any )?.tryAura;
-		return {
-			apiKey: aura?.apiKey || null,
-			imageModel: aura?.imageModel || null,
-		};
-	}
-}
 
 const PreviewModal = ( {
 	imageUrls,
@@ -67,6 +45,7 @@ const PreviewModal = ( {
 		( select ) => {
 			const store = select( STORE_NAME );
 			const aiModelsStore = select( 'try-aura/ai-models' );
+			const settingsStore = select( SETTINGS_STORE_NAME );
 			return {
 				isBlockEditorPage: store.getIsBlockEditorPage(),
 				isWoocommerceProductPage: store.getIsWoocommerceProductPage(),
@@ -78,6 +57,7 @@ const PreviewModal = ( {
 				selectedImageIndices: store.getSelectedImageIndices(),
 				imageConfigData: store.getImageConfigData(),
 				defaultImageModel: aiModelsStore.getDefaultImageModel(),
+				settings: settingsStore.getSettings(),
 			};
 		},
 		[ STORE_NAME ]
@@ -178,8 +158,11 @@ const PreviewModal = ( {
 				);
 			}
 
-			const { apiKey, imageModel: savedImageModel } =
-				await resolveSettings();
+			const aura = ( window as any )?.tryAura;
+			const google = settings?.[ aura?.optionKey ]?.google;
+			const apiKey = google?.apiKey || aura?.apiKey;
+			const savedImageModel = google?.imageModel || aura?.imageModel;
+
 			if ( ! apiKey ) {
 				throw new Error(
 					__(

@@ -21,22 +21,22 @@ abstract class BaseServiceProvider extends AbstractServiceProvider {
 	 * @return bool True if the service provider can provide the service, false otherwise.
 	 */
 	public function provides( string $alias ): bool {
-		static $implements = array();
+		if ( array_key_exists( $alias, $this->services ) || in_array( $alias, $this->services, true ) || in_array( $alias, $this->tags, true ) ) {
+			return true;
+		}
 
 		foreach ( $this->services as $class ) {
 			if ( ! class_exists( $class ) ) {
 				continue;
 			}
 
-			$implements_more = class_implements( $class );
-			if ( $implements_more ) {
-				$implements = array_merge( $implements, $implements_more );
+			$implements = class_implements( $class );
+			if ( $implements && in_array( $alias, $implements, true ) ) {
+				return true;
 			}
 		}
 
-		$implements = array_unique( $implements );
-
-		return array_key_exists( $alias, $implements ) || in_array( $alias, $this->services, true ) || in_array( $alias, $this->tags, true );
+		return false;
 	}
 
 	/**

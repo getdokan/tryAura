@@ -68,6 +68,24 @@ class SettingsController {
 				),
 			)
 		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/bulk-try-on',
+			array(
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'bulk_try_on' ),
+					'permission_callback' => array( $this, 'permissions_check' ),
+					'args'                => array(
+						'enabled' => array(
+							'type'     => 'boolean',
+							'required' => true,
+						),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -108,5 +126,70 @@ class SettingsController {
 		update_option( $this->option_key, $new_value );
 
 		return new WP_REST_Response( array( $this->option_key => $new_value ) );
+	}
+
+	/**
+	 * Bulk enable/disable try-on for all products.
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function bulk_try_on( WP_REST_Request $request ): WP_REST_Response {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_REST_Response(
+				array(
+					'message' => __( 'WooCommerce is not active.', 'try-aura' ),
+				),
+				400
+			);
+		}
+
+		$enabled = $request->get_param( 'enabled' ) ? 'yes' : 'no';
+
+		$products = wc_get_products(
+			array(
+				'limit'  => -1,
+				'return' => 'ids',
+				'status' => 'publish',
+			)
+		);
+
+		$total_products = count( $products );
+
+		if ( 0 === $total_products ) {
+			return new WP_REST_Response(
+				array(
+					'message' => __( 'No products found to update.', 'try-aura' ),
+				),
+				200
+			);
+		}
+
+		$chunk_count = 10;
+		$chunks      = array_chunk( $products, $chunk_count );
+
+		foreach ( $chunks as $chunk ) {
+			WC()->queue()->add(
+				'try_aura_bulk_update_products_try_on',
+				array(
+					'product_ids' => $chunk,
+					'enabled'     => $enabled,
+				),
+				'try-aura'
+			);
+		}
+
+		return new WP_REST_Response(
+			array(
+				'message' => sprintf(
+					// translators: %1$d total products, %2$d enable/disable.
+					__( '%1$d products added to queue to %2$s try-on.', 'try-aura' ),
+					$total_products,
+					'yes' === $enabled ? 'enable' : 'disable'
+				),
+			),
+			200
+		);
 	}
 }

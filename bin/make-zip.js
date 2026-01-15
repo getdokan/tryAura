@@ -75,9 +75,11 @@ const { replaceInFile } = require( 'replace-in-file' );
 
 		// 4) Build include globs and exclusions (mirrors PHP script intent)
 		const includeGlobs = [
+			'assets/**',
 			'build/**',
 			'inc/**',
 			'languages/**',
+			'lib/**',
 			'templates/**',
 			'vendor/**',
 			'*.php', // root PHP files

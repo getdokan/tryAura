@@ -80,9 +80,26 @@ declare const tryAuraVideo: any;
 						if ( ! $img.data( 'original-src' ) ) {
 							$img.data( 'original-src', $img.attr( 'src' ) );
 						}
+						if ( ! $img.data( 'original-id' ) ) {
+							$img.data( 'original-id', attachmentId );
+						}
+						if ( ! $img.data( 'original-srcset' ) ) {
+							$img.data(
+								'original-srcset',
+								$img.attr( 'srcset' )
+							);
+						}
+						if ( ! $img.data( 'original-sizes' ) ) {
+							$img.data( 'original-sizes', $img.attr( 'sizes' ) );
+						}
 
-						if ( dataObj?.useCustomThumbnail && dataObj?.thumbnailUrl ) {
-							$img.attr( 'src', dataObj.thumbnailUrl );
+						if (
+							dataObj?.useCustomThumbnail &&
+							dataObj?.thumbnailUrl
+						) {
+							$img.attr( 'src', dataObj.thumbnailUrl )
+								.removeAttr( 'srcset' )
+								.removeAttr( 'sizes' );
 						}
 					}
 
@@ -132,9 +149,23 @@ declare const tryAuraVideo: any;
 					if ( ! $img.data( 'original-src' ) ) {
 						$img.data( 'original-src', $img.attr( 'src' ) );
 					}
+					if ( ! $img.data( 'original-id' ) ) {
+						$img.data( 'original-id', mainAttachmentId );
+					}
+					if ( ! $img.data( 'original-srcset' ) ) {
+						$img.data( 'original-srcset', $img.attr( 'srcset' ) );
+					}
+					if ( ! $img.data( 'original-sizes' ) ) {
+						$img.data( 'original-sizes', $img.attr( 'sizes' ) );
+					}
 
-					if ( dataObj?.useCustomThumbnail && dataObj?.thumbnailUrl ) {
-						$img.attr( 'src', dataObj.thumbnailUrl );
+					if (
+						dataObj?.useCustomThumbnail &&
+						dataObj?.thumbnailUrl
+					) {
+						$img.attr( 'src', dataObj.thumbnailUrl )
+							.removeAttr( 'srcset' )
+							.removeAttr( 'sizes' );
 					}
 				}
 
@@ -208,12 +239,82 @@ declare const tryAuraVideo: any;
 				renderModal(
 					Object.keys( currentData ).length > 0 ? currentData : null,
 					( newData ) => {
-						$input.val( JSON.stringify( newData ) );
+						let attachmentId = $btn.data( 'attachment-id' );
+						const isMainImage = ! $btn.closest( 'li.image' ).length;
+						const $parentLi = $btn.closest( 'li.image' );
 						const $icon = $btn.find( '.dashicons' );
+
+						let targetId = attachmentId;
+						const thumbnailUrl = newData?.thumbnailUrl;
+
+						if ( newData && newData.useCustomThumbnail ) {
+							if ( newData.thumbnailId ) {
+								targetId = newData.thumbnailId;
+							}
+						} else {
+							const originalId = $img.data( 'original-id' );
+							if ( originalId ) {
+								targetId = originalId;
+							}
+						}
+
+						if ( String( targetId ) !== String( attachmentId ) ) {
+							if ( isMainImage ) {
+								$( '#_thumbnail_id' )
+									.val( targetId )
+									.trigger( 'change' );
+							} else {
+								const $galleryInput = $(
+									'#product_image_gallery'
+								);
+								const ids = $galleryInput
+									.val()
+									.split( ',' )
+									.filter( Boolean );
+								const index = ids.indexOf(
+									attachmentId.toString()
+								);
+								if ( index !== -1 ) {
+									ids[ index ] = targetId.toString();
+									$galleryInput
+										.val( ids.join( ',' ) )
+										.trigger( 'change' );
+								}
+								$parentLi
+									.data( 'attachment_id', targetId )
+									.attr( 'data-attachment_id', targetId );
+							}
+
+							if (
+								tryAuraVideo.videoData &&
+								tryAuraVideo.videoData[ attachmentId ]
+							) {
+								tryAuraVideo.videoData[ targetId ] =
+									tryAuraVideo.videoData[ attachmentId ];
+								delete tryAuraVideo.videoData[ attachmentId ];
+							}
+
+							$btn.data( 'attachment-id', targetId ).attr(
+								'data-attachment-id',
+								targetId
+							);
+							$input.attr(
+								'name',
+								`try_aura_video_data[${ targetId }]`
+							);
+							attachmentId = targetId;
+						}
+
+						if ( ! tryAuraVideo.videoData ) {
+							tryAuraVideo.videoData = {};
+						}
+
 						if (
 							! newData ||
 							Object.keys( newData ).length === 0
 						) {
+							delete tryAuraVideo.videoData[ attachmentId ];
+
 							$btn.removeClass( 'try-aura-edit-video' ).addClass(
 								'try-aura-add-video'
 							);
@@ -222,10 +323,35 @@ declare const tryAuraVideo: any;
 								.addClass( 'dashicons-plus' );
 
 							const originalSrc = $img.data( 'original-src' );
+							const originalSrcset =
+								$img.data( 'original-srcset' );
+							const originalSizes = $img.data( 'original-sizes' );
+
 							if ( originalSrc ) {
 								$img.attr( 'src', originalSrc );
 							}
+							if ( originalSrcset ) {
+								$img.attr( 'srcset', originalSrcset );
+							} else {
+								$img.removeAttr( 'srcset' );
+							}
+							if ( originalSizes ) {
+								$img.attr( 'sizes', originalSizes );
+							} else {
+								$img.removeAttr( 'sizes' );
+							}
+							$input.val( '' );
 						} else {
+							// Strip redundant info for storage
+							const saveData = { ...newData };
+							if ( saveData.useCustomThumbnail ) {
+								delete saveData.thumbnailId;
+								delete saveData.thumbnailUrl;
+							}
+
+							tryAuraVideo.videoData[ attachmentId ] = saveData;
+							$input.val( JSON.stringify( saveData ) );
+
 							$btn.removeClass( 'try-aura-add-video' ).addClass(
 								'try-aura-edit-video'
 							);
@@ -233,15 +359,29 @@ declare const tryAuraVideo: any;
 								.removeClass( 'dashicons-plus' )
 								.addClass( 'dashicons-edit' );
 
-							if (
-								newData.useCustomThumbnail &&
-								newData.thumbnailUrl
-							) {
-								$img.attr( 'src', newData.thumbnailUrl );
-							} else {
+							if ( newData.useCustomThumbnail && thumbnailUrl ) {
+								$img.attr( 'src', thumbnailUrl )
+									.removeAttr( 'srcset' )
+									.removeAttr( 'sizes' );
+							} else if ( ! newData.useCustomThumbnail ) {
 								const originalSrc = $img.data( 'original-src' );
+								const originalSrcset =
+									$img.data( 'original-srcset' );
+								const originalSizes =
+									$img.data( 'original-sizes' );
+
 								if ( originalSrc ) {
 									$img.attr( 'src', originalSrc );
+								}
+								if ( originalSrcset ) {
+									$img.attr( 'srcset', originalSrcset );
+								} else {
+									$img.removeAttr( 'srcset' );
+								}
+								if ( originalSizes ) {
+									$img.attr( 'sizes', originalSizes );
+								} else {
+									$img.removeAttr( 'sizes' );
 								}
 							}
 						}

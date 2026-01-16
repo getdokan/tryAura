@@ -105,7 +105,7 @@ class UsageManager {
 			'total_tokens'  => (int) $total_tokens,
 		);
 
-		$stats = apply_filters('try_aura_stats_data', $stats);
+		$stats = apply_filters('try_aura_stats_data', $stats, $table, $where, $params);
 
 		if ( class_exists( 'WooCommerce' ) ) {
 			$stats['tryon_count'] = (int) $wpdb->get_var( $sql_tryon );
@@ -132,6 +132,11 @@ class UsageManager {
 		$params = array();
 
 		if ( $type ) {
+			$is_fetchable = ($type === 'image' || $type === 'tryon');
+			$is_fetchable = apply_filters('try_aura_recent_activity_type', $is_fetchable, $type );
+
+			if( $is_fetchable === false ) return [];
+
 			if ( $type === 'tryon' ) {
 				if ( ! class_exists( 'WooCommerce' ) ) {
 					return array();
@@ -141,6 +146,17 @@ class UsageManager {
 				$where   .= ' AND type = %s';
 				$params[] = $type;
 			}
+		} else {
+			$type_list    = [ 'image', 'tryon' ];
+			$type_list    = apply_filters('try_aura_recent_activity_type_list', $type_list);
+			$types_quoted = [];
+
+			foreach( $type_list as $type_item ) {
+				$types_quoted[] = "'$type_item'";
+			}
+			
+			$all_types  = '(' . implode(', ', $types_quoted) . ')';
+			$where     .= ' AND type in '. $all_types;
 		}
 
 		if ( ! class_exists( 'WooCommerce' ) ) {

@@ -122,21 +122,25 @@ class UsageManager {
 			$params[] = $end_date . ' 23:59:59';
 		}
 
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$image_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND type = 'image'", array_merge( array( $table ), $params ) ) );
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		$video_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND type = 'video'", array_merge( array( $table ), $params ) ) );
+		//$video_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND type = 'video'", array_merge( array( $table ), $params ) ) );
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$total_tokens = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(total_tokens) FROM %i $where", array_merge( array( $table ), $params ) ) );
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		$video_seconds = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(video_seconds) FROM %i $where AND type = 'video'", array_merge( array( $table ), $params ) ) );
+		//$video_seconds = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(video_seconds) FROM %i $where AND type = 'video'", array_merge( array( $table ), $params ) ) );
 
 		$stats = array(
 			'image_count'   => (int) $image_count,
-			'video_count'   => (int) $video_count,
 			'total_tokens'  => (int) $total_tokens,
-			'video_seconds' => (float) $video_seconds,
 		);
+
+		$stats = apply_filters('try_aura_admin_dashboard_stats_data', $stats, $table, $where, $params);
 
 		if ( class_exists( 'WooCommerce' ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
@@ -179,7 +183,12 @@ class UsageManager {
 		$params = array( $table );
 
 		if ( $type ) {
-			if ( 'tryon' === $type ) {
+			$is_fetchable = ($type === 'image' || $type === 'tryon');
+			$is_fetchable = apply_filters('try_aura_recent_activity_type', $is_fetchable, $type );
+
+			if( $is_fetchable === false ) return [];
+
+			if ( $type === 'tryon' ) {
 				if ( ! class_exists( 'WooCommerce' ) ) {
 					return array();
 				}
@@ -188,6 +197,17 @@ class UsageManager {
 				$where   .= ' AND type = %s';
 				$params[] = $type;
 			}
+		} else {
+			$type_list    = [ 'image', 'tryon' ];
+			$type_list    = apply_filters('try_aura_recent_activity_type_list', $type_list);
+			$types_quoted = [];
+
+			foreach( $type_list as $type_item ) {
+				$types_quoted[] = "'$type_item'";
+			}
+
+			$all_types  = '(' . implode(', ', $types_quoted) . ')';
+			$where     .= ' AND type in '. $all_types;
 		}
 
 		if ( ! class_exists( 'WooCommerce' ) ) {

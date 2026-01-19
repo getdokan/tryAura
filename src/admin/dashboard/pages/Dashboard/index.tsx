@@ -8,6 +8,8 @@ import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { DateRange } from 'react-day-picker';
 import { DateRangePicker } from '../../../../components';
+import { Slot } from '@wordpress/components';
+
 
 function Index() {
 	const today = new Date();
@@ -90,12 +92,14 @@ function Index() {
 					Icon={ Image }
 					loading={ loading }
 				/>
-				<StateCardItem
-					title={ __( 'Videos Generated', 'try-aura' ) }
-					value={ stats.video_count }
-					iconColor="#FF9345"
-					Icon={ Video }
-					loading={ loading }
+				<Slot
+					name="try-aura-generated-video-count-card" 
+					fillProps={{
+						StateCardItem,
+						stats,
+						Video,
+						loading,	
+					}}
 				/>
 				{ wcExists && (
 					<StateCardItem
@@ -113,13 +117,17 @@ function Index() {
 					Icon={ Sparkles }
 					loading={ loading }
 				/>
-				<StateCardItem
-					title={ __( 'Generated Video Duration', 'try-aura' ) }
-					value={ stats.video_seconds.toFixed( 1 ) + 's' }
-					iconColor="#f59e0b"
-					Icon={ Clock }
-					loading={ loading }
+				<Slot
+					name="try-aura-generated-video-duration-card" 
+					fillProps={{
+						StateCardItem,
+						stats,
+						loading,
+						Clock
+						
+					}}
 				/>
+				
 			</div>
 
 			<div className="mt-[32px] grid grid-cols-1 lg:grid-cols-3 gap-[32px]">

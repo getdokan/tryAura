@@ -8,7 +8,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { DateRange } from 'react-day-picker';
 import { DateRangePicker } from '../../../../components';
-import { Slot, SlotFillProvider } from '@wordpress/components';
+import { Slot } from '@wordpress/components';
 
 
 function Index() {

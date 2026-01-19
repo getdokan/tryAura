@@ -3,13 +3,7 @@ import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { Image, Video, Eye } from 'lucide-react';
-
-const tabs = [
-	{ id: '', label: __( 'All', 'try-aura' ) },
-	{ id: 'image', label: __( 'A.I. Images', 'try-aura' ) },
-	{ id: 'video', label: __( 'A.I. Videos', 'try-aura' ) },
-	{ id: 'tryon', label: __( 'Try Ons', 'try-aura' ) },
-];
+import { applyFilters } from '@wordpress/hooks';
 
 function RecentActivity( {
 	className = '',
@@ -18,9 +12,15 @@ function RecentActivity( {
 	className?: string;
 	wcExists?: boolean;
 } ) {
-	const [ activeTab, setActiveTab ] = useState( '' );
+	const tabs = applyFilters('tryaura.recent.activity.tabs', [
+		{ id: '', label: __( 'All', 'try-aura' ) },
+		{ id: 'image', label: __( 'A.I. Images', 'try-aura' ) },
+		{ id: 'tryon', label: __( 'Try Ons', 'try-aura' ) },
+	]);
+
+	const [ activeTab, setActiveTab ]   = useState( '' );
 	const [ activities, setActivities ] = useState( [] );
-	const [ loading, setLoading ] = useState( true );
+	const [ loading, setLoading ]       = useState( true );
 
 	const filteredTabs = tabs.filter( ( tab ) => {
 		if ( tab.id === 'tryon' ) {

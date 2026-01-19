@@ -94,22 +94,18 @@ class UsageManager {
 		}
 
 		$sql_image   = $wpdb->prepare( "SELECT COUNT(*) FROM $table $where AND type = 'image'", $params );
-		$sql_video   = $wpdb->prepare( "SELECT COUNT(*) FROM $table $where AND type = 'video'", $params );
 		$sql_tryon   = $wpdb->prepare( "SELECT COUNT(*) FROM $table $where AND generated_from = 'tryon'", $params );
 		$sql_tokens  = $wpdb->prepare( "SELECT SUM(total_tokens) FROM $table $where", $params );
-		$sql_seconds = $wpdb->prepare( "SELECT SUM(video_seconds) FROM $table $where AND type = 'video'", $params );
 
 		$image_count   = $wpdb->get_var( $sql_image );
-		$video_count   = $wpdb->get_var( $sql_video );
 		$total_tokens  = $wpdb->get_var( $sql_tokens );
-		$video_seconds = $wpdb->get_var( $sql_seconds );
-
+		
 		$stats = array(
 			'image_count'   => (int) $image_count,
-			'video_count'   => (int) $video_count,
 			'total_tokens'  => (int) $total_tokens,
-			'video_seconds' => (float) $video_seconds,
 		);
+
+		$stats = apply_filters('try_aura_admin_dashboard_stats_data', $stats, $table, $where, $params);
 
 		if ( class_exists( 'WooCommerce' ) ) {
 			$stats['tryon_count'] = (int) $wpdb->get_var( $sql_tryon );
@@ -136,6 +132,11 @@ class UsageManager {
 		$params = array();
 
 		if ( $type ) {
+			$is_fetchable = ($type === 'image' || $type === 'tryon');
+			$is_fetchable = apply_filters('try_aura_recent_activity_type', $is_fetchable, $type );
+
+			if( $is_fetchable === false ) return [];
+
 			if ( $type === 'tryon' ) {
 				if ( ! class_exists( 'WooCommerce' ) ) {
 					return array();
@@ -145,6 +146,17 @@ class UsageManager {
 				$where   .= ' AND type = %s';
 				$params[] = $type;
 			}
+		} else {
+			$type_list    = [ 'image', 'tryon' ];
+			$type_list    = apply_filters('try_aura_recent_activity_type_list', $type_list);
+			$types_quoted = [];
+
+			foreach( $type_list as $type_item ) {
+				$types_quoted[] = "'$type_item'";
+			}
+			
+			$all_types  = '(' . implode(', ', $types_quoted) . ')';
+			$where     .= ' AND type in '. $all_types;
 		}
 
 		if ( ! class_exists( 'WooCommerce' ) ) {

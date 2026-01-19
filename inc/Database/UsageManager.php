@@ -9,6 +9,8 @@ namespace Dokan\TryAura\Database;
 
 use Dokan\TryAura\Models\Usage;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 /**
  * Usage Manager class.
  */

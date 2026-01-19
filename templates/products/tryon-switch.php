@@ -7,6 +7,8 @@
  *
  * @package TryAura
  */
+
+if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
 
 <div class="tryaura">

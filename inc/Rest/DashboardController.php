@@ -11,6 +11,8 @@ use WP_REST_Request;
 use WP_REST_Response;
 use Dokan\TryAura\Database\UsageManager;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 /**
  * Dashboard Controller class.
  */

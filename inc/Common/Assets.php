@@ -2,6 +2,8 @@
 
 namespace Dokan\TryAura\Common;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 /**
  * Assets class.
  */

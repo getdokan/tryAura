@@ -32,7 +32,7 @@ class ProductVideoGallery {
 	 *
 	 * @return string Modified HTML.
 	 */
-	public function render_video_gallery_item( string $html, int $attachment_id ): string {
+	public function render_video_gallery_item( $html, $attachment_id ) {
 		global $product;
 
 		if ( ! $product ) {

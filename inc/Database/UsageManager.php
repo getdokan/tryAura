@@ -105,7 +105,7 @@ class UsageManager {
 			'total_tokens'  => (int) $total_tokens,
 		);
 
-		$stats = apply_filters('try_aura_stats_data', $stats, $table, $where, $params);
+		$stats = apply_filters('try_aura_admin_dashboard_stats_data', $stats, $table, $where, $params);
 
 		if ( class_exists( 'WooCommerce' ) ) {
 			$stats['tryon_count'] = (int) $wpdb->get_var( $sql_tryon );

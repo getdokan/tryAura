@@ -5,12 +5,6 @@ import { addQueryArgs } from '@wordpress/url';
 import { Image, Video, Eye } from 'lucide-react';
 import { applyFilters } from '@wordpress/hooks';
 
-const defaultTabs = [
-	{ id: '', label: __( 'All', 'try-aura' ) },
-	{ id: 'image', label: __( 'A.I. Images', 'try-aura' ) },
-	{ id: 'tryon', label: __( 'Try Ons', 'try-aura' ) },
-];
-
 function RecentActivity( {
 	className = '',
 	wcExists = false,
@@ -18,7 +12,11 @@ function RecentActivity( {
 	className?: string;
 	wcExists?: boolean;
 } ) {
-	const tabs = applyFilters('tryaura.recent.activity.tabs', defaultTabs);
+	const tabs = applyFilters('tryaura.recent.activity.tabs', [
+		{ id: '', label: __( 'All', 'try-aura' ) },
+		{ id: 'image', label: __( 'A.I. Images', 'try-aura' ) },
+		{ id: 'tryon', label: __( 'Try Ons', 'try-aura' ) },
+	]);
 
 	const [ activeTab, setActiveTab ]   = useState( '' );
 	const [ activities, setActivities ] = useState( [] );

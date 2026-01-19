@@ -1,4 +1,4 @@
-import { useState, useEffect } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Modal } from '@wordpress/components';
 import { Button, Checkbox, ModernSelect } from '../../../components';
@@ -20,7 +20,7 @@ const VideoDetailsModal = ( {
 	const [ useCustomThumbnail, setUseCustomThumbnail ] = useState(
 		initialData?.useCustomThumbnail !== undefined
 			? initialData.useCustomThumbnail
-			: true
+			: false
 	);
 	const [ thumbnailId, setThumbnailId ] = useState(
 		initialData?.thumbnailId || null
@@ -29,14 +29,7 @@ const VideoDetailsModal = ( {
 		initialData?.thumbnailUrl || ''
 	);
 	const [ generatedThumbnail, setGeneratedThumbnail ] = useState( '' );
-
-	useEffect( () => {
-		if ( ! useCustomThumbnail ) {
-			generateFromVideo();
-		} else {
-			setGeneratedThumbnail( '' );
-		}
-	}, [ url, platform, useCustomThumbnail ] );
+	const [ isSaving, setIsSaving ] = useState( false );
 
 	const getYoutubeId = ( videoUrl: string ) => {
 		const pattern =
@@ -45,45 +38,56 @@ const VideoDetailsModal = ( {
 		return match ? match[ 1 ] : null;
 	};
 
-	const generateFromVideo = async () => {
+	const generateFromVideo = async (): Promise< string | null > => {
 		if ( ! url ) {
-			return;
+			return null;
 		}
 
 		if ( platform === 'youtube' ) {
 			const videoId = getYoutubeId( url );
 			if ( videoId ) {
-				setGeneratedThumbnail(
-					`https://img.youtube.com/vi/${ videoId }/hqdefault.jpg`
-				);
+				const thumbUrl = `https://img.youtube.com/vi/${ videoId }/hqdefault.jpg`;
+				setGeneratedThumbnail( thumbUrl );
+				return thumbUrl;
 			}
 		} else if ( platform === 'site_stored' ) {
-			try {
-				const video = document.createElement( 'video' );
-				video.src = url;
-				video.crossOrigin = 'anonymous';
-				video.currentTime = 1;
-				video.onloadeddata = () => {
-					const canvas = document.createElement( 'canvas' );
-					canvas.width = video.videoWidth;
-					canvas.height = video.videoHeight;
-					const ctx = canvas.getContext( '2d' );
-					if ( ctx ) {
-						ctx.drawImage(
-							video,
-							0,
-							0,
-							canvas.width,
-							canvas.height
-						);
-						setGeneratedThumbnail( canvas.toDataURL( 'image/jpeg' ) );
-					}
-				};
-			} catch ( e ) {
-				// eslint-disable-next-line no-console
-				console.error( 'Error generating thumbnail', e );
-			}
+			return new Promise( ( resolve ) => {
+				try {
+					const video = document.createElement( 'video' );
+					video.src = url;
+					video.crossOrigin = 'anonymous';
+					video.currentTime = 1;
+					video.onloadeddata = () => {
+						const canvas = document.createElement( 'canvas' );
+						canvas.width = video.videoWidth;
+						canvas.height = video.videoHeight;
+						const ctx = canvas.getContext( '2d' );
+						if ( ctx ) {
+							ctx.drawImage(
+								video,
+								0,
+								0,
+								canvas.width,
+								canvas.height
+							);
+							const thumbUrl = canvas.toDataURL(
+								'image/jpeg'
+							);
+							setGeneratedThumbnail( thumbUrl );
+							resolve( thumbUrl );
+						} else {
+							resolve( null );
+						}
+					};
+					video.onerror = () => resolve( null );
+				} catch ( e ) {
+					// eslint-disable-next-line no-console
+					console.error( 'Error generating thumbnail', e );
+					resolve( null );
+				}
+			} );
 		}
+		return null;
 	};
 
 	const openMediaModal = () => {
@@ -126,7 +130,7 @@ const VideoDetailsModal = ( {
 		frame.open();
 	};
 
-	const handleSave = () => {
+	const handleSave = async () => {
 		if ( ! platform ) {
 			toast.error( __( 'Please select a video platform.', 'try-aura' ) );
 			return;
@@ -135,23 +139,33 @@ const VideoDetailsModal = ( {
 			toast.error( __( 'Please enter a valid video URL.', 'try-aura' ) );
 			return;
 		}
-		if (
-			! thumbnailUrl &&
-			! originalImageUrl &&
-			useCustomThumbnail
-		) {
+		if ( ! thumbnailUrl && ! originalImageUrl && useCustomThumbnail ) {
 			toast.error( __( 'Please select a video thumbnail.', 'try-aura' ) );
 			return;
 		}
 
-		onSave( {
-			platform,
-			url,
-			useCustomThumbnail,
-			thumbnailId,
-			thumbnailUrl,
-			generatedThumbnail,
-		} );
+		setIsSaving( true );
+
+		try {
+			let currentGeneratedThumbnail = generatedThumbnail;
+			if ( ! useCustomThumbnail ) {
+				currentGeneratedThumbnail = await generateFromVideo();
+			}
+
+			await onSave( {
+				platform,
+				url,
+				useCustomThumbnail,
+				thumbnailId,
+				thumbnailUrl,
+				generatedThumbnail: currentGeneratedThumbnail,
+			} );
+		} catch ( e ) {
+			// eslint-disable-next-line no-console
+			console.error( 'Save error', e );
+		} finally {
+			setIsSaving( false );
+		}
 	};
 
 	return (
@@ -248,36 +262,19 @@ const VideoDetailsModal = ( {
 					</div>
 
 					<div className="flex flex-col gap-[32px]">
-						<div>
-							<span className="block text-sm font-medium text-gray-700 mb-2">
-								{ __( 'Thumbnail Source', 'try-aura' ) }
+						<Checkbox
+							checked={ useCustomThumbnail }
+							onChange={ ( e: any ) =>
+								setUseCustomThumbnail( e.target.checked )
+							}
+						>
+							<span className="text-[15px] font-medium text-[#7D7D7D]">
+								{ __(
+									'Use Custom video Thumbnail?',
+									'try-aura'
+								) }
 							</span>
-							<ModernSelect
-								value={
-									useCustomThumbnail ? 'custom' : 'generate'
-								}
-								onChange={ ( val: any ) => {
-									setUseCustomThumbnail( val === 'custom' );
-								} }
-								options={ [
-									{
-										label: __(
-											'Select Video Thumbnail (WP Media)',
-											'try-aura'
-										),
-										value: 'custom',
-									},
-									{
-										label: __(
-											'Generate from video',
-											'try-aura'
-										),
-										value: 'generate',
-									},
-								] }
-								variant="list"
-							/>
-						</div>
+						</Checkbox>
 
 						{ useCustomThumbnail ? (
 							<div className="">
@@ -345,7 +342,7 @@ const VideoDetailsModal = ( {
 						<Button variant="outline" onClick={ onClose }>
 							{ __( 'Cancel', 'try-aura' ) }
 						</Button>
-						<Button onClick={ handleSave }>
+						<Button onClick={ handleSave } loading={ isSaving }>
 							{ initialData
 								? __( 'Update Video', 'try-aura' )
 								: __( 'Add Video', 'try-aura' ) }

@@ -35,7 +35,7 @@ class ProductVideoGallery {
 	public function render_video_gallery_item( string $html, int $attachment_id ): string {
 		global $product;
 
-		if ( ! $product || (int) $attachment_id === (int) $product->get_image_id() ) {
+		if ( ! $product ) {
 			return $html;
 		}
 
@@ -67,18 +67,18 @@ class ProductVideoGallery {
 		}
 
 		// Add video-related data attributes to the existing gallery item
-		$html = str_replace(
-			'class="',
-			'data-video-url="' . esc_url( $video['url'] ) . '" data-video-platform="' . esc_attr( $video['platform'] ) . '" class="try-aura-video-item ',
-			$html
+		$html = preg_replace(
+			'/class=["\']/',
+			'data-try-aura-video-url="' . esc_url( $video['url'] ) . '" data-try-aura-video-platform="' . esc_attr( $video['platform'] ) . '" $0try-aura-video-item try-aura-video-thumbnail ',
+			$html,
+			1
 		);
 
-		// Insert video icon overlay before the closing </div> of the gallery image wrapper
-		// Most themes use woocommerce-product-gallery__image
-		$video_overlay = '<div class="try-aura-video-icon-overlay"><svg viewBox="0 0 24 24" width="48" height="48" fill="white"><path d="M8 5v14l11-7z"/></svg></div>';
+		// Insert video icon overlay before the closing tag of the gallery image wrapper
+		$video_overlay = '<div class="try-aura-video-icon-overlay"><svg viewBox="0 0 24 24" width="48" height="48" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg></div>';
 
-		if ( strpos( $html, '</div>' ) !== false ) {
-			$html = preg_replace( '/<\/div>\s*$/', $video_overlay . '</div>', $html );
+		if ( strpos( $html, '</' ) !== false ) {
+			$html = preg_replace( '/<\/[a-z0-9]+>\s*$/i', $video_overlay . '$0', $html );
 		}
 
 		return $html;
@@ -92,8 +92,8 @@ class ProductVideoGallery {
 			return;
 		}
 
-		wp_enqueue_style( 'try-aura-product-video-frontend', plugins_url( 'assets/css/product-video.css', TRYAURA_FILE ), array(), TRYAURA_PLUGIN_VERSION );
-		wp_enqueue_script( 'try-aura-product-video-frontend', plugins_url( 'assets/js/product-video.js', TRYAURA_FILE ), array( 'jquery' ), TRYAURA_PLUGIN_VERSION, true );
+		wp_enqueue_style( 'try-aura-product-video-frontend', plugins_url( 'assets/css/product-video.css', TRYAURA_FILE ), array( 'wp-components' ), TRYAURA_PLUGIN_VERSION );
+		wp_enqueue_script( 'try-aura-product-video-frontend', plugins_url( 'assets/js/product-video.js', TRYAURA_FILE ), array( 'jquery', 'wp-element', 'wp-components', 'wp-i18n' ), TRYAURA_PLUGIN_VERSION, true );
 
 		global $post;
 

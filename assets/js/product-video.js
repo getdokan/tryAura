@@ -1,5 +1,5 @@
 /* global jQuery */
-( function ( $ ) {
+( function ( $, wp ) {
 	'use strict';
 
 	$( function () {
@@ -8,112 +8,108 @@
 			return;
 		}
 
-		// Function to get the current main image wrapper (handles some themes having multiple or changing wrappers)
-		const getMainWrapper = () => {
-			let $wrapper = $gallery.find(
-				'.woocommerce-product-gallery__wrapper'
-			);
+		if ( ! wp || ! wp.element || ! wp.components || ! wp.components.Modal ) {
+			return;
+		}
 
-			if ( ! $wrapper.length ) {
-				$wrapper = $gallery.find( '.flex-viewport' );
-			}
+		const { createElement } = wp.element;
+		const { Modal } = wp.components;
+		const createRootFn = wp.element.createRoot;
 
-			if ( ! $wrapper.length ) {
-				$wrapper = $gallery.find( '.swiper-wrapper' );
-			}
+		let modalRoot = null;
 
-			if ( ! $wrapper.length ) {
-				$wrapper = $gallery.find( '.owl-stage-outer' );
-			}
-
-			if ( ! $wrapper.length ) {
-				$wrapper = $gallery;
-			}
-			return $wrapper;
-		};
-
-		const removeVideo = () => {
-			const $container = $( '.try-aura-video-player-container' );
-			if ( $container.length ) {
-				$container.remove();
-				// Restore visibility to all images that might have been hidden
-				$gallery
-					.find( '.woocommerce-product-gallery__image, img' )
-					.css( 'visibility', '' );
-			}
-		};
-
-		$( document ).on( 'click', '.try-aura-video-item', function ( e ) {
-			const $this = $( this );
-			const videoUrl = $this.data( 'video-url' );
-
-			if ( ! videoUrl ) {
-				return;
-			}
-
-			const videoPlatform = $this.data( 'video-platform' );
-
-			e.preventDefault();
-			e.stopPropagation();
-
-			// Remove any existing video before starting new one
-			removeVideo();
-
-			const $mainWrapper = getMainWrapper();
-
+		const VideoModal = ( { videoUrl, videoPlatform, onClose } ) => {
 			let videoHtml = '';
 			if ( videoPlatform === 'youtube' ) {
 				const videoId = getYoutubeId( videoUrl );
 				if ( videoId ) {
-					videoHtml = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ videoId }?autoplay=1&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+					videoHtml = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ videoId }?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
 				}
 			} else {
 				videoHtml = `<video width="100%" height="auto" controls autoplay><source src="${ videoUrl }" type="video/mp4">Your browser does not support the video tag.</video>`;
 			}
 
-			if ( videoHtml ) {
-				const $container = $(
-					'<div class="try-aura-video-player-container"></div>'
-				).html( videoHtml );
+			return createElement(
+				Modal,
+				{
+					title: 'Video Player',
+					onRequestClose: onClose,
+					shouldCloseOnClickOutside: true,
+					shouldCloseOnEsc: true,
+					className: 'try-aura-video-modal-root',
+				},
+				createElement( 'div', {
+					className: 'try-aura-video-modal-player',
+					dangerouslySetInnerHTML: { __html: videoHtml },
+				} )
+			);
+		};
 
-				// If we are in a slider, we want to overlay the viewport
-				const $viewport = $gallery.find( '.flex-viewport, .swiper-container, .swiper, .owl-stage-outer' );
-				if ( $viewport.length ) {
-					$viewport.first().append( $container );
-				} else {
-					$mainWrapper.prepend( $container );
-				}
-
-				// Hide images to show video
-				$mainWrapper
-					.find( '.woocommerce-product-gallery__image, img' )
-					.css( 'visibility', 'hidden' );
+		const openModal = ( videoUrl, videoPlatform ) => {
+			let container = document.getElementById(
+				'try-aura-video-modal-container'
+			);
+			if ( ! container ) {
+				container = document.createElement( 'div' );
+				container.id = 'try-aura-video-modal-container';
+				document.body.appendChild( container );
 			}
-		} );
 
-		// Handle clicking other thumbnails or navigation to remove video
-		const cleanupSelectors = [
-			'.woocommerce-product-gallery__image:not(.try-aura-video-item)',
-			'.flex-control-nav li',
-			'.flex-control-nav img',
-			'.woocommerce-product-gallery__trigger',
-			'.flex-direction-nav a',
-			'.woocommerce-product-gallery__wrapper .zoomImg',
-		].join( ', ' );
+			const handleClose = () => {
+				if ( modalRoot && modalRoot.unmount ) {
+					modalRoot.unmount();
+				} else if ( wp.element.render ) {
+					wp.element.render( null, container );
+				}
+				container.remove();
+				modalRoot = null;
+			};
 
-		$( document ).on( 'click', cleanupSelectors, function () {
-			removeVideo();
-		} );
+			if ( createRootFn ) {
+				modalRoot = createRootFn( container );
+				modalRoot.render(
+					createElement( VideoModal, {
+						videoUrl,
+						videoPlatform,
+						onClose: handleClose,
+					} )
+				);
+			} else if ( wp.element.render ) {
+				wp.element.render(
+					createElement( VideoModal, {
+						videoUrl,
+						videoPlatform,
+						onClose: handleClose,
+					} ),
+					container
+				);
+			}
+		};
 
-		// WooCommerce Flexslider specific events
-		$gallery.on( 'flexslider_before', function () {
-			removeVideo();
-		} );
+		// Capture phase listener to beat theme lightboxes and other scripts
+		document.addEventListener(
+			'click',
+			function ( e ) {
+				const target = e.target.closest( '.try-aura-video-item' );
+				if ( target ) {
+					const videoUrl = target.getAttribute(
+						'data-try-aura-video-url'
+					);
+					if ( videoUrl ) {
+						const videoPlatform = target.getAttribute(
+							'data-try-aura-video-platform'
+						);
 
-		// Support for themes using Swiper or other sliders that trigger events
-		$( document ).on( 'found_variation', function () {
-			removeVideo();
-		} );
+						e.preventDefault();
+						e.stopPropagation();
+						e.stopImmediatePropagation();
+
+						openModal( videoUrl, videoPlatform );
+					}
+				}
+			},
+			true
+		);
 
 		function getYoutubeId( url ) {
 			const regExp =
@@ -122,4 +118,4 @@
 			return match && match[ 2 ].length === 11 ? match[ 2 ] : false;
 		}
 	} );
-} )( jQuery );
+} )( jQuery, wp );

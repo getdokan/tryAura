@@ -124,7 +124,7 @@ class ProductGalleryVideo {
 			foreach ( $video_data as $attachment_id => $settings ) {
 				$settings = json_decode( wp_unslash( $settings ), true );
 				if ( ! empty( $settings['url'] ) ) {
-					$product_settings[ $attachment_id ] = $settings;
+					$product_settings[ $attachment_id ] = map_deep( $settings, 'sanitize_text_field' );
 				}
 			}
 

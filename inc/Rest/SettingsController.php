@@ -121,8 +121,8 @@ class SettingsController {
 			return new WP_REST_Response( array( $this->option_key => $current ) );
 		}
 
-		// If it's an array, we should probably sanitize it recursively or just save it.
-		// For now, let's keep it simple as we expect a structured object.
+		// Sanitize the new value recursively.
+		$new_value = map_deep( $new_value, 'sanitize_text_field' );
 		update_option( $this->option_key, $new_value );
 
 		return new WP_REST_Response( array( $this->option_key => $new_value ) );

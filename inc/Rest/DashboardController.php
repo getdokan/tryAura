@@ -1,4 +1,9 @@
 <?php
+/**
+ * Dashboard Controller.
+ *
+ * @package TryAura
+ */
 
 namespace Dokan\TryAura\Rest;
 
@@ -6,57 +11,103 @@ use WP_REST_Request;
 use WP_REST_Response;
 use Dokan\TryAura\Database\UsageManager;
 
+/**
+ * Dashboard Controller class.
+ */
 class DashboardController {
+	/**
+	 * Namespace.
+	 *
+	 * @var string
+	 */
 	protected string $namespace = 'try-aura/v1';
+
+	/**
+	 * Usage Manager.
+	 *
+	 * @var UsageManager
+	 */
 	protected UsageManager $manager;
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		$this->manager = new UsageManager();
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 	}
 
+	/**
+	 * Register routes.
+	 *
+	 * @return void
+	 */
 	public function register_routes(): void {
-		register_rest_route( $this->namespace, '/stats', array(
-			'methods'             => 'GET',
-			'callback'            => array( $this, 'get_stats' ),
-			'permission_callback' => array( $this, 'permissions_check' ),
-		) );
+		register_rest_route(
+			$this->namespace,
+			'/stats',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_stats' ),
+				'permission_callback' => array( $this, 'permissions_check' ),
+			)
+		);
 
-		register_rest_route( $this->namespace, '/log-usage', array(
-			'methods'             => 'POST',
-			'callback'            => array( $this, 'log_usage' ),
-			'permission_callback' => array( $this, 'permissions_check' ),
-		) );
+		register_rest_route(
+			$this->namespace,
+			'/log-usage',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'log_usage' ),
+				'permission_callback' => array( $this, 'permissions_check' ),
+			)
+		);
 
-		register_rest_route( $this->namespace, '/activities', array(
-			'methods'             => 'GET',
-			'callback'            => array( $this, 'get_activities' ),
-			'permission_callback' => array( $this, 'permissions_check' ),
-			'args'                => array(
-				'limit' => array(
-					'default'           => 5,
-					'sanitize_callback' => 'absint',
-					'schema'            => array(
-						'type'    => 'integer',
-						'default' => 5,
+		register_rest_route(
+			$this->namespace,
+			'/activities',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_activities' ),
+				'permission_callback' => array( $this, 'permissions_check' ),
+				'args'                => array(
+					'limit' => array(
+						'default'           => 5,
+						'sanitize_callback' => 'absint',
+						'schema'            => array(
+							'type'    => 'integer',
+							'default' => 5,
+						),
+					),
+					'type'  => array(
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+						'schema'            => array(
+							'type' => 'string',
+							'enum' => array( '', 'image', 'video', 'tryon' ),
+						),
 					),
 				),
-				'type'  => array(
-					'default'           => '',
-					'sanitize_callback' => 'sanitize_text_field',
-					'schema'            => array(
-						'type' => 'string',
-						'enum' => array( '', 'image', 'video', 'tryon' ),
-					),
-				),
-			),
-		) );
+			)
+		);
 	}
 
+	/**
+	 * Permissions check.
+	 *
+	 * @return bool
+	 */
 	public function permissions_check() {
 		return current_user_can( 'manage_options' );
 	}
 
+	/**
+	 * Get activities.
+	 *
+	 * @param WP_REST_Request $request REST Request.
+	 *
+	 * @return WP_REST_Response
+	 */
 	public function get_activities( WP_REST_Request $request ) {
 		$params     = $request->get_params();
 		$activities = $this->manager->get_recent_activities( $params );
@@ -64,6 +115,13 @@ class DashboardController {
 		return new WP_REST_Response( $activities, 200 );
 	}
 
+	/**
+	 * Get statistics.
+	 *
+	 * @param WP_REST_Request $request REST Request.
+	 *
+	 * @return WP_REST_Response
+	 */
 	public function get_stats( WP_REST_Request $request ) {
 		$params = $request->get_params();
 		$args   = array();
@@ -76,7 +134,7 @@ class DashboardController {
 			$args['end_date'] = sanitize_text_field( $params['end_date'] );
 		}
 
-		// Default to last 30 days if no dates provided
+		// Default to last 30 days if no dates provided.
 		if ( empty( $args['start_date'] ) && empty( $args['end_date'] ) ) {
 			$args['start_date'] = current_time( 'Y-m-d', strtotime( '-30 days' ) );
 			$args['end_date']   = current_time( 'Y-m-d' );
@@ -87,10 +145,23 @@ class DashboardController {
 		return new WP_REST_Response( $stats, 200 );
 	}
 
+	/**
+	 * Log usage.
+	 *
+	 * @param WP_REST_Request $request REST Request.
+	 *
+	 * @return WP_REST_Response
+	 */
 	public function log_usage( WP_REST_Request $request ) {
 		$params = $request->get_json_params();
 		$id     = $this->manager->log_usage( $params );
 
-		return new WP_REST_Response( array( 'success' => true, 'id' => $id ), 200 );
+		return new WP_REST_Response(
+			array(
+				'success' => true,
+				'id'      => $id,
+			),
+			200
+		);
 	}
 }

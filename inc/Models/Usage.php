@@ -1,4 +1,9 @@
 <?php
+/**
+ * Usage Model.
+ *
+ * @package TryAura
+ */
 
 namespace Dokan\TryAura\Models;
 

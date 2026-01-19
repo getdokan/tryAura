@@ -1,4 +1,9 @@
 <?php
+/**
+ * Usage Manager.
+ *
+ * @package TryAura
+ */
 
 namespace Dokan\TryAura\Database;
 
@@ -8,6 +13,13 @@ use Dokan\TryAura\Models\Usage;
  * Usage Manager class.
  */
 class UsageManager {
+
+	/**
+	 * Cache group.
+	 *
+	 * @var string
+	 */
+	const CACHE_GROUP = 'tryaura_usage';
 
 	/**
 	 * Get table name.
@@ -55,13 +67,15 @@ class UsageManager {
 			'output_count'   => (int) ( $usage->output_count ?? 1 ),
 			'status'         => $usage->status ?? 'success',
 			'error_message'  => $usage->error_message ?? null,
-			'object_id'      => (int) ( $usage->object_id ?? 0 ) ?: null,
+			'object_id'      => ! empty( $usage->object_id ) ? (int) $usage->object_id : null,
 			'object_type'    => $usage->object_type ?? null,
 			'meta'           => is_array( $usage->meta ) ? wp_json_encode( $usage->meta ) : $usage->meta,
 			'created_at'     => $usage->created_at ?? current_time( 'mysql' ),
 		);
 
-		$wpdb->insert( self::get_table_name(), $insert_data );
+		$wpdb->insert( self::get_table_name(), $insert_data ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+
+		wp_cache_set( 'last_changed', microtime(), self::CACHE_GROUP );
 
 		return $wpdb->insert_id;
 	}
@@ -77,8 +91,21 @@ class UsageManager {
 		global $wpdb;
 		$table = self::get_table_name();
 
-		$start_date = $args['start_date'] ?? null;
-		$end_date   = $args['end_date'] ?? null;
+		$start_date = isset( $args['start_date'] ) ? sanitize_text_field( $args['start_date'] ) : null;
+		$end_date   = isset( $args['end_date'] ) ? sanitize_text_field( $args['end_date'] ) : null;
+
+		$last_changed = wp_cache_get( 'last_changed', self::CACHE_GROUP );
+		if ( ! $last_changed ) {
+			$last_changed = microtime();
+			wp_cache_set( 'last_changed', $last_changed, self::CACHE_GROUP );
+		}
+
+		$cache_key = 'stats_' . md5( wp_json_encode( $args ) ) . ':' . $last_changed;
+		$stats     = wp_cache_get( $cache_key, self::CACHE_GROUP );
+
+		if ( false !== $stats ) {
+			return $stats;
+		}
 
 		$where  = "WHERE status = 'success'";
 		$params = array();
@@ -93,16 +120,14 @@ class UsageManager {
 			$params[] = $end_date . ' 23:59:59';
 		}
 
-		$sql_image   = $wpdb->prepare( "SELECT COUNT(*) FROM $table $where AND type = 'image'", $params );
-		$sql_video   = $wpdb->prepare( "SELECT COUNT(*) FROM $table $where AND type = 'video'", $params );
-		$sql_tryon   = $wpdb->prepare( "SELECT COUNT(*) FROM $table $where AND generated_from = 'tryon'", $params );
-		$sql_tokens  = $wpdb->prepare( "SELECT SUM(total_tokens) FROM $table $where", $params );
-		$sql_seconds = $wpdb->prepare( "SELECT SUM(video_seconds) FROM $table $where AND type = 'video'", $params );
-
-		$image_count   = $wpdb->get_var( $sql_image );
-		$video_count   = $wpdb->get_var( $sql_video );
-		$total_tokens  = $wpdb->get_var( $sql_tokens );
-		$video_seconds = $wpdb->get_var( $sql_seconds );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$image_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND type = 'image'", array_merge( array( $table ), $params ) ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$video_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND type = 'video'", array_merge( array( $table ), $params ) ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$total_tokens = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(total_tokens) FROM %i $where", array_merge( array( $table ), $params ) ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$video_seconds = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(video_seconds) FROM %i $where AND type = 'video'", array_merge( array( $table ), $params ) ) );
 
 		$stats = array(
 			'image_count'   => (int) $image_count,
@@ -112,8 +137,11 @@ class UsageManager {
 		);
 
 		if ( class_exists( 'WooCommerce' ) ) {
-			$stats['tryon_count'] = (int) $wpdb->get_var( $sql_tryon );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$stats['tryon_count'] = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND generated_from = 'tryon'", array_merge( array( $table ), $params ) ) );
 		}
+
+		wp_cache_set( $cache_key, $stats, self::CACHE_GROUP );
 
 		return $stats;
 	}
@@ -130,13 +158,26 @@ class UsageManager {
 		$table = self::get_table_name();
 
 		$limit = isset( $args['limit'] ) ? (int) $args['limit'] : 5;
-		$type  = $args['type'] ?? null;
+		$type  = isset( $args['type'] ) ? sanitize_text_field( $args['type'] ) : null;
+
+		$last_changed = wp_cache_get( 'last_changed', self::CACHE_GROUP );
+		if ( ! $last_changed ) {
+			$last_changed = microtime();
+			wp_cache_set( 'last_changed', $last_changed, self::CACHE_GROUP );
+		}
+
+		$cache_key = 'recent_activities_' . md5( wp_json_encode( $args ) ) . ':' . $last_changed;
+		$results   = wp_cache_get( $cache_key, self::CACHE_GROUP );
+
+		if ( false !== $results ) {
+			return $results;
+		}
 
 		$where  = "WHERE status = 'success'";
-		$params = array();
+		$params = array( $table );
 
 		if ( $type ) {
-			if ( $type === 'tryon' ) {
+			if ( 'tryon' === $type ) {
 				if ( ! class_exists( 'WooCommerce' ) ) {
 					return array();
 				}
@@ -151,20 +192,19 @@ class UsageManager {
 			$where .= " AND generated_from != 'tryon'";
 		}
 
-		$sql = "SELECT * FROM $table $where ORDER BY created_at DESC LIMIT $limit";
-		if ( ! empty( $params ) ) {
-			$sql = $wpdb->prepare( $sql, $params );
-		}
-
-		$results = $wpdb->get_results( $sql, ARRAY_A );
+		$params[] = $limit;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i $where ORDER BY created_at DESC LIMIT %d", ...$params ), ARRAY_A );
 
 		foreach ( $results as &$result ) {
 			$result['object_name'] = '';
 			if ( ! empty( $result['object_id'] ) ) {
 				$result['object_name'] = get_the_title( $result['object_id'] );
 			}
-			$result['human_time_diff'] = human_time_diff( strtotime( $result['created_at'] ), current_time( 'timestamp' ) ) . ' ' . __( 'ago', 'try-aura' );
+			$result['human_time_diff'] = human_time_diff( strtotime( $result['created_at'] ), current_time( 'timestamp' ) ) . ' ' . __( 'ago', 'try-aura' ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
 		}
+
+		wp_cache_set( $cache_key, $results, self::CACHE_GROUP );
 
 		return $results;
 	}

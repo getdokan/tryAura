@@ -1,4 +1,9 @@
 <?php
+/**
+ * Installer.
+ *
+ * @package TryAura
+ */
 
 namespace Dokan\TryAura\Common;
 

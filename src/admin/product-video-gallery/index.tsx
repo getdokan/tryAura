@@ -128,7 +128,7 @@ declare const tryAuraVideo: any;
 					'<div class="tryaura try-aura-add-global-video-wrapper"></div>'
 				);
 				const $btn = $( `
-					<button type="button" id="try-aura-add-global-video" class="mt-3.25 flex flex-row justify-center items-center gap-1 rounded-[5px] bg-primary px-3 py-2 text-[14px] text-white hover:bg-bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed w-full">
+					<button type="button" id="try-aura-add-global-video" class="mt-3.25 flex flex-row justify-center items-center gap-1 rounded-[5px] bg-primary px-3 py-2 text-[14px] text-white hover:bg-bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed w-full">
 						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-video" aria-hidden="true"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg>
 						${ tryAuraVideo.addVideoText }
 					</button>

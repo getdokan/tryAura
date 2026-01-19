@@ -69,7 +69,7 @@ class UsageManager {
 			'output_count'   => (int) ( $usage->output_count ?? 1 ),
 			'status'         => $usage->status ?? 'success',
 			'error_message'  => $usage->error_message ?? null,
-			'object_id'      => ! empty( $usage->object_id ) ? (int) $usage->object_id : null,
+			'object_id'      => (int) ( $usage->object_id ?? 0 ),
 			'object_type'    => $usage->object_type ?? null,
 			'meta'           => is_array( $usage->meta ) ? wp_json_encode( $usage->meta ) : $usage->meta,
 			'created_at'     => $usage->created_at ?? current_time( 'mysql' ),

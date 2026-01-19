@@ -92,8 +92,24 @@ class ProductVideoGallery {
 			return;
 		}
 
-		wp_enqueue_style( 'try-aura-product-video-frontend', plugins_url( 'assets/css/product-video.css', TRYAURA_FILE ), array( 'wp-components' ), TRYAURA_PLUGIN_VERSION );
-		wp_enqueue_script( 'try-aura-product-video-frontend', plugins_url( 'assets/js/product-video.js', TRYAURA_FILE ), array( 'jquery', 'wp-element', 'wp-components', 'wp-i18n' ), TRYAURA_PLUGIN_VERSION, true );
+		$script_path = 'build/frontend/product-video/index.js';
+		$style_path  = 'build/frontend/product-video/style-index.css';
+		$asset_path  = TRYAURA_DIR . '/build/frontend/product-video/index.asset.php';
+
+		$deps    = array( 'jquery', 'wp-element', 'wp-components', 'wp-i18n' );
+		$version = TRYAURA_PLUGIN_VERSION;
+
+		if ( file_exists( $asset_path ) ) {
+			$asset   = include $asset_path;
+			$deps    = array_unique( array_merge( $deps, $asset['dependencies'] ?? array() ) );
+			$version = $asset['version'] ?? $version;
+		}
+
+		if ( file_exists( TRYAURA_DIR . '/' . $style_path ) ) {
+			wp_enqueue_style( 'try-aura-product-video-frontend', plugins_url( $style_path, TRYAURA_FILE ), array( 'wp-components' ), $version );
+		}
+
+		wp_enqueue_script( 'try-aura-product-video-frontend', plugins_url( $script_path, TRYAURA_FILE ), $deps, $version, true );
 
 		global $post;
 

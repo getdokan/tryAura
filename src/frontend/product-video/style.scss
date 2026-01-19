@@ -1,3 +1,6 @@
+@import "../../base-tailwind.css";
+@source "../product-video/**/*.{ts,tsx,js,jsx,php,html}";
+
 .try-aura-video-item {
     position: relative !important;
 }
@@ -65,34 +68,16 @@
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-}
+	width: 100% !important;
+	height: 100% !important;
 
-.try-aura-video-modal-root .components-modal__header {
-    position: absolute !important;
-    top: -40px !important;
-    right: 0 !important;
-    background: transparent !important;
-    border: none !important;
-    z-index: 100002 !important;
-}
-
-.try-aura-video-modal-root .components-modal__header button {
-    color: #fff !important;
-}
-
-.try-aura-video-modal-root .components-modal__header h1 {
-    display: none !important;
+	div {
+		width: 100% !important;
+		height: 100% !important;
+	}
 }
 
 /* Modal Overlay Fallback */
 .components-modal__screen-overlay {
-    z-index: 100000 !important;
     background-color: rgba(0, 0, 0, 0.8) !important;
-}
-
-#try-aura-video-modal-container {
-    position: relative;
-    z-index: 99999;
 }

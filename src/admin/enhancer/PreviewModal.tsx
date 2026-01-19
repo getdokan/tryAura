@@ -41,6 +41,7 @@ const PreviewModal = ( {
 		selectedImageIndices,
 		imageConfigData,
 		defaultImageModel,
+		settings,
 	} = useSelect(
 		( select ) => {
 			const store = select( STORE_NAME );

@@ -8,11 +8,8 @@ import { applyFilters } from '@wordpress/hooks';
 const defaultTabs = [
 	{ id: '', label: __( 'All', 'try-aura' ) },
 	{ id: 'image', label: __( 'A.I. Images', 'try-aura' ) },
-	{ id: 'video', label: __( 'A.I. Videos', 'try-aura' ) },
 	{ id: 'tryon', label: __( 'Try Ons', 'try-aura' ) },
 ];
-
-const tabs = applyFilters('tryaura.recent.activity.tabs', defaultTabs);
 
 function RecentActivity( {
 	className = '',
@@ -21,9 +18,11 @@ function RecentActivity( {
 	className?: string;
 	wcExists?: boolean;
 } ) {
-	const [ activeTab, setActiveTab ] = useState( '' );
+	const tabs = applyFilters('tryaura.recent.activity.tabs', defaultTabs);
+
+	const [ activeTab, setActiveTab ]   = useState( '' );
 	const [ activities, setActivities ] = useState( [] );
-	const [ loading, setLoading ] = useState( true );
+	const [ loading, setLoading ]       = useState( true );
 
 	const filteredTabs = tabs.filter( ( tab ) => {
 		if ( tab.id === 'tryon' ) {

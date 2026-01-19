@@ -1,6 +1,6 @@
 === TryAura ===
 Contributors: aunshon, tryaura
-Tags: ai, virtual try-on, woocommerce, fashion, ecommerce, content creation, gemini
+Tags: ai, virtual try-on, woocommerce
 Requires at least: 6.8
 Tested up to: 6.9
 WC tested up to: 10.4.3
@@ -9,7 +9,7 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-TryAura is an AI-powered virtual try-on and content creation platform built for fashion and eCommerce. With seamless WooCommerce integration, it allows brands and shoppers to instantly visualize clothing on models, customers, or in any scene — without costly photoshoots.
+TryAura is an AI-powered virtual try-on and content creation platform built for fashion and eCommerce.
 
 == Description ==
 

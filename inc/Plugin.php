@@ -23,25 +23,9 @@ class Plugin {
 	 * Bootstraps the plugin.
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'load_textdomain' ) );
 		register_activation_hook( TRYAURA_FILE, array( Installer::class, 'activate' ) );
 		$this->define_constants();
 		add_action( 'plugins_loaded', array( $this, 'init_plugin' ) );
-	}
-
-	/**
-	 * Load plugin textdomain.
-	 *
-	 * @since PLUGIN_SINCE
-	 *
-	 * @return void
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain(
-			'try-aura',
-			false,
-			dirname( plugin_basename( TRYAURA_FILE ) ) . '/languages/'
-		);
 	}
 
 	/**

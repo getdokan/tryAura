@@ -33,6 +33,13 @@ class ProductGalleryVideo {
 	 * @param int $attachment_id Attachment id.
 	 */
 	public function get_gallery_product_video_btn( $post_id, $attachment_id ): void {
+		static $nonce_printed = false;
+
+		if ( ! $nonce_printed ) {
+			wp_nonce_field( 'try_aura_save_video_data', 'try_aura_video_data_nonce' );
+			$nonce_printed = true;
+		}
+
 		$product_video_data = get_post_meta( $post_id, self::VIDEO_META_KEY, true );
 		$settings           = array();
 
@@ -117,14 +124,18 @@ class ProductGalleryVideo {
 	 * @param int $post_id The product ID.
 	 */
 	public function save_video_meta( int $post_id ): void {
+		if ( ! isset( $_POST['try_aura_video_data_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['try_aura_video_data_nonce'] ) ), 'try_aura_save_video_data' ) ) {
+			return;
+		}
+
 		if ( isset( $_POST['try_aura_video_data'] ) ) {
-			$video_data = (array) $_POST['try_aura_video_data'];
+			$video_data = wp_unslash( $_POST['try_aura_video_data'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$product_settings = array();
 
-			foreach ( $video_data as $attachment_id => $settings ) {
-				$settings = json_decode( wp_unslash( $settings ), true );
+			foreach ( (array) $video_data as $attachment_id => $settings ) {
+				$settings = json_decode( $settings, true );
 				if ( ! empty( $settings['url'] ) ) {
-					$product_settings[ $attachment_id ] = map_deep( $settings, 'sanitize_text_field' );
+					$product_settings[ (int) $attachment_id ] = map_deep( $settings, 'sanitize_text_field' );
 				}
 			}
 

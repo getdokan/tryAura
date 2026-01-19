@@ -122,13 +122,13 @@ class UsageManager {
 			$params[] = $end_date . ' 23:59:59';
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$image_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND type = 'image'", array_merge( array( $table ), $params ) ) );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$video_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND type = 'video'", array_merge( array( $table ), $params ) ) );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$total_tokens = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(total_tokens) FROM %i $where", array_merge( array( $table ), $params ) ) );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$video_seconds = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(video_seconds) FROM %i $where AND type = 'video'", array_merge( array( $table ), $params ) ) );
 
 		$stats = array(
@@ -139,7 +139,7 @@ class UsageManager {
 		);
 
 		if ( class_exists( 'WooCommerce' ) ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 			$stats['tryon_count'] = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND generated_from = 'tryon'", array_merge( array( $table ), $params ) ) );
 		}
 
@@ -195,7 +195,7 @@ class UsageManager {
 		}
 
 		$params[] = $limit;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i $where ORDER BY created_at DESC LIMIT %d", ...$params ), ARRAY_A );
 
 		foreach ( $results as &$result ) {

@@ -14,16 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 class ProductVideoGallery {
 
 	/**
-	 * Virtual ID prefix for videos.
-	 */
-	private const VIRTUAL_ID_PREFIX = -999000;
-
-	/**
 	 * Class constructor.
 	 */
 	public function __construct() {
 		// Use filters for better theme compatibility.
-		add_filter( 'woocommerce_product_get_gallery_image_ids', array( $this, 'inject_video_ids' ), 10, 2 );
 		add_filter( 'woocommerce_single_product_image_thumbnail_html', array( $this, 'render_video_gallery_item' ), 10, 2 );
 
 		// Enqueue scripts and styles.
@@ -31,34 +25,7 @@ class ProductVideoGallery {
 	}
 
 	/**
-	 * Inject virtual IDs for videos into the product gallery.
-	 *
-	 * @param array       $image_ids Array of image attachment IDs.
-	 * @param \WC_Product $product   The product object.
-	 *
-	 * @return array Modified array of IDs.
-	 */
-	public function inject_video_ids( array $image_ids, $product ): array {
-		$video_data = get_post_meta( $product->get_id(), AdminProductVideo::VIDEO_META_KEY, true );
-
-		if ( empty( $video_data ) ) {
-			return $image_ids;
-		}
-
-		$videos = is_array( $video_data ) && ( empty( $video_data ) || isset( $video_data[0] ) ) ? $video_data : array( $video_data );
-
-		foreach ( $videos as $index => $video ) {
-			if ( ! empty( $video['url'] ) ) {
-				// Use a negative ID to avoid conflicts with real attachments.
-				$image_ids[] = self::VIRTUAL_ID_PREFIX - $index;
-			}
-		}
-
-		return $image_ids;
-	}
-
-	/**
-	 * Render video gallery item when the virtual ID is encountered.
+	 * Render video gallery item when the attachment has video data.
 	 *
 	 * @param string $html          The original HTML.
 	 * @param int    $attachment_id The attachment ID.
@@ -66,10 +33,6 @@ class ProductVideoGallery {
 	 * @return string Modified HTML.
 	 */
 	public function render_video_gallery_item( string $html, int $attachment_id ): string {
-		if ( $attachment_id > self::VIRTUAL_ID_PREFIX ) {
-			return $html;
-		}
-
 		global $product;
 
 		if ( ! $product ) {
@@ -78,18 +41,11 @@ class ProductVideoGallery {
 
 		$video_data = get_post_meta( $product->get_id(), AdminProductVideo::VIDEO_META_KEY, true );
 
-		if ( empty( $video_data ) ) {
+		if ( empty( $video_data ) || ! is_array( $video_data ) || ! isset( $video_data[ $attachment_id ] ) ) {
 			return $html;
 		}
 
-		$videos = is_array( $video_data ) && ( empty( $video_data ) || isset( $video_data[0] ) ) ? $video_data : array( $video_data );
-		$index  = self::VIRTUAL_ID_PREFIX - $attachment_id;
-
-		if ( ! isset( $videos[ $index ] ) ) {
-			return $html;
-		}
-
-		$video = $videos[ $index ];
+		$video = $video_data[ $attachment_id ];
 
 		if ( empty( $video['url'] ) ) {
 			return $html;
@@ -103,28 +59,27 @@ class ProductVideoGallery {
 		}
 
 		if ( empty( $thumbnail_url ) ) {
+			$thumbnail_url = wp_get_attachment_image_url( $attachment_id, 'woocommerce_thumbnail' );
+		}
+
+		if ( empty( $thumbnail_url ) ) {
 			$thumbnail_url = wc_placeholder_img_src();
 		}
 
-		$html = sprintf(
-			'<div class="woocommerce-product-gallery__image try-aura-video-thumbnail" data-thumb="%s" data-video-url="%s" data-video-platform="%s">',
-			esc_url( $thumbnail_url ),
-			esc_url( $video['url'] ),
-			esc_attr( $video['platform'] )
+		// Add video-related data attributes to the existing gallery item
+		$html = preg_replace(
+			'/class=["\']/',
+			'data-try-aura-video-url="' . esc_url( $video['url'] ) . '" data-try-aura-video-platform="' . esc_attr( $video['platform'] ) . '" $0try-aura-video-item try-aura-video-thumbnail ',
+			$html,
+			1
 		);
-		$html .= sprintf(
-			'<a href="%s" class="try-aura-video-link">',
-			esc_url( $thumbnail_url )
-		);
-		$html .= sprintf(
-			'<img src="%s" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="%s" data-src="%s" data-large_image="%s" data-large_image_width="1000" data-large_image_height="1000">',
-			esc_url( $thumbnail_url ),
-			__( 'Product Video', 'try-aura' ),
-			esc_url( $thumbnail_url ),
-			esc_url( $thumbnail_url )
-		);
-		$html .= '<div class="try-aura-video-icon-overlay"><svg viewBox="0 0 24 24" width="48" height="48" fill="white"><path d="M8 5v14l11-7z"/></svg></div>';
-		$html .= '</a></div>';
+
+		// Insert video icon overlay before the closing tag of the gallery image wrapper
+		$video_overlay = '<div class="try-aura-video-icon-overlay"><svg viewBox="0 0 24 24" width="48" height="48" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg></div>';
+
+		if ( strpos( $html, '</' ) !== false ) {
+			$html = preg_replace( '/<\/[a-z0-9]+>\s*$/i', $video_overlay . '$0', $html );
+		}
 
 		return $html;
 	}
@@ -137,8 +92,24 @@ class ProductVideoGallery {
 			return;
 		}
 
-		wp_enqueue_style( 'try-aura-product-video-frontend', plugins_url( 'assets/css/product-video.css', TRYAURA_FILE ), array(), TRYAURA_PLUGIN_VERSION );
-		wp_enqueue_script( 'try-aura-product-video-frontend', plugins_url( 'assets/js/product-video.js', TRYAURA_FILE ), array( 'jquery' ), TRYAURA_PLUGIN_VERSION, true );
+		$script_path = 'build/frontend/product-video/index.js';
+		$style_path  = 'build/frontend/product-video/style-index.css';
+		$asset_path  = TRYAURA_DIR . '/build/frontend/product-video/index.asset.php';
+
+		$deps    = array( 'jquery', 'wp-element', 'wp-components', 'wp-i18n' );
+		$version = TRYAURA_PLUGIN_VERSION;
+
+		if ( file_exists( $asset_path ) ) {
+			$asset   = include $asset_path;
+			$deps    = array_unique( array_merge( $deps, $asset['dependencies'] ?? array() ) );
+			$version = $asset['version'] ?? $version;
+		}
+
+		if ( file_exists( TRYAURA_DIR . '/' . $style_path ) ) {
+			wp_enqueue_style( 'try-aura-product-video-frontend', plugins_url( $style_path, TRYAURA_FILE ), array( 'wp-components' ), $version );
+		}
+
+		wp_enqueue_script( 'try-aura-product-video-frontend', plugins_url( $script_path, TRYAURA_FILE ), $deps, $version, true );
 
 		global $post;
 

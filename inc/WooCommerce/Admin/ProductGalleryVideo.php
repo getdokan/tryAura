@@ -22,7 +22,44 @@ class ProductGalleryVideo {
 	public function __construct() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'woocommerce_process_product_meta', array( $this, 'save_video_meta' ) );
+
+		add_action( 'woocommerce_admin_after_product_gallery_item', array( $this, 'get_gallery_product_video_btn' ), 10, 2 );
 	}
+
+	/**
+	 * Get button for gallery image.
+	 *
+	 * @param int $post_id       Post ID.
+	 * @param int $attachment_id Attachment id.
+	 */
+	public function get_gallery_product_video_btn( $post_id, $attachment_id ): void {
+		static $nonce_printed = false;
+
+		if ( ! $nonce_printed ) {
+			wp_nonce_field( 'try_aura_save_video_data', 'try_aura_video_data_nonce' );
+			$nonce_printed = true;
+		}
+
+		$product_video_data = get_post_meta( $post_id, self::VIDEO_META_KEY, true );
+		$settings           = array();
+
+		if ( ! empty( $product_video_data[ $attachment_id ] ) && is_array( $product_video_data[ $attachment_id ] ) ) {
+			$settings = $product_video_data[ $attachment_id ];
+		}
+
+		$classes = ! empty( $settings ) ? ' try-aura-edit-video' : ' try-aura-add-video';
+		$icon_class = ! empty( $settings ) ? 'dashicons-edit' : 'dashicons-plus';
+		?>
+		<div class="tryaura try-aura-product-video-wrapp absolute bottom-0 left-0 right-0 z-10">
+			<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center gap-[5px] bg-[var(--color-primary)] text-white no-underline py-[5px] text-[11px] font-semibold leading-none hover:bg-[var(--color-primary-dark)] <?php echo esc_attr( $classes ); ?>" data-attachment-id="<?php echo esc_attr( $attachment_id ); ?>">
+				<span class="dashicons <?php echo esc_attr( $icon_class ); ?> !text-[14px] !w-[14px] !h-[14px] !flex !items-center !justify-center"></span>
+				<?php esc_html_e( 'Video', 'try-aura' ); ?>
+			</a>
+			<input type="hidden" class="try-aura-video-data-input" name="try_aura_video_data[<?php echo esc_attr( $attachment_id ); ?>]" value='<?php echo wp_json_encode( $settings ); ?>'>
+		</div>
+		<?php
+	}
+
 
 	/**
 	 * Enqueue admin assets for the product edit page.
@@ -73,6 +110,8 @@ class ProductGalleryVideo {
 				'nonce'      => wp_create_nonce( 'wp_rest' ),
 				'productId'  => $product_id,
 				'videoData'  => $video_data ? $video_data : null,
+				'videoText'  => __( 'Video', 'try-aura' ),
+				'addVideoText' => __( 'Add video', 'try-aura' ),
 				'apiKey'     => $api_key,
 				'imageModel' => $image_model,
 			)
@@ -85,9 +124,22 @@ class ProductGalleryVideo {
 	 * @param int $post_id The product ID.
 	 */
 	public function save_video_meta( int $post_id ): void {
+		if ( ! isset( $_POST['try_aura_video_data_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['try_aura_video_data_nonce'] ) ), 'try_aura_save_video_data' ) ) {
+			return;
+		}
+
 		if ( isset( $_POST['try_aura_video_data'] ) ) {
-			$video_data = json_decode( stripslashes( $_POST['try_aura_video_data'] ), true );
-			update_post_meta( $post_id, self::VIDEO_META_KEY, $video_data );
+			$video_data = wp_unslash( $_POST['try_aura_video_data'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$product_settings = array();
+
+			foreach ( (array) $video_data as $attachment_id => $settings ) {
+				$settings = json_decode( $settings, true );
+				if ( ! empty( $settings['url'] ) ) {
+					$product_settings[ (int) $attachment_id ] = map_deep( $settings, 'sanitize_text_field' );
+				}
+			}
+
+			update_post_meta( $post_id, self::VIDEO_META_KEY, $product_settings );
 		}
 	}
 }

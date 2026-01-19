@@ -55,6 +55,9 @@ class Plugin {
 		if ( $container->has( 'dashboard_controller' ) ) {
 			$container->get( 'dashboard_controller' );
 		}
+		if ( $container->has( 'video_thumbnail_controller' ) ) {
+			$container->get( 'video_thumbnail_controller' );
+		}
 
 		// Register assets.
 		if ( $container->has( 'assets' ) ) {

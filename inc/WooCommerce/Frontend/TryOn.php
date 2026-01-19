@@ -77,9 +77,11 @@ class TryOn {
 	 * @return string Redirect URL.
 	 */
 	public function redirect_to_try_on( $redirect, $user ) {
-		if ( ! empty( $_REQUEST['tryaura_redirect_to'] ) ) {
-			return esc_url_raw( wp_unslash( $_REQUEST['tryaura_redirect_to'] ) );
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		if ( ! empty( $_GET['tryaura_redirect_to'] ) ) {
+			return esc_url_raw( wp_unslash( $_GET['tryaura_redirect_to'] ) );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		return $redirect;
 	}

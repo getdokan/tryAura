@@ -40,6 +40,7 @@ module.exports = {
 			'./src/admin/woocommerce-products-list/index.tsx',
 		'admin/product-video-gallery/index':
 			'./src/admin/product-video-gallery/index.tsx',
+		'frontend/product-video/index': './src/frontend/product-video/index.tsx',
 	},
 	plugins: [
 		...defaultConfig.plugins.filter(

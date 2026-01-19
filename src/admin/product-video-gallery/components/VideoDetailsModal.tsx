@@ -7,13 +7,20 @@ import { Youtube, Video, Upload, X } from 'lucide-react';
 
 declare const wp: any;
 
-const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
+const VideoDetailsModal = ( {
+	initialData,
+	onClose,
+	onSave,
+	originalImageUrl,
+} ) => {
 	const [ platform, setPlatform ] = useState(
 		initialData?.platform || 'youtube'
 	);
 	const [ url, setUrl ] = useState( initialData?.url || '' );
 	const [ useCustomThumbnail, setUseCustomThumbnail ] = useState(
-		initialData?.useCustomThumbnail || false
+		initialData?.useCustomThumbnail !== undefined
+			? initialData.useCustomThumbnail
+			: false
 	);
 	const [ thumbnailId, setThumbnailId ] = useState(
 		initialData?.thumbnailId || null
@@ -21,6 +28,67 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 	const [ thumbnailUrl, setThumbnailUrl ] = useState(
 		initialData?.thumbnailUrl || ''
 	);
+	const [ generatedThumbnail, setGeneratedThumbnail ] = useState( '' );
+	const [ isSaving, setIsSaving ] = useState( false );
+
+	const getYoutubeId = ( videoUrl: string ) => {
+		const pattern =
+			/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+		const match = videoUrl.match( pattern );
+		return match ? match[ 1 ] : null;
+	};
+
+	const generateFromVideo = async (): Promise< string | null > => {
+		if ( ! url ) {
+			return null;
+		}
+
+		if ( platform === 'youtube' ) {
+			const videoId = getYoutubeId( url );
+			if ( videoId ) {
+				const thumbUrl = `https://img.youtube.com/vi/${ videoId }/hqdefault.jpg`;
+				setGeneratedThumbnail( thumbUrl );
+				return thumbUrl;
+			}
+		} else if ( platform === 'site_stored' ) {
+			return new Promise( ( resolve ) => {
+				try {
+					const video = document.createElement( 'video' );
+					video.src = url;
+					video.crossOrigin = 'anonymous';
+					video.currentTime = 1;
+					video.onloadeddata = () => {
+						const canvas = document.createElement( 'canvas' );
+						canvas.width = video.videoWidth;
+						canvas.height = video.videoHeight;
+						const ctx = canvas.getContext( '2d' );
+						if ( ctx ) {
+							ctx.drawImage(
+								video,
+								0,
+								0,
+								canvas.width,
+								canvas.height
+							);
+							const thumbUrl = canvas.toDataURL(
+								'image/jpeg'
+							);
+							setGeneratedThumbnail( thumbUrl );
+							resolve( thumbUrl );
+						} else {
+							resolve( null );
+						}
+					};
+					video.onerror = () => resolve( null );
+				} catch ( e ) {
+					// eslint-disable-next-line no-console
+					console.error( 'Error generating thumbnail', e );
+					resolve( null );
+				}
+			} );
+		}
+		return null;
+	};
 
 	const openMediaModal = () => {
 		const frame = wp.media( {
@@ -62,7 +130,7 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 		frame.open();
 	};
 
-	const handleSave = () => {
+	const handleSave = async () => {
 		if ( ! platform ) {
 			toast.error( __( 'Please select a video platform.', 'try-aura' ) );
 			return;
@@ -71,18 +139,33 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 			toast.error( __( 'Please enter a valid video URL.', 'try-aura' ) );
 			return;
 		}
-		if ( ! thumbnailUrl && useCustomThumbnail ) {
+		if ( ! thumbnailUrl && ! originalImageUrl && useCustomThumbnail ) {
 			toast.error( __( 'Please select a video thumbnail.', 'try-aura' ) );
 			return;
 		}
 
-		onSave( {
-			platform,
-			url,
-			useCustomThumbnail,
-			thumbnailId,
-			thumbnailUrl,
-		} );
+		setIsSaving( true );
+
+		try {
+			let currentGeneratedThumbnail = generatedThumbnail;
+			if ( ! useCustomThumbnail ) {
+				currentGeneratedThumbnail = await generateFromVideo();
+			}
+
+			await onSave( {
+				platform,
+				url,
+				useCustomThumbnail,
+				thumbnailId,
+				thumbnailUrl,
+				generatedThumbnail: currentGeneratedThumbnail,
+			} );
+		} catch ( e ) {
+			// eslint-disable-next-line no-console
+			console.error( 'Save error', e );
+		} finally {
+			setIsSaving( false );
+		}
 	};
 
 	return (
@@ -90,7 +173,7 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 			onRequestClose={ () => {
 				return '';
 			} }
-			className="tryaura tryaura-add-video-modal-url"
+			className="tryaura tryaura-add-video-modal-url rounded-[3px] [&_.components-modal__content]:p-0 [&_.components-modal__content]:m-0"
 			__experimentalHideHeader
 			size="medium"
 			style={ { maxHeight: '90vh', overflowY: 'auto' } }
@@ -122,7 +205,10 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 						</span>
 						<ModernSelect
 							value={ platform }
-							onChange={ ( val: any ) => setPlatform( val ) }
+							onChange={ ( val: any ) => {
+								setUrl( '' );
+								setPlatform( val );
+							} }
 							options={ [
 								{
 									label: __( 'Youtube Video', 'try-aura' ),
@@ -177,26 +263,20 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 
 					<div className="flex flex-col gap-[32px]">
 						<Checkbox
-							id="useCustomThumbnail"
 							checked={ useCustomThumbnail }
-							onChange={ ( e ) =>
-								setUseCustomThumbnail(
-									( e.target as HTMLInputElement ).checked
-								)
+							onChange={ ( e: any ) =>
+								setUseCustomThumbnail( e.target.checked )
 							}
 						>
-							<label
-								htmlFor="useCustomThumbnail"
-								className="text-sm text-gray-700 cursor-pointer"
-							>
+							<span className="text-[15px] font-medium text-[#7D7D7D]">
 								{ __(
 									'Use Custom video Thumbnail?',
 									'try-aura'
 								) }
-							</label>
+							</span>
 						</Checkbox>
 
-						{ useCustomThumbnail && (
+						{ useCustomThumbnail ? (
 							<div className="">
 								<Button
 									variant="outline-primary"
@@ -212,29 +292,62 @@ const VideoDetailsModal = ( { initialData, onClose, onSave } ) => {
 									) }
 								</Button>
 
-								{ thumbnailUrl && (
+								{ ( thumbnailUrl || originalImageUrl ) && (
 									<div className="rounded-lg border border-gray-200 w-50 h-50 overflow-hidden mt-8">
 										<img
-											src={ thumbnailUrl }
+											src={
+												thumbnailUrl || originalImageUrl
+											}
 											alt="Thumbnail preview"
 											className="object-fill h-full w-full"
 										/>
 									</div>
 								) }
 							</div>
+						) : (
+							generatedThumbnail && (
+								<div className="">
+									<span className="block text-xs font-medium text-gray-500 mb-2">
+										{ __(
+											'Generated Preview:',
+											'try-aura'
+										) }
+									</span>
+									<div className="rounded-lg border border-gray-200 w-50 h-50 overflow-hidden">
+										<img
+											src={ generatedThumbnail }
+											alt="Generated thumbnail preview"
+											className="object-fill h-full w-full"
+										/>
+									</div>
+								</div>
+							)
 						) }
 					</div>
 				</div>
 
-				<div className="flex justify-end gap-3 p-[20px_24px]">
-					<Button variant="outline" onClick={ onClose }>
-						{ __( 'Cancel', 'try-aura' ) }
-					</Button>
-					<Button onClick={ handleSave }>
-						{ initialData
-							? __( 'Update Video', 'try-aura' )
-							: __( 'Add Video', 'try-aura' ) }
-					</Button>
+				<div className="flex justify-between gap-3 p-[20px_24px]">
+					<div>
+						{ initialData && (
+							<Button
+								variant="outline"
+								className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+								onClick={ () => onSave( {} ) }
+							>
+								{ __( 'Remove Video', 'try-aura' ) }
+							</Button>
+						) }
+					</div>
+					<div className="flex gap-3">
+						<Button variant="outline" onClick={ onClose }>
+							{ __( 'Cancel', 'try-aura' ) }
+						</Button>
+						<Button onClick={ handleSave } loading={ isSaving }>
+							{ initialData
+								? __( 'Update Video', 'try-aura' )
+								: __( 'Add Video', 'try-aura' ) }
+						</Button>
+					</div>
 				</div>
 			</div>
 		</Modal>

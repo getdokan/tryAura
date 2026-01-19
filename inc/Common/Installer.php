@@ -1,8 +1,15 @@
 <?php
+/**
+ * Installer.
+ *
+ * @package TryAura
+ */
 
 namespace Dokan\TryAura\Common;
 
 use Dokan\TryAura\Database\UsageManager;
+
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
  * Installer class.

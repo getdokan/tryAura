@@ -35,7 +35,7 @@ class ProductVideoGallery {
 	public function render_video_gallery_item( string $html, int $attachment_id ): string {
 		global $product;
 
-		if ( ! $product ) {
+		if ( ! $product || (int) $attachment_id === (int) $product->get_image_id() ) {
 			return $html;
 		}
 

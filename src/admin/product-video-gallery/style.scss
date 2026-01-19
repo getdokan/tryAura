@@ -1,7 +1,6 @@
 @import "../../base-tailwind.css";
 
 /* Ensure the parent is relative */
-#postimagediv .inside,
 .woocommerce_product_images .product_images .image {
 	position: relative;
 }

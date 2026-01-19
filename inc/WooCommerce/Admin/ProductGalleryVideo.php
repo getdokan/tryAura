@@ -23,7 +23,6 @@ class ProductGalleryVideo {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'woocommerce_process_product_meta', array( $this, 'save_video_meta' ) );
 
-		add_filter( 'admin_post_thumbnail_html', array( $this, 'get_main_image_video_btn' ), 10, 3 );
 		add_action( 'woocommerce_admin_after_product_gallery_item', array( $this, 'get_gallery_product_video_btn' ), 10, 2 );
 	}
 
@@ -54,23 +53,6 @@ class ProductGalleryVideo {
 		<?php
 	}
 
-	/**
-	 * Get button for main product image.
-	 *
-	 * @param string $content       Image content.
-	 * @param int    $post_id       Post ID.
-	 * @param int    $attachment_id Attachment ID.
-	 * @return string
-	 */
-	public function get_main_image_video_btn( $content, $post_id, $attachment_id ): string {
-		if ( 'product' !== get_post_type( $post_id ) ) {
-			return $content;
-		}
-
-		ob_start();
-		$this->get_gallery_product_video_btn( $post_id, $attachment_id );
-		return $content . ob_get_clean();
-	}
 
 	/**
 	 * Enqueue admin assets for the product edit page.

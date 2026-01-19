@@ -114,71 +114,6 @@ declare const tryAuraVideo: any;
 				` );
 				}
 			);
-
-			// For Featured Image
-			const $mainImage = $( '#postimagediv .inside' );
-			const mainAttachmentId = $( '#_thumbnail_id' ).val();
-			if (
-				mainAttachmentId &&
-				mainAttachmentId !== '-1' &&
-				! $mainImage.find( '.try-aura-product-gallery-video' ).length
-			) {
-				const videoData =
-					tryAuraVideo.videoData &&
-					tryAuraVideo.videoData[ mainAttachmentId ]
-						? JSON.stringify(
-								tryAuraVideo.videoData[ mainAttachmentId ]
-						  )
-						: '';
-
-				const buttonClass = videoData
-					? 'try-aura-edit-video'
-					: 'try-aura-add-video';
-				const iconClass = videoData
-					? 'dashicons-edit'
-					: 'dashicons-plus';
-
-				const dataObj =
-					tryAuraVideo.videoData &&
-					tryAuraVideo.videoData[ mainAttachmentId ]
-						? tryAuraVideo.videoData[ mainAttachmentId ]
-						: null;
-
-				const $img = $mainImage.find( 'img' );
-				if ( $img.length ) {
-					if ( ! $img.data( 'original-src' ) ) {
-						$img.data( 'original-src', $img.attr( 'src' ) );
-					}
-					if ( ! $img.data( 'original-id' ) ) {
-						$img.data( 'original-id', mainAttachmentId );
-					}
-					if ( ! $img.data( 'original-srcset' ) ) {
-						$img.data( 'original-srcset', $img.attr( 'srcset' ) );
-					}
-					if ( ! $img.data( 'original-sizes' ) ) {
-						$img.data( 'original-sizes', $img.attr( 'sizes' ) );
-					}
-
-					if (
-						dataObj?.useCustomThumbnail &&
-						dataObj?.thumbnailUrl
-					) {
-						$img.attr( 'src', dataObj.thumbnailUrl )
-							.removeAttr( 'srcset' )
-							.removeAttr( 'sizes' );
-					}
-				}
-
-				$mainImage.append( `
-					<div class="tryaura try-aura-product-video-wrapp absolute bottom-0 left-0 right-0 z-10">
-						<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center gap-1.25 bg-primary text-white no-underline py-1.25 text-[11px] font-semibold leading-none hover:bg-primary-dark ${ buttonClass }" data-attachment-id="${ mainAttachmentId }">
-							<span class="dashicons ${ iconClass } text-[14px]! w-3.5! h-3.5! flex! items-center! justify-center!"></span>
-							${ tryAuraVideo.videoText }
-						</a>
-						<input type="hidden" class="try-aura-video-data-input" name="try_aura_video_data[${ mainAttachmentId }]" value='${ videoData }'>
-					</div>
-				` );
-			}
 		};
 
 		addVideoButtons();
@@ -340,17 +275,6 @@ declare const tryAuraVideo: any;
 			observer.observe( galleryList, { childList: true } );
 		}
 
-		const mainImageInside = document.querySelector(
-			'#postimagediv .inside'
-		);
-		if ( mainImageInside ) {
-			const observer = new MutationObserver( () => {
-				addVideoButtons();
-				addGlobalVideoButton();
-			} );
-			observer.observe( mainImageInside, { childList: true } );
-		}
-
 		$( 'body' ).on(
 			'click',
 			'.try-aura-product-gallery-video',
@@ -362,9 +286,7 @@ declare const tryAuraVideo: any;
 				const currentData = JSON.parse( $input.val() || '{}' );
 
 				const $li = $btn.closest( 'li.image' );
-				const $img = $li.length
-					? $li.find( 'img' )
-					: $( '#postimagediv .inside img' );
+				const $img = $li.find( 'img' );
 				const originalImageUrl = $img.attr( 'src' );
 
 				renderModal(
@@ -424,36 +346,27 @@ declare const tryAuraVideo: any;
 							}
 						}
 
-						const isMainImage = ! $btn.closest( 'li.image' ).length;
 						const $parentLi = $btn.closest( 'li.image' );
 						const $icon = $btn.find( '.dashicons' );
 
 						if ( String( targetId ) !== String( attachmentId ) ) {
-							if ( isMainImage ) {
-								$( '#_thumbnail_id' )
-									.val( targetId )
+							const $galleryInput = $( '#product_image_gallery' );
+							const ids = $galleryInput
+								.val()
+								.split( ',' )
+								.filter( Boolean );
+							const index = ids.indexOf(
+								attachmentId.toString()
+							);
+							if ( index !== -1 ) {
+								ids[ index ] = targetId.toString();
+								$galleryInput
+									.val( ids.join( ',' ) )
 									.trigger( 'change' );
-							} else {
-								const $galleryInput = $(
-									'#product_image_gallery'
-								);
-								const ids = $galleryInput
-									.val()
-									.split( ',' )
-									.filter( Boolean );
-								const index = ids.indexOf(
-									attachmentId.toString()
-								);
-								if ( index !== -1 ) {
-									ids[ index ] = targetId.toString();
-									$galleryInput
-										.val( ids.join( ',' ) )
-										.trigger( 'change' );
-								}
-								$parentLi
-									.data( 'attachment_id', targetId )
-									.attr( 'data-attachment_id', targetId );
 							}
+							$parentLi
+								.data( 'attachment_id', targetId )
+								.attr( 'data-attachment_id', targetId );
 
 							if (
 								tryAuraVideo.videoData &&

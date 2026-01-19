@@ -17,7 +17,7 @@ const { replaceInFile } = require( 'replace-in-file' );
 ( async () => {
 	try {
 		const root = path.resolve( __dirname, '..' );
-		const pluginSlug = path.basename( root ); // expects plug-version-switcher
+		const pluginSlug = 'try-aura';
 
 		// 1) Read version from package.json
 		const pkgPath = path.join( root, 'package.json' );

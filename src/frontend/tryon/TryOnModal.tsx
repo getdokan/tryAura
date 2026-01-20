@@ -6,6 +6,7 @@ import UserImageSection from './UserImageSection';
 import ProductImagesSection from './ProductImagesSection';
 import Output from './Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
+import { Button } from '../../components';
 
 type TryOnModalProps = {
 	productImages: string[];
@@ -18,7 +19,10 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		'idle' | 'fetching' | 'generating' | 'parsing' | 'done' | 'error'
 	>( 'idle' );
 	const [ message, setMessage ] = useState< string >(
-		__( 'Select or capture one or more photos, then click Try', 'try-aura' )
+		__(
+			'Select or capture one or more photos, then click Try On',
+			'try-aura'
+		)
 	);
 	const [ error, setError ] = useState< string | null >( null );
 	const [ generatedUrl, setGeneratedUrl ] = useState< string | null >( null );
@@ -381,14 +385,14 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 
 	return (
 		<>
-			<div className="ai-enhancer-modal fixed inset-[0px] bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-[200000]">
-				<div className="ai-enhancer-modal__content bg-[#fff] rounded-[3px] max-w-[1000px] w-[90vw] h-auto max-h-[90vh] overflow-y-auto">
-					<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] p-[16px_24px]">
+			<div className="ai-enhancer-modal fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-200000">
+				<div className="ai-enhancer-modal__content bg-white rounded-[3px] max-w-250 w-[90vw] h-auto max-h-[90vh] overflow-y-auto">
+					<div className="flex flex-row justify-between border-b border-b-[#E9E9E9] p-[16px_24px]">
 						<h2 className="m-0 font-[700] font-bold text-[18px] text-[#25252D]">
 							{ __( 'Try-On Product', 'try-aura' ) }
 						</h2>
 						<button
-							className="w-[16px] h-[16px] cursor-pointer p-0 m-0 bg-transparent"
+							className="w-4 h-4 cursor-pointer p-0 m-0 bg-transparent"
 							onClick={ onClose }
 							aria-label="Close modal"
 							disabled={ isBusy }
@@ -397,7 +401,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 						</button>
 					</div>
 
-					<div className="flex flex-col sm:flex-row gap-[24px] mt-[24px] pl-[24px] pr-[24px]">
+					<div className="flex flex-col sm:flex-row gap-6 mt-6 pl-6 pr-6">
 						<UserImageSection
 							onFileChange={ onFileChange }
 							userImages={ userImages }
@@ -427,26 +431,28 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 						/>
 					</div>
 					{ /* Actions */ }
-					<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
-						<button
-							className="bg-[#000000] text-white px-[10px] sm:px-[50px] py-[10px] cursor-pointer font-[500] text-[14px]"
+					<div className="mt-6 border-t border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-3">
+						<Button
+							className="bg-black hover:bg-black/90"
 							onClick={ doTry }
 							disabled={
 								isBusy ||
 								userImages.length === 0 ||
 								selectedProductImages.length === 0
 							}
+							loading={ isBusy }
 						>
 							{ isBusy
 								? __( 'Trying…', 'try-aura' )
 								: __( 'Try On', 'try-aura' ) }
-						</button>
-						<button
-							className="bg-white text-black px-[10px] sm:px-[50px] py-[10px] cursor-pointer border border-[#E9E9E9] font-[500] text-[14px]"
+						</Button>
+						<Button
 							onClick={ addToCart }
+							variant="outline"
+							disabled={ isBusy }
 						>
 							{ __( 'Add to Cart', 'try-aura' ) }
-						</button>
+						</Button>
 					</div>
 				</div>
 			</div>

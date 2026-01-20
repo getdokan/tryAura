@@ -27,7 +27,7 @@ const Button = forwardRef< HTMLButtonElement, ButtonProps >( function Button(
 
 	if ( variant === 'outline' ) {
 		classNames =
-			'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-white px-3 py-2 text-[14px] text-gray-900 inset-ring inset-ring-gray-300 hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
+			'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-white px-3 py-2 text-[14px] text-neutral-900 inset-ring inset-ring-neutral-300 hover:bg-neutral-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 	}
 
 	if ( variant === 'outline-primary' ) {

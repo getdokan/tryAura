@@ -183,7 +183,7 @@ function ImageConfigInputs( { doGenerate } ) {
 						: __( 'Prompt (Optional)', 'try-aura' ) }
 				</span>
 				<textarea
-					className="border border-[#E9E9E9] placeholder-[#A5A5AA]"
+					className="border border-[#E9E9E9] placeholder-[#A5A5AA] max-h-44 focus:shadow-none focus:ring-1 focus:ring-primary"
 					required
 					value={ imageConfigData?.optionalPrompt ?? '' }
 					onChange={ ( e: any ) =>

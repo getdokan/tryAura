@@ -52,7 +52,8 @@ const ModernSelect = ( {
 					type="button"
 					className={ twMerge(
 						'w-full p-[10px_16px] border border-[#E9E9E9] rounded-[5px] flex items-center justify-between bg-white focus:outline-none cursor-pointer',
-						disabled && 'opacity-50 cursor-not-allowed'
+						disabled && 'opacity-50 cursor-not-allowed',
+						open && 'ring-1 ring-primary'
 					) }
 					aria-haspopup="listbox"
 					aria-expanded={ open }

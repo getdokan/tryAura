@@ -17,6 +17,7 @@ function Index( {
 	activeTab,
 	setUserImages,
 	error,
+	isBusy,
 } ) {
 	return (
 		<div className="w-full sm:w-1/3 max-h-[533px] overflow-auto">
@@ -49,7 +50,8 @@ function Index( {
 					}
 				} }
 				value={ activeTab }
-				className="mb-[20px] flex w-full"
+				className="mb-5 flex w-full"
+				disabled={ isBusy }
 			/>
 			<div className="flex flex-wrap gap-[8px] w-full">
 				{ activeTab === 'upload' && (

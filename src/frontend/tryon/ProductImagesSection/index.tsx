@@ -6,10 +6,12 @@ function Index( {
 	productImages,
 	selectedProductImages,
 	onToggleImage,
+	isBusy,
 }: {
 	productImages: string[];
 	selectedProductImages: string[];
 	onToggleImage: ( url: string ) => void;
+	isBusy: boolean;
 } ) {
 	return (
 		<div className="w-full sm:w-1/3">
@@ -24,12 +26,15 @@ function Index( {
 							<img
 								src={ url }
 								alt={ `Product ${ i + 1 }` }
-								onClick={ () => onToggleImage( url ) }
+								onClick={ () =>
+									! isBusy && onToggleImage( url )
+								}
 								className={ twMerge(
 									'w-full aspect-square object-contain rounded-[4px] cursor-pointer',
 									isSelected
 										? 'border-2 border-black p-[2px]'
-										: 'border border-solid border-[#eee]'
+										: 'border border-solid border-[#eee]',
+									isBusy && 'cursor-not-allowed'
 								) }
 							/>
 							{ isSelected && (

@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { useState, useEffect, useRef } from '@wordpress/element';
 import Star from '../../../images/star.gif';
 import Congrats from '../../../images/congrats.gif';
+import { Button } from '../../../components';
 
 function Index( { generatedUrl, message, isBusy, status } ) {
 	const [ showCongrats, setShowCongrats ] = useState( false );
@@ -62,17 +63,16 @@ function Index( { generatedUrl, message, isBusy, status } ) {
 				</div>
 			) }
 			{ generatedUrl && ! isBusy ? (
-				<div className="flex gap-2 mt-2 justify-end">
-					<a
-						className={ `bg-[#000000] text-white px-[50px] py-[10px] cursor-pointer mx-auto ${
-							isBusy ? 'opacity-60 cursor-not-allowed' : ''
-						}` }
+				<div className="flex gap-2 mt-2 justify-center">
+					<Button
+						type="link"
+						className="bg-black hover:bg-black/90"
+						disabled={ isBusy }
 						href={ isBusy ? undefined : generatedUrl }
 						download={ isBusy ? undefined : 'tryon.png' }
-						aria-disabled={ isBusy }
 					>
 						{ __( 'Download', 'try-aura' ) }
-					</a>
+					</Button>
 				</div>
 			) : null }
 		</div>

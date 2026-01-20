@@ -415,12 +415,14 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 							activeTab={ activeTab }
 							setUserImages={ setUserImages }
 							error={ error }
+							isBusy={ isBusy }
 						/>
 
 						<ProductImagesSection
 							productImages={ productImages }
 							selectedProductImages={ selectedProductImages }
 							onToggleImage={ toggleProductImage }
+							isBusy={ isBusy }
 						/>
 
 						<Output

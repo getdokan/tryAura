@@ -435,7 +435,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 					{ /* Actions */ }
 					<div className="mt-6 border-t border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-3">
 						<Button
-							className="bg-black hover:bg-black/90"
+							className="bg-black hover:bg-black/90 disabled:bg-[rgba(241,241,244,1)] disabled:text-[rgba(165,165,170,1)]"
 							onClick={ doTry }
 							disabled={
 								isBusy ||
@@ -446,14 +446,14 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 						>
 							{ isBusy
 								? __( 'Trying…', 'try-aura' )
-								: __( 'Try On', 'try-aura' ) }
+								: __( 'TRY ON', 'try-aura' ) }
 						</Button>
 						<Button
 							onClick={ addToCart }
 							variant="outline"
 							disabled={ isBusy }
 						>
-							{ __( 'Add to Cart', 'try-aura' ) }
+							{ __( 'Add To cart', 'try-aura' ) }
 						</Button>
 					</div>
 				</div>

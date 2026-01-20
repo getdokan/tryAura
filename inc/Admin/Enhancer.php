@@ -13,6 +13,8 @@ class Enhancer {
 
 	/**
 	 * Class constructor.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function __construct() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
@@ -20,6 +22,8 @@ class Enhancer {
 
 	/**
 	 * Enqueue the enhancer UI only on post edit screens.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param string $hook Current admin page hook suffix.
 	 */

@@ -6,6 +6,8 @@ use Dokan\TryAura\ThirdParty\Packages\League\Container\Container as BaseContaine
 
 /**
  * Container class.
+ *
+ * @since PLUGIN_SINCE
  */
 class Container extends BaseContainer {
 

@@ -8,16 +8,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Handles Product Gallery Video functionality in the admin.
+ *
+ * @since PLUGIN_SINCE
  */
 class ProductGalleryVideo {
 
 	/**
 	 * Meta key for storing product video data.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public const VIDEO_META_KEY = '_try_aura_product_video';
 
 	/**
 	 * Class constructor.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function __construct() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
@@ -28,6 +34,8 @@ class ProductGalleryVideo {
 
 	/**
 	 * Get button for gallery image.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param int $post_id       Post ID.
 	 * @param int $attachment_id Attachment id.
@@ -63,6 +71,8 @@ class ProductGalleryVideo {
 
 	/**
 	 * Enqueue admin assets for the product edit page.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param string $hook Current admin page hook.
 	 */
@@ -120,6 +130,8 @@ class ProductGalleryVideo {
 
 	/**
 	 * Save video meta when product is saved.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param int $post_id The product ID.
 	 */

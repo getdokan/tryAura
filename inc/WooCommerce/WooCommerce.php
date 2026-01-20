@@ -10,16 +10,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * WooCommerce Integration class.
+ *
+ * @since PLUGIN_SINCE
  */
 class WooCommerce {
 
 	/**
 	 * Meta key for try-on visibility.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public const TRY_ON_META_KEY = '_try_aura_try_on_enabled';
 
 	/**
 	 * Class constructor.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function __construct() {
 		if ( ! $this->is_woocommerce_active() ) {
@@ -45,6 +51,8 @@ class WooCommerce {
 
 	/**
 	 * Check if WooCommerce is active.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	private function is_woocommerce_active(): bool {
 		return class_exists( 'WooCommerce' );
@@ -52,6 +60,8 @@ class WooCommerce {
 
 	/**
 	 * Add "Try-on" column to product list.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param array $columns The existing columns.
 	 *
@@ -70,6 +80,8 @@ class WooCommerce {
 
 	/**
 	 * Render the "Try-on" column content.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param string $column The column name.
 	 * @param int    $product_id The product ID.
@@ -95,6 +107,8 @@ class WooCommerce {
 
 	/**
 	 * Enqueue admin assets.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param string $hook The current admin page hook suffix.
 	 */
@@ -139,6 +153,8 @@ class WooCommerce {
 
 	/**
 	 * Toggle try-on visibility via AJAX.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function toggle_try_on_ajax(): void {
 		check_ajax_referer( 'try_aura_toggle_nonce', 'nonce' );

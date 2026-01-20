@@ -8,10 +8,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Admin class for TryAura plugin.
+ *
+ * @since PLUGIN_SINCE
  */
 class Admin {
 	/**
 	 * Option key for storing API key.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @var string
 	 */
@@ -19,6 +23,8 @@ class Admin {
 
 	/**
 	 * Bootstrap admin hooks.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'register_admin_page' ) );
@@ -28,6 +34,8 @@ class Admin {
 
 	/**
 	 * Register the TryAura top-level admin page.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function register_admin_page(): void {
 		global $submenu;
@@ -51,6 +59,8 @@ class Admin {
 
 	/**
 	 * Register plugin settings (API key) and expose via REST for JS app.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function register_settings(): void {
 		register_setting(
@@ -72,6 +82,8 @@ class Admin {
 
 	/**
 	 * Enqueue admin assets only on our settings page.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function enqueue_assets( string $hook ): void {
 		if ( 'toplevel_page_try-aura' !== $hook ) {
@@ -103,7 +115,7 @@ class Admin {
 		}
 
 		wp_enqueue_script( 'try-aura-ai-models' );
-		
+
 		do_action( 'try_aura_register_admin_dashboard_assets' );
 
 		wp_enqueue_script( 'try-aura-admin' );
@@ -112,6 +124,8 @@ class Admin {
 
 	/**
 	 * Render the main admin page content.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function render_page(): void {
 		echo '<div class="wrap">';

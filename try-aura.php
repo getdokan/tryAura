@@ -18,10 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-// Use the necessary namespace.
 use Dokan\TryAura\DependencyManagement\Container;
 
-// Declare the $try_aura_container as global to access from the inside of the function.
 global $try_aura_container;
 
 // Instantiate the container.
@@ -36,6 +34,8 @@ $try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement
 
 /**
  * Get the container.
+ *
+ * @since PLUGIN_SINCE
  *
  * @return Container The global container instance.
  */

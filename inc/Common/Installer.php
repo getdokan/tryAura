@@ -2,6 +2,8 @@
 /**
  * Installer.
  *
+ * @since PLUGIN_SINCE
+ *
  * @package TryAura
  */
 
@@ -13,11 +15,15 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
  * Installer class.
+ *
+ * @since PLUGIN_SINCE
  */
 class Installer {
 
 	/**
 	 * Run the installer.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public static function activate() {
 		self::create_tables();
@@ -25,6 +31,8 @@ class Installer {
 
 	/**
 	 * Create required tables.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public static function create_tables() {
 		global $wpdb;

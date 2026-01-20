@@ -12,10 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Custom REST controller for TryAura settings.
+ *
+ * @since PLUGIN_SINCE
  */
 class SettingsController {
 	/**
 	 * REST API namespace.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @var string api namespace.
 	 */
@@ -24,6 +28,8 @@ class SettingsController {
 	/**
 	 * REST API base.
 	 *
+	 * @since PLUGIN_SINCE
+	 *
 	 * @var string  rest base.
 	 */
 	protected string $rest_base = 'settings';
@@ -31,12 +37,16 @@ class SettingsController {
 	/**
 	 * Option key for settings.
 	 *
+	 * @since PLUGIN_SINCE
+	 *
 	 * @var string option key.
 	 */
 	protected string $option_key = 'try_aura_settings';
 
 	/**
 	 * Class constructor.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function __construct() {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
@@ -44,6 +54,8 @@ class SettingsController {
 
 	/**
 	 * Register REST routes.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function register_routes(): void {
 		register_rest_route(
@@ -90,6 +102,8 @@ class SettingsController {
 
 	/**
 	 * Simple permissions check: only admins (manage_options).
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function permissions_check(): bool {
 		return current_user_can( 'manage_options' );
@@ -97,6 +111,8 @@ class SettingsController {
 
 	/**
 	 * GET callback: return current option value.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @return WP_REST_Response
 	 */
@@ -107,6 +123,8 @@ class SettingsController {
 
 	/**
 	 * POST callback: update option value.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 *
@@ -130,6 +148,8 @@ class SettingsController {
 
 	/**
 	 * Bulk enable/disable try-on for all products.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 *

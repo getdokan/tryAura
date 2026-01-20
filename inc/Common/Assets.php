@@ -6,10 +6,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
  * Assets class.
+ *
+ * @since PLUGIN_SINCE
  */
 class Assets {
 	/**
 	 * Constructor.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'register_all_scripts' ), 10 );
@@ -17,6 +21,8 @@ class Assets {
 
 	/**
 	 * Register all scripts and styles
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function register_all_scripts() {
 		$styles  = $this->get_styles();
@@ -31,6 +37,8 @@ class Assets {
 
 	/**
 	 * Localize scripts with necessary data
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @return void
 	 */
@@ -660,6 +668,8 @@ class Assets {
 	/**
 	 * Get styles.
 	 *
+	 * @since PLUGIN_SINCE
+	 *
 	 * @return array
 	 */
 	private function get_styles() {
@@ -708,6 +718,8 @@ class Assets {
 
 	/**
 	 * Get scripts.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @return array
 	 */
@@ -805,6 +817,8 @@ class Assets {
 	/**
 	 * Register styles
 	 *
+	 * @since PLUGIN_SINCE
+	 *
 	 * @param array $styles Assets to register.
 	 *
 	 * @return void
@@ -820,6 +834,8 @@ class Assets {
 
 	/**
 	 * Register scripts
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param array $scripts Assets to register.
 	 *
@@ -838,6 +854,8 @@ class Assets {
 
 	/**
 	 * Enqueue the scripts
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param array $scripts Assets to enqueue.
 	 *

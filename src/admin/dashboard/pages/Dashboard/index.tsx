@@ -9,6 +9,7 @@ import { addQueryArgs } from '@wordpress/url';
 import { DateRange } from 'react-day-picker';
 import { DateRangePicker } from '../../../../components';
 import { Slot } from '@wordpress/components';
+import UsageChart from './Components/UsageChart';
 
 
 function Index() {
@@ -93,12 +94,12 @@ function Index() {
 					loading={ loading }
 				/>
 				<Slot
-					name="try-aura-generated-video-count-card" 
+					name="try-aura-generated-video-count-card"
 					fillProps={{
 						StateCardItem,
 						stats,
 						Video,
-						loading,	
+						loading,
 					}}
 				/>
 				{ wcExists && (
@@ -118,16 +119,20 @@ function Index() {
 					loading={ loading }
 				/>
 				<Slot
-					name="try-aura-generated-video-duration-card" 
+					name="try-aura-generated-video-duration-card"
 					fillProps={{
 						StateCardItem,
 						stats,
 						loading,
 						Clock
-						
+
 					}}
 				/>
-				
+
+			</div>
+
+			<div className="mt-[32px]">
+				<UsageChart className="bg-white rounded-2xl border border-[rgba(230,230,230,1)] p-6 h-full w-full flex flex-col" />
 			</div>
 
 			<div className="mt-[32px] grid grid-cols-1 lg:grid-cols-3 gap-[32px]">

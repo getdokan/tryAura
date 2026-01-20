@@ -526,6 +526,7 @@ const PreviewModal = ( {
 								showGeneratedImage={ false }
 								limits={ { min: 1, max: 3 } }
 								className="col-span-1 md:col-span-3 max-h-133.25 overflow-auto"
+								isBusy={ isBusy }
 							/>
 						) }
 						<Slot

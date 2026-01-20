@@ -14,6 +14,7 @@ function OriginalImage( {
 	showSelection = true,
 	limits = { min: 1, max: 1 },
 	sectionTitle,
+	isBusy,
 }: {
 	imageUrls: string[];
 	multiple?: boolean;
@@ -24,6 +25,7 @@ function OriginalImage( {
 	showSelection?: boolean;
 	limits?: { min: number; max: number };
 	sectionTitle?: string;
+	isBusy: boolean;
 } ) {
 	const { generatedUrl } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
@@ -127,10 +129,10 @@ function OriginalImage( {
 						key={ idx }
 						className={ `relative rounded-[8px] overflow-hidden ${
 							showSelection
-								? 'cursor-pointer hover:opacity-90 transition-opacity'
+								? 'cursor-pointer hover:opacity-90 transition-opacity '
 								: ''
-						}` }
-						onClick={ () => toggleSelection( idx ) }
+						} ${ isBusy ? 'cursor-not-allowed opacity-50' : '' }` }
+						onClick={ () => ! isBusy && toggleSelection( idx ) }
 						role={ showSelection ? 'button' : undefined }
 						tabIndex={ showSelection ? 0 : -1 }
 						onKeyDown={ ( e ) => {

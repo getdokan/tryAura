@@ -39,7 +39,6 @@ const CustomTooltip = ( { active, payload } ) => {
 						</div>
 					) ) }
 				</div>
-				<div className="absolute left-1/2 -bottom-1 w-2 h-2 bg-[#1e293b] rotate-45 -translate-x-1/2" />
 			</div>
 		);
 	}

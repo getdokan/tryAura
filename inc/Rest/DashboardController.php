@@ -72,6 +72,14 @@ class DashboardController {
 				'methods'             => 'GET',
 				'callback'            => array( $this, 'get_chart_data' ),
 				'permission_callback' => array( $this, 'permissions_check' ),
+				'args'                => array(
+					'start_date' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'end_date'   => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
 			)
 		);
 

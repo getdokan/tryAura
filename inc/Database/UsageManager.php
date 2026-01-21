@@ -221,37 +221,24 @@ class UsageManager {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$results = $wpdb->get_results( $wpdb->prepare( $query, ...$params ), ARRAY_A );
 
-
-		// Fill missing dates
-		$chart_data = [];
-		$period     = new \DatePeriod(
-			new \DateTime( $start_date ),
-			new \DateInterval( 'P1D' ),
-			(new \DateTime( $end_date ))->modify( '+1 day' )
-		);
-
 		$indexed_results = [];
 		foreach ( $results as $row ) {
 			$indexed_results[ $row['date'] ] = $row;
 		}
 
-		foreach ( $period as $date ) {
-			$date_str = $date->format( 'Y-m-d' );
+		$chart_data = [];
+
+		foreach ( $results as $row ) {
+			$date_str = $row['date'];
+			$date     = new \DateTime( $date_str );
+
 			$chart_item_data = [
 				'name'   => $date->format( 'M j' ),
-				'images' => 0,
-				'tryOns' => 0,
+				'images' => (int) $row['images'],
+				'tryOns' => (int) $row['tryOns'],
 			];
 
-			if ( isset( $indexed_results[ $date_str ] ) ) {
-				$chart_item_data = [
-					'name'   => $date->format( 'M j' ),
-					'images' => (int) $indexed_results[ $date_str ]['images'],
-					'tryOns' => (int) $indexed_results[ $date_str ]['tryOns'],
-				];
-			}
-
-			$chart_data[] = apply_filters('try_aura_admin_dashboard_chart_data_item', $chart_item_data, $date_str, $indexed_results);
+			$chart_data[] = apply_filters( 'try_aura_admin_dashboard_chart_data_item', $chart_item_data, $date_str, $indexed_results );
 		}
 
 		wp_cache_set( $cache_key, $chart_data, self::CACHE_GROUP );

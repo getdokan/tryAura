@@ -196,12 +196,23 @@ class UsageManager {
 		$where   .= ' AND created_at <= %s';
 		$params[] = $end_date . ' 23:59:59';
 
+		$selectors = implode(
+			', ',
+			apply_filters('try_aura_admin_dashboard_chart_data_query_selectors',
+				[
+				'DATE(created_at) as date',
+				"SUM(CASE WHEN type = 'image' THEN output_count ELSE 0 END) as images",
+				"SUM(CASE WHEN generated_from = 'tryon' THEN output_count ELSE 0 END) as tryOns",
+				],
+				$table,
+				$where,
+				$params
+			)
+		);
+
 		// Group by date
 		$query = "SELECT
-					DATE(created_at) as date,
-					SUM(CASE WHEN type = 'image' THEN output_count ELSE 0 END) as images,
-					SUM(CASE WHEN type = 'video' THEN output_count ELSE 0 END) as videos,
-					SUM(CASE WHEN generated_from = 'tryon' THEN output_count ELSE 0 END) as tryOns
+					$selectors
 				FROM %i
 				$where
 				GROUP BY DATE(created_at)
@@ -209,6 +220,7 @@ class UsageManager {
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$results = $wpdb->get_results( $wpdb->prepare( $query, ...$params ), ARRAY_A );
+
 
 		// Fill missing dates
 		$chart_data = [];
@@ -225,21 +237,21 @@ class UsageManager {
 
 		foreach ( $period as $date ) {
 			$date_str = $date->format( 'Y-m-d' );
+			$chart_item_data = [
+				'name'   => $date->format( 'M j' ),
+				'images' => 0,
+				'tryOns' => 0,
+			];
+
 			if ( isset( $indexed_results[ $date_str ] ) ) {
-				$chart_data[] = [
+				$chart_item_data = [
 					'name'   => $date->format( 'M j' ),
 					'images' => (int) $indexed_results[ $date_str ]['images'],
-					'videos' => (int) $indexed_results[ $date_str ]['videos'],
 					'tryOns' => (int) $indexed_results[ $date_str ]['tryOns'],
 				];
-			} else {
-				$chart_data[] = [
-					'name'   => $date->format( 'M j' ),
-					'images' => 0,
-					'videos' => 0,
-					'tryOns' => 0,
-				];
 			}
+
+			$chart_data[] = apply_filters('try_aura_admin_dashboard_chart_data_item', $chart_item_data, $date_str, $indexed_results);
 		}
 
 		wp_cache_set( $cache_key, $chart_data, self::CACHE_GROUP );

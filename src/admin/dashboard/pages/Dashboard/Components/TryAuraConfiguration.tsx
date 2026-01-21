@@ -46,7 +46,7 @@ function TryAuraConfiguration( { className = '' }: { className: string } ) {
 
 			<Link
 				to="/settings/gemini"
-				className="bg-[#7047EB] text-white px-[32px] py-[12px] rounded-[8px] text-[16px] font-[500] hover:bg-[#5f3bc7] transition-colors no-underline"
+				className="bg-primary text-white px-[32px] py-[12px] rounded-[8px] text-[16px] font-[500] hover:bg-[#5f3bc7] transition-colors no-underline"
 			>
 				{ __( 'Configure', 'try-aura' ) }
 			</Link>
@@ -57,7 +57,7 @@ function TryAuraConfiguration( { className = '' }: { className: string } ) {
 					href="https://aistudio.google.com/app/apikey"
 					target="_blank"
 					rel="noreferrer"
-					className="text-[#7047EB] no-underline hover:underline"
+					className="text-primary no-underline hover:underline"
 				>
 					{ __( 'API Keys', 'try-aura' ) }?
 				</a>

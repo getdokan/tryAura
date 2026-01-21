@@ -104,7 +104,7 @@ const ModernSelect = ( {
 											'relative text-[#828282] h-auto rounded-[3px] flex gap-[4px] transition-all duration-200',
 											opt.locked
 												? 'cursor-not-allowed opacity-60 hover:opacity-100 hover:bg-gray-50'
-												: 'cursor-pointer hover:text-primary hover:bg-[#EFEAFF]',
+												: 'cursor-pointer hover:text-primary hover:bg-primary/10',
 											opt.value === value
 												? 'bg-neutral-100'
 												: 'bg-white',

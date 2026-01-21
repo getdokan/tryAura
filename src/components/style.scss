@@ -1,3 +1,101 @@
 @import "../base-tailwind.css";
 @source "../components/**/*.{ts,tsx,js,jsx,php,html}";
-@import "react-day-picker/style.css";
+
+.tryaura-date-range-picker {
+	.rdp-months {
+		@apply relative;
+	}
+
+	.rdp-month_caption {
+		@apply flex justify-center pt-1 pb-5 relative items-center;
+	}
+
+	.rdp-caption_label {
+		@apply text-sm font-medium;
+	}
+
+	.rdp-nav {
+		@apply flex items-center justify-between absolute w-full left-0 px-2 z-10 pointer-events-none;
+	}
+
+	.rdp-button_previous,
+	.rdp-button_next {
+		@apply h-7 w-7 bg-neutral-100/50 hover:bg-neutral-100 p-0 rounded-md flex items-center justify-center pointer-events-auto hover:ring-2 hover:ring-primary;
+	}
+
+	.rdp-month_grid {
+		@apply w-full border-collapse space-y-1;
+	}
+
+	.rdp-weekdays {
+		@apply flex;
+	}
+
+	.rdp-weekday {
+		@apply text-neutral-500 rounded-md w-9 font-normal text-[0.8rem];
+	}
+
+	.rdp-week {
+		@apply flex w-full mt-2;
+	}
+
+	.rdp-day {
+		@apply h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20;
+
+		&.rdp-range_start {
+			@apply rounded-l-md bg-primary! text-white!;
+		}
+
+		&.rdp-range_end {
+			@apply rounded-r-md bg-primary! text-white!;
+		}
+
+		&.rdp-outside {
+			&.rdp-selected {
+				@apply bg-neutral-100/50;
+			}
+		}
+
+		&.rdp-selected {
+			@apply bg-neutral-100;
+
+			.rdp-day_button {
+				@apply opacity-100;
+			}
+		}
+
+		&:first-child.rdp-selected {
+			@apply rounded-l-md;
+		}
+
+		&:last-child.rdp-selected {
+			@apply rounded-r-md;
+		}
+	}
+
+	.rdp-day_button {
+		@apply h-9 w-9 p-0 font-normal hover:ring-2 hover:ring-primary rounded-md cursor-pointer!;
+	}
+
+	.rdp-today {
+		@apply text-primary!;
+	}
+
+	.rdp-outside {
+		@apply text-neutral-500 opacity-50;
+	}
+
+	.rdp-disabled {
+		@apply text-neutral-500 opacity-50;
+	}
+
+	.rdp-range_middle {
+		&.rdp-selected {
+			@apply bg-primary/10 text-black;
+		}
+	}
+
+	.rdp-hidden {
+		@apply invisible;
+	}
+}

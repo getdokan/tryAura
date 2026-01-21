@@ -51,7 +51,7 @@ function RecentActivity( {
 		if ( activity.type === 'video' ) {
 			return <Video size={ 20 } className="text-[#FF9345]" />;
 		}
-		return <Image size={ 20 } className="text-[#7047EB]" />;
+		return <Image size={ 20 } className="text-primary" />;
 	};
 
 	const getIconBg = ( activity: any ) => {
@@ -90,7 +90,7 @@ function RecentActivity( {
 							onClick={ () => setActiveTab( tab.id ) }
 							className={ `px-[16px] py-[6px] rounded-[8px] text-[14px] font-[500] transition-colors ${
 								activeTab === tab.id
-									? 'bg-[#7047EB] text-white'
+									? 'bg-primary text-white'
 									: 'bg-[#F5F5F5] text-[rgba(99,99,99,1)] hover:bg-[#E5E5E5]'
 							}` }
 						>

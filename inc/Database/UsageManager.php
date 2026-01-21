@@ -136,16 +136,10 @@ class UsageManager {
 
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		$image_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND type = 'image'", array_merge( array( $table ), $params ) ) );
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		//$video_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND type = 'video'", array_merge( array( $table ), $params ) ) );
+		$image_count = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(output_count) FROM %i $where AND type = 'image'", array_merge( array( $table ), $params ) ) );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$total_tokens = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(total_tokens) FROM %i $where", array_merge( array( $table ), $params ) ) );
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		//$video_seconds = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(video_seconds) FROM %i $where AND type = 'video'", array_merge( array( $table ), $params ) ) );
 
 		$stats = array(
 			'image_count'   => (int) $image_count,
@@ -156,12 +150,100 @@ class UsageManager {
 
 		if ( class_exists( 'WooCommerce' ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-			$stats['tryon_count'] = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND generated_from = 'tryon'", array_merge( array( $table ), $params ) ) );
+			$stats['tryon_count'] = (int) $wpdb->get_var( $wpdb->prepare( "SELECT SUM(output_count) FROM %i $where AND generated_from = 'tryon'", array_merge( array( $table ), $params ) ) );
 		}
 
 		wp_cache_set( $cache_key, $stats, self::CACHE_GROUP );
 
 		return $stats;
+	}
+
+	/**
+	 * Get chart data.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @param array $args Filter arguments.
+	 *
+	 * @return array
+	 */
+	public function get_chart_data( array $args = array() ): array {
+		global $wpdb;
+		$table = self::get_table_name();
+
+		$start_date = isset( $args['start_date'] ) ? sanitize_text_field( $args['start_date'] ) : current_time( 'Y-m-01' );
+		$end_date   = isset( $args['end_date'] ) ? sanitize_text_field( $args['end_date'] ) : current_time( 'Y-m-d' );
+
+		$last_changed = wp_cache_get( 'last_changed', self::CACHE_GROUP );
+		if ( ! $last_changed ) {
+			$last_changed = microtime();
+			wp_cache_set( 'last_changed', $last_changed, self::CACHE_GROUP );
+		}
+
+		$cache_key = 'chart_data_' . md5( wp_json_encode( $args ) ) . ':' . $last_changed;
+		$chart_data = wp_cache_get( $cache_key, self::CACHE_GROUP );
+
+		if ( false !== $chart_data ) {
+			return $chart_data;
+		}
+
+		$where  = "WHERE status = 'success'";
+		$params = [ $table ];
+
+		$where   .= ' AND created_at >= %s';
+		$params[] = $start_date . ' 00:00:00';
+
+		$where   .= ' AND created_at <= %s';
+		$params[] = $end_date . ' 23:59:59';
+
+		$selectors = implode(
+			', ',
+			apply_filters('try_aura_admin_dashboard_chart_data_query_selectors',
+				[
+				'DATE(created_at) as date',
+				"SUM(CASE WHEN type = 'image' THEN output_count ELSE 0 END) as images",
+				"SUM(CASE WHEN generated_from = 'tryon' THEN output_count ELSE 0 END) as tryOns",
+				],
+				$table,
+				$where,
+				$params
+			)
+		);
+
+		// Group by date
+		$query = "SELECT
+					$selectors
+				FROM %i
+				$where
+				GROUP BY DATE(created_at)
+				ORDER BY date ASC";
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$results = $wpdb->get_results( $wpdb->prepare( $query, ...$params ), ARRAY_A );
+
+		$indexed_results = [];
+		foreach ( $results as $row ) {
+			$indexed_results[ $row['date'] ] = $row;
+		}
+
+		$chart_data = [];
+
+		foreach ( $results as $row ) {
+			$date_str = $row['date'];
+			$date     = new \DateTime( $date_str );
+
+			$chart_item_data = [
+				'name'   => $date->format( 'M j' ),
+				'images' => (int) $row['images'],
+				'tryOns' => (int) $row['tryOns'],
+			];
+
+			$chart_data[] = apply_filters( 'try_aura_admin_dashboard_chart_data_item', $chart_item_data, $date_str, $indexed_results );
+		}
+
+		wp_cache_set( $cache_key, $chart_data, self::CACHE_GROUP );
+
+		return $chart_data;
 	}
 
 	/**

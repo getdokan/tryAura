@@ -67,6 +67,24 @@ class DashboardController {
 
 		register_rest_route(
 			$this->namespace,
+			'/chart-data',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_chart_data' ),
+				'permission_callback' => array( $this, 'permissions_check' ),
+				'args'                => array(
+					'start_date' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'end_date'   => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
 			'/log-usage',
 			array(
 				'methods'             => 'POST',
@@ -132,6 +150,38 @@ class DashboardController {
 	}
 
 	/**
+	 * Get chart data.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @param WP_REST_Request $request REST Request.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function get_chart_data( WP_REST_Request $request ) {
+		$params = $request->get_params();
+		$args   = array();
+
+		if ( ! empty( $params['start_date'] ) ) {
+			$args['start_date'] = sanitize_text_field( $params['start_date'] );
+		}
+
+		if ( ! empty( $params['end_date'] ) ) {
+			$args['end_date'] = sanitize_text_field( $params['end_date'] );
+		}
+
+		// Default to current month if no dates provided.
+		if ( empty( $args['start_date'] ) && empty( $args['end_date'] ) ) {
+			$args['start_date'] = current_time( 'Y-m-01' );
+			$args['end_date']   = current_time( 'Y-m-d' );
+		}
+
+		$chart_data = $this->manager->get_chart_data( $args );
+
+		return new WP_REST_Response( $chart_data, 200 );
+	}
+
+	/**
 	 * Get statistics.
 	 *
 	 * @since PLUGIN_SINCE
@@ -152,9 +202,9 @@ class DashboardController {
 			$args['end_date'] = sanitize_text_field( $params['end_date'] );
 		}
 
-		// Default to last 30 days if no dates provided.
+		// Default to current month if no dates provided.
 		if ( empty( $args['start_date'] ) && empty( $args['end_date'] ) ) {
-			$args['start_date'] = current_time( 'Y-m-d', strtotime( '-30 days' ) );
+			$args['start_date'] = current_time( 'Y-m-01' );
 			$args['end_date']   = current_time( 'Y-m-d' );
 		}
 

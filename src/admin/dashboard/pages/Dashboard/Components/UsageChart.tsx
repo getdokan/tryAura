@@ -197,7 +197,10 @@ function UsageChart( {
 									bottom: 20,
 								} }
 							>
-								<CartesianGrid stroke="#f1f5f9" />
+								<CartesianGrid
+									stroke="rgba(230, 230, 230, 1)"
+									strokeWidth={ 0.5 }
+								/>
 								<XAxis
 									dataKey="name"
 									axisLine={ false }
@@ -221,7 +224,7 @@ function UsageChart( {
 								<Tooltip
 									content={ <CustomTooltip /> }
 									cursor={ {
-										stroke: '#f1f5f9',
+										stroke: 'rgba(230, 230, 230, 1)',
 										strokeWidth: 1,
 									} }
 								/>

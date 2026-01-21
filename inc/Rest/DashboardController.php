@@ -67,6 +67,16 @@ class DashboardController {
 
 		register_rest_route(
 			$this->namespace,
+			'/chart-data',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_chart_data' ),
+				'permission_callback' => array( $this, 'permissions_check' ),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
 			'/log-usage',
 			array(
 				'methods'             => 'POST',
@@ -129,6 +139,38 @@ class DashboardController {
 		$activities = $this->manager->get_recent_activities( $params );
 
 		return new WP_REST_Response( $activities, 200 );
+	}
+
+	/**
+	 * Get chart data.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @param WP_REST_Request $request REST Request.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function get_chart_data( WP_REST_Request $request ) {
+		$params = $request->get_params();
+		$args   = array();
+
+		if ( ! empty( $params['start_date'] ) ) {
+			$args['start_date'] = sanitize_text_field( $params['start_date'] );
+		}
+
+		if ( ! empty( $params['end_date'] ) ) {
+			$args['end_date'] = sanitize_text_field( $params['end_date'] );
+		}
+
+		// Default to last 30 days if no dates provided.
+		if ( empty( $args['start_date'] ) && empty( $args['end_date'] ) ) {
+			$args['start_date'] = current_time( 'Y-m-d', strtotime( '-30 days' ) );
+			$args['end_date']   = current_time( 'Y-m-d' );
+		}
+
+		$chart_data = $this->manager->get_chart_data( $args );
+
+		return new WP_REST_Response( $chart_data, 200 );
 	}
 
 	/**

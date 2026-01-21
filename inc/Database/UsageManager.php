@@ -165,6 +165,95 @@ class UsageManager {
 	}
 
 	/**
+	 * Get chart data.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @param array $args Filter arguments.
+	 *
+	 * @return array
+	 */
+	public function get_chart_data( array $args = array() ): array {
+		global $wpdb;
+		$table = self::get_table_name();
+
+		$start_date = isset( $args['start_date'] ) ? sanitize_text_field( $args['start_date'] ) : current_time( 'Y-m-d', strtotime( '-30 days' ) );
+		$end_date   = isset( $args['end_date'] ) ? sanitize_text_field( $args['end_date'] ) : current_time( 'Y-m-d' );
+
+		$last_changed = wp_cache_get( 'last_changed', self::CACHE_GROUP );
+		if ( ! $last_changed ) {
+			$last_changed = microtime();
+			wp_cache_set( 'last_changed', $last_changed, self::CACHE_GROUP );
+		}
+
+		$cache_key = 'chart_data_' . md5( wp_json_encode( $args ) ) . ':' . $last_changed;
+		$chart_data = wp_cache_get( $cache_key, self::CACHE_GROUP );
+
+		if ( false !== $chart_data ) {
+			return $chart_data;
+		}
+
+		$where  = "WHERE status = 'success'";
+		$params = [ $table ];
+
+		$where   .= ' AND created_at >= %s';
+		$params[] = $start_date . ' 00:00:00';
+
+		$where   .= ' AND created_at <= %s';
+		$params[] = $end_date . ' 23:59:59';
+
+		// Group by date
+		$query = "SELECT
+					DATE(created_at) as date,
+					SUM(CASE WHEN type = 'image' THEN 1 ELSE 0 END) as images,
+					SUM(CASE WHEN type = 'video' THEN 1 ELSE 0 END) as videos,
+					SUM(CASE WHEN generated_from = 'tryon' THEN 1 ELSE 0 END) as tryOns
+				FROM %i
+				$where
+				GROUP BY DATE(created_at)
+				ORDER BY date ASC";
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$results = $wpdb->get_results( $wpdb->prepare( $query, ...$params ), ARRAY_A );
+
+		// Fill missing dates
+		$chart_data = [];
+		$period     = new \DatePeriod(
+			new \DateTime( $start_date ),
+			new \DateInterval( 'P1D' ),
+			(new \DateTime( $end_date ))->modify( '+1 day' )
+		);
+
+		$indexed_results = [];
+		foreach ( $results as $row ) {
+			$indexed_results[ $row['date'] ] = $row;
+		}
+
+		foreach ( $period as $date ) {
+			$date_str = $date->format( 'Y-m-d' );
+			if ( isset( $indexed_results[ $date_str ] ) ) {
+				$chart_data[] = [
+					'name'   => $date->format( 'M j' ),
+					'images' => (int) $indexed_results[ $date_str ]['images'],
+					'videos' => (int) $indexed_results[ $date_str ]['videos'],
+					'tryOns' => (int) $indexed_results[ $date_str ]['tryOns'],
+				];
+			} else {
+				$chart_data[] = [
+					'name'   => $date->format( 'M j' ),
+					'images' => 0,
+					'videos' => 0,
+					'tryOns' => 0,
+				];
+			}
+		}
+
+		wp_cache_set( $cache_key, $chart_data, self::CACHE_GROUP );
+
+		return $chart_data;
+	}
+
+	/**
 	 * Get recent activities.
 	 *
 	 * @since PLUGIN_SINCE

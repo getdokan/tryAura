@@ -132,7 +132,10 @@ function Index() {
 			</div>
 
 			<div className="mt-[32px]">
-				<UsageChart className="bg-white rounded-2xl border border-[rgba(230,230,230,1)] p-6 h-full w-full flex flex-col" />
+				<UsageChart
+					range={ range }
+					className="bg-white rounded-2xl border border-[rgba(230,230,230,1)] p-6 h-full w-full flex flex-col"
+				/>
 			</div>
 
 			<div className="mt-[32px] grid grid-cols-1 lg:grid-cols-3 gap-[32px]">

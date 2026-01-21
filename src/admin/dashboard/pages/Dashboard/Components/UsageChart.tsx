@@ -8,7 +8,10 @@ import {
 	ResponsiveContainer,
 } from 'recharts';
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
+import apiFetch from '@wordpress/api-fetch';
+import { addQueryArgs } from '@wordpress/url';
+import { DateRange } from 'react-day-picker';
 
 const CustomTooltip = ( { active, payload } ) => {
 	if ( active && payload && payload.length ) {
@@ -45,127 +48,205 @@ const CustomTooltip = ( { active, payload } ) => {
 	return null;
 };
 
-function UsageChart( { className } ) {
-	const [ data, setData ] = useState( [
-		{ name: 'Oct 2', images: 200, videos: 1750, tryOns: 750 },
-		{ name: 'Oct 3', images: 250, videos: 800, tryOns: 1300 },
-		{ name: 'Oct 4', images: 800, videos: 200, tryOns: 900 },
-		{ name: 'Oct 5', images: 1500, videos: 600, tryOns: 800 },
-		{ name: 'Oct 6', images: 1000, videos: 700, tryOns: 1600 },
-		{ name: 'Oct 7', images: 600, videos: 100, tryOns: 1300 },
-		{ name: 'Oct 8', images: 1400, videos: 200, tryOns: 1000 },
-		{ name: 'Oct 31', images: 1800, videos: 550, tryOns: 850 },
-	] );
+function UsageChartLoader() {
+	return (
+		<div className="flex flex-col gap-8">
+			<div className="flex flex-row flex-wrap justify-between items-center gap-6">
+				<div className="h-7 w-48 rounded-[5px] bg-neutral-200 animate-pulse" />
+				<div className="flex flex-row gap-6">
+					<div className="flex items-center gap-2">
+						<div className="h-4 w-20 rounded-[5px] bg-neutral-200 animate-pulse" />
+					</div>
+					<div className="flex items-center gap-2">
+						<div className="h-4 w-20 rounded-[5px] bg-neutral-200 animate-pulse" />
+					</div>
+					<div className="flex items-center gap-2">
+						<div className="h-4 w-20 rounded-[5px] bg-neutral-200 animate-pulse" />
+					</div>
+				</div>
+			</div>
+			<div className="h-87.5 w-full bg-neutral-200 rounded-2xl animate-pulse" />
+		</div>
+	);
+}
+
+function UsageChart( {
+	className,
+	range,
+}: {
+	className?: string;
+	range?: DateRange;
+} ) {
+	const [ data, setData ] = useState( [] );
+	const [ loading, setLoading ] = useState( true );
+
+	const formatDateForApi = ( date?: Date ) => {
+		if ( ! date ) {
+			return '';
+		}
+		const year = date.getFullYear();
+		const month = String( date.getMonth() + 1 ).padStart( 2, '0' );
+		const day = String( date.getDate() ).padStart( 2, '0' );
+		return `${ year }-${ month }-${ day }`;
+	};
+
+	useEffect( () => {
+		const params: any = {};
+		if ( range?.from ) {
+			params.start_date = formatDateForApi( range.from );
+		}
+		if ( range?.to ) {
+			params.end_date = formatDateForApi( range.to );
+		}
+
+		setLoading( true );
+		apiFetch( {
+			path: addQueryArgs( '/try-aura/v1/chart-data', params ),
+		} )
+			.then( ( response: any ) => {
+				setData( response );
+				setLoading( false );
+			} )
+			.catch( () => {
+				setLoading( false );
+			} );
+	}, [ range ] );
+
+	const maxValue = Math.max(
+		...data.flatMap( ( item ) => [
+			item.images,
+			item.videos,
+			item.tryOns,
+		] ),
+		2000
+	);
+
+	// Round up to nearest 500
+	const chartMax = Math.ceil( maxValue / 500 ) * 500;
+	const ticks = Array.from(
+		{ length: chartMax / 500 + 1 },
+		( _, i ) => i * 500
+	);
+
 	return (
 		<div
 			className={ `bg-white p-6 rounded-[20px] border border-gray-100 shadow-sm ${ className }` }
 		>
-			<div className="flex flex-row flex-wrap justify-between items-center gap-6 mb-8">
-				<h2 className="text-[18px] font-semibold text-[#333333] m-0">
-					{ __( 'Content Creation Activity', 'try-aura' ) }
-				</h2>
-				<div className="flex flex-row gap-6">
-					<div className="flex items-center gap-2">
-						<div className="w-2 h-2 rounded-full bg-[rgba(112,71,235,1)]" />
-						<span className="text-sm font-medium text-[rgba(99,99,99,1)]">
-							{ __( 'Images', 'try-aura' ) }
-						</span>
+			{ loading ? (
+				<UsageChartLoader />
+			) : (
+				<>
+					<div className="flex flex-row flex-wrap justify-between items-center gap-6 mb-8">
+						<h2 className="text-[18px] font-semibold text-[#333333] m-0">
+							{ __( 'Content Creation Activity', 'try-aura' ) }
+						</h2>
+						<div className="flex flex-row gap-6">
+							<div className="flex items-center gap-2">
+								<div className="w-2 h-2 rounded-full bg-[rgba(112,71,235,1)]" />
+								<span className="text-sm font-medium text-[rgba(99,99,99,1)]">
+									{ __( 'Images', 'try-aura' ) }
+								</span>
+							</div>
+							<div className="flex items-center gap-2">
+								<div className="w-2 h-2 rounded-full bg-[rgba(255,147,69,1)]" />
+								<span className="text-sm font-medium text-[rgba(99,99,99,1)]">
+									{ __( 'Videos', 'try-aura' ) }
+								</span>
+							</div>
+							<div className="flex items-center gap-2">
+								<div className="w-2 h-2 rounded-full bg-[rgba(38,176,255,1)]" />
+								<span className="text-sm font-medium text-[rgba(99,99,99,1)]">
+									{ __( 'Try-Ons', 'try-aura' ) }
+								</span>
+							</div>
+						</div>
 					</div>
-					<div className="flex items-center gap-2">
-						<div className="w-2 h-2 rounded-full bg-[rgba(255,147,69,1)]" />
-						<span className="text-sm font-medium text-[rgba(99,99,99,1)]">
-							{ __( 'Videos', 'try-aura' ) }
-						</span>
+					<div className="h-[350px] w-full">
+						<ResponsiveContainer width="100%" height="100%">
+							<LineChart
+								data={ data }
+								margin={ {
+									top: 10,
+									right: 30,
+									left: -20,
+									bottom: 20,
+								} }
+							>
+								<CartesianGrid stroke="#f1f5f9" />
+								<XAxis
+									dataKey="name"
+									axisLine={ false }
+									tickLine={ false }
+									tick={ {
+										fill: 'rgba(140, 140, 140, 1)',
+										fontSize: 12,
+									} }
+									dy={ 10 }
+								/>
+								<YAxis
+									axisLine={ false }
+									tickLine={ false }
+									tick={ {
+										fill: 'rgba(140, 140, 140, 1)',
+										fontSize: 12,
+									} }
+									ticks={ ticks }
+									domain={ [ 0, chartMax ] }
+								/>
+								<Tooltip
+									content={ <CustomTooltip /> }
+									cursor={ {
+										stroke: '#f1f5f9',
+										strokeWidth: 1,
+									} }
+								/>
+								<Line
+									type="monotone"
+									dataKey="images"
+									name="images"
+									stroke="rgba(112, 71, 235, 1)"
+									strokeWidth={ 2.5 }
+									dot={ false }
+									activeDot={ {
+										r: 6,
+										stroke: 'rgba(112, 71, 235, 1)',
+										strokeWidth: 2,
+										fill: '#fff',
+									} }
+								/>
+								<Line
+									type="monotone"
+									dataKey="videos"
+									name="videos"
+									stroke="rgba(255, 147, 69, 1)"
+									strokeWidth={ 2 }
+									dot={ false }
+									activeDot={ {
+										r: 6,
+										stroke: 'rgba(255, 147, 69, 1)',
+										strokeWidth: 2,
+										fill: '#fff',
+									} }
+								/>
+								<Line
+									type="monotone"
+									dataKey="tryOns"
+									name="tryOns"
+									stroke="rgba(38, 176, 255, 1)"
+									strokeWidth={ 2 }
+									dot={ false }
+									activeDot={ {
+										r: 6,
+										stroke: 'rgba(38, 176, 255, 1)',
+										strokeWidth: 2,
+										fill: '#fff',
+									} }
+								/>
+							</LineChart>
+						</ResponsiveContainer>
 					</div>
-					<div className="flex items-center gap-2">
-						<div className="w-2 h-2 rounded-full bg-[rgba(38,176,255,1)]" />
-						<span className="text-sm font-medium text-[rgba(99,99,99,1)]">
-							{ __( 'Try-Ons', 'try-aura' ) }
-						</span>
-					</div>
-				</div>
-			</div>
-			<div className="h-[350px] w-full">
-				<ResponsiveContainer width="100%" height="100%">
-					<LineChart
-						data={ data }
-						margin={ {
-							top: 10,
-							right: 30,
-							left: -20,
-							bottom: 20,
-						} }
-					>
-						<CartesianGrid stroke="#f1f5f9" />
-						<XAxis
-							dataKey="name"
-							axisLine={ false }
-							tickLine={ false }
-							tick={ {
-								fill: 'rgba(140, 140, 140, 1)',
-								fontSize: 12,
-							} }
-							dy={ 10 }
-						/>
-						<YAxis
-							axisLine={ false }
-							tickLine={ false }
-							tick={ {
-								fill: 'rgba(140, 140, 140, 1)',
-								fontSize: 12,
-							} }
-							ticks={ [ 0, 500, 1000, 1500, 2000 ] }
-							domain={ [ 0, 2000 ] }
-						/>
-						<Tooltip
-							content={ <CustomTooltip /> }
-							cursor={ { stroke: '#f1f5f9', strokeWidth: 1 } }
-						/>
-						<Line
-							type="monotone"
-							dataKey="images"
-							name="images"
-							stroke="rgba(112, 71, 235, 1)"
-							strokeWidth={ 2.5 }
-							dot={ false }
-							activeDot={ {
-								r: 6,
-								stroke: 'rgba(112, 71, 235, 1)',
-								strokeWidth: 2,
-								fill: '#fff',
-							} }
-						/>
-						<Line
-							type="monotone"
-							dataKey="videos"
-							name="videos"
-							stroke="rgba(255, 147, 69, 1)"
-							strokeWidth={ 2 }
-							dot={ false }
-							activeDot={ {
-								r: 6,
-								stroke: 'rgba(255, 147, 69, 1)',
-								strokeWidth: 2,
-								fill: '#fff',
-							} }
-						/>
-						<Line
-							type="monotone"
-							dataKey="tryOns"
-							name="tryOns"
-							stroke="rgba(38, 176, 255, 1)"
-							strokeWidth={ 2 }
-							dot={ false }
-							activeDot={ {
-								r: 6,
-								stroke: 'rgba(38, 176, 255, 1)',
-								strokeWidth: 2,
-								fill: '#fff',
-							} }
-						/>
-					</LineChart>
-				</ResponsiveContainer>
-			</div>
+				</>
+			) }
 		</div>
 	);
 }

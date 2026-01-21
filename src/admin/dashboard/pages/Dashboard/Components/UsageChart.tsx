@@ -112,20 +112,45 @@ function UsageChart( {
 			} );
 	}, [ range ] );
 
-	const maxValue = Math.max(
+	const realMax = Math.max(
 		...data.flatMap( ( item ) => [
-			item.images,
-			item.videos,
-			item.tryOns,
+			item.images || 0,
+			item.videos || 0,
+			item.tryOns || 0,
 		] ),
-		2000
+		0
 	);
 
-	// Round up to nearest 500
-	const chartMax = Math.ceil( maxValue / 500 ) * 500;
+	// Determine a suitable maximum and step based on the data
+	let chartMax;
+	let step;
+
+	if ( realMax <= 10 ) {
+		chartMax = 10;
+		step = 2;
+	} else if ( realMax <= 50 ) {
+		chartMax = Math.ceil( realMax / 10 ) * 10;
+		step = 10;
+	} else if ( realMax <= 100 ) {
+		chartMax = Math.ceil( realMax / 20 ) * 20;
+		step = 20;
+	} else if ( realMax <= 500 ) {
+		chartMax = Math.ceil( realMax / 100 ) * 100;
+		step = 100;
+	} else if ( realMax <= 2000 ) {
+		chartMax = Math.ceil( realMax / 500 ) * 500;
+		step = 500;
+	} else if ( realMax <= 5000 ) {
+		chartMax = Math.ceil( realMax / 1000 ) * 1000;
+		step = 1000;
+	} else {
+		chartMax = Math.ceil( realMax / 2500 ) * 2500;
+		step = 2500;
+	}
+
 	const ticks = Array.from(
-		{ length: chartMax / 500 + 1 },
-		( _, i ) => i * 500
+		{ length: Math.floor( chartMax / step ) + 1 },
+		( _, i ) => i * step
 	);
 
 	return (

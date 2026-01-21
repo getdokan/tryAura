@@ -19,7 +19,7 @@ const CustomTooltip = ( { active, payload } ) => {
 		const getLabel = ( name ) => {
 			switch ( name ) {
 				case 'images':
-					return __( 'A.I. Images Generated', 'try-aura' );
+					return __( 'Images', 'try-aura' );
 				case 'videos':
 					return __( 'Videos', 'try-aura' );
 				case 'tryOns':

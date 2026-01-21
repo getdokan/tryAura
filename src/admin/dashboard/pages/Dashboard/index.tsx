@@ -87,7 +87,7 @@ function Index() {
 
 			<div className="mt-[16px] flex flex-col md:flex-row gap-[32px] flex-wrap">
 				<StateCardItem
-					title={ __( 'Images Generated', 'try-aura' ) }
+					title={ __( 'Total Images Generated', 'try-aura' ) }
 					value={ stats.image_count }
 					iconColor="#7047EB"
 					Icon={ Image }

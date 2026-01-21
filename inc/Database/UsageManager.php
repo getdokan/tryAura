@@ -136,16 +136,10 @@ class UsageManager {
 
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		$image_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND type = 'image'", array_merge( array( $table ), $params ) ) );
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		//$video_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND type = 'video'", array_merge( array( $table ), $params ) ) );
+		$image_count = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(output_count) FROM %i $where AND type = 'image'", array_merge( array( $table ), $params ) ) );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$total_tokens = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(total_tokens) FROM %i $where", array_merge( array( $table ), $params ) ) );
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		//$video_seconds = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(video_seconds) FROM %i $where AND type = 'video'", array_merge( array( $table ), $params ) ) );
 
 		$stats = array(
 			'image_count'   => (int) $image_count,
@@ -156,7 +150,7 @@ class UsageManager {
 
 		if ( class_exists( 'WooCommerce' ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-			$stats['tryon_count'] = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i $where AND generated_from = 'tryon'", array_merge( array( $table ), $params ) ) );
+			$stats['tryon_count'] = (int) $wpdb->get_var( $wpdb->prepare( "SELECT SUM(output_count) FROM %i $where AND generated_from = 'tryon'", array_merge( array( $table ), $params ) ) );
 		}
 
 		wp_cache_set( $cache_key, $stats, self::CACHE_GROUP );
@@ -205,9 +199,9 @@ class UsageManager {
 		// Group by date
 		$query = "SELECT
 					DATE(created_at) as date,
-					SUM(CASE WHEN type = 'image' THEN 1 ELSE 0 END) as images,
-					SUM(CASE WHEN type = 'video' THEN 1 ELSE 0 END) as videos,
-					SUM(CASE WHEN generated_from = 'tryon' THEN 1 ELSE 0 END) as tryOns
+					SUM(CASE WHEN type = 'image' THEN output_count ELSE 0 END) as images,
+					SUM(CASE WHEN type = 'video' THEN output_count ELSE 0 END) as videos,
+					SUM(CASE WHEN generated_from = 'tryon' THEN output_count ELSE 0 END) as tryOns
 				FROM %i
 				$where
 				GROUP BY DATE(created_at)

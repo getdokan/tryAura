@@ -14,41 +14,6 @@ import { addQueryArgs } from '@wordpress/url';
 import { DateRange } from 'react-day-picker';
 import { applyFilters } from '@wordpress/hooks';
 
-const CustomTooltip = ( { active, payload } ) => {
-	if ( active && payload && payload.length ) {
-		const getLabel = ( name ) => {
-			switch ( name ) {
-				case 'images':
-					return __( 'Images', 'try-aura' );
-				case 'videos':
-					return __( 'Videos', 'try-aura' );
-				case 'tryOns':
-					return __( 'Try-Ons', 'try-aura' );
-				default:
-					return name;
-			}
-		};
-
-		return (
-			<div className="bg-[#1e293b] text-white p-3 rounded-xl shadow-lg border-none outline-none relative mb-2 min-w-[160px]">
-				<div className="flex flex-col gap-3">
-					{ payload.map( ( entry, index ) => (
-						<div key={ index }>
-							<p className="text-[10px] font-medium mb-0.5 text-slate-400 uppercase tracking-wider">
-								{ getLabel( entry.name ) }
-							</p>
-							<p className="text-lg font-bold m-0 leading-tight">
-								{ entry.value.toLocaleString() }
-							</p>
-						</div>
-					) ) }
-				</div>
-			</div>
-		);
-	}
-	return null;
-};
-
 function UsageChartLoader() {
 	return (
 		<div className="flex flex-col gap-8">
@@ -80,6 +45,21 @@ function UsageChart( {
 } ) {
 	const [ data, setData ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
+	const chartLineItemLabels = applyFilters(
+		'tryaura.dashboard.usage-chart.line-item-labels',
+		[
+			{
+				value: 'images',
+				label: __( 'Images', 'try-aura' ),
+				color: 'rgba(112,71,235,1)',
+			},
+			{
+				value: 'tryOns',
+				label: __( 'Try-Ons', 'try-aura' ),
+				color: 'rgba(38,176,255,1)',
+			},
+		]
+	);
 	const lines: Array< object > = applyFilters(
 		'tryaura.dashboard.usage-chart.lines',
 		[
@@ -93,20 +73,6 @@ function UsageChart( {
 				activeDot: {
 					r: 6,
 					stroke: 'rgba(112, 71, 235, 1)',
-					strokeWidth: 2,
-					fill: '#fff',
-				},
-			},
-			{
-				type: 'monotone',
-				dataKey: 'videos',
-				name: 'videos',
-				stroke: 'rgba(255, 147, 69, 1)',
-				strokeWidth: 2,
-				dot: false,
-				activeDot: {
-					r: 6,
-					stroke: 'rgba(255, 147, 69, 1)',
 					strokeWidth: 2,
 					fill: '#fff',
 				},
@@ -161,11 +127,13 @@ function UsageChart( {
 	}, [ range ] );
 
 	const realMax = Math.max(
-		...data.flatMap( ( item ) => [
-			item.images || 0,
-			item.videos || 0,
-			item.tryOns || 0,
-		] ),
+		...data.flatMap( ( item ) => {
+			return applyFilters(
+				'tryaura.dashboard.usage-chart.data-value',
+				[ item.images || 0, item.tryOns || 0 ],
+				item
+			);
+		} ),
 		0
 	);
 
@@ -201,6 +169,35 @@ function UsageChart( {
 		( _, i ) => i * step
 	);
 
+	const CustomTooltip = ( { active, payload } ) => {
+		if ( active && payload && payload.length ) {
+			const getLabel = ( name ) => {
+				return (
+					chartLineItemLabels.find( ( item ) => item.value === name )
+						?.label || ''
+				);
+			};
+
+			return (
+				<div className="bg-[#1e293b] text-white p-3 rounded-xl shadow-lg border-none outline-none relative mb-2 min-w-[160px]">
+					<div className="flex flex-col gap-3">
+						{ payload.map( ( entry, index ) => (
+							<div key={ index }>
+								<p className="text-[10px] font-medium mb-0.5 text-slate-400 uppercase tracking-wider">
+									{ getLabel( entry.name ) }
+								</p>
+								<p className="text-lg font-bold m-0 leading-tight">
+									{ entry.value.toLocaleString() }
+								</p>
+							</div>
+						) ) }
+					</div>
+				</div>
+			);
+		}
+		return null;
+	};
+
 	return (
 		<div
 			className={ `bg-white p-6 rounded-[20px] border border-gray-100 shadow-sm ${ className }` }
@@ -214,24 +211,24 @@ function UsageChart( {
 							{ __( 'Content Creation Activity', 'try-aura' ) }
 						</h2>
 						<div className="flex flex-row gap-6">
-							<div className="flex items-center gap-2">
-								<div className="w-2 h-2 rounded-full bg-[rgba(112,71,235,1)]" />
-								<span className="text-sm font-medium text-[rgba(99,99,99,1)]">
-									{ __( 'Images', 'try-aura' ) }
-								</span>
-							</div>
-							<div className="flex items-center gap-2">
-								<div className="w-2 h-2 rounded-full bg-[rgba(255,147,69,1)]" />
-								<span className="text-sm font-medium text-[rgba(99,99,99,1)]">
-									{ __( 'Videos', 'try-aura' ) }
-								</span>
-							</div>
-							<div className="flex items-center gap-2">
-								<div className="w-2 h-2 rounded-full bg-[rgba(38,176,255,1)]" />
-								<span className="text-sm font-medium text-[rgba(99,99,99,1)]">
-									{ __( 'Try-Ons', 'try-aura' ) }
-								</span>
-							</div>
+							{ chartLineItemLabels.map( ( item, index ) => {
+								return (
+									<div
+										className="flex items-center gap-2"
+										key={ index }
+									>
+										<div
+											className="w-2 h-2 rounded-full"
+											style={ {
+												backgroundColor: item.color,
+											}}
+										/>
+										<span className="text-sm font-medium text-[rgba(99,99,99,1)]">
+											{ item.label }
+										</span>
+									</div>
+								);
+							} ) }
 						</div>
 					</div>
 					<div className="h-87.5 w-full">

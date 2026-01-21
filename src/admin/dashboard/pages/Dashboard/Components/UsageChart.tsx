@@ -12,6 +12,7 @@ import { useState, useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { DateRange } from 'react-day-picker';
+import { applyFilters } from '@wordpress/hooks';
 
 const CustomTooltip = ( { active, payload } ) => {
 	if ( active && payload && payload.length ) {
@@ -79,6 +80,53 @@ function UsageChart( {
 } ) {
 	const [ data, setData ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
+	const lines: Array< object > = applyFilters(
+		'tryaura.dashboard.usage-chart.lines',
+		[
+			{
+				type: 'monotone',
+				dataKey: 'images',
+				name: 'images',
+				stroke: 'rgba(112, 71, 235, 1)',
+				strokeWidth: 2.5,
+				dot: false,
+				activeDot: {
+					r: 6,
+					stroke: 'rgba(112, 71, 235, 1)',
+					strokeWidth: 2,
+					fill: '#fff',
+				},
+			},
+			{
+				type: 'monotone',
+				dataKey: 'videos',
+				name: 'videos',
+				stroke: 'rgba(255, 147, 69, 1)',
+				strokeWidth: 2,
+				dot: false,
+				activeDot: {
+					r: 6,
+					stroke: 'rgba(255, 147, 69, 1)',
+					strokeWidth: 2,
+					fill: '#fff',
+				},
+			},
+			{
+				type: 'monotone',
+				dataKey: 'tryOns',
+				name: 'tryOns',
+				stroke: 'rgba(38, 176, 255, 1)',
+				strokeWidth: 2,
+				dot: false,
+				activeDot: {
+					r: 6,
+					stroke: 'rgba(38, 176, 255, 1)',
+					strokeWidth: 2,
+					fill: '#fff',
+				},
+			},
+		]
+	);
 
 	const formatDateForApi = ( date?: Date ) => {
 		if ( ! date ) {
@@ -186,7 +234,7 @@ function UsageChart( {
 							</div>
 						</div>
 					</div>
-					<div className="h-[350px] w-full">
+					<div className="h-87.5 w-full">
 						<ResponsiveContainer width="100%" height="100%">
 							<LineChart
 								data={ data }
@@ -228,48 +276,9 @@ function UsageChart( {
 										strokeWidth: 1,
 									} }
 								/>
-								<Line
-									type="monotone"
-									dataKey="images"
-									name="images"
-									stroke="rgba(112, 71, 235, 1)"
-									strokeWidth={ 2.5 }
-									dot={ false }
-									activeDot={ {
-										r: 6,
-										stroke: 'rgba(112, 71, 235, 1)',
-										strokeWidth: 2,
-										fill: '#fff',
-									} }
-								/>
-								<Line
-									type="monotone"
-									dataKey="videos"
-									name="videos"
-									stroke="rgba(255, 147, 69, 1)"
-									strokeWidth={ 2 }
-									dot={ false }
-									activeDot={ {
-										r: 6,
-										stroke: 'rgba(255, 147, 69, 1)',
-										strokeWidth: 2,
-										fill: '#fff',
-									} }
-								/>
-								<Line
-									type="monotone"
-									dataKey="tryOns"
-									name="tryOns"
-									stroke="rgba(38, 176, 255, 1)"
-									strokeWidth={ 2 }
-									dot={ false }
-									activeDot={ {
-										r: 6,
-										stroke: 'rgba(38, 176, 255, 1)',
-										strokeWidth: 2,
-										fill: '#fff',
-									} }
-								/>
+								{ lines.map( ( line, index ) => (
+									<Line key={ index } { ...line } />
+								) ) }
 							</LineChart>
 						</ResponsiveContainer>
 					</div>

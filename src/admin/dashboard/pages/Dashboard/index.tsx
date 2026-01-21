@@ -14,11 +14,10 @@ import UsageChart from './Components/UsageChart';
 
 function Index() {
 	const today = new Date();
-	const thirtyDaysAgo = new Date();
-	thirtyDaysAgo.setDate( today.getDate() - 30 );
+	const startOfMonth = new Date( today.getFullYear(), today.getMonth(), 1 );
 
 	const [ range, setRange ] = useState< DateRange | undefined >( {
-		from: thirtyDaysAgo,
+		from: startOfMonth,
 		to: today,
 	} );
 	const [ stats, setStats ] = useState( {

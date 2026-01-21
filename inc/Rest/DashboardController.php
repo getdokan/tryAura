@@ -170,9 +170,9 @@ class DashboardController {
 			$args['end_date'] = sanitize_text_field( $params['end_date'] );
 		}
 
-		// Default to last 30 days if no dates provided.
+		// Default to current month if no dates provided.
 		if ( empty( $args['start_date'] ) && empty( $args['end_date'] ) ) {
-			$args['start_date'] = current_time( 'Y-m-d', strtotime( '-30 days' ) );
+			$args['start_date'] = current_time( 'Y-m-01' );
 			$args['end_date']   = current_time( 'Y-m-d' );
 		}
 
@@ -202,9 +202,9 @@ class DashboardController {
 			$args['end_date'] = sanitize_text_field( $params['end_date'] );
 		}
 
-		// Default to last 30 days if no dates provided.
+		// Default to current month if no dates provided.
 		if ( empty( $args['start_date'] ) && empty( $args['end_date'] ) ) {
-			$args['start_date'] = current_time( 'Y-m-d', strtotime( '-30 days' ) );
+			$args['start_date'] = current_time( 'Y-m-01' );
 			$args['end_date']   = current_time( 'Y-m-d' );
 		}
 

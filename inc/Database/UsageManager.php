@@ -171,7 +171,7 @@ class UsageManager {
 		global $wpdb;
 		$table = self::get_table_name();
 
-		$start_date = isset( $args['start_date'] ) ? sanitize_text_field( $args['start_date'] ) : current_time( 'Y-m-d', strtotime( '-30 days' ) );
+		$start_date = isset( $args['start_date'] ) ? sanitize_text_field( $args['start_date'] ) : current_time( 'Y-m-01' );
 		$end_date   = isset( $args['end_date'] ) ? sanitize_text_field( $args['end_date'] ) : current_time( 'Y-m-d' );
 
 		$last_changed = wp_cache_get( 'last_changed', self::CACHE_GROUP );

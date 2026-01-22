@@ -179,11 +179,11 @@ function UsageChart( {
 			};
 
 			return (
-				<div className="bg-[#1e293b] text-white p-3 rounded-xl shadow-lg border-none outline-none relative mb-2 min-w-[160px]">
+				<div className="bg-[rgba(37,51,78,1)] text-white p-3 rounded-xl shadow-lg border-none outline-none relative mb-2 min-w-[160px]">
 					<div className="flex flex-col gap-3">
 						{ payload.map( ( entry, index ) => (
 							<div key={ index }>
-								<p className="text-[10px] font-medium mb-0.5 text-slate-400 uppercase tracking-wider">
+								<p className="text-[10px] font-medium mb-0.5 text-white tracking-wider">
 									{ getLabel( entry.name ) }
 								</p>
 								<p className="text-lg font-bold m-0 leading-tight">

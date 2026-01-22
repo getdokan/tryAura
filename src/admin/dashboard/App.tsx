@@ -27,7 +27,7 @@ const getAdminRoutes = () => {
 			path: '/settings',
 		},
 		{
-			id: 'settings/gemini',
+			id: 'settings-gemini',
 			element: <GeminiSettings />,
 			path: '/settings/gemini',
 		},

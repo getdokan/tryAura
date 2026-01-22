@@ -7,6 +7,7 @@ import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useNavigate } from 'react-router-dom';
 import { useSelect, useDispatch } from '@wordpress/data';
+import { Slot } from '@wordpress/components';
 // @ts-ignore
 import { STORE_NAME } from '@tryaura/settings';
 
@@ -204,17 +205,15 @@ const GeminiSettings = () => {
 												variant="list"
 											/>
 										</div>
-										<div>
-											<ModernSelect
-												value={ selectedVideoModel }
-												label="Select Video Model"
-												onChange={ ( val ) => {
-													setSelectedVideoModel( val );
-												} }
-												options={ videoModels }
-												variant="list"
-											/>
-										</div>
+										<Slot
+											name="try-aura-choose-video-model"
+											fillProps={{
+												ModernSelect,
+												selectedVideoModel,
+												setSelectedVideoModel,
+												videoModels
+											}}
+										/>	 
 									</>
 								) }
 							</div>

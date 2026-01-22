@@ -35,7 +35,8 @@ class RestServiceProvider extends BaseServiceProvider {
 	 * @since PLUGIN_SINCE
 	 */
 	public function register(): void {
-		foreach ( $this->services as $key => $class_name ) {
+		$filtered_services = apply_filters( 'tryaura_rest_container_services', $this->services );
+		foreach ( $filtered_services as $key => $class_name ) {
 			$this->getContainer()->addShared( $key, $class_name );
 		}
 	}

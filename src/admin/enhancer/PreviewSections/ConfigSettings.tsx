@@ -8,10 +8,7 @@ import ConfigFooter from './ConfigFooter';
 
 import { Slot } from '@wordpress/components';
 
-function ConfigSettings( {
-	doGenerate,
-	className = '',
-} ) {
+function ConfigSettings( { doGenerate, className = '' } ) {
 	const { activeTab, isBusy, isThumbnailMode } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {

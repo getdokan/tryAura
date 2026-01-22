@@ -8,6 +8,7 @@
 namespace Dokan\TryAura\Database;
 
 use Dokan\TryAura\Models\Usage;
+use Dokan\TryAura\TryAura;
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
@@ -148,7 +149,7 @@ class UsageManager {
 
 		$stats = apply_filters('try_aura_admin_dashboard_stats_data', $stats, $table, $where, $params);
 
-		if ( class_exists( 'WooCommerce' ) ) {
+		if ( TryAura::is_woocommerce_active() ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 			$stats['tryon_count'] = (int) $wpdb->get_var( $wpdb->prepare( "SELECT SUM(output_count) FROM %i $where AND generated_from = 'tryon'", array_merge( array( $table ), $params ) ) );
 		}
@@ -285,7 +286,7 @@ class UsageManager {
 			if( $is_fetchable === false ) return [];
 
 			if ( $type === 'tryon' ) {
-				if ( ! class_exists( 'WooCommerce' ) ) {
+				if ( ! TryAura::is_woocommerce_active()) {
 					return array();
 				}
 				$where .= " AND generated_from = 'tryon'";
@@ -306,7 +307,7 @@ class UsageManager {
 			$where     .= ' AND type in '. $all_types;
 		}
 
-		if ( ! class_exists( 'WooCommerce' ) ) {
+		if ( ! TryAura::is_woocommerce_active()) {
 			$where .= " AND generated_from != 'tryon'";
 		}
 

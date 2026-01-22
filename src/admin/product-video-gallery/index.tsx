@@ -2,6 +2,7 @@ import { createRoot } from '@wordpress/element';
 import './style.scss';
 import ProductVideoGallery from './components/ProductVideoGallery';
 import { Toaster } from 'react-hot-toast';
+import { __ } from '@wordpress/i18n';
 
 declare const jQuery: any;
 declare const tryAuraVideo: any;
@@ -86,9 +87,17 @@ declare const tryAuraVideo: any;
 					}
 
 					if ( dataObj?.useCustomThumbnail && dataObj?.thumbnailUrl ) {
-						$img.attr( 'src', dataObj.thumbnailUrl )
-							.removeAttr( 'srcset' )
-							.removeAttr( 'sizes' );
+						$img.attr( 'src', dataObj.thumbnailUrl ).removeAttr(
+							'srcset'
+						);
+						if ( $image.is( 'li.image' ) ) {
+							$img.attr(
+								'sizes',
+								'auto, (max-width: 150px) 100vw, 150px'
+							);
+						} else {
+							$img.removeAttr( 'sizes' );
+						}
 					}
 				}
 
@@ -215,7 +224,7 @@ declare const tryAuraVideo: any;
 								// Add the item to the list so we don't have to wait for refresh
 								$gallery.append( `
 									<li class="image" data-attachment_id="${ attachmentId }">
-										<img src="${ thumbnailUrl }" />
+										<img width="150" height="150" src="${ thumbnailUrl }" sizes="auto, (max-width: 150px) 100vw, 150px" />
 										<ul class="actions">
 											<li><a href="#" class="delete" title="Delete image">Delete</a></li>
 										</ul>
@@ -458,9 +467,17 @@ declare const tryAuraVideo: any;
 								.addClass( 'dashicons-edit' );
 
 							if ( newData.useCustomThumbnail && thumbnailUrl ) {
-								$img.attr( 'src', thumbnailUrl )
-									.removeAttr( 'srcset' )
-									.removeAttr( 'sizes' );
+								$img.attr( 'src', thumbnailUrl ).removeAttr(
+									'srcset'
+								);
+								if ( $parentLi.length ) {
+									$img.attr(
+										'sizes',
+										'auto, (max-width: 150px) 100vw, 150px'
+									);
+								} else {
+									$img.removeAttr( 'sizes' );
+								}
 							} else if ( ! newData.useCustomThumbnail ) {
 								const originalSrc = $img.data( 'original-src' );
 								const originalSrcset =
@@ -515,9 +532,9 @@ declare const tryAuraVideo: any;
 					: $( '#_thumbnail_id' ).val();
 
 				const frame = wp.media( {
-					title: 'Select or Upload Image',
+					title: __( 'Update gallery image', 'try-aura' ),
 					button: {
-						text: 'Use this image',
+						text: __( 'Use this image', 'try-aura' ),
 					},
 					multiple: false,
 				} );
@@ -529,7 +546,8 @@ declare const tryAuraVideo: any;
 						.first()
 						.toJSON();
 					const newAttachmentId = attachment.id;
-					const newImageUrl = attachment.url;
+					const newImageUrl =
+						attachment.sizes?.thumbnail?.url || attachment.url;
 
 					if ( isGallery ) {
 						// Update gallery input
@@ -559,7 +577,15 @@ declare const tryAuraVideo: any;
 					}
 
 					$img.attr( 'src', newImageUrl );
-					$img.removeAttr( 'srcset' ).removeAttr( 'sizes' );
+					$img.removeAttr( 'srcset' );
+					if ( isGallery ) {
+						$img.attr(
+							'sizes',
+							'auto, (max-width: 150px) 100vw, 150px'
+						);
+					} else {
+						$img.removeAttr( 'sizes' );
+					}
 
 					// Update video button's data-attachment-id
 					const $videoBtn = $container.find(

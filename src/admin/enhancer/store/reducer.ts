@@ -79,7 +79,6 @@ const reducer = (
 				isBlockEditorPage: state.isBlockEditorPage,
 				isWoocommerceProductPage: state.isWoocommerceProductPage,
 				isThumbnailMode: state.isThumbnailMode,
-				imageConfigData: state.imageConfigData,
 			};
 		default:
 			return state;

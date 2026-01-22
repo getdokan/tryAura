@@ -76,15 +76,17 @@ const PreviewModal = ( {
 		setImageUrls,
 		setAttachmentIds,
 		setSupportsVideo,
+		resetState,
 	} = useDispatch( STORE_NAME );
 
 	const multiple = imageUrls.length > 1;
 
 	useEffect( () => {
+		resetState();
 		setImageUrls( imageUrls );
 		setAttachmentIds( attachmentIds );
 		setSupportsVideo( !! supportsVideo );
-	}, [ imageUrls, attachmentIds, supportsVideo ] );
+	}, [ imageUrls, attachmentIds, supportsVideo, resetState ] );
 
 	useEffect( () => {
 		setIsBlockEditorPage(

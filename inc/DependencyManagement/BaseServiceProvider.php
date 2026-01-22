@@ -7,6 +7,8 @@ use Dokan\TryAura\ThirdParty\Packages\League\Container\ServiceProvider\AbstractS
 
 /**
  * Base class for the service providers used to register classes in the container.
+ *
+ * @since PLUGIN_SINCE
  */
 abstract class BaseServiceProvider extends AbstractServiceProvider {
 	protected $services = [];
@@ -17,7 +19,10 @@ abstract class BaseServiceProvider extends AbstractServiceProvider {
 	 *
 	 * Check if the service provider can provide the given service alias.
 	 *
+	 * @since PLUGIN_SINCE
+	 *
 	 * @param string $alias The service alias to check.
+	 *
 	 * @return bool True if the service provider can provide the service, false otherwise.
 	 */
 	public function provides( string $alias ): bool {
@@ -42,6 +47,8 @@ abstract class BaseServiceProvider extends AbstractServiceProvider {
 	/**
 	 * Register a class in the container and add tags for all the interfaces it implements.
 	 *
+	 * @since PLUGIN_SINCE
+	 *
 	 * @param string     $id       Entry ID (typically a class or interface name).
 	 * @param mixed|null $concrete Concrete entity to register under that ID, null for automatic creation.
 	 * @param bool       $shared   Whether to register the class as shared (`get` always returns the same instance)
@@ -65,6 +72,8 @@ abstract class BaseServiceProvider extends AbstractServiceProvider {
 	/**
 	 * Register a shared class in the container and add tags for all the interfaces it implements.
 	 *
+	 * @since PLUGIN_SINCE
+	 *
 	 * @param string     $id       Entry ID (typically a class or interface name).
 	 * @param mixed|null $concrete Concrete entity to register under that ID, null for automatic creation.
 	 *
@@ -76,6 +85,8 @@ abstract class BaseServiceProvider extends AbstractServiceProvider {
 
 	/**
 	 * Adds tags to the given definition.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param DefinitionInterface $definition The definition to which tags will be added.
 	 * @param array $tags An array of tags to add to the definition.

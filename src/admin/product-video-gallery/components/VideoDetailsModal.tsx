@@ -267,13 +267,17 @@ const VideoDetailsModal = ( {
 							onChange={ ( e: any ) =>
 								setUseCustomThumbnail( e.target.checked )
 							}
+							id="try-aura-video-use-custom-thumbnail"
 						>
-							<span className="text-[15px] font-medium text-[#7D7D7D]">
+							<label
+								className="text-[15px] font-medium text-[#7D7D7D] cursor-pointer"
+								htmlFor="try-aura-video-use-custom-thumbnail"
+							>
 								{ __(
 									'Use Custom video Thumbnail?',
 									'try-aura'
 								) }
-							</span>
+							</label>
 						</Checkbox>
 
 						{ useCustomThumbnail ? (

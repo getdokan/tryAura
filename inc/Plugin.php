@@ -10,10 +10,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Plugin class.
+ *
+ * @since PLUGIN_SINCE
  */
 class Plugin {
 	/**
 	 * Plugin version
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @var string
 	 */
@@ -21,6 +25,8 @@ class Plugin {
 
 	/**
 	 * Bootstraps the plugin.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function __construct() {
 		register_activation_hook( TRYAURA_FILE, array( Installer::class, 'activate' ) );
@@ -30,6 +36,8 @@ class Plugin {
 
 	/**
 	 * Define all constants
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @return void
 	 */
@@ -41,6 +49,8 @@ class Plugin {
 
 	/**
 	 * Initialize the plugin once all plugins are loaded.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function init_plugin(): void {
 		$container = tryaura_get_container();

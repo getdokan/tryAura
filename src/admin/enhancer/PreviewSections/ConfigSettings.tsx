@@ -8,10 +8,7 @@ import ConfigFooter from './ConfigFooter';
 
 import { Slot } from '@wordpress/components';
 
-function ConfigSettings( {
-	doGenerate,
-	className = '',
-} ) {
+function ConfigSettings( { doGenerate, className = '' } ) {
 	const { activeTab, isBusy, isThumbnailMode } = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		return {
@@ -28,6 +25,12 @@ function ConfigSettings( {
 			label: __( 'Generate Image', 'tryaura' ),
 			value: 'image',
 			disabled: isBusy,
+		},
+		{
+			label: __( 'Generate Video', 'tryaura' ),
+			value: 'video',
+			disabled: true,
+			locked: true,
 		},
 	] );
 

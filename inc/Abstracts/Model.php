@@ -10,12 +10,16 @@ abstract class Model {
 	/**
 	 * Data holder.
 	 *
+	 * @since PLUGIN_SINCE
+	 *
 	 * @var array
 	 */
 	protected array $data = array();
 
 	/**
 	 * Constructor.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param array $data Model data.
 	 */
@@ -25,6 +29,8 @@ abstract class Model {
 
 	/**
 	 * Magic getter.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param string $name Property name.
 	 *
@@ -37,6 +43,8 @@ abstract class Model {
 	/**
 	 * Magic setter.
 	 *
+	 * @since PLUGIN_SINCE
+	 *
 	 * @param string $name  Property name.
 	 * @param mixed  $value Property value.
 	 */
@@ -46,6 +54,8 @@ abstract class Model {
 
 	/**
 	 * Convert model to array.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @return array
 	 */

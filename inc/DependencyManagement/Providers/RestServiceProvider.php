@@ -10,11 +10,15 @@ use Dokan\TryAura\Rest\VideoThumbnailController;
 
 /**
  * RestServiceProvider Class
+ *
+ * @since PLUGIN_SINCE
  */
 class RestServiceProvider extends BaseServiceProvider {
 
 	/**
 	 * The services provided by this provider.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @var array
 	 */
@@ -27,9 +31,12 @@ class RestServiceProvider extends BaseServiceProvider {
 
 	/**
 	 * Register the classes.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function register(): void {
-		foreach ( $this->services as $key => $class_name ) {
+		$filtered_services = apply_filters( 'tryaura_rest_container_services', $this->services );
+		foreach ( $filtered_services as $key => $class_name ) {
 			$this->getContainer()->addShared( $key, $class_name );
 		}
 	}

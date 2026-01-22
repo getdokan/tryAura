@@ -6,10 +6,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
  * Assets class.
+ *
+ * @since PLUGIN_SINCE
  */
 class Assets {
 	/**
 	 * Constructor.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'register_all_scripts' ), 10 );
@@ -17,6 +21,8 @@ class Assets {
 
 	/**
 	 * Register all scripts and styles
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function register_all_scripts() {
 		$styles  = $this->get_styles();
@@ -32,6 +38,8 @@ class Assets {
 	/**
 	 * Localize scripts with necessary data
 	 *
+	 * @since PLUGIN_SINCE
+	 *
 	 * @return void
 	 */
 	public function localize_scripts() {
@@ -40,168 +48,6 @@ class Assets {
 				'google' => array(
 					'gemini-2.5-flash-image'         => array(
 						'label'        => __( 'gemini-2.5-flash-image', 'try-aura' ),
-						'identity'     => 'image',
-						'inputTypes'   => array( 'text', 'image' ),
-						'outputTypes'  => array( 'image' ),
-						'supported'    => true,
-						'locked'       => false,
-						'capabilities' => array(
-							'image'  => array(
-								'supported' => true,
-								'locked'    => false,
-							),
-							'prompt' => array(
-								'supported' => true,
-								'locked'    => false,
-							),
-						),
-						'parameters'   => array(
-							'aspectRatio'      => array(
-								'supported' => true,
-								'locked'    => false,
-								'default'   => '1:1',
-								'values'    => array(
-									array(
-										'label'  => __( '1:1', 'try-aura' ),
-										'value'  => '1:1',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( '16:9', 'try-aura' ),
-										'value'  => '16:9',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( '9:16', 'try-aura' ),
-										'value'  => '9:16',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( '4:3', 'try-aura' ),
-										'value'  => '4:3',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( '3:4', 'try-aura' ),
-										'value'  => '3:4',
-										'locked' => false,
-									),
-								),
-							),
-							'personGeneration' => array(
-								'supported' => true,
-								'locked'    => false,
-								'default'   => 'allow_adult',
-								'values'    => array(
-									array(
-										'label'  => __( 'Allow Adult', 'try-aura' ),
-										'value'  => 'allow_adult',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( 'Disallow', 'try-aura' ),
-										'value'  => 'disallow',
-										'locked' => false,
-									),
-								),
-							),
-							'candidateCount'   => array(
-								'supported' => true,
-								'locked'    => false,
-								'default'   => '1',
-								'values'    => array(
-									array(
-										'label'  => __( '1 image', 'try-aura' ),
-										'value'  => '1',
-										'locked' => false,
-									),
-								),
-							),
-						),
-					),
-					'gemini-3-pro-image-preview'     => array(
-						'label'        => __( 'gemini-3-pro-image-preview', 'try-aura' ),
-						'identity'     => 'image',
-						'inputTypes'   => array( 'text', 'image' ),
-						'outputTypes'  => array( 'image' ),
-						'supported'    => true,
-						'locked'       => false,
-						'capabilities' => array(
-							'image'  => array(
-								'supported' => true,
-								'locked'    => false,
-							),
-							'prompt' => array(
-								'supported' => true,
-								'locked'    => false,
-							),
-						),
-						'parameters'   => array(
-							'aspectRatio'      => array(
-								'supported' => true,
-								'locked'    => false,
-								'default'   => '1:1',
-								'values'    => array(
-									array(
-										'label'  => __( '1:1', 'try-aura' ),
-										'value'  => '1:1',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( '16:9', 'try-aura' ),
-										'value'  => '16:9',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( '9:16', 'try-aura' ),
-										'value'  => '9:16',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( '4:3', 'try-aura' ),
-										'value'  => '4:3',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( '3:4', 'try-aura' ),
-										'value'  => '3:4',
-										'locked' => false,
-									),
-								),
-							),
-							'personGeneration' => array(
-								'supported' => true,
-								'locked'    => false,
-								'default'   => 'allow_adult',
-								'values'    => array(
-									array(
-										'label'  => __( 'Allow Adult', 'try-aura' ),
-										'value'  => 'allow_adult',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( 'Disallow', 'try-aura' ),
-										'value'  => 'disallow',
-										'locked' => false,
-									),
-								),
-							),
-							'candidateCount'   => array(
-								'supported' => true,
-								'locked'    => false,
-								'default'   => '1',
-								'values'    => array(
-									array(
-										'label'  => __( '1 image', 'try-aura' ),
-										'value'  => '1',
-										'locked' => false,
-									),
-								),
-							),
-						),
-					),
-					'nano-banana-pro-preview'     => array(
-						'label'        => __( 'nano-banana-pro-preview', 'try-aura' ),
 						'identity'     => 'image',
 						'inputTypes'   => array( 'text', 'image' ),
 						'outputTypes'  => array( 'image' ),
@@ -293,6 +139,8 @@ class Assets {
 	/**
 	 * Get styles.
 	 *
+	 * @since PLUGIN_SINCE
+	 *
 	 * @return array
 	 */
 	private function get_styles() {
@@ -341,6 +189,8 @@ class Assets {
 
 	/**
 	 * Get scripts.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @return array
 	 */
@@ -438,6 +288,8 @@ class Assets {
 	/**
 	 * Register styles
 	 *
+	 * @since PLUGIN_SINCE
+	 *
 	 * @param array $styles Assets to register.
 	 *
 	 * @return void
@@ -453,6 +305,8 @@ class Assets {
 
 	/**
 	 * Register scripts
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param array $scripts Assets to register.
 	 *
@@ -471,6 +325,8 @@ class Assets {
 
 	/**
 	 * Enqueue the scripts
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param array $scripts Assets to enqueue.
 	 *

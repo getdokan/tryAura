@@ -6,11 +6,15 @@ use Dokan\TryAura\DependencyManagement\BaseServiceProvider;
 
 /**
  * FrontendServiceProvider Class
+ *
+ * @since PLUGIN_SINCE
  */
 class FrontendServiceProvider extends BaseServiceProvider {
 
 	/**
 	 * The services provided by this provider.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @var array
 	 */
@@ -18,6 +22,8 @@ class FrontendServiceProvider extends BaseServiceProvider {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function provides( string $alias ): bool {
 		return ! is_admin() && parent::provides( $alias );
@@ -25,9 +31,12 @@ class FrontendServiceProvider extends BaseServiceProvider {
 
 	/**
 	 * Register the classes.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function register(): void {
-		foreach ( $this->services as $key => $class_name ) {
+		$filtered_services = apply_filters( 'tryaura_frontend_container_services', $this->services );
+		foreach ( $filtered_services as $key => $class_name ) {
 			$this->getContainer()->addShared( $key, $class_name );
 		}
 	}

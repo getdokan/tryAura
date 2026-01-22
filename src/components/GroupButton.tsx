@@ -1,4 +1,5 @@
 import { twMerge } from 'tailwind-merge';
+import { Crown } from 'lucide-react';
 
 export interface GroupButtonProps {
 	options: {
@@ -7,6 +8,7 @@ export interface GroupButtonProps {
 		disabled?: boolean;
 		icon?: any;
 		className?: string;
+		locked?: boolean;
 	}[];
 	onClick: ( value: string ) => void;
 	value: string;
@@ -29,6 +31,7 @@ const GroupButton = ( {
 	return (
 		<div className={ className }>
 			{ options.map( ( option, index ) => {
+				const optionDisabled = option?.disabled || option?.locked;
 				return (
 					<button
 						className={ twMerge(
@@ -39,18 +42,24 @@ const GroupButton = ( {
 							index === options.length - 1
 								? 'rounded-r-[5px]'
 								: '',
-							disabled || option?.disabled
+							disabled || optionDisabled
 								? 'opacity-50 cursor-not-allowed'
 								: '',
 							option?.className ?? ''
 						) }
 						onClick={ () => onClick( option?.value ) }
 						key={ option?.value }
-						disabled={ ( disabled || option?.disabled ) ?? false }
+						disabled={ ( disabled || optionDisabled ) ?? false }
 					>
 						<div className="flex flex-row items-center justify-center gap-2">
 							{ option?.icon ?? '' }
 							<span>{ option?.label ?? '' }</span>
+							{ option?.locked && (
+								<Crown
+									size={ 14 }
+									className="text-[rgba(239,187,64,1)] fill-[rgba(239,187,64,1)]"
+								/>
+							) }
 						</div>
 					</button>
 				);

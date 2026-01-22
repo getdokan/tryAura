@@ -7,11 +7,15 @@ use Dokan\TryAura\Common\Assets;
 
 /**
  * CommonServiceProvider Class
+ *
+ * @since PLUGIN_SINCE
  */
 class CommonServiceProvider extends BaseServiceProvider {
 
 	/**
 	 * The services provided by this provider.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @var array
 	 */
@@ -21,9 +25,12 @@ class CommonServiceProvider extends BaseServiceProvider {
 
 	/**
 	 * Register the classes.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function register(): void {
-		foreach ( $this->services as $key => $class_name ) {
+		$filtered_services = apply_filters( 'tryaura_common_container_services', $this->services );
+		foreach ( $filtered_services as $key => $class_name ) {
 			$this->getContainer()->addShared( $key, $class_name );
 		}
 	}

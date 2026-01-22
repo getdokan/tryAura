@@ -4,7 +4,7 @@ import { Button, Popover } from '@wordpress/components';
 import { twMerge } from 'tailwind-merge';
 import { dateI18n, getSettings } from '@wordpress/date';
 import { DayPicker, DateRange } from 'react-day-picker';
-import { Calendar } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Props {
 	value?: DateRange;
@@ -73,7 +73,7 @@ const DateRangePicker = ( props: Props ) => {
 			>
 				{ props.children ?? (
 					<>
-						<Calendar size={ 16 } className="text-gray-500" />
+						<CalendarDays size={ 16 } className="text-gray-500" />
 						<span className="text-sm text-gray-700">
 							{ displayValue ||
 								__( 'Select Date Range', 'try-aura' ) }
@@ -106,24 +106,21 @@ const DateRangePicker = ( props: Props ) => {
 								mode="range"
 								selected={ internalValue }
 								onSelect={ setInternalValue }
+								components={ {
+									Chevron: ( { orientation } ) => {
+										if ( orientation === 'left' ) {
+											return (
+												<ChevronLeft className="h-4 w-4" />
+											);
+										}
+										return (
+											<ChevronRight className="h-4 w-4" />
+										);
+									},
+								} }
 							/>
 						</div>
 						<div className="m-4 mt-0 flex flex-row justify-end gap-2 pt-4">
-							{/*<Button*/}
-							{/*	size="small"*/}
-							{/*	onClick={ () => {*/}
-							{/*		if ( props?.onClear ) {*/}
-							{/*			props.onClear();*/}
-							{/*		} else {*/}
-							{/*			onChange( undefined );*/}
-							{/*		}*/}
-							{/*		setIsVisible( false );*/}
-							{/*	} }*/}
-							{/*	variant="tertiary"*/}
-							{/*>*/}
-							{/*	{ __( 'Clear', 'try-aura' ) }*/}
-							{/*</Button>*/}
-
 							<Button
 								size="small"
 								onClick={ () => {

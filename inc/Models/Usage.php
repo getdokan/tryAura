@@ -12,6 +12,8 @@ use Dokan\TryAura\Abstracts\Model;
 /**
  * Usage Model class.
  *
+ * @since PLUGIN_SINCE
+ *
  * @property int          $id
  * @property int          $user_id
  * @property string       $provider

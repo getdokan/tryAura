@@ -10,11 +10,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Handles Product Gallery Video functionality on the frontend.
+ *
+ * @since PLUGIN_SINCE
  */
 class ProductVideoGallery {
 
 	/**
 	 * Class constructor.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function __construct() {
 		// Use filters for better theme compatibility.
@@ -26,6 +30,8 @@ class ProductVideoGallery {
 
 	/**
 	 * Render video gallery item when the attachment has video data.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param string $html          The original HTML.
 	 * @param int    $attachment_id The attachment ID.
@@ -86,6 +92,8 @@ class ProductVideoGallery {
 
 	/**
 	 * Enqueue frontend assets.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function enqueue_assets(): void {
 		if ( ! is_product() ) {
@@ -130,6 +138,8 @@ class ProductVideoGallery {
 
 	/**
 	 * Extract YouTube video ID from URL.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param string $url YouTube URL.
 	 *

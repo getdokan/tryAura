@@ -12,10 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Gemini REST controller.
+ *
+ * @since PLUGIN_SINCE
  */
 class GenerateController {
 	/**
 	 * REST API namespace.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @var string api namespace.
 	 */
@@ -23,6 +27,8 @@ class GenerateController {
 
 	/**
 	 * Class constructor.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function __construct() {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
@@ -30,6 +36,8 @@ class GenerateController {
 
 	/**
 	 * Register REST routes.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function register_routes(): void {
 		register_rest_route(
@@ -45,6 +53,8 @@ class GenerateController {
 
 	/**
 	 * Handle generation request.
+	 *
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 *
@@ -146,6 +156,8 @@ class GenerateController {
 
 	/**
 	 * Check if the current user is logged in.
+	 *
+	 * @since PLUGIN_SINCE
 	 */
 	public function permissions_check() {
 		return is_user_logged_in();

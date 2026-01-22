@@ -9,15 +9,15 @@ import { addQueryArgs } from '@wordpress/url';
 import { DateRange } from 'react-day-picker';
 import { DateRangePicker } from '../../../../components';
 import { Slot } from '@wordpress/components';
+import UsageChart from './Components/UsageChart';
 
 
 function Index() {
 	const today = new Date();
-	const thirtyDaysAgo = new Date();
-	thirtyDaysAgo.setDate( today.getDate() - 30 );
+	const startOfMonth = new Date( today.getFullYear(), today.getMonth(), 1 );
 
 	const [ range, setRange ] = useState< DateRange | undefined >( {
-		from: thirtyDaysAgo,
+		from: startOfMonth,
 		to: today,
 	} );
 	const [ stats, setStats ] = useState( {
@@ -84,21 +84,21 @@ function Index() {
 				</div>
 			</div>
 
-			<div className="mt-[16px] flex flex-col md:flex-row gap-[32px] flex-wrap">
+			<div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
 				<StateCardItem
-					title={ __( 'Images Generated', 'try-aura' ) }
+					title={ __( 'Total Images Generated', 'try-aura' ) }
 					value={ stats.image_count }
-					iconColor="#7047EB"
+					iconColor="var(--color-primary)"
 					Icon={ Image }
 					loading={ loading }
 				/>
 				<Slot
-					name="try-aura-generated-video-count-card" 
+					name="try-aura-generated-video-count-card"
 					fillProps={{
 						StateCardItem,
 						stats,
 						Video,
-						loading,	
+						loading,
 					}}
 				/>
 				{ wcExists && (
@@ -118,16 +118,23 @@ function Index() {
 					loading={ loading }
 				/>
 				<Slot
-					name="try-aura-generated-video-duration-card" 
+					name="try-aura-generated-video-duration-card"
 					fillProps={{
 						StateCardItem,
 						stats,
 						loading,
 						Clock
-						
+
 					}}
 				/>
-				
+
+			</div>
+
+			<div className="mt-[32px]">
+				<UsageChart
+					range={ range }
+					className="bg-white rounded-2xl border border-[rgba(230,230,230,1)] p-6 h-full w-full flex flex-col"
+				/>
 			</div>
 
 			<div className="mt-[32px] grid grid-cols-1 lg:grid-cols-3 gap-[32px]">

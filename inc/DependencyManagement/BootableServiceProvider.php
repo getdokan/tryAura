@@ -6,6 +6,8 @@ use Dokan\TryAura\ThirdParty\Packages\League\Container\ServiceProvider\BootableS
 
 /**
  * Base class for the service providers used to register classes in the container or/and to register the other service providers.
+ *
+ * @since PLUGIN_SINCE
  */
 abstract class BootableServiceProvider extends BaseServiceProvider implements BootableServiceProviderInterface {
 

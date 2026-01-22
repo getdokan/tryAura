@@ -18,35 +18,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Dokan\TryAura\DependencyManagement\Container;
-
-global $try_aura_container;
-
-// Instantiate the container.
-$try_aura_container = new Container();
-
-// Register the service providers.
-$try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement\Providers\CommonServiceProvider() );
-$try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement\Providers\AdminServiceProvider() );
-$try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement\Providers\FrontendServiceProvider() );
-$try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement\Providers\WooCommerceServiceProvider() );
-$try_aura_container->addServiceProvider( new \Dokan\TryAura\DependencyManagement\Providers\RestServiceProvider() );
-
-/**
- * Get the container.
- *
- * @since PLUGIN_SINCE
- *
- * @return Container The global container instance.
- */
-function tryaura_get_container(): Container {
-	global $try_aura_container;
-
-	return $try_aura_container;
-}
-
 // Define constant for the Plugin file.
 defined( 'TRYAURA_FILE' ) || define( 'TRYAURA_FILE', __FILE__ );
 defined( 'TRYAURA_DIR' ) || define( 'TRYAURA_DIR', __DIR__ );
+defined( 'TRYAURA_INC_DIR' ) || define( 'TRYAURA_INC_DIR', TRYAURA_DIR . '/inc' );
+defined( 'TRYAURA_PLUGIN_ASSEST' ) || define( 'TRYAURA_PLUGIN_ASSEST', plugins_url( 'build', TRYAURA_FILE ) );
 
 new Dokan\TryAura\Plugin();

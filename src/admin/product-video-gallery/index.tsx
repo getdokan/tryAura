@@ -2,6 +2,7 @@ import { createRoot } from '@wordpress/element';
 import './style.scss';
 import ProductVideoGallery from './components/ProductVideoGallery';
 import { Toaster } from 'react-hot-toast';
+import { __ } from '@wordpress/i18n';
 
 declare const jQuery: any;
 declare const tryAuraVideo: any;
@@ -41,69 +42,66 @@ declare const tryAuraVideo: any;
 		renderModal();
 
 		const addVideoButtons = () => {
-			// For Gallery Images
-			$( '#product_images_container ul.product_images > li' ).each(
-				function () {
-					const $image = $( this );
-					const attachmentId = $image.data( 'attachment_id' );
+			const processImage = ( $image, attachmentId ) => {
+				if (
+					! attachmentId ||
+					attachmentId === '-1' ||
+					$image.find( '.try-aura-product-gallery-video' ).length
+				) {
+					return;
+				}
 
-					if (
-						! attachmentId ||
-						$image.find( '.try-aura-product-gallery-video' ).length
-					) {
-						return;
+				const videoData =
+					tryAuraVideo.videoData &&
+					tryAuraVideo.videoData[ attachmentId ]
+						? JSON.stringify(
+								tryAuraVideo.videoData[ attachmentId ]
+						  )
+						: '';
+
+				if ( ! videoData ) {
+					return;
+				}
+
+				const buttonClass = 'try-aura-edit-video';
+				const iconClass = 'dashicons-edit';
+
+				const dataObj =
+					tryAuraVideo.videoData && tryAuraVideo.videoData[ attachmentId ]
+						? tryAuraVideo.videoData[ attachmentId ]
+						: null;
+
+				const $img = $image.find( 'img' );
+				if ( $img.length ) {
+					if ( ! $img.data( 'original-src' ) ) {
+						$img.data( 'original-src', $img.attr( 'src' ) );
+					}
+					if ( ! $img.data( 'original-id' ) ) {
+						$img.data( 'original-id', attachmentId );
+					}
+					if ( ! $img.data( 'original-srcset' ) ) {
+						$img.data( 'original-srcset', $img.attr( 'srcset' ) );
+					}
+					if ( ! $img.data( 'original-sizes' ) ) {
+						$img.data( 'original-sizes', $img.attr( 'sizes' ) );
 					}
 
-					const videoData =
-						tryAuraVideo.videoData &&
-						tryAuraVideo.videoData[ attachmentId ]
-							? JSON.stringify(
-									tryAuraVideo.videoData[ attachmentId ]
-							  )
-							: '';
-
-					const buttonClass = videoData
-						? 'try-aura-edit-video'
-						: 'try-aura-add-video';
-					const iconClass = videoData
-						? 'dashicons-edit'
-						: 'dashicons-plus';
-
-					const dataObj =
-						tryAuraVideo.videoData &&
-						tryAuraVideo.videoData[ attachmentId ]
-							? tryAuraVideo.videoData[ attachmentId ]
-							: null;
-
-					const $img = $image.find( 'img' );
-					if ( $img.length ) {
-						if ( ! $img.data( 'original-src' ) ) {
-							$img.data( 'original-src', $img.attr( 'src' ) );
-						}
-						if ( ! $img.data( 'original-id' ) ) {
-							$img.data( 'original-id', attachmentId );
-						}
-						if ( ! $img.data( 'original-srcset' ) ) {
-							$img.data(
-								'original-srcset',
-								$img.attr( 'srcset' )
+					if ( dataObj?.useCustomThumbnail && dataObj?.thumbnailUrl ) {
+						$img.attr( 'src', dataObj.thumbnailUrl ).removeAttr(
+							'srcset'
+						);
+						if ( $image.is( 'li.image' ) ) {
+							$img.attr(
+								'sizes',
+								'auto, (max-width: 150px) 100vw, 150px'
 							);
-						}
-						if ( ! $img.data( 'original-sizes' ) ) {
-							$img.data( 'original-sizes', $img.attr( 'sizes' ) );
-						}
-
-						if (
-							dataObj?.useCustomThumbnail &&
-							dataObj?.thumbnailUrl
-						) {
-							$img.attr( 'src', dataObj.thumbnailUrl )
-								.removeAttr( 'srcset' )
-								.removeAttr( 'sizes' );
+						} else {
+							$img.removeAttr( 'sizes' );
 						}
 					}
+				}
 
-					$image.append( `
+				$image.append( `
 					<div class="tryaura try-aura-product-video-wrapp absolute bottom-0 left-0 right-0 z-10">
 						<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center gap-1.25 bg-primary text-white no-underline py-1.25 text-[11px] font-semibold leading-none hover:bg-primary-dark ${ buttonClass }" data-attachment-id="${ attachmentId }">
 							<span class="dashicons ${ iconClass } text-[14px]! w-3.5! h-3.5! flex! items-center! justify-center!"></span>
@@ -112,8 +110,25 @@ declare const tryAuraVideo: any;
 						<input type="hidden" class="try-aura-video-data-input" name="try_aura_video_data[${ attachmentId }]" value='${ videoData }'>
 					</div>
 				` );
+			};
+
+			// For Gallery Images
+			$( '#product_images_container ul.product_images > li' ).each(
+				function () {
+					const $image = $( this );
+					const attachmentId =
+						$image.data( 'attachment_id' ) ||
+						$image.attr( 'data-attachment_id' );
+					processImage( $image, attachmentId );
 				}
 			);
+
+			// For Featured Image
+			const $featuredImageContainer = $( '#postimagediv .inside' );
+			if ( $featuredImageContainer.length ) {
+				const attachmentId = $( '#_thumbnail_id' ).val();
+				processImage( $featuredImageContainer, attachmentId );
+			}
 		};
 
 		addVideoButtons();
@@ -209,7 +224,7 @@ declare const tryAuraVideo: any;
 								// Add the item to the list so we don't have to wait for refresh
 								$gallery.append( `
 									<li class="image" data-attachment_id="${ attachmentId }">
-										<img src="${ thumbnailUrl }" />
+										<img width="150" height="150" src="${ thumbnailUrl }" sizes="auto, (max-width: 150px) 100vw, 150px" />
 										<ul class="actions">
 											<li><a href="#" class="delete" title="Delete image">Delete</a></li>
 										</ul>
@@ -273,6 +288,21 @@ declare const tryAuraVideo: any;
 				addGlobalVideoButton();
 			} );
 			observer.observe( galleryList, { childList: true } );
+		}
+
+		const inputThumbnail = document.querySelector( 'input#_thumbnail_id' );
+		if ( inputThumbnail ) {
+			const observer = new MutationObserver( ( changes ) => {
+				changes.forEach( ( change ) => {
+					if (
+						change.attributeName &&
+						change.attributeName.includes( 'value' )
+					) {
+						addVideoButtons();
+					}
+				} );
+			} );
+			observer.observe( inputThumbnail, { attributes: true } );
 		}
 
 		$( 'body' ).on(
@@ -398,12 +428,7 @@ declare const tryAuraVideo: any;
 						) {
 							delete tryAuraVideo.videoData[ attachmentId ];
 
-							$btn.removeClass( 'try-aura-edit-video' ).addClass(
-								'try-aura-add-video'
-							);
-							$icon
-								.removeClass( 'dashicons-edit' )
-								.addClass( 'dashicons-plus' );
+							$wrapp.remove();
 
 							const originalSrc = $img.data( 'original-src' );
 							const originalSrcset =
@@ -423,7 +448,6 @@ declare const tryAuraVideo: any;
 							} else {
 								$img.removeAttr( 'sizes' );
 							}
-							$input.val( '' );
 						} else {
 							// Strip redundant info for storage
 							const saveData = { ...newData };
@@ -443,9 +467,17 @@ declare const tryAuraVideo: any;
 								.addClass( 'dashicons-edit' );
 
 							if ( newData.useCustomThumbnail && thumbnailUrl ) {
-								$img.attr( 'src', thumbnailUrl )
-									.removeAttr( 'srcset' )
-									.removeAttr( 'sizes' );
+								$img.attr( 'src', thumbnailUrl ).removeAttr(
+									'srcset'
+								);
+								if ( $parentLi.length ) {
+									$img.attr(
+										'sizes',
+										'auto, (max-width: 150px) 100vw, 150px'
+									);
+								} else {
+									$img.removeAttr( 'sizes' );
+								}
 							} else if ( ! newData.useCustomThumbnail ) {
 								const originalSrc = $img.data( 'original-src' );
 								const originalSrcset =
@@ -475,6 +507,128 @@ declare const tryAuraVideo: any;
 					},
 					originalImageUrl
 				);
+			}
+		);
+
+		// Change Gallery or Featured Image
+		$( 'body' ).on(
+			'click',
+			'li.image img, #postimagediv .inside img',
+			function ( e ) {
+				e.preventDefault();
+
+				if ( ! window.wp || ! wp.media ) {
+					return;
+				}
+
+				const $img = $( this );
+				const $li = $img.closest( 'li.image' );
+				const isGallery = $li.length > 0;
+				const $container = isGallery ? $li : $img.closest( '.inside' );
+
+				const attachmentId = isGallery
+					? $li.data( 'attachment_id' ) ||
+					  $li.attr( 'data-attachment_id' )
+					: $( '#_thumbnail_id' ).val();
+
+				const frame = wp.media( {
+					title: __( 'Update gallery image', 'try-aura' ),
+					button: {
+						text: __( 'Use this image', 'try-aura' ),
+					},
+					multiple: false,
+				} );
+
+				frame.on( 'select', function () {
+					const attachment = frame
+						.state()
+						.get( 'selection' )
+						.first()
+						.toJSON();
+					const newAttachmentId = attachment.id;
+					const newImageUrl =
+						attachment.sizes?.thumbnail?.url || attachment.url;
+
+					if ( isGallery ) {
+						// Update gallery input
+						const $galleryInput = $( '#product_image_gallery' );
+						const ids = $galleryInput
+							.val()
+							.split( ',' )
+							.filter( Boolean );
+						const index = ids.indexOf( attachmentId.toString() );
+						if ( index !== -1 ) {
+							ids[ index ] = newAttachmentId.toString();
+							$galleryInput
+								.val( ids.join( ',' ) )
+								.trigger( 'change' );
+						}
+
+						// Update li
+						$li.data( 'attachment_id', newAttachmentId ).attr(
+							'data-attachment_id',
+							newAttachmentId
+						);
+					} else {
+						// Update featured image input
+						$( '#_thumbnail_id' )
+							.val( newAttachmentId )
+							.trigger( 'change' );
+					}
+
+					$img.attr( 'src', newImageUrl );
+					$img.removeAttr( 'srcset' );
+					if ( isGallery ) {
+						$img.attr(
+							'sizes',
+							'auto, (max-width: 150px) 100vw, 150px'
+						);
+					} else {
+						$img.removeAttr( 'sizes' );
+					}
+
+					// Update video button's data-attachment-id
+					const $videoBtn = $container.find(
+						'.try-aura-product-gallery-video'
+					);
+					if ( $videoBtn.length ) {
+						$videoBtn
+							.data( 'attachment-id', newAttachmentId )
+							.attr( 'data-attachment-id', newAttachmentId );
+
+						// Also update hidden input name
+						const $videoInput = $container.find(
+							'.try-aura-video-data-input'
+						);
+						if ( $videoInput.length ) {
+							$videoInput.attr(
+								'name',
+								`try_aura_video_data[${ newAttachmentId }]`
+							);
+
+							// If there was video data for the old ID, move it to the new ID
+							if (
+								tryAuraVideo.videoData &&
+								tryAuraVideo.videoData[ attachmentId ]
+							) {
+								tryAuraVideo.videoData[ newAttachmentId ] =
+									tryAuraVideo.videoData[ attachmentId ];
+								delete tryAuraVideo.videoData[ attachmentId ];
+							}
+						}
+					}
+				} );
+
+				frame.on( 'open', function () {
+					const selection = frame.state().get( 'selection' );
+					if ( attachmentId && attachmentId !== '-1' ) {
+						const attachment = wp.media.attachment( attachmentId );
+						attachment.fetch();
+						selection.add( attachment ? [ attachment ] : [] );
+					}
+				} );
+
+				frame.open();
 			}
 		);
 	} );

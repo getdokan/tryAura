@@ -3,6 +3,8 @@
 namespace Dokan\TryAura\DependencyManagement\Providers;
 
 use Dokan\TryAura\DependencyManagement\BaseServiceProvider;
+use Dokan\TryAura\TryAura;
+use Dokan\TryAura\WooCommerce\Frontend\TryOn;
 use Dokan\TryAura\WooCommerce\WooCommerce;
 use Dokan\TryAura\WooCommerce\Admin\ProductGalleryVideo as AdminProductVideo;
 use Dokan\TryAura\WooCommerce\Frontend\ProductVideoGallery as FrontendProductVideo;
@@ -23,8 +25,9 @@ class WooCommerceServiceProvider extends BaseServiceProvider {
 	 */
 	protected $services = [
 		'woocommerce'           => WooCommerce::class,
-		'product_gallery_video' => AdminProductVideo::class,
-		'product_video_gallery' => FrontendProductVideo::class,
+		'admin_product_video' => AdminProductVideo::class,
+		'frontend_product_video' => FrontendProductVideo::class,
+		'try_on'                => TryOn::class,
 	];
 
 	/**
@@ -33,7 +36,7 @@ class WooCommerceServiceProvider extends BaseServiceProvider {
 	 * @since PLUGIN_SINCE
 	 */
 	public function provides( string $alias ): bool {
-		return class_exists( 'WooCommerce' ) && parent::provides( $alias );
+		return TryAura::is_woocommerce_active()&& parent::provides( $alias );
 	}
 
 	/**

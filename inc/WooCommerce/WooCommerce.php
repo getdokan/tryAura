@@ -2,8 +2,6 @@
 
 namespace Dokan\TryAura\WooCommerce;
 
-use Dokan\TryAura\WooCommerce\Frontend\TryOn;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -28,13 +26,6 @@ class WooCommerce {
 	 * @since PLUGIN_SINCE
 	 */
 	public function __construct() {
-		if ( ! $this->is_woocommerce_active() ) {
-			return;
-		}
-
-		// Frontend try-on script on product pages.
-		new TryOn();
-
 		// Add product list column.
 		add_filter( 'manage_edit-product_columns', array( $this, 'add_product_column' ) );
 		add_action( 'manage_product_posts_custom_column', array( $this, 'render_product_column' ), 10, 2 );
@@ -47,15 +38,6 @@ class WooCommerce {
 
 		// Action Scheduler handler for bulk update.
 		add_action( 'try_aura_bulk_update_products_try_on', array( $this, 'bulk_update_products_try_on' ), 10, 2 );
-	}
-
-	/**
-	 * Check if WooCommerce is active.
-	 *
-	 * @since PLUGIN_SINCE
-	 */
-	private function is_woocommerce_active(): bool {
-		return class_exists( 'WooCommerce' );
 	}
 
 	/**

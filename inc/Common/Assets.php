@@ -16,7 +16,7 @@ class Assets {
 	 * @since PLUGIN_SINCE
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'register_all_scripts' ), 10 );
+		$this->register_all_scripts();
 	}
 
 	/**

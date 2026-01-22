@@ -124,7 +124,9 @@ const VideoDetailsModal = ( {
 				.first()
 				.toJSON();
 			setThumbnailId( attachment.id );
-			setThumbnailUrl( attachment.url );
+			setThumbnailUrl(
+				attachment.sizes?.thumbnail?.url || attachment.url
+			);
 		} );
 
 		frame.open();

@@ -33,6 +33,20 @@ class ProductGalleryVideo {
 	}
 
 	/**
+	 * Print nonce field.
+	 *
+	 * @since PLUGIN_SINCE
+	 */
+	public function maybe_print_nonce(): void {
+		static $nonce_printed = false;
+
+		if ( ! $nonce_printed ) {
+			wp_nonce_field( 'try_aura_save_video_data', 'try_aura_video_data_nonce' );
+			$nonce_printed = true;
+		}
+	}
+
+	/**
 	 * Get button for gallery image.
 	 *
 	 * @since PLUGIN_SINCE
@@ -41,12 +55,7 @@ class ProductGalleryVideo {
 	 * @param int $attachment_id Attachment id.
 	 */
 	public function get_gallery_product_video_btn( $post_id, $attachment_id ): void {
-		static $nonce_printed = false;
-
-		if ( ! $nonce_printed ) {
-			wp_nonce_field( 'try_aura_save_video_data', 'try_aura_video_data_nonce' );
-			$nonce_printed = true;
-		}
+		$this->maybe_print_nonce();
 
 		$product_video_data = get_post_meta( $post_id, self::VIDEO_META_KEY, true );
 		$settings           = array();
@@ -55,12 +64,16 @@ class ProductGalleryVideo {
 			$settings = $product_video_data[ $attachment_id ];
 		}
 
-		$classes = ! empty( $settings ) ? ' try-aura-edit-video' : ' try-aura-add-video';
-		$icon_class = ! empty( $settings ) ? 'dashicons-edit' : 'dashicons-plus';
+		if ( empty( $settings ) ) {
+			return;
+		}
+
+		$classes = ' try-aura-edit-video';
+		$icon_class = 'dashicons-edit';
 		?>
 		<div class="tryaura try-aura-product-video-wrapp absolute bottom-0 left-0 right-0 z-10">
-			<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center gap-[5px] bg-[var(--color-primary)] text-white no-underline py-[5px] text-[11px] font-semibold leading-none hover:bg-[var(--color-primary-dark)] <?php echo esc_attr( $classes ); ?>" data-attachment-id="<?php echo esc_attr( $attachment_id ); ?>">
-				<span class="dashicons <?php echo esc_attr( $icon_class ); ?> !text-[14px] !w-[14px] !h-[14px] !flex !items-center !justify-center"></span>
+			<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center gap-1.25 bg-primary text-white no-underline py-1.25 text-[11px] font-semibold leading-none hover:bg-primary-dark <?php echo esc_attr( $classes ); ?>" data-attachment-id="<?php echo esc_attr( $attachment_id ); ?>">
+				<span class="dashicons <?php echo esc_attr( $icon_class ); ?> text-[14px]! w-3.5! h-3.5! flex! items-center! justify-center!"></span>
 				<?php esc_html_e( 'Video', 'try-aura' ); ?>
 			</a>
 			<input type="hidden" class="try-aura-video-data-input" name="try_aura_video_data[<?php echo esc_attr( $attachment_id ); ?>]" value='<?php echo wp_json_encode( $settings ); ?>'>
@@ -85,6 +98,8 @@ class ProductGalleryVideo {
 		if ( ! $screen || 'product' !== $screen->post_type ) {
 			return;
 		}
+
+		add_action( 'post_submitbox_misc_actions', array( $this, 'maybe_print_nonce' ) );
 
 		global $post;
 		$product_id = $post ? $post->ID : 0;
@@ -140,17 +155,19 @@ class ProductGalleryVideo {
 			return;
 		}
 
-		if ( isset( $_POST['try_aura_video_data'] ) ) {
-			$video_data = wp_unslash( $_POST['try_aura_video_data'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$product_settings = array();
+		$video_data = isset( $_POST['try_aura_video_data'] ) ? wp_unslash( $_POST['try_aura_video_data'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$product_settings = array();
 
-			foreach ( (array) $video_data as $attachment_id => $settings ) {
-				$settings = json_decode( $settings, true );
-				if ( ! empty( $settings['url'] ) ) {
-					$product_settings[ (int) $attachment_id ] = map_deep( $settings, 'sanitize_text_field' );
-				}
+		foreach ( (array) $video_data as $attachment_id => $settings ) {
+			$settings = json_decode( $settings, true );
+			if ( ! empty( $settings['url'] ) ) {
+				$product_settings[ (int) $attachment_id ] = map_deep( $settings, 'sanitize_text_field' );
 			}
+		}
 
+		if ( empty( $product_settings ) ) {
+			delete_post_meta( $post_id, self::VIDEO_META_KEY );
+		} else {
 			update_post_meta( $post_id, self::VIDEO_META_KEY, $product_settings );
 		}
 	}

@@ -89,7 +89,7 @@ class VideoThumbnailController {
 		return new WP_REST_Response(
 			array(
 				'attachment_id' => $attachment_id,
-				'url'           => wp_get_attachment_url( $attachment_id ),
+				'url'           => wp_get_attachment_image_url( $attachment_id, 'thumbnail' ),
 			),
 			200
 		);

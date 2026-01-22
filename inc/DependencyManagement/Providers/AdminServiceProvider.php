@@ -26,15 +26,6 @@ class AdminServiceProvider extends BaseServiceProvider {
 	];
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * @since PLUGIN_SINCE
-	 */
-	public function provides( string $alias ): bool {
-		return is_admin() && parent::provides( $alias );
-	}
-
-	/**
 	 * Register the classes.
 	 *
 	 * @since PLUGIN_SINCE

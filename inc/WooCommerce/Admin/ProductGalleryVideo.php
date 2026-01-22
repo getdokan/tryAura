@@ -33,6 +33,20 @@ class ProductGalleryVideo {
 	}
 
 	/**
+	 * Print nonce field.
+	 *
+	 * @since PLUGIN_SINCE
+	 */
+	public function maybe_print_nonce(): void {
+		static $nonce_printed = false;
+
+		if ( ! $nonce_printed ) {
+			wp_nonce_field( 'try_aura_save_video_data', 'try_aura_video_data_nonce' );
+			$nonce_printed = true;
+		}
+	}
+
+	/**
 	 * Get button for gallery image.
 	 *
 	 * @since PLUGIN_SINCE
@@ -41,12 +55,7 @@ class ProductGalleryVideo {
 	 * @param int $attachment_id Attachment id.
 	 */
 	public function get_gallery_product_video_btn( $post_id, $attachment_id ): void {
-		static $nonce_printed = false;
-
-		if ( ! $nonce_printed ) {
-			wp_nonce_field( 'try_aura_save_video_data', 'try_aura_video_data_nonce' );
-			$nonce_printed = true;
-		}
+		$this->maybe_print_nonce();
 
 		$product_video_data = get_post_meta( $post_id, self::VIDEO_META_KEY, true );
 		$settings           = array();
@@ -89,6 +98,8 @@ class ProductGalleryVideo {
 		if ( ! $screen || 'product' !== $screen->post_type ) {
 			return;
 		}
+
+		add_action( 'post_submitbox_misc_actions', array( $this, 'maybe_print_nonce' ) );
 
 		global $post;
 		$product_id = $post ? $post->ID : 0;

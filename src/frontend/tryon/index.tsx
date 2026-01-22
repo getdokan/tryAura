@@ -4,6 +4,8 @@ import TryOnModal from './TryOnModal';
 import { addAction, applyFilters, doAction } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import { select } from '@wordpress/data';
+import apiFetch from '@wordpress/api-fetch';
+import { toast } from '@tryaura/components';
 
 declare global {
 	interface Window {
@@ -17,29 +19,38 @@ declare global {
 	}
 }
 
-function unique< T >( arr: T[] ): T[] {
-	return Array.from( new Set( arr ) );
-}
+async function getProductImageUrls(): Promise< string[] > {
+	if ( ! isUserLoggedIn() ) {
+		goToLogin();
+		return;
+	}
+	// disable try-aura-tryon-button button
+	const button = window?.document?.getElementById( 'try-aura-tryon-button' );
 
-function getProductImageUrls(): string[] {
-	const imgs: HTMLImageElement[] = Array.from(
-		document.querySelectorAll(
-			applyFilters(
-				'tryaura.tryon.product_image_selector',
-				'.woocommerce-product-gallery__wrapper img:not(.zoomImg)'
-			)
-		)
-	);
-	const urls: string[] = imgs
-		.map( ( img ) => {
-			const large =
-				( img as any ).dataset?.large_image ||
-				img.getAttribute( 'data-large_image' );
-			const cs = ( img as any ).currentSrc || img.getAttribute( 'src' );
-			return large || cs || '';
-		} )
-		.filter( Boolean ) as string[];
-	return applyFilters( 'tryaura.tryon.product_image_urls', unique( urls ) );
+	button?.setAttribute( 'disabled', '' );
+	try {
+		// Pass the apiFetch promise directly to toast.promise
+		const product: Record< number, string > = await toast.promise(
+			apiFetch( {
+				path: `/try-aura/v1/product/${ window?.tryAura?.productId }/images`,
+			} ),
+			{
+				loading: __( 'Loading try-on images..', 'try-aura' ),
+				success: __( 'Images loaded!', 'try-aura' ),
+				error: __( 'No product images found to try on.', 'try-aura' ),
+			}
+		);
+
+		button?.removeAttribute( 'disabled' );
+
+		if ( product && Object.values( product ).length ) {
+			return Object.values( product );
+		}
+		return [];
+	} catch ( e ) {
+		button?.removeAttribute( 'disabled' );
+		return [];
+	}
 }
 
 const isUserLoggedIn = (): boolean => {
@@ -64,10 +75,6 @@ const goToLogin = () => {
 };
 
 function openTryOnModal( productImages: string[] ) {
-	if ( ! isUserLoggedIn() ) {
-		goToLogin();
-		return;
-	}
 	const containerId = applyFilters(
 		'tryaura.tryon.container_id',
 		'try-aura-tryon-modal-root'
@@ -91,10 +98,9 @@ function openTryOnModal( productImages: string[] ) {
 	);
 }
 
-const handleTryOnBtnClick = () => {
-	const images = getProductImageUrls();
+const handleTryOnBtnClick = async () => {
+	const images = await getProductImageUrls();
 	if ( ! images.length ) {
-		window.alert( __( 'No product images found to try on.', 'try-aura' ) );
 		return;
 	}
 	openTryOnModal( images );
@@ -132,19 +138,23 @@ function injectButton() {
 	doAction( 'tryaura.tryon.button_added', btn, addToCart );
 }
 
-addAction( 'tryaura.tryon.button_added', 'try-aura-tryon-button-added', () => {
-	// check if in the url there is a tryOnAutoOpen param, if so, open the modal
-	const currentUrl = new URL( window.location.href );
-	const tryOnAutoOpen = currentUrl.searchParams.get( 'tryOnAutoOpen' );
-	if ( tryOnAutoOpen ) {
-		const productImages = getProductImageUrls();
-		if ( productImages.length ) {
-			openTryOnModal( productImages );
-			currentUrl.searchParams.delete( 'tryOnAutoOpen' );
-			window.history.replaceState( null, '', currentUrl.toString() );
+addAction(
+	'tryaura.tryon.button_added',
+	'try-aura-tryon-button-added',
+	async () => {
+		// check if in the url there is a tryOnAutoOpen param, if so, open the modal
+		const currentUrl = new URL( window.location.href );
+		const tryOnAutoOpen = currentUrl.searchParams.get( 'tryOnAutoOpen' );
+		if ( tryOnAutoOpen ) {
+			const productImages = await getProductImageUrls();
+			if ( productImages.length ) {
+				openTryOnModal( productImages );
+				currentUrl.searchParams.delete( 'tryOnAutoOpen' );
+				window.history.replaceState( null, '', currentUrl.toString() );
+			}
 		}
 	}
-} );
+);
 
 function init() {
 	injectButton();

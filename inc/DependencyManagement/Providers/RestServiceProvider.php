@@ -7,6 +7,7 @@ use Dokan\TryAura\Rest\SettingsController;
 use Dokan\TryAura\Rest\GenerateController;
 use Dokan\TryAura\Rest\DashboardController;
 use Dokan\TryAura\Rest\VideoThumbnailController;
+use Dokan\TryAura\Rest\ProductController;
 
 /**
  * RestServiceProvider Class
@@ -27,6 +28,7 @@ class RestServiceProvider extends BaseServiceProvider {
 		'generate_controller'        => GenerateController::class,
 		'dashboard_controller'       => DashboardController::class,
 		'video_thumbnail_controller' => VideoThumbnailController::class,
+		'product_controller'         => ProductController::class,
 	];
 
 	/**

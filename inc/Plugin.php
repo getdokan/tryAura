@@ -68,6 +68,9 @@ class Plugin {
 		if ( $container->has( 'video_thumbnail_controller' ) ) {
 			$container->get( 'video_thumbnail_controller' );
 		}
+		if ( $container->has( 'product_controller' ) ) {
+			$container->get( 'product_controller' );
+		}
 
 		// Register assets.
 		if ( $container->has( 'assets' ) ) {

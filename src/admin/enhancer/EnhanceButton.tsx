@@ -39,6 +39,20 @@ const EnhanceButton = () => {
 				);
 				return;
 			}
+			const isOnlyImagesSelected = items.every(
+				( item: any ) => item.type === 'image'
+			);
+
+			if ( ! isOnlyImagesSelected ) {
+				toast.error(
+					__(
+						'Please select only image(s) for enhancement.',
+						'try-aura'
+					)
+				);
+				return;
+			}
+
 			setPreviewUrls(
 				applyFilters(
 					'tryaura.enhancer_preview_urls',

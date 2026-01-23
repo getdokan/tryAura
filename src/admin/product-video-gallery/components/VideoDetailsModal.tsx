@@ -232,16 +232,17 @@ const VideoDetailsModal = ( {
 
 					<div>
 						<label
-							htmlFor="try-aura-video-url"
+							htmlFor={ `try-aura-video-url-${ platform }` }
 							className="block text-sm font-medium text-gray-700 mb-2"
 						>
 							{ __( 'Video URL', 'try-aura' ) }
 						</label>
 						<div className="flex gap-2">
 							<input
-								id="try-aura-video-url"
+								id={ `try-aura-video-url-${ platform }` }
+								name={ `try-aura-video-url-${ platform }` }
 								type="text"
-								className="flex-1 border rounded-md p-[10px_16px] leading-0 border-[#E9E9E9]"
+								className="flex-1 border rounded-md p-[10px_16px] leading-0 border-[#E9E9E9] focus:border-primary! focus:shadow-none"
 								placeholder={
 									platform === 'youtube'
 										? 'e.g. https://www.youtube.com/watch?v=...'

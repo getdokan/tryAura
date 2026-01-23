@@ -36,7 +36,7 @@ const ModernSelect = ( {
 	};
 
 	return (
-		<label
+		<div
 			className={ `relative flex flex-col gap-[4px] ${ className }` }
 			ref={ contentRef }
 		>
@@ -150,7 +150,7 @@ const ModernSelect = ( {
 					</Popover>
 				) : null }
 			</div>
-		</label>
+		</div>
 	);
 };
 

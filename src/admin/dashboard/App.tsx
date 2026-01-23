@@ -16,6 +16,9 @@ export type TryAuraAdminRoute = {
 };
 
 const getAdminRoutes = () => {
+	// @ts-ignore
+	const wcExists = window?.tryAura?.wcExists ?? false;
+
 	let routes: Array< TryAuraAdminRoute > = [
 		{
 			id: 'dashboard',
@@ -32,12 +35,14 @@ const getAdminRoutes = () => {
 			element: <GeminiSettings />,
 			path: '/settings/gemini',
 		},
-		{
+	];
+	if ( wcExists ) {
+		routes.push( {
 			id: 'try-on-control',
 			element: <TryOnControlSettings />,
 			path: '/settings/try-on-control',
-		},
-	];
+		} );
+	}
 
 	// @ts-ignore
 	routes = applyFilters(

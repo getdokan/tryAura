@@ -3,10 +3,12 @@ import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import { Button } from '../../../../../components';
 import { toast } from '@tryaura/components';
+import Toggle from '../../../../../components/Toggle';
 
 function ProductTryOn() {
 	const [ enabling, setEnabling ] = useState( false );
 	const [ disabling, setDisabling ] = useState( false );
+	const [ checked, setChecked ] = useState( false );
 
 	const handleBulkAction = async ( enabled: boolean ) => {
 		if ( enabled ) {
@@ -59,6 +61,8 @@ function ProductTryOn() {
 				>
 					{ __( 'Disable for all products', 'try-aura' ) }
 				</Button>
+
+				<Toggle checked={checked} onChange={setChecked} />
 			</div>
 		</div>
 	);

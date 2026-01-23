@@ -1,5 +1,6 @@
 import './style.scss';
 import Button from './Button';
+import Toggle from './Toggle';
 import WpBtn from './WpBtn';
 import ModernSelect from './ModernSelect';
 import GroupButton from './GroupButton';
@@ -17,8 +18,10 @@ export { DateRangePicker };
 export { Checkbox };
 export { GoogleGenAI };
 export { toast };
+export { Toggle };
 export type { ButtonProps } from './Button';
 export type { CheckboxProps } from './Checkbox';
+export type { GroupButtonProps } from './GroupButton';
 
 domReady( () => {
 	const container = document.getElementById( 'aura-toaster' );

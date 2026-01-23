@@ -2,7 +2,7 @@
 
 namespace Dokan\TryAura\Rest;
 
-use WP_Error;
+use Dokan\TryAura\TryAura;
 use WP_REST_Request;
 use WP_REST_Response;
 

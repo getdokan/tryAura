@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import Gemini from "./Gemini";
-import ProductTryOn from "./Woocommerce/ProductTryOn";
+import TryOnControl from './Woocommerce/TryOnControl';
 
 const Index = () => {
 	return (
@@ -11,7 +11,7 @@ const Index = () => {
 
 			<div className="flex flex-col gap-8">
 				<Gemini />
-				<ProductTryOn />
+				<TryOnControl />
 			</div>
 		</div>
 	);

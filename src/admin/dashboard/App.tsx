@@ -6,6 +6,7 @@ import { createHashRouter, RouterProvider } from 'react-router-dom';
 import Settings from './pages/Settings';
 import Dashboard from './pages/Dashboard';
 import GeminiSettings from './pages/Settings/Gemini/GeminiSettings';
+import TryOnControlSettings from './pages/Settings/Woocommerce/TryOnControl/TryOnControlSettings';
 
 export type TryAuraAdminRoute = {
 	id: string;
@@ -30,6 +31,11 @@ const getAdminRoutes = () => {
 			id: 'settings-gemini',
 			element: <GeminiSettings />,
 			path: '/settings/gemini',
+		},
+		{
+			id: 'try-on-control',
+			element: <TryOnControlSettings />,
+			path: '/settings/try-on-control',
 		},
 	];
 

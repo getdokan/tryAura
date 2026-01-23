@@ -1,8 +1,8 @@
 import { ArrowLeft } from 'lucide-react';
 import geminiLogo from '../assets/geminiLogo.svg';
 import ApiKeyInput from '../components/ApiKeyInput';
-import { ModernSelect, Button } from "../../../../../components";
-import { toast } from "@tryaura/components";
+import { ModernSelect, Button } from '../../../../../components';
+import { toast } from '@tryaura/components';
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { Slot } from '@wordpress/components';
 // @ts-ignore
 import { STORE_NAME } from '@tryaura/settings';
+import SettingDetailsContainer from '../components/SettingDetailsContainer';
 
 const InitialLoader = () => {
 	return (
@@ -139,91 +140,9 @@ const GeminiSettings = () => {
 	};
 
 	return (
-		<div className="bg-white rounded-2xl min-h-[90vh] flex flex-col justify-between">
-			<div>
-				<div>
-					<div className="border-b border-solid border-[#f0e5e5]">
-						<button
-							type="button"
-							className="inline-flex items-center gap-1.5 m-[22px] hover:cursor-pointer hover:underline bg-transparent border-none p-0"
-							onClick={ () => {
-								navigate( '/settings' );
-							} }
-						>
-							<ArrowLeft className="w-4 h-4 rotate-0 opacity-100" />
-							<div className="font-medium text-[14px] leading-[20px] tracking-normal text-center align-middle">
-								{ __( 'Back to Settings', 'try-aura' ) }
-							</div>
-						</button>
-					</div>
-				</div>
-				<div className="flex flex-col items-center justify-center m-[22px] sm:my-[100px]">
-					{ fetching ? (
-						<InitialLoader />
-					) : (
-						<div className="flex flex-col w-full md:w-[550px]">
-							<div className="flex flex-col gap-[24px] mb-[36px]">
-								<div>
-									<img src={ geminiLogo } alt="Gemini Logo" />
-								</div>
-								<div>
-									<div className="font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[8px]">
-										{ __( 'Gemini Integration', 'try-aura' ) }
-									</div>
-									<div className="text-[14px] font-[400] leading-[18.67px] text-[rgba(99,99,99,1)]">
-										{ __(
-											'Connect your Gemini account with an API key. Need help finding your',
-											'try-aura'
-										) }
-										&nbsp;
-										<a
-											href="https://aistudio.google.com/api-keys"
-											className="text-blue-600 underline hover:text-blue-700"
-											target="_blank"
-											rel="noreferrer"
-										>
-											{ __( 'API key ?', 'try-aura' ) }
-										</a>
-									</div>
-								</div>
-							</div>
-							<div className="flex flex-col gap-[24px]">
-								<ApiKeyInput
-									apiKey={ apiKey }
-									setApiKey={ setApiKey }
-								/>
-								{ apiKey && (
-									<>
-										<div>
-											<ModernSelect
-												value={ selectedImageModel }
-												label="Select Image Model"
-												onChange={ ( val ) => {
-													setSelectedImageModel( val );
-												} }
-												options={ imageModels }
-												variant="list"
-											/>
-										</div>
-										<Slot
-											name="try-aura-choose-video-model"
-											fillProps={{
-												ModernSelect,
-												selectedVideoModel,
-												setSelectedVideoModel,
-												videoModels
-											}}
-										/>	 
-									</>
-								) }
-							</div>
-						</div>
-					) }
-				</div>
-			</div>
-
-			<div className="flex gap-[10px] justify-end border-t border-solid border-[#f0e5e5] p-[22px]">
-				{ ! fetching && (
+		<SettingDetailsContainer
+			footer={
+				! fetching && (
 					<>
 						<Button
 							className="py-3 px-7"
@@ -243,9 +162,71 @@ const GeminiSettings = () => {
 							{ __( 'Cancel', 'try-aura' ) }
 						</Button>
 					</>
-				) }
-			</div>
-		</div>
+				)
+			}
+		>
+			{ fetching ? (
+				<InitialLoader />
+			) : (
+				<div className="flex flex-col w-full md:w-[550px]">
+					<div className="flex flex-col gap-[24px] mb-[36px]">
+						<div>
+							<img src={ geminiLogo } alt="Gemini Logo" />
+						</div>
+						<div>
+							<div className="font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[8px]">
+								{ __( 'Gemini Integration', 'try-aura' ) }
+							</div>
+							<div className="text-[14px] font-[400] leading-[18.67px] text-[rgba(99,99,99,1)]">
+								{ __(
+									'Connect your Gemini account with an API key. Need help finding your',
+									'try-aura'
+								) }
+								&nbsp;
+								<a
+									href="https://aistudio.google.com/api-keys"
+									className="text-primary underline hover:text-primary-dark"
+									target="_blank"
+									rel="noreferrer"
+								>
+									{ __( 'API key ?', 'try-aura' ) }
+								</a>
+							</div>
+						</div>
+					</div>
+					<div className="flex flex-col gap-[24px]">
+						<ApiKeyInput
+							apiKey={ apiKey }
+							setApiKey={ setApiKey }
+						/>
+						{ apiKey && (
+							<>
+								<div>
+									<ModernSelect
+										value={ selectedImageModel }
+										label="Select Image Model"
+										onChange={ ( val ) => {
+											setSelectedImageModel( val );
+										} }
+										options={ imageModels }
+										variant="list"
+									/>
+								</div>
+								<Slot
+									name="try-aura-choose-video-model"
+									fillProps={ {
+										ModernSelect,
+										selectedVideoModel,
+										setSelectedVideoModel,
+										videoModels,
+									} }
+								/>
+							</>
+						) }
+					</div>
+				</div>
+			) }
+		</SettingDetailsContainer>
 	);
 };
 export default GeminiSettings;

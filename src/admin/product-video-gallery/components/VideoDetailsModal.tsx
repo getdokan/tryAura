@@ -332,18 +332,7 @@ const VideoDetailsModal = ( {
 					</div>
 				</div>
 
-				<div className="flex justify-between gap-3 p-[20px_24px]">
-					<div>
-						{ initialData && (
-							<Button
-								variant="outline"
-								className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
-								onClick={ () => onSave( {} ) }
-							>
-								{ __( 'Remove Video', 'try-aura' ) }
-							</Button>
-						) }
-					</div>
+				<div className="flex justify-end gap-3 p-[20px_24px]">
 					<div className="flex gap-3">
 						<Button variant="outline" onClick={ onClose }>
 							{ __( 'Cancel', 'try-aura' ) }

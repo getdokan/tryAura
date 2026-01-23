@@ -1,6 +1,6 @@
 import { Button, Toggle } from '../../../../../../components';
 import { toast } from '@tryaura/components';
-import { useEffect, useState } from '@wordpress/element';
+import { RawHTML, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useNavigate } from 'react-router-dom';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -9,6 +9,8 @@ import apiFetch from '@wordpress/api-fetch';
 import { STORE_NAME } from '@tryaura/settings';
 import ScanFace from './ScanFace';
 import SettingDetailsContainer from '../../components/SettingDetailsContainer';
+import { Modal } from '@wordpress/components';
+import { X } from 'lucide-react';
 
 const InitialLoader = () => {
 	return (
@@ -30,6 +32,7 @@ const InitialLoader = () => {
 };
 
 const TryOnControlSettings = () => {
+	const [ confirmOpen, setConfirmOpen ] = useState( false );
 	const { settings, fetching, saving } = useSelect( ( select ) => {
 		return {
 			settings: select( STORE_NAME ).getSettings(),
@@ -82,6 +85,8 @@ const TryOnControlSettings = () => {
 
 			await updateSettings( newSettings );
 			await handleBulkAction( checked );
+
+			setConfirmOpen( false );
 		} catch ( e: unknown ) {
 			const msg =
 				e && typeof e === 'object' && 'message' in e
@@ -93,76 +98,140 @@ const TryOnControlSettings = () => {
 	};
 
 	return (
-		<SettingDetailsContainer
-			footer={
-				! fetching && (
-					<>
-						<Button
-							className="py-3 px-7"
-							onClick={ onSave }
-							disabled={ saving }
-							loading={ saving }
-						>
-							{ __( 'Save', 'try-aura' ) }
-						</Button>
-						<Button
-							className="py-3 px-7"
-							variant="outline"
-							onClick={ () => {
-								navigate( '/settings' );
-							} }
-						>
-							{ __( 'Cancel', 'try-aura' ) }
-						</Button>
-					</>
-				)
-			}
-		>
-			{ fetching ? (
-				<InitialLoader />
-			) : (
-				<div className="flex flex-col w-full md:w-[550px]">
-					<div className="flex flex-col gap-[24px] mb-[36px]">
-						<div className="w-15.75 h-15.5 bg-primary rounded-2xl flex justify-center items-center">
-							<ScanFace color="white" />
+		<>
+			{ confirmOpen && (
+				<Modal
+					onRequestClose={ () => setConfirmOpen( false ) }
+					className="tryaura tryaura-bulk-tryon-confirm-modal"
+					__experimentalHideHeader
+					size="medium"
+					style={ {
+						maxHeight: '90vh',
+						maxWidth: '512px',
+						overflowY: 'auto',
+					} }
+					shouldCloseOnClickOutside={ false }
+				>
+					<div>
+						<div className="flex justify-end items-center">
+							<button
+								onClick={ ( e ) => {
+									e.preventDefault();
+									setConfirmOpen( false );
+								} }
+								className="cursor-pointer text-[rgba(130,130,130,1)] hover:bg-red-50 hover:text-red-400 p-1.25 m-3.5 rounded-md"
+							>
+								<X size={ 20 } />
+							</button>
 						</div>
-						<div>
-							<div className="font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[8px]">
-								{ __( 'Bulk Try-On Control', 'try-aura' ) }
-							</div>
-							<div className="text-[14px] font-[400] leading-[18.67px] text-[rgba(99,99,99,1)]">
-								{ __(
-									'Enable or disable try-on for all products in your store.',
-									'try-aura'
-								) }
-							</div>
-						</div>
-					</div>
-					<div className="flex flex-col gap-6">
-						<div className="flex flex-row gap-3">
-							<Toggle
-								checked={ checked }
-								onChange={ ( val ) => setChecked( val ) }
-							/>
-							<div className="flex flex-col gap-2">
-								<span className="text-[rgba(37,37,45,1)] font-semibold text-[14px]">
+
+						<div className="flex flex-col">
+							<div className="flex flex-col gap-5 px-8">
+								<h2 className="p-0 m-0">
 									{ __(
-										'Enable for All Products',
+										'Are you sure you want to Enable Bulk Try-On?',
 										'try-aura'
 									) }
-								</span>
-								<span className="text-[rgba(130,130,130,1)] font-normal text-[12px]">
+								</h2>
+								<span>
 									{ __(
 										'This setting will apply try-on functionality to all products.',
 										'try-aura'
 									) }
 								</span>
 							</div>
+							<div className="flex justify-end gap-3 p-[20px_32px] mt-3">
+								<Button
+									className="py-3 px-7"
+									variant="outline"
+									onClick={ () => setConfirmOpen( false ) }
+								>
+									{ __( 'No, Go Back', 'try-aura' ) }
+								</Button>
+								<Button
+									className="py-3 px-7"
+									onClick={ onSave }
+									disabled={ saving }
+									loading={ saving }
+								>
+									{ checked
+										? __( 'Yes, Enable', 'try-aura' )
+										: __( 'Yes, Disable', 'try-aura' ) }
+								</Button>
+							</div>
 						</div>
 					</div>
-				</div>
+				</Modal>
 			) }
-		</SettingDetailsContainer>
+			<SettingDetailsContainer
+				footer={
+					! fetching && (
+						<>
+							<Button
+								className="py-3 px-7"
+								onClick={ () => setConfirmOpen( true ) }
+							>
+								{ __( 'Save', 'try-aura' ) }
+							</Button>
+							<Button
+								className="py-3 px-7"
+								variant="outline"
+								onClick={ () => {
+									navigate( '/settings' );
+								} }
+							>
+								{ __( 'Cancel', 'try-aura' ) }
+							</Button>
+						</>
+					)
+				}
+			>
+				{ fetching ? (
+					<InitialLoader />
+				) : (
+					<div className="flex flex-col w-full md:w-[550px]">
+						<div className="flex flex-col gap-[24px] mb-[36px]">
+							<div className="w-15.75 h-15.5 bg-primary rounded-2xl flex justify-center items-center">
+								<ScanFace color="white" />
+							</div>
+							<div>
+								<div className="font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[8px]">
+									{ __( 'Bulk Try-On Control', 'try-aura' ) }
+								</div>
+								<div className="text-[14px] font-[400] leading-[18.67px] text-[rgba(99,99,99,1)]">
+									{ __(
+										'Enable or disable try-on for all products in your store.',
+										'try-aura'
+									) }
+								</div>
+							</div>
+						</div>
+						<div className="flex flex-col gap-6">
+							<div className="flex flex-row gap-3">
+								<Toggle
+									checked={ checked }
+									onChange={ ( val ) => setChecked( val ) }
+								/>
+								<div className="flex flex-col gap-2">
+									<span className="text-[rgba(37,37,45,1)] font-semibold text-[14px]">
+										{ __(
+											'Enable for All Products',
+											'try-aura'
+										) }
+									</span>
+									<span className="text-[rgba(130,130,130,1)] font-normal text-[12px]">
+										{ __(
+											'This setting will apply try-on functionality to all products.',
+											'try-aura'
+										) }
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				) }
+			</SettingDetailsContainer>
+		</>
 	);
 };
 export default TryOnControlSettings;

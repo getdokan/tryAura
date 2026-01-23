@@ -140,7 +140,7 @@ class Plugin {
 		$route = $request->get_route();
 
 		if ( strpos( $route, 'try-aura/v1' ) !== false || strpos( $route, 'generate/v1' ) !== false ) {
-			$response->header( 'X-Try-Aura-WC-Exists', TryAura::is_woocommerce_active()? 'true' : 'false' );
+			$response->header( 'X-Try-Aura-WC-Exists', class_exists( 'WooCommerce' )? 'true' : 'false' );
 		}
 
 		return $response;

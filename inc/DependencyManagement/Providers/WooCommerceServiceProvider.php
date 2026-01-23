@@ -36,7 +36,7 @@ class WooCommerceServiceProvider extends BaseServiceProvider {
 	 * @since PLUGIN_SINCE
 	 */
 	public function provides( string $alias ): bool {
-		return TryAura::is_woocommerce_active()&& parent::provides( $alias );
+		return class_exists( 'WooCommerce' )&& parent::provides( $alias );
 	}
 
 	/**

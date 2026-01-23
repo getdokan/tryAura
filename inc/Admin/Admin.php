@@ -108,7 +108,7 @@ class Admin {
 				'imageModel' => $image_model,
 				'videoModel' => $video_model,
 				'optionKey'  => $this->option_key,
-				'wcExists'   => TryAura::is_woocommerce_active(),
+				'wcExists'   => class_exists( 'WooCommerce' ),
 			)
 		);
 

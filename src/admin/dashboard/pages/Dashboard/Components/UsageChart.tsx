@@ -45,6 +45,9 @@ function UsageChart( {
 } ) {
 	const [ data, setData ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
+	// @ts-ignore
+	const wcExists = window?.tryAura?.wcExists ?? false;
+
 	const chartLineItemLabels = applyFilters(
 		'tryaura.dashboard.usage-chart.line-item-labels',
 		[
@@ -53,11 +56,15 @@ function UsageChart( {
 				label: __( 'Images', 'try-aura' ),
 				color: 'rgba(112,71,235,1)',
 			},
-			{
-				value: 'tryOns',
-				label: __( 'Try-Ons', 'try-aura' ),
-				color: 'rgba(38,176,255,1)',
-			},
+			...( wcExists
+				? [
+						{
+							value: 'tryOns',
+							label: __( 'Try-Ons', 'try-aura' ),
+							color: 'rgba(38,176,255,1)',
+						},
+				  ]
+				: [] ),
 		]
 	);
 	const lines: Array< object > = applyFilters(
@@ -221,7 +228,7 @@ function UsageChart( {
 											className="w-2 h-2 rounded-full"
 											style={ {
 												backgroundColor: item.color,
-											}}
+											} }
 										/>
 										<span className="text-sm font-medium text-[rgba(99,99,99,1)]">
 											{ item.label }

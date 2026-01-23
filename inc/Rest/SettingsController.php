@@ -156,7 +156,7 @@ class SettingsController {
 	 * @return WP_REST_Response
 	 */
 	public function bulk_try_on( WP_REST_Request $request ): WP_REST_Response {
-		if ( ! TryAura::is_woocommerce_active()) {
+		if ( ! class_exists( 'WooCommerce' )) {
 			return new WP_REST_Response(
 				array(
 					'message' => __( 'WooCommerce is not active.', 'try-aura' ),

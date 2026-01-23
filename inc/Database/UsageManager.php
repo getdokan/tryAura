@@ -149,7 +149,7 @@ class UsageManager {
 
 		$stats = apply_filters('try_aura_admin_dashboard_stats_data', $stats, $table, $where, $params);
 
-		if ( TryAura::is_woocommerce_active() ) {
+		if ( class_exists( 'WooCommerce' ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 			$stats['tryon_count'] = (int) $wpdb->get_var( $wpdb->prepare( "SELECT SUM(output_count) FROM %i $where AND generated_from = 'tryon'", array_merge( array( $table ), $params ) ) );
 		}
@@ -171,6 +171,7 @@ class UsageManager {
 	public function get_chart_data( array $args = array() ): array {
 		global $wpdb;
 		$table = self::get_table_name();
+		$is_woocommerce_active = class_exists( 'WooCommerce' );
 
 		$start_date = isset( $args['start_date'] ) ? sanitize_text_field( $args['start_date'] ) : current_time( 'Y-m-01' );
 		$end_date   = isset( $args['end_date'] ) ? sanitize_text_field( $args['end_date'] ) : current_time( 'Y-m-d' );
@@ -200,11 +201,13 @@ class UsageManager {
 		$selectors = implode(
 			', ',
 			apply_filters('try_aura_admin_dashboard_chart_data_query_selectors',
-				[
-				'DATE(created_at) as date',
-				"SUM(CASE WHEN type = 'image' THEN output_count ELSE 0 END) as images",
-				"SUM(CASE WHEN generated_from = 'tryon' THEN output_count ELSE 0 END) as tryOns",
-				],
+				array_merge(
+					[
+						'DATE(created_at) as date',
+						"SUM(CASE WHEN type = 'image' THEN output_count ELSE 0 END) as images",
+					],
+					( $is_woocommerce_active ? [ "SUM(CASE WHEN generated_from = 'tryon' THEN output_count ELSE 0 END) as tryOns" ] : [] )
+				),
 				$table,
 				$where,
 				$params
@@ -236,8 +239,11 @@ class UsageManager {
 			$chart_item_data = [
 				'name'   => $date->format( 'M j' ),
 				'images' => (int) $row['images'],
-				'tryOns' => (int) $row['tryOns'],
 			];
+
+			if ( $is_woocommerce_active ) {
+				$chart_item_data['tryOns'] = (int) $row['tryOns'];
+			}
 
 			$chart_data[] = apply_filters( 'try_aura_admin_dashboard_chart_data_item', $chart_item_data, $date_str, $indexed_results );
 		}
@@ -286,7 +292,7 @@ class UsageManager {
 			if( $is_fetchable === false ) return [];
 
 			if ( $type === 'tryon' ) {
-				if ( ! TryAura::is_woocommerce_active()) {
+				if ( ! class_exists( 'WooCommerce' )) {
 					return array();
 				}
 				$where .= " AND generated_from = 'tryon'";
@@ -307,7 +313,7 @@ class UsageManager {
 			$where     .= ' AND type in '. $all_types;
 		}
 
-		if ( ! TryAura::is_woocommerce_active()) {
+		if ( ! class_exists( 'WooCommerce' )) {
 			$where .= " AND generated_from != 'tryon'";
 		}
 

@@ -32,15 +32,4 @@ final class TryAura {
 
 		return self::$container;
 	}
-
-	/**
-	 * Checks if WooCommerce is active by verifying the existence of its main class.
-	 *
-	 * @since PLUGIN_SINCE
-	 *
-	 * @return bool Returns true if the WooCommerce class exists, indicating WooCommerce is active; otherwise, false.
-	 */
-	public static function is_woocommerce_active(): bool {
-		return class_exists( 'WooCommerce' );
-	}
 }

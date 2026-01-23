@@ -84,20 +84,24 @@ function UsageChart( {
 					fill: '#fff',
 				},
 			},
-			{
-				type: 'monotone',
-				dataKey: 'tryOns',
-				name: 'tryOns',
-				stroke: 'rgba(38, 176, 255, 1)',
-				strokeWidth: 2,
-				dot: false,
-				activeDot: {
-					r: 6,
-					stroke: 'rgba(38, 176, 255, 1)',
-					strokeWidth: 2,
-					fill: '#fff',
-				},
-			},
+			...( wcExists
+				? [
+						{
+							type: 'monotone',
+							dataKey: 'tryOns',
+							name: 'tryOns',
+							stroke: 'rgba(38, 176, 255, 1)',
+							strokeWidth: 2,
+							dot: false,
+							activeDot: {
+								r: 6,
+								stroke: 'rgba(38, 176, 255, 1)',
+								strokeWidth: 2,
+								fill: '#fff',
+							},
+						},
+				  ]
+				: [] ),
 		]
 	);
 

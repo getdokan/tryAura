@@ -1,6 +1,6 @@
 export const hasPro = () => {
 	// @ts-ignore
-	const hasPro = window?.tryAura.hasPro;
+	const hasPro = window?.tryAura?.hasPro;
 
 	if (
 		hasPro &&
@@ -14,4 +14,11 @@ export const hasPro = () => {
 	}
 
 	return false;
+};
+
+export const getUpgradeToProUrl = () => {
+	// @ts-ignore
+	const upgradeToProUrl = window?.tryAura?.upgradeToProUrl;
+
+	return upgradeToProUrl ?? '';
 };

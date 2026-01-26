@@ -3,6 +3,7 @@ import { Wallpaper, RectangleHorizontal, ZoomIn, Play } from 'lucide-react';
 import { Button, CrownIcon, ModernSelect } from '../../../components';
 import { Popover } from '@wordpress/components';
 import { useState, useRef } from '@wordpress/element';
+import { getUpgradeToProUrl } from '../../../utils/tryaura';
 
 function DummyVideoConfigInputs() {
 	const [ isHovered, setIsHovered ] = useState( false );
@@ -27,11 +28,11 @@ function DummyVideoConfigInputs() {
 			<ModernSelect
 				value={ 'studio' }
 				onChange={ () => {} }
-				label={ __( 'Styles', 'try-aura-pro' ) }
+				label={ __( 'Styles', 'try-aura' ) }
 				labelClassName="text-[#929296]"
 				options={ [
 					{
-						label: __( 'Studio', 'try-aura-pro' ),
+						label: __( 'Studio', 'try-aura' ),
 						value: 'studio',
 						icon: <Wallpaper />,
 					},
@@ -42,11 +43,11 @@ function DummyVideoConfigInputs() {
 			<ModernSelect
 				value={ 'zoom in' }
 				onChange={ () => {} }
-				label={ __( 'Camera Motion', 'try-aura-pro' ) }
+				label={ __( 'Camera Motion', 'try-aura' ) }
 				labelClassName="text-[#929296]"
 				options={ [
 					{
-						label: __( 'Zoom In', 'try-aura-pro' ),
+						label: __( 'Zoom In', 'try-aura' ),
 						value: 'zoom in',
 						icon: <ZoomIn />,
 					},
@@ -58,11 +59,11 @@ function DummyVideoConfigInputs() {
 				variant="list"
 				value={ '16:9' }
 				onChange={ () => {} }
-				label={ __( 'Aspect Ratio', 'try-aura-pro' ) }
+				label={ __( 'Aspect Ratio', 'try-aura' ) }
 				labelClassName="text-[#929296]"
 				options={ [
 					{
-						label: __( 'Landscape (16:9)', 'try-aura-pro' ),
+						label: __( 'Landscape (16:9)', 'try-aura' ),
 						value: '16:9',
 						icon: <RectangleHorizontal />,
 					},
@@ -79,7 +80,7 @@ function DummyVideoConfigInputs() {
 				htmlFor="try-aura-video-optional-prompt"
 			>
 				<span className="w-[500] text-[14px] mb-[8px] text-[#929296]">
-					{ __( 'Prompt (Optional)', 'try-aura-pro' ) }
+					{ __( 'Prompt (Optional)', 'try-aura' ) }
 				</span>
 				<textarea
 					className="border border-[#E9E9E9]"
@@ -88,7 +89,7 @@ function DummyVideoConfigInputs() {
 					rows={ 3 }
 					placeholder={ __(
 						'Add any specific instructions (optional)',
-						'try-aura-pro'
+						'try-aura'
 					) }
 					id="try-aura-video-optional-prompt"
 				/>
@@ -114,32 +115,29 @@ function DummyVideoConfigInputs() {
 						onClose={ () => setIsHovered( false ) }
 						placement="top"
 						focusOnMount={ false }
-						className="tryaura try-aura-pro-tooltip-popover"
+						className="tryaura try-aura-tooltip-popover"
 						style={ {
 							top: '-10px !important',
 						} }
 					>
 						<div
-							className="bg-black text-white p-4 rounded-[8px] flex flex-col items-center gap-3 w-[240px] text-center"
+							className="bg-black text-white p-4 rounded-[5px] flex flex-col items-center gap-3 w-46.25 text-center"
 							onMouseEnter={ handleMouseEnter }
 							onMouseLeave={ handleMouseLeave }
 						>
-							<p className="m-0 text-[13px] leading-[1.4] font-medium">
+							<p className="m-0 text-[12px] leading-[1.4] font-normal">
 								{ __(
 									'Unlock advanced features and create stunning videos with a pro account.',
-									'try-aura-pro'
+									'try-aura'
 								) }
 							</p>
 							<Button
-								className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white border-none py-2 px-4 rounded-[6px] w-full justify-center text-[13px] font-semibold"
-								onClick={ () =>
-									window.open(
-										'https://tryaura.com/pro',
-										'_blank'
-									)
-								}
+								type="link"
+								href={ getUpgradeToProUrl() }
+								target="_blank"
+								className="w-29.75 h-7 text-[12px] leading-none font-medium"
 							>
-								{ __( 'Upgrade to Pro', 'try-aura-pro' ) }
+								{ __( 'Upgrade to Pro', 'try-aura' ) }
 							</Button>
 
 							<Play

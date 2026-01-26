@@ -11,7 +11,6 @@ import { GoogleGenAI } from '@google/genai';
 import toast, { Toaster } from 'react-hot-toast';
 import domReady from '@wordpress/dom-ready';
 import { createRoot } from '@wordpress/element';
-import TryauraLogo from './TryauraLogo';
 import TryauraLogoWithText from './TryauraLogoWithText';
 
 export { Button, WpBtn };
@@ -19,7 +18,6 @@ export { ModernSelect };
 export { GroupButton };
 export { DateRangePicker };
 export { CrownIcon };
-export { TryauraLogo };
 export { TryauraLogoWithText };
 export { Checkbox };
 export { GoogleGenAI };

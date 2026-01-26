@@ -84,7 +84,7 @@ const ModernSelect = ( {
 					>
 						<div
 							className={ twMerge(
-								'bg-white border border-[#E9E9E9] rounded-[5px] rounded-[5px] shadow flex flex-wrap',
+								'bg-white border border-[#E9E9E9] rounded-[5px] shadow flex flex-wrap',
 								variant === 'list' ? 'flex-col' : 'flex-row'
 							) }
 							style={ {

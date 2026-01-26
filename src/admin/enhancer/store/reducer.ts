@@ -12,7 +12,7 @@ export const INITIAL_STATE: EnhancerState = {
 	uploading: false,
 	imageConfigData: {
 		imageSize: '1:1',
-		backgroundType: 'studio',
+		backgroundType: 'plain',
 		styleType: 'photo-realistic',
 		optionalPrompt: '',
 		videoPlatform: 'youtube',

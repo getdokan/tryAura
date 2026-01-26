@@ -59,87 +59,80 @@ function ImageConfigInputs( { doGenerate } ) {
 				/>
 			) }
 
-			{ isWoocommerceProductPage && (
-				<>
-					{ applyFilters(
-						'tryaura.enhancer.image_config_extra_inputs',
-						null,
-						{ imageConfigData, setImageConfigData }
-					) || (
-						<>
-							<ModernSelect
-								value={ imageConfigData?.backgroundType ?? '' }
-								onChange={ ( val ) =>
-									setImageConfigData( {
-										backgroundType: val,
-									} )
-								}
-								label={ __(
-									'Background preference',
-									'try-aura'
-								) }
-								options={ [
-									{
-										label: __( 'Plain', 'try-aura' ),
-										value: 'plain',
-										icon: <Circle />,
-									},
-									{
-										label: __( 'Natural', 'try-aura' ),
-										value: 'natural',
-										icon: <Leaf />,
-									},
-									{
-										label: __( 'Studio', 'try-aura' ),
-										value: 'studio',
-										icon: <Wallpaper />,
-									},
-									{
-										label: __( 'Custom', 'try-aura' ),
-										value: 'custom',
-										icon: <Settings />,
-									},
-								] }
-								disabled={ isBusy }
-							/>
+			<>
+				{ applyFilters(
+					'tryaura.enhancer.image_config_extra_inputs',
+					null,
+					{ imageConfigData, setImageConfigData }
+				) || (
+					<>
+						<ModernSelect
+							value={ imageConfigData?.backgroundType ?? '' }
+							onChange={ ( val ) =>
+								setImageConfigData( {
+									backgroundType: val,
+								} )
+							}
+							label={ __(
+								'Background preference',
+								'try-aura'
+							) }
+							options={ [
+								{
+									label: __( 'Plain', 'try-aura' ),
+									value: 'plain',
+									icon: <Circle />,
+								},
+								{
+									label: __( 'Natural', 'try-aura' ),
+									value: 'natural',
+									icon: <Leaf />,
+								},
+								{
+									label: __( 'Studio', 'try-aura' ),
+									value: 'studio',
+									icon: <Wallpaper />,
+								},
+							] }
+							disabled={ isBusy }
+						/>
 
-							<ModernSelect
-								value={ imageConfigData?.styleType ?? '' }
-								onChange={ ( val ) =>
-									setImageConfigData( {
-										styleType: val,
-									} )
-								}
-								label={ __( 'Output style', 'try-aura' ) }
-								options={ [
-									{
-										label: __(
-											'Photo realistic',
-											'try-aura'
-										),
-										value: 'photo-realistic',
-										icon: <Image />,
-									},
-									{
-										label: __(
-											'Studio mockup',
-											'try-aura'
-										),
-										value: 'studio mockup',
-										icon: <Shirt />,
-									},
-									{
-										label: __( 'Model shoot', 'try-aura' ),
-										value: 'model shoot',
-										icon: <User />,
-									},
-								] }
-								disabled={ isBusy }
-							/>
-						</>
-					) }
-				</>
-			) }
+						<ModernSelect
+							value={ imageConfigData?.styleType ?? '' }
+							onChange={ ( val ) =>
+								setImageConfigData( {
+									styleType: val,
+								} )
+							}
+							label={ __( 'Output style', 'try-aura' ) }
+							options={ [
+								{
+									label: __(
+										'Photo realistic',
+										'try-aura'
+									),
+									value: 'photo-realistic',
+									icon: <Image />,
+								},
+								{
+									label: __(
+										'Studio mockup',
+										'try-aura'
+									),
+									value: 'studio mockup',
+									icon: <Shirt />,
+								},
+								{
+									label: __( 'Model shoot', 'try-aura' ),
+									value: 'model shoot',
+									icon: <User />,
+								},
+							] }
+							disabled={ isBusy }
+						/>
+					</>
+				) }
+			</>
 
 			<ModernSelect
 				value={ imageConfigData?.imageSize ?? '' }

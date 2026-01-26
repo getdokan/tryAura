@@ -191,6 +191,7 @@ function ImageConfigInputs( { doGenerate } ) {
 							optionalPrompt: e.target.value,
 						} )
 					}
+					disabled={ isBusy || ! hasPro() }
 					rows={ 3 }
 					placeholder={
 						isBlockEditorPage && ! isWoocommerceProductPage

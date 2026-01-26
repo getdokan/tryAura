@@ -87,6 +87,7 @@ function DummyVideoConfigInputs() {
 					value={ '' }
 					onChange={ () => {} }
 					rows={ 3 }
+					disabled={ true }
 					placeholder={ __(
 						'Add any specific instructions (optional)',
 						'try-aura'

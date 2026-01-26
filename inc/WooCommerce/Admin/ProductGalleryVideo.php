@@ -71,10 +71,9 @@ class ProductGalleryVideo {
 		$classes = ' try-aura-edit-video';
 		$icon_class = 'dashicons-edit';
 		?>
-		<div class="tryaura try-aura-product-video-wrapp absolute bottom-0 left-0 right-0 z-10">
-			<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center gap-1.25 bg-primary text-white no-underline py-1.25 text-[11px] font-semibold leading-none hover:bg-primary-dark <?php echo esc_attr( $classes ); ?>" data-attachment-id="<?php echo esc_attr( $attachment_id ); ?>">
-				<span class="dashicons <?php echo esc_attr( $icon_class ); ?> text-[14px]! w-3.5! h-3.5! flex! items-center! justify-center!"></span>
-				<?php esc_html_e( 'Video', 'try-aura' ); ?>
+		<div class="tryaura try-aura-product-video-wrapp">
+			<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center bg-primary text-white no-underline <?php echo esc_attr( $classes ); ?>" data-attachment-id="<?php echo esc_attr( $attachment_id ); ?>">
+				<span class="dashicons <?php echo esc_attr( $icon_class ); ?> text-[18px]! w-4.5! h-4.5! flex! items-center! justify-center!"></span>
 			</a>
 			<input type="hidden" class="try-aura-video-data-input" name="try_aura_video_data[<?php echo esc_attr( $attachment_id ); ?>]" value='<?php echo wp_json_encode( $settings ); ?>'>
 		</div>

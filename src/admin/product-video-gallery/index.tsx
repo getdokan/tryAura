@@ -102,10 +102,9 @@ declare const tryAuraVideo: any;
 				}
 
 				$image.append( `
-					<div class="tryaura try-aura-product-video-wrapp absolute bottom-0 left-0 right-0 z-10">
-						<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center gap-1.25 bg-primary text-white no-underline py-1.25 text-[11px] font-semibold leading-none hover:bg-primary-dark ${ buttonClass }" data-attachment-id="${ attachmentId }">
-							<span class="dashicons ${ iconClass } text-[14px]! w-3.5! h-3.5! flex! items-center! justify-center!"></span>
-							${ tryAuraVideo.videoText }
+					<div class="tryaura try-aura-product-video-wrapp">
+						<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center bg-primary text-white no-underline ${ buttonClass }" data-attachment-id="${ attachmentId }">
+							<span class="dashicons ${ iconClass } text-[18px]! w-4.5! h-4.5! flex! items-center! justify-center!"></span>
 						</a>
 						<input type="hidden" class="try-aura-video-data-input" name="try_aura_video_data[${ attachmentId }]" value='${ videoData }'>
 					</div>

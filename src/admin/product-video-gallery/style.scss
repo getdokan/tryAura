@@ -2,14 +2,35 @@
 
 .try-aura-product-video-wrapp {
 	position: absolute !important;
-	bottom: 0 !important;
+	top: 0 !important;
 	left: 0 !important;
 	right: 0 !important;
+	bottom: 0 !important;
 	z-index: 10 !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	background-color: rgba(0, 0, 0, 0.2) !important;
+	opacity: 0 !important;
+	transition: opacity 0.3s ease !important;
+	pointer-events: none !important;
 
 	.try-aura-btn {
-		width: 100% !important;
+		width: 40px !important;
+		height: 40px !important;
+		padding: 0 !important;
+		border-radius: 50% !important;
+		pointer-events: auto !important;
+
+		span {
+			margin: 0 !important;
+		}
 	}
+}
+
+li.image:hover .try-aura-product-video-wrapp,
+.upload_image:hover .try-aura-product-video-wrapp {
+	opacity: 1 !important;
 }
 
 .tryaura-add-video-modal-url {

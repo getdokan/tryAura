@@ -6,7 +6,9 @@ import UserImageSection from './UserImageSection';
 import ProductImagesSection from './ProductImagesSection';
 import Output from './Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
-import { Button } from '../../components';
+import { Button, TryauraLogoWithText } from '../../components';
+import { hasPro } from '../../utils/tryaura';
+import { twMerge } from 'tailwind-merge';
 
 type TryOnModalProps = {
 	productImages: string[];
@@ -388,7 +390,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			<div className="ai-enhancer-modal fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-200000">
 				<div className="ai-enhancer-modal__content bg-white rounded-[3px] max-w-250 w-[90vw] h-auto max-h-[90vh] overflow-y-auto">
 					<div className="flex flex-row justify-between border-b border-b-[#E9E9E9] p-[16px_24px]">
-						<h2 className="m-0 font-[700] font-bold text-[18px] text-[#25252D]">
+						<h2 className="m-0 font-bold text-[18px] text-[#25252D]">
 							{ __( 'Try-On Product', 'try-aura' ) }
 						</h2>
 						<button
@@ -433,28 +435,45 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 						/>
 					</div>
 					{ /* Actions */ }
-					<div className="mt-6 border-t border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-3">
-						<Button
-							className="bg-black hover:bg-black/90 disabled:bg-[rgba(241,241,244,1)] disabled:text-[rgba(165,165,170,1)]"
-							onClick={ doTry }
-							disabled={
-								isBusy ||
-								userImages.length === 0 ||
-								selectedProductImages.length === 0
-							}
-							loading={ isBusy }
-						>
-							{ isBusy
-								? __( 'Trying…', 'try-aura' )
-								: __( 'TRY ON', 'try-aura' ) }
-						</Button>
-						<Button
-							onClick={ addToCart }
-							variant="outline"
-							disabled={ isBusy }
-						>
-							{ __( 'Add To cart', 'try-aura' ) }
-						</Button>
+					<div
+						className={ twMerge(
+							'mt-6 border-t border-t-[#E9E9E9] flex flex-row p-[16px_24px]',
+							hasPro() ? 'justify-end' : 'justify-between'
+						) }
+					>
+						{ ! hasPro() && (
+							<div className="flex flex-row gap-2 items-center">
+								<span className="text-[14px] font-normal text-[rgba(130,130,130,1)]">
+									{ __( 'Powered By', 'try-aura' ) }
+								</span>
+								<div>
+									<TryauraLogoWithText className="h-5 w-auto" />
+								</div>
+							</div>
+						) }
+						<div className="flex flex-row gap-3">
+							<Button
+								className="bg-black hover:bg-black/90 disabled:bg-[rgba(241,241,244,1)] disabled:text-[rgba(165,165,170,1)]"
+								onClick={ doTry }
+								disabled={
+									isBusy ||
+									userImages.length === 0 ||
+									selectedProductImages.length === 0
+								}
+								loading={ isBusy }
+							>
+								{ isBusy
+									? __( 'Trying…', 'try-aura' )
+									: __( 'TRY ON', 'try-aura' ) }
+							</Button>
+							<Button
+								onClick={ addToCart }
+								variant="outline"
+								disabled={ isBusy }
+							>
+								{ __( 'Add To cart', 'try-aura' ) }
+							</Button>
+						</div>
 					</div>
 				</div>
 			</div>

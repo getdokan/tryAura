@@ -2,6 +2,7 @@
 
 namespace Dokan\TryAura\WooCommerce\Frontend;
 
+use Dokan\TryAura\TryAura;
 use Dokan\TryAura\WooCommerce\WooCommerce;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -54,6 +55,7 @@ class TryOn {
 				'tryonNonce' => wp_create_nonce( 'tryon_nonce' ),
 				'productId'  => $product_id,
 				'loginUrl'   => $this->get_login_url(),
+				'hasPro'     => (bool) TryAura::is_pro_exists(),
 			)
 		);
 

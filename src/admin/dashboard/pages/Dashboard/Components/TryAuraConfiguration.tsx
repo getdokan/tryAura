@@ -46,7 +46,7 @@ function TryAuraConfiguration( { className = '' }: { className: string } ) {
 
 			<Link
 				to="/settings/gemini"
-				className="bg-primary text-white px-[32px] py-[12px] rounded-[8px] text-[16px] font-[500] hover:bg-[#5f3bc7] transition-colors no-underline"
+				className="bg-primary text-white px-[32px] py-[12px] rounded-[8px] text-[16px] font-[500] hover:bg-primary-dark transition-colors no-underline"
 			>
 				{ __( 'Configure', 'try-aura' ) }
 			</Link>

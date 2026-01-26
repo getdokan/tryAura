@@ -61,7 +61,7 @@ function RecentActivity( {
 		if ( activity.type === 'video' ) {
 			return 'bg-[#FF93451a]';
 		}
-		return 'bg-[#7047EB1a]';
+		return 'bg-primary/10';
 	};
 
 	const getActivityText = ( activity: any ) => {

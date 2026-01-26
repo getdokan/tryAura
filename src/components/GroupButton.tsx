@@ -55,7 +55,7 @@ const GroupButton = ( {
 							{ option?.icon ?? '' }
 							<span>{ option?.label ?? '' }</span>
 							{ option?.locked && (
-								<CrownIcon className="text-[rgba(239,187,64,1)] text-[15px]" />
+								<CrownIcon className="text-[15px]" />
 							) }
 						</div>
 					</button>

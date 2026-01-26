@@ -1,8 +1,9 @@
 import { Popover, Tooltip } from '@wordpress/components';
 import { useRef, useState } from 'react';
-import { ChevronDown, Lock } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { twMerge } from 'tailwind-merge';
+import { CrownIcon } from './index';
 const ModernSelect = ( {
 	value,
 	onChange,
@@ -101,10 +102,10 @@ const ModernSelect = ( {
 										role="option"
 										aria-selected={ opt.value === value }
 										className={ twMerge(
-											'relative text-[#828282] h-auto rounded-[3px] flex gap-[4px] transition-all duration-200',
+											'relative items-center text-[#828282] h-auto rounded-[3px] flex gap-1 transition-all duration-200 hover:text-primary hover:bg-primary/10',
 											opt.locked
-												? 'cursor-not-allowed opacity-60 hover:opacity-100 hover:bg-gray-50'
-												: 'cursor-pointer hover:text-primary hover:bg-primary/10',
+												? 'cursor-not-allowed'
+												: 'cursor-pointer ',
 											opt.value === value
 												? 'bg-neutral-100'
 												: 'bg-white',
@@ -112,9 +113,7 @@ const ModernSelect = ( {
 												? 'w-full flex-row p-[8px_12px]'
 												: 'w-[78.25px] p-[12px] flex-col items-center justify-center border border-transparent',
 											variant === 'grid' &&
-												( opt.locked
-													? 'hover:border-gray-200'
-													: 'hover:border-primary' )
+												'hover:border-primary'
 										) }
 										onClick={ () =>
 											! opt.locked &&
@@ -122,8 +121,15 @@ const ModernSelect = ( {
 										}
 									>
 										{ opt.locked && (
-											<div className="absolute top-1 right-1">
-												<Lock size={ 10 } />
+											<div
+												className={ twMerge(
+													'absolute right-1',
+													variant === 'list'
+														? 'top-1/2 transform -translate-x-1/2 -translate-y-1/2'
+														: 'top-1'
+												) }
+											>
+												<CrownIcon className="text-[16px]" />
 											</div>
 										) }
 										{ opt.icon ?? '' }

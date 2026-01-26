@@ -14,6 +14,8 @@ import { applyFilters, doAction } from '@wordpress/hooks';
 import { Modal, Slot, SlotFillProvider } from '@wordpress/components';
 import { PluginArea } from '@wordpress/plugins';
 import { GoogleGenAI } from '@google/genai';
+import { hasPro } from '../../utils/tryaura';
+import { twMerge } from 'tailwind-merge';
 
 declare const wp: any;
 
@@ -30,8 +32,6 @@ const PreviewModal = ( {
 	onClose,
 	supportsVideo,
 }: PreviewProps ) => {
-	// @ts-ignore
-	const hasPro = window?.tryAura.hasPro;
 	const {
 		isBlockEditorPage,
 		isWoocommerceProductPage,
@@ -565,8 +565,13 @@ const PreviewModal = ( {
 						/>
 					</div>
 					{ /* Actions */ }
-					<div className="mt-6 border-t border-t-[#E9E9E9] p-[16px_24px] flex flex-row justify-between">
-						{ ! hasPro && (
+					<div
+						className={ twMerge(
+							'mt-6 border-t border-t-[#E9E9E9] p-[16px_24px] flex flex-row justify-between',
+							hasPro() && 'justify-end'
+						) }
+					>
+						{ ! hasPro() && (
 							<div className="flex flex-row gap-2 items-center">
 								<span className="text-[14px] font-normal text-[rgba(130,130,130,1)]">
 									{ __( 'Powered By', 'try-aura' ) }

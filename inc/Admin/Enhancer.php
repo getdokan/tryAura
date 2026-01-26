@@ -59,7 +59,7 @@ class Enhancer {
 				'testMode'   => defined( 'TRYAURA_DEBUG' ) && TRYAURA_DEBUG,
 				'testVideo'  => defined( 'TRYAURA_TEST_VIDEO' ) ? TRYAURA_TEST_VIDEO : '',
 				'testImage'  => defined( 'TRYAURA_TEST_IMAGE' ) ? TRYAURA_TEST_IMAGE : '',
-				'hasPro'     => TryAura::is_pro_exists(),
+				'hasPro'     => (bool) TryAura::is_pro_exists(),
 			)
 		);
 

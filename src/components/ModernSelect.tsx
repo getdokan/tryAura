@@ -10,6 +10,7 @@ const ModernSelect = ( {
 	options,
 	placeholder = __( 'Select…', 'try-aura' ),
 	className = '',
+	labelClassName = '',
 	label = '',
 	variant = 'grid',
 	disabled = false,
@@ -20,6 +21,7 @@ const ModernSelect = ( {
 	options: { label: string; value: string; icon?: any; locked?: boolean }[];
 	placeholder?: string;
 	className?: string;
+	labelClassName?: string;
 	variant?: 'grid' | 'list';
 	disabled?: boolean;
 } ) => {
@@ -42,7 +44,12 @@ const ModernSelect = ( {
 			ref={ contentRef }
 		>
 			{ label && (
-				<span className="w-[500] text-[14px] mb-[8px] font-[500] text-[rgba(37,37,45,1)]">
+				<span
+					className={ twMerge(
+						'w-[500] text-[14px] mb-[8px] font-[500] text-[rgba(37,37,45,1)]',
+						labelClassName
+					) }
+				>
 					{ label }
 				</span>
 			) }

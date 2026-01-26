@@ -72,7 +72,7 @@ class ProductGalleryVideo {
 		$icon_class = 'dashicons-edit';
 		?>
 		<div class="tryaura try-aura-product-video-wrapp">
-			<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center bg-primary text-white no-underline <?php echo esc_attr( $classes ); ?>" data-attachment-id="<?php echo esc_attr( $attachment_id ); ?>">
+			<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center bg-white text-primary no-underline <?php echo esc_attr( $classes ); ?>" data-attachment-id="<?php echo esc_attr( $attachment_id ); ?>">
 				<span class="dashicons <?php echo esc_attr( $icon_class ); ?> text-[18px]! w-4.5! h-4.5! flex! items-center! justify-center!"></span>
 			</a>
 			<input type="hidden" class="try-aura-video-data-input" name="try_aura_video_data[<?php echo esc_attr( $attachment_id ); ?>]" value='<?php echo wp_json_encode( $settings ); ?>'>

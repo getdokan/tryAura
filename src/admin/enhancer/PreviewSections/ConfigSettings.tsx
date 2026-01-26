@@ -29,7 +29,6 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 		{
 			label: __( 'Generate Video', 'tryaura' ),
 			value: 'video',
-			disabled: true,
 			locked: true,
 		},
 	] );

@@ -520,7 +520,7 @@ const PreviewModal = ( {
 					</div>
 
 					<div className="grid grid-cols-1 md:grid-cols-11 md:flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
-						{ activeTab === 'image' && (
+						{ ( activeTab === 'image' || ! hasPro() ) && (
 							<OriginalImage
 								imageUrls={ imageUrls }
 								multiple={ multiple }
@@ -550,7 +550,7 @@ const PreviewModal = ( {
 							className="col-span-1 md:col-span-4 flex flex-col gap-[32px]"
 						/>
 
-						{ activeTab === 'image' && (
+						{ ( activeTab === 'image' || ! hasPro() ) && (
 							<Output
 								supportsVideo={ supportsVideo }
 								className="col-span-1 md:col-span-4"

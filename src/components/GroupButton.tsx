@@ -24,7 +24,7 @@ const GroupButton = ( {
 	disabled = false,
 }: GroupButtonProps ) => {
 	const classNames =
-		'bg-black px-3 py-2 text-[14px] text-white hover:bg-bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer';
+		'bg-[rgba(37,37,45,1)] px-3 py-2 text-[14px] text-white hover:bg-[rgba(37,37,45,1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer';
 	const normalButtonCLass =
 		'bg-white px-3 py-2 text-[14px] text-gray-900 inset-ring inset-ring-gray-300 hover:bg-gray-50 cursor-pointer';
 

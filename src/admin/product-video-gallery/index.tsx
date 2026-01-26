@@ -534,6 +534,15 @@ declare const tryAuraVideo: any;
 					  $li.attr( 'data-attachment_id' )
 					: $( '#_thumbnail_id' ).val();
 
+				if (
+					attachmentId &&
+					attachmentId !== '-1' &&
+					tryAuraVideo.videoData &&
+					tryAuraVideo.videoData[ attachmentId ]
+				) {
+					return;
+				}
+
 				const frame = wp.media( {
 					title: __( 'Update gallery image', 'try-aura' ),
 					button: {

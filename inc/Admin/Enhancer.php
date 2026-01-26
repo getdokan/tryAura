@@ -2,6 +2,8 @@
 
 namespace Dokan\TryAura\Admin;
 
+use Dokan\TryAura\TryAura;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -57,6 +59,7 @@ class Enhancer {
 				'testMode'   => defined( 'TRYAURA_DEBUG' ) && TRYAURA_DEBUG,
 				'testVideo'  => defined( 'TRYAURA_TEST_VIDEO' ) ? TRYAURA_TEST_VIDEO : '',
 				'testImage'  => defined( 'TRYAURA_TEST_IMAGE' ) ? TRYAURA_TEST_IMAGE : '',
+				'hasPro'     => TryAura::is_pro_exists(),
 			)
 		);
 

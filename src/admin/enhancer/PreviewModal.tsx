@@ -4,7 +4,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 // @ts-ignore
 import { STORE_NAME as SETTINGS_STORE_NAME } from '@tryaura/settings';
 import { STORE_NAME } from './store';
-import { Button } from '../../components';
+import { Button, TryauraLogoWithText } from '../../components';
 import { __ } from '@wordpress/i18n';
 import { X } from 'lucide-react';
 import OriginalImage from './PreviewSections/OriginalImage';
@@ -30,6 +30,8 @@ const PreviewModal = ( {
 	onClose,
 	supportsVideo,
 }: PreviewProps ) => {
+	// @ts-ignore
+	const hasPro = window?.tryAura.hasPro;
 	const {
 		isBlockEditorPage,
 		isWoocommerceProductPage,
@@ -563,30 +565,45 @@ const PreviewModal = ( {
 						/>
 					</div>
 					{ /* Actions */ }
-					<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
-						{ generatedUrl && 'image' === activeTab && (
-							<Button
-								onClick={ setInMediaSelection }
-								disabled={ disabledImageAddToMedia }
-								loading={ uploading }
-							>
-								{ uploading
-									? __( 'Adding…' )
-									: __( 'Add to Media Library', 'try-aura' ) }
-							</Button>
+					<div className="mt-6 border-t border-t-[#E9E9E9] p-[16px_24px] flex flex-row justify-between">
+						{ ! hasPro && (
+							<div className="flex flex-row gap-2 items-center">
+								<span className="text-[14px] font-normal text-[rgba(130,130,130,1)]">
+									{ __( 'Powered By', 'try-aura' ) }
+								</span>
+								<div>
+									<TryauraLogoWithText className="h-5 w-auto" />
+								</div>
+							</div>
 						) }
+						<div className="flex flex-row justify-end gap-3">
+							{ generatedUrl && 'image' === activeTab && (
+								<Button
+									onClick={ setInMediaSelection }
+									disabled={ disabledImageAddToMedia }
+									loading={ uploading }
+								>
+									{ uploading
+										? __( 'Adding…' )
+										: __(
+												'Add to Media Library',
+												'try-aura'
+										  ) }
+								</Button>
+							) }
 
-						<Slot name="TryAuraEnhancerFooterActions" />
+							<Slot name="TryAuraEnhancerFooterActions" />
 
-						<PluginArea scope="tryaura-enhancer" />
+							<PluginArea scope="tryaura-enhancer" />
 
-						<Button
-							variant="outline"
-							onClick={ onClose }
-							disabled={ isBusy }
-						>
-							{ __( 'Close', 'try-aura' ) }
-						</Button>
+							<Button
+								variant="outline"
+								onClick={ onClose }
+								disabled={ isBusy }
+							>
+								{ __( 'Close', 'try-aura' ) }
+							</Button>
+						</div>
 					</div>
 				</div>
 			</SlotFillProvider>

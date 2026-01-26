@@ -1,5 +1,5 @@
 import { twMerge } from 'tailwind-merge';
-import { Crown } from 'lucide-react';
+import { CrownIcon } from './index';
 
 export interface GroupButtonProps {
 	options: {
@@ -55,10 +55,7 @@ const GroupButton = ( {
 							{ option?.icon ?? '' }
 							<span>{ option?.label ?? '' }</span>
 							{ option?.locked && (
-								<Crown
-									size={ 14 }
-									className="text-[rgba(239,187,64,1)] fill-[rgba(239,187,64,1)]"
-								/>
+								<CrownIcon className="text-[rgba(239,187,64,1)] text-[15px]" />
 							) }
 						</div>
 					</button>

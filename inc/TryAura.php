@@ -32,4 +32,8 @@ final class TryAura {
 
 		return self::$container;
 	}
+
+	public static function is_pro_exists() {
+		return apply_filters( 'tryaura_is_pro_exists', false );
+	}
 }

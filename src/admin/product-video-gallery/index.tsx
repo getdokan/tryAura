@@ -64,7 +64,6 @@ declare const tryAuraVideo: any;
 				}
 
 				const buttonClass = 'try-aura-edit-video';
-				const iconClass = 'dashicons-edit';
 
 				const dataObj =
 					tryAuraVideo.videoData && tryAuraVideo.videoData[ attachmentId ]
@@ -103,8 +102,13 @@ declare const tryAuraVideo: any;
 
 				$image.append( `
 					<div class="tryaura try-aura-product-video-wrapp">
-						<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center bg-white text-primary no-underline ${ buttonClass }" data-attachment-id="${ attachmentId }">
-							<span class="dashicons ${ iconClass } text-[18px]! w-4.5! h-4.5! flex! items-center! justify-center!"></span>
+						<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center bg-white/50 hover:bg-white text-white hover:text-primary no-underline ${ buttonClass }" data-attachment-id="${ attachmentId }">
+							<span class="hidden group-hover:flex text-[18px]! w-4.5! h-4.5! items-center! justify-center!">
+								<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-pencil-icon lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+							</span>
+							<span class="text-[18px]! w-4.5! h-4.5! flex! group-hover:hidden! items-center! justify-center! bg-primary rounded-full">
+								<svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" viewBox="0 0 24 24" fill="white" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-play-icon lucide-play"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg>
+							</span>
 						</a>
 						<input type="hidden" class="try-aura-video-data-input" name="try_aura_video_data[${ attachmentId }]" value='${ videoData }'>
 					</div>

@@ -204,7 +204,7 @@ const GeminiSettings = () => {
 								<div>
 									<ModernSelect
 										value={ selectedImageModel }
-										label="Select Image Model"
+										label={ __( 'Select Image Model', 'try-aura' ) }
 										onChange={ ( val ) => {
 											setSelectedImageModel( val );
 										} }

@@ -90,7 +90,11 @@ function Output( { className = '' } ) {
 			) }
 
 			{ error ? (
-				<div style={ { color: 'red', marginTop: 8 } }>{ error }</div>
+				<div
+					className="text-red-400 mt-2 max-h-25 overflow-auto"
+				>
+					{ error }
+				</div>
 			) : null }
 		</div>
 	);

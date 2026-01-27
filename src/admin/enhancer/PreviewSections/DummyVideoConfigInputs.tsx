@@ -79,11 +79,11 @@ function DummyVideoConfigInputs() {
 				} }
 				htmlFor="try-aura-video-optional-prompt"
 			>
-				<span className="w-[500] text-[14px] mb-[8px] text-[#929296]">
+				<span className="w-[500] text-[14px] mb-2 text-[#929296]">
 					{ __( 'Prompt (Optional)', 'try-aura' ) }
 				</span>
 				<textarea
-					className="border border-[#E9E9E9]"
+					className="border border-[#E9E9E9] placeholder-[#929296]"
 					value={ '' }
 					onChange={ () => {} }
 					rows={ 3 }

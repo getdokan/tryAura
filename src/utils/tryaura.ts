@@ -1,3 +1,5 @@
+import { applyFilters } from '@wordpress/hooks';
+
 export const hasPro = () => {
 	// @ts-ignore
 	const hasPro = window?.tryAura?.hasPro;
@@ -21,4 +23,24 @@ export const getUpgradeToProUrl = () => {
 	const upgradeToProUrl = window?.tryAura?.upgradeToProUrl;
 
 	return upgradeToProUrl ?? '';
+};
+
+export const getMediaSelectedItems = () => {
+	let frameObj =
+		wp?.media?.frame ||
+		( wp?.media?.featuredImage?.frame
+			? wp.media.featuredImage.frame()
+			: null );
+	frameObj = applyFilters( 'tryaura.media_frame', frameObj );
+	const state =
+		typeof frameObj?.state === 'function' ? frameObj.state() : null;
+	const collection = state?.get?.( 'selection' );
+	const models =
+		collection?.models ||
+		( collection?.toArray ? collection.toArray() : [] );
+	return ( models || [] )
+		.map( ( m: any ) =>
+			typeof m?.toJSON === 'function' ? m.toJSON() : m
+		)
+		.filter( ( j: any ) => j && j.url && j.id );
 };

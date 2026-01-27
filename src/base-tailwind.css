@@ -8,7 +8,7 @@
 }
 
 @theme {
-  --color-primary: #2271b1;
+  --color-primary: var(--wp-tryaura-admin-scheme, #2271b1);
 	/* Mixes the primary color with 20% black */
 	--color-primary-dark: color-mix(in srgb, var(--color-primary), black 20%);
 }

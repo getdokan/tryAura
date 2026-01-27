@@ -44,7 +44,7 @@ function UploadImage( {
 							) }
 							<br />
 							{ __(
-								'File size must be under 25 MB.',
+								'File size must be under 20 MB.',
 								'try-aura'
 							) }
 						</p>

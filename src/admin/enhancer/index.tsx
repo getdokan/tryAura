@@ -90,6 +90,19 @@ function addEnhancerButton( toolbar ) {
 				applyFilters( 'tryaura.admin_enhance_btn_toolbar', toolBar )
 			);
 
+			const selection = this.controller.state().get( 'selection' );
+
+			// Function to check if the button should be disabled
+			const updateButtonState = () => {
+				doAction( 'tryaura.admin_wp_media_selection_changed' );
+			};
+
+			// Listen for selection changes
+			selection.on(
+				'selection:single selection:unsingle add remove reset',
+				updateButtonState
+			);
+
 			return ret;
 		};
 

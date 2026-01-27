@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { Wallpaper, RectangleHorizontal, ZoomIn, Play } from 'lucide-react';
-import { Button, CrownIcon, ModernSelect } from '../../../components';
+import { Button, ModernSelect } from '../../../components';
 import { Popover } from '@wordpress/components';
 import { useState, useRef } from '@wordpress/element';
 import { getUpgradeToProUrl } from '../../../utils/tryaura';
@@ -103,11 +103,9 @@ function DummyVideoConfigInputs() {
 					onMouseEnter={ handleMouseEnter }
 					onMouseLeave={ handleMouseLeave }
 					className="bg-[rgba(241,241,244,1)] text-[rgba(165,165,170,1)]"
+					isPro={ true }
 				>
-					<div className="flex flex-row items-center justify-center gap-2">
-						<span>{ __( 'Generate Video', 'try-aura' ) }</span>
-						<CrownIcon className="text-[15px]" />
-					</div>
+					{ __( 'Generate Video', 'try-aura' ) }
 				</Button>
 
 				{ isHovered && (

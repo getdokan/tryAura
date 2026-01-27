@@ -5,6 +5,7 @@ import { __ } from '@wordpress/i18n';
 import Star from '../../../images/star.gif';
 import Congrats from '../../../images/congrats.gif';
 import { Slot } from '@wordpress/components';
+import GenerateVideoBtn from './GenerateVideoBtn';
 
 function Output( { className = '' } ) {
 	const [ showCongrats, setShowCongrats ] = useState( false );
@@ -77,6 +78,8 @@ function Output( { className = '' } ) {
 							</div>
 						) }
 					</div>
+
+					<GenerateVideoBtn />
 
 					<Slot name="TryAuraEnhancerAfterImageOutput" />
 				</div>

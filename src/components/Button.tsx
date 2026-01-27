@@ -1,5 +1,6 @@
 import { forwardRef } from '@wordpress/element';
 import { twMerge } from 'tailwind-merge';
+import { CrownIcon } from './index';
 
 type Variant = 'solid' | 'outline' | 'outline-primary';
 type Color = 'primary';
@@ -9,6 +10,8 @@ export interface ButtonProps
 	variant?: Variant;
 	color?: Color;
 	loading?: boolean;
+	isPro?: boolean;
+	proIconClassName?: string;
 }
 const Button = forwardRef< HTMLButtonElement, ButtonProps >( function Button(
 	{
@@ -18,6 +21,8 @@ const Button = forwardRef< HTMLButtonElement, ButtonProps >( function Button(
 		children,
 		type = 'button',
 		loading = false,
+		isPro = false,
+		proIconClassName = '',
 		...rest
 	},
 	ref
@@ -65,7 +70,14 @@ const Button = forwardRef< HTMLButtonElement, ButtonProps >( function Button(
 				></path>
 			</svg>
 
-			{ children ?? '' }
+			<div className="flex flex-row items-center justify-center gap-2">
+				<div>{ children ?? '' }</div>
+				{ isPro && (
+					<CrownIcon
+						className={ twMerge( 'text-[15px]', proIconClassName ) }
+					/>
+				) }
+			</div>
 		</Tag>
 	);
 } );

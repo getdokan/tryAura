@@ -31,6 +31,7 @@ const GroupButton = ( {
 	return (
 		<div className={ className }>
 			{ options.map( ( option, index ) => {
+				const btnDisabled = disabled || option?.disabled;
 				return (
 					<button
 						className={ twMerge(
@@ -41,14 +42,16 @@ const GroupButton = ( {
 							index === options.length - 1
 								? 'rounded-r-[5px]'
 								: '',
-							disabled || option?.disabled
-								? 'opacity-50 cursor-not-allowed'
-								: '',
+							btnDisabled ? 'opacity-50 cursor-not-allowed' : '',
 							option?.className ?? ''
 						) }
-						onClick={ () => onClick( option?.value ) }
+						onClick={ () => {
+							if ( ! btnDisabled ) {
+								onClick( option?.value ?? '' );
+							}
+						} }
 						key={ option?.value }
-						disabled={ disabled }
+						disabled={ btnDisabled }
 					>
 						<div className="flex flex-row items-center justify-center gap-2">
 							{ option?.icon ?? '' }

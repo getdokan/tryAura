@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { Modal } from '@wordpress/components';
 import { Button, Checkbox, ModernSelect } from '../../../components';
 import { toast } from '@tryaura/components';
-import { Youtube, Video, Upload, X } from 'lucide-react';
+import { Youtube, Video, Upload, X, CirclePlay, Play } from 'lucide-react';
 
 declare const wp: any;
 
@@ -273,18 +273,20 @@ const VideoDetailsModal = ( {
 						{ platform === 'site_stored' && (
 							<div className="w-full">
 								{ url && videoFileName ? (
-									<div className="flex items-center gap-3 p-4 rounded-[5px] border border-neutral-200 bg-white">
-										<div className="flex items-center justify-center w-10 h-10 rounded-full bg-neutral-100">
-											<Video
-												size={ 20 }
-												className="text-neutral-600"
-											/>
+									<div className="flex items-center gap-3 p-4 rounded-[5px] bg-[#F8F9F8]">
+										<div className="flex items-center justify-center w-9 h-9 rounded-md border border-neutral-200">
+											<div className="w-6 h-6 bg-neutral-400 rounded-full flex items-center justify-center">
+												<Play
+													size={ 9 }
+													className="text-white fill-white"
+												/>
+											</div>
 										</div>
-										<div className="flex-1 min-w-0">
-											<p className="text-sm font-medium text-neutral-900 truncate m-0">
+										<div className="flex-1 flex flex-col gap-1 min-w-0">
+											<p className="text-[13px] font-semibold text-[#575757] truncate m-0">
 												{ videoFileName }
 											</p>
-											<p className="text-xs text-neutral-500 m-0">
+											<p className="text-[12px] font-normal text-[#828282] m-0">
 												{ videoFileSize }
 											</p>
 										</div>
@@ -293,15 +295,15 @@ const VideoDetailsModal = ( {
 												e.preventDefault();
 												clearVideo();
 											} }
-											className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer border-0 bg-transparent"
+											className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-red-50 transition-colors cursor-pointer border-0 bg-transparent"
 											aria-label={ __(
 												'Remove video',
 												'try-aura'
 											) }
 										>
 											<X
-												size={ 16 }
-												className="text-neutral-500"
+												size={ 20 }
+												className="text-neutral-500 hover:text-red-500"
 											/>
 										</button>
 									</div>

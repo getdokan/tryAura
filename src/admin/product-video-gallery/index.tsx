@@ -66,7 +66,8 @@ declare const tryAuraVideo: any;
 				const buttonClass = 'try-aura-edit-video';
 
 				const dataObj =
-					tryAuraVideo.videoData && tryAuraVideo.videoData[ attachmentId ]
+					tryAuraVideo.videoData &&
+					tryAuraVideo.videoData[ attachmentId ]
 						? tryAuraVideo.videoData[ attachmentId ]
 						: null;
 
@@ -85,7 +86,10 @@ declare const tryAuraVideo: any;
 						$img.data( 'original-sizes', $img.attr( 'sizes' ) );
 					}
 
-					if ( dataObj?.useCustomThumbnail && dataObj?.thumbnailUrl ) {
+					if (
+						dataObj?.useCustomThumbnail &&
+						dataObj?.thumbnailUrl
+					) {
 						$img.attr( 'src', dataObj.thumbnailUrl ).removeAttr(
 							'srcset'
 						);
@@ -125,13 +129,6 @@ declare const tryAuraVideo: any;
 					processImage( $image, attachmentId );
 				}
 			);
-
-			// For Featured Image
-			const $featuredImageContainer = $( '#postimagediv .inside' );
-			if ( $featuredImageContainer.length ) {
-				const attachmentId = $( '#_thumbnail_id' ).val();
-				processImage( $featuredImageContainer, attachmentId );
-			}
 		};
 
 		addVideoButtons();
@@ -291,21 +288,6 @@ declare const tryAuraVideo: any;
 				addGlobalVideoButton();
 			} );
 			observer.observe( galleryList, { childList: true } );
-		}
-
-		const inputThumbnail = document.querySelector( 'input#_thumbnail_id' );
-		if ( inputThumbnail ) {
-			const observer = new MutationObserver( ( changes ) => {
-				changes.forEach( ( change ) => {
-					if (
-						change.attributeName &&
-						change.attributeName.includes( 'value' )
-					) {
-						addVideoButtons();
-					}
-				} );
-			} );
-			observer.observe( inputThumbnail, { attributes: true } );
 		}
 
 		$( 'body' ).on(

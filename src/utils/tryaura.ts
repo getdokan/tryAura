@@ -38,9 +38,11 @@ export const getMediaSelectedItems = () => {
 	const models =
 		collection?.models ||
 		( collection?.toArray ? collection.toArray() : [] );
-	return ( models || [] )
+	const items =  ( models || [] )
 		.map( ( m: any ) =>
 			typeof m?.toJSON === 'function' ? m.toJSON() : m
 		)
 		.filter( ( j: any ) => j && j.url && j.id );
+
+	return { items, frameObj };
 };

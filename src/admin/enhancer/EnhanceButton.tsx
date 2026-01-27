@@ -1,6 +1,6 @@
 import PreviewModal from './PreviewModal';
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { addAction, applyFilters, doAction } from '@wordpress/hooks';
 import { toast } from '@tryaura/components';
 import { getMediaSelectedItems } from '../../utils/tryaura';
@@ -17,7 +17,7 @@ const EnhanceButton = () => {
 		e.stopPropagation();
 		setLoading( true );
 		try {
-			const items = getMediaSelectedItems();
+			const { items } = getMediaSelectedItems();
 			if ( ! items.length ) {
 				toast.error(
 					__( 'Please select at least one image.', 'try-aura' )
@@ -68,7 +68,7 @@ const EnhanceButton = () => {
 	};
 
 	const updateButtonState = () => {
-		const items = getMediaSelectedItems();
+		const { items } = getMediaSelectedItems();
 
 		const isOnlyImagesSelected = items.every(
 			( item: any ) => item.type === 'image'
@@ -81,6 +81,12 @@ const EnhanceButton = () => {
 		'tryaura.admin_wp_media_selection_changed',
 		updateButtonState
 	);
+
+	useEffect( () => {
+		const { frameObj } = getMediaSelectedItems();
+		const found = jQuery( frameObj.el ).find( 'div.attachment-details' );
+		setDisable( ! found?.length );
+	}, [] );
 
 	return (
 		<div>

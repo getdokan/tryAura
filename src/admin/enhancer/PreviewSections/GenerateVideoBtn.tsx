@@ -26,7 +26,7 @@ function GenerateVideoBtn() {
 					onClick={ () =>
 						dispatch( STORE_NAME ).setActiveTab( 'video' )
 					}
-					isPro={ hasPro() }
+					isPro={ ! hasPro() }
 				>
 					{ __( 'Generate Video', 'tryaura' ) }
 				</Button>

@@ -3,7 +3,8 @@ import { __ } from '@wordpress/i18n';
 import { Modal } from '@wordpress/components';
 import { Button, Checkbox, ModernSelect } from '../../../components';
 import { toast } from '@tryaura/components';
-import { Youtube, Video, Upload, X } from 'lucide-react';
+import { Youtube, Video, Upload, X, User } from 'lucide-react';
+import ImagePreview from '../../../frontend/tryon/UserImageSection/ImagePreview';
 
 declare const wp: any;
 
@@ -70,9 +71,7 @@ const VideoDetailsModal = ( {
 								canvas.width,
 								canvas.height
 							);
-							const thumbUrl = canvas.toDataURL(
-								'image/jpeg'
-							);
+							const thumbUrl = canvas.toDataURL( 'image/jpeg' );
 							setGeneratedThumbnail( thumbUrl );
 							resolve( thumbUrl );
 						} else {
@@ -103,6 +102,8 @@ const VideoDetailsModal = ( {
 				.get( 'selection' )
 				.first()
 				.toJSON();
+			console.log( attachment );
+			setPlatform( 'site_stored')
 			setUrl( attachment.url );
 		} );
 
@@ -231,37 +232,57 @@ const VideoDetailsModal = ( {
 					</div>
 
 					<div>
-						<label
-							htmlFor={ `try-aura-video-url-${ platform }` }
-							className="block text-sm font-medium text-gray-700 mb-2"
-						>
-							{ __( 'Video URL', 'try-aura' ) }
-						</label>
-						<div className="flex gap-2">
-							<input
-								id={ `try-aura-video-url-${ platform }` }
-								name={ `try-aura-video-url-${ platform }` }
-								type="text"
-								className="flex-1 border rounded-md p-[10px_16px] leading-0 border-[#E9E9E9] focus:border-primary! focus:shadow-none placeholder-[#2c333880]"
-								placeholder={
-									platform === 'youtube'
-										? 'e.g. https://www.youtube.com/watch?v=...'
-										: __( 'Video URL', 'try-aura' )
-								}
-								value={ url }
-								onChange={ ( e ) => setUrl( e.target.value ) }
-								readOnly={ platform === 'site_stored' }
-								disabled={ platform === 'site_stored' }
-							/>
-							{ platform === 'site_stored' && (
-								<Button
-									variant="outline-primary"
-									onClick={ openMediaModal }
+						{ platform === 'youtube' && (
+							<>
+								<label
+									htmlFor={ `try-aura-video-url-${ platform }` }
+									className="block text-sm font-medium text-gray-700 mb-2"
 								>
-									<Upload size={ 18 } />
-								</Button>
-							) }
-						</div>
+									{ __( 'Video URL', 'try-aura' ) }
+								</label>
+								<div className="flex gap-2">
+									<input
+										id={ `try-aura-video-url-${ platform }` }
+										name={ `try-aura-video-url-${ platform }` }
+										type="text"
+										className="flex-1 border rounded-md p-[10px_16px] leading-0 border-[#E9E9E9] focus:border-primary! focus:shadow-none placeholder-[#2c333880]"
+										placeholder={ __( 'e.g. https://www.youtube.com/watch?v=...', 'try-aura' ) }
+										value={ url }
+										onChange={ ( e ) =>
+											setUrl( e.target.value )
+										}
+									/>
+								</div>
+							</>
+						) }
+						{ platform === 'site_stored' && (
+							<div className="w-full">
+								<div className="flex flex-col p-5 gap-2.5 justify-center items-center rounded-[5px] border-2 border-dashed border-neutral-200 bg-neutral-50 text-center hover:border-neutral-400 transition-colors duration-200">
+									<Button
+										variant="outline"
+										className="border-neutral-200!"
+										onClick={ openMediaModal }
+									>
+										<div className="flex items-center gap-2">
+											<span className="text-[#575757]! font-medium! text-[14px]! leading-5!">
+												{ __(
+													'Upload Video',
+													'try-aura'
+												) }
+											</span>
+											<Upload size={ 16 } />
+										</div>
+									</Button>
+
+									<p className="text-[#828282] p-0 m-0 font-normal text-[12px]">
+										{ __(
+											'Supported files: mov, mp4',
+											'try-aura'
+										) }
+									</p>
+								</div>
+							</div>
+						) }
 					</div>
 
 					<div className="flex flex-col gap-[32px]">

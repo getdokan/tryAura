@@ -54,7 +54,7 @@ function UsageChart( {
 			{
 				value: 'images',
 				label: __( 'Images', 'try-aura' ),
-				color: 'rgba(112,71,235,1)',
+				color: 'var(--color-primary)',
 			},
 			...( wcExists
 				? [
@@ -74,12 +74,12 @@ function UsageChart( {
 				type: 'monotone',
 				dataKey: 'images',
 				name: 'images',
-				stroke: 'rgba(112, 71, 235, 1)',
+				stroke: 'var(--color-primary)',
 				strokeWidth: 2.5,
 				dot: false,
 				activeDot: {
 					r: 6,
-					stroke: 'rgba(112, 71, 235, 1)',
+					stroke: 'var(--color-primary)',
 					strokeWidth: 2,
 					fill: '#fff',
 				},

@@ -1,4 +1,4 @@
-import { Popover, Tooltip } from '@wordpress/components';
+import { Popover } from '@wordpress/components';
 import { useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
@@ -111,7 +111,7 @@ const ModernSelect = ( {
 										className={ twMerge(
 											'relative items-center text-[#828282] h-auto rounded-[3px] flex gap-1 transition-all duration-200 hover:text-primary hover:bg-primary/10',
 											opt.locked
-												? 'cursor-not-allowed'
+												? 'cursor-not-allowed opacity-50 hover:bg-white'
 												: 'cursor-pointer ',
 											opt.value === value
 												? 'bg-neutral-100'
@@ -145,17 +145,6 @@ const ModernSelect = ( {
 										</span>
 									</button>
 								);
-
-								if ( opt.locked ) {
-									return (
-										<Tooltip
-											key={ opt.value }
-											text={ __( 'Locked', 'try-aura' ) }
-										>
-											{ button }
-										</Tooltip>
-									);
-								}
 
 								return button;
 							} ) }

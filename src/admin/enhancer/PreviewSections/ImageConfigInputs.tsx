@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import ConfigFooter from './ConfigFooter';
 import { hasPro } from '../../../utils/tryaura';
+import { twMerge } from 'tailwind-merge';
 
 function ImageConfigInputs( { doGenerate } ) {
 	const {
@@ -65,17 +66,17 @@ function ImageConfigInputs( { doGenerate } ) {
 
 	const allOutputStyles = applyFilters( 'tryaura.enhancer.output_styles', [
 		{
-			label: __( 'Photo realistic', 'try-aura' ),
+			label: __( 'Photo Realistic', 'try-aura' ),
 			value: 'photo-realistic',
 			icon: <Image />,
 		},
 		{
-			label: __( 'Studio mockup', 'try-aura' ),
+			label: __( 'Studio Mockup', 'try-aura' ),
 			value: 'studio mockup',
 			icon: <Shirt />,
 		},
 		{
-			label: __( 'Model shoot', 'try-aura' ),
+			label: __( 'Model Shoot', 'try-aura' ),
 			value: 'model shoot',
 			icon: <User />,
 		},
@@ -133,7 +134,7 @@ function ImageConfigInputs( { doGenerate } ) {
 									backgroundType: val,
 								} )
 							}
-							label={ __( 'Background preference', 'try-aura' ) }
+							label={ __( 'Background Preference', 'try-aura' ) }
 							options={ allBackgroundPrefrences }
 							disabled={ isBusy }
 						/>
@@ -145,7 +146,7 @@ function ImageConfigInputs( { doGenerate } ) {
 									styleType: val,
 								} )
 							}
-							label={ __( 'Output style', 'try-aura' ) }
+							label={ __( 'Output Style', 'try-aura' ) }
 							options={ allOutputStyles }
 							disabled={ isBusy }
 						/>
@@ -174,7 +175,12 @@ function ImageConfigInputs( { doGenerate } ) {
 				} }
 			>
 				<div className="flex flex-row gap-2 items-center mb-2">
-					<span className="w-[500] text-[14px]">
+					<span
+						className={ twMerge(
+							'w-[500] text-[14px]',
+							!hasPro() ? 'text-[#929296]' : ''
+						) }
+					>
 						{ isBlockEditorPage && ! isWoocommerceProductPage
 							? __( 'Prompt', 'try-aura' )
 							: __( 'Prompt (Optional)', 'try-aura' ) }

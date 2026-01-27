@@ -242,7 +242,7 @@ const VideoDetailsModal = ( {
 								id={ `try-aura-video-url-${ platform }` }
 								name={ `try-aura-video-url-${ platform }` }
 								type="text"
-								className="flex-1 border rounded-md p-[10px_16px] leading-0 border-[#E9E9E9] focus:border-primary! focus:shadow-none"
+								className="flex-1 border rounded-md p-[10px_16px] leading-0 border-[#E9E9E9] focus:border-primary! focus:shadow-none placeholder-[#2c333880]"
 								placeholder={
 									platform === 'youtube'
 										? 'e.g. https://www.youtube.com/watch?v=...'

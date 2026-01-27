@@ -3,8 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { Modal } from '@wordpress/components';
 import { Button, Checkbox, ModernSelect } from '../../../components';
 import { toast } from '@tryaura/components';
-import { Youtube, Video, Upload, X, User } from 'lucide-react';
-import ImagePreview from '../../../frontend/tryon/UserImageSection/ImagePreview';
+import { Youtube, Video, Upload, X } from 'lucide-react';
 
 declare const wp: any;
 
@@ -31,6 +30,12 @@ const VideoDetailsModal = ( {
 	);
 	const [ generatedThumbnail, setGeneratedThumbnail ] = useState( '' );
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ videoFileName, setVideoFileName ] = useState(
+		initialData?.videoFileName || ''
+	);
+	const [ videoFileSize, setVideoFileSize ] = useState(
+		initialData?.videoFileSize || ''
+	);
 
 	const getYoutubeId = ( videoUrl: string ) => {
 		const pattern =
@@ -102,12 +107,20 @@ const VideoDetailsModal = ( {
 				.get( 'selection' )
 				.first()
 				.toJSON();
-			console.log( attachment );
-			setPlatform( 'site_stored')
+			setPlatform( 'site_stored' );
 			setUrl( attachment.url );
+			setVideoFileName( attachment.filename || attachment.title || '' );
+			setVideoFileSize( attachment.filesizeHumanReadable || '' );
 		} );
 
 		frame.open();
+	};
+
+	const clearVideo = () => {
+		setUrl( '' );
+		setVideoFileName( '' );
+		setVideoFileSize( '' );
+		setGeneratedThumbnail( '' );
 	};
 
 	const openThumbnailModal = () => {
@@ -162,6 +175,8 @@ const VideoDetailsModal = ( {
 				thumbnailId,
 				thumbnailUrl,
 				generatedThumbnail: currentGeneratedThumbnail,
+				videoFileName,
+				videoFileSize,
 			} );
 		} catch ( e ) {
 			// eslint-disable-next-line no-console
@@ -257,30 +272,65 @@ const VideoDetailsModal = ( {
 						) }
 						{ platform === 'site_stored' && (
 							<div className="w-full">
-								<div className="flex flex-col p-5 gap-2.5 justify-center items-center rounded-[5px] border-2 border-dashed border-neutral-200 bg-neutral-50 text-center hover:border-neutral-400 transition-colors duration-200">
-									<Button
-										variant="outline"
-										className="border-neutral-200!"
-										onClick={ openMediaModal }
-									>
-										<div className="flex items-center gap-2">
-											<span className="text-[#575757]! font-medium! text-[14px]! leading-5!">
-												{ __(
-													'Upload Video',
-													'try-aura'
-												) }
-											</span>
-											<Upload size={ 16 } />
+								{ url && videoFileName ? (
+									<div className="flex items-center gap-3 p-4 rounded-[5px] border border-neutral-200 bg-white">
+										<div className="flex items-center justify-center w-10 h-10 rounded-full bg-neutral-100">
+											<Video
+												size={ 20 }
+												className="text-neutral-600"
+											/>
 										</div>
-									</Button>
+										<div className="flex-1 min-w-0">
+											<p className="text-sm font-medium text-neutral-900 truncate m-0">
+												{ videoFileName }
+											</p>
+											<p className="text-xs text-neutral-500 m-0">
+												{ videoFileSize }
+											</p>
+										</div>
+										<button
+											onClick={ ( e ) => {
+												e.preventDefault();
+												clearVideo();
+											} }
+											className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100 transition-colors cursor-pointer border-0 bg-transparent"
+											aria-label={ __(
+												'Remove video',
+												'try-aura'
+											) }
+										>
+											<X
+												size={ 16 }
+												className="text-neutral-500"
+											/>
+										</button>
+									</div>
+								) : (
+									<div className="flex flex-col p-5 gap-2.5 justify-center items-center rounded-[5px] border-2 border-dashed border-neutral-200 bg-neutral-50 text-center hover:border-neutral-400 transition-colors duration-200">
+										<Button
+											variant="outline"
+											className="border-neutral-200!"
+											onClick={ openMediaModal }
+										>
+											<div className="flex items-center gap-2">
+												<span className="text-[#575757]! font-medium! text-[14px]! leading-5!">
+													{ __(
+														'Upload Video',
+														'try-aura'
+													) }
+												</span>
+												<Upload size={ 16 } />
+											</div>
+										</Button>
 
-									<p className="text-[#828282] p-0 m-0 font-normal text-[12px]">
-										{ __(
-											'Supported files: mov, mp4',
-											'try-aura'
-										) }
-									</p>
-								</div>
+										<p className="text-[#828282] p-0 m-0 font-normal text-[12px]">
+											{ __(
+												'Supported files: mov, mp4',
+												'try-aura'
+											) }
+										</p>
+									</div>
+								) }
 							</div>
 						) }
 					</div>

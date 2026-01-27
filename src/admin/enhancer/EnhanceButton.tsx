@@ -74,7 +74,9 @@ const EnhanceButton = () => {
 			( item: any ) => item.type === 'image'
 		);
 
-		setDisable( ! isOnlyImagesSelected );
+		const status = items.length === 0 || ! isOnlyImagesSelected;
+
+		setDisable( status );
 	};
 	addAction(
 		'tryaura.admin_wp_media_selection_changed',

@@ -28,11 +28,11 @@ function DummyVideoConfigInputs() {
 			<ModernSelect
 				value={ 'studio' }
 				onChange={ () => {} }
-				label={ __( 'Styles', 'try-aura' ) }
+				label={ __( 'Styles', 'tryaura' ) }
 				labelClassName="text-[#929296]"
 				options={ [
 					{
-						label: __( 'Studio', 'try-aura' ),
+						label: __( 'Studio', 'tryaura' ),
 						value: 'studio',
 						icon: <Wallpaper />,
 					},
@@ -43,11 +43,11 @@ function DummyVideoConfigInputs() {
 			<ModernSelect
 				value={ 'zoom in' }
 				onChange={ () => {} }
-				label={ __( 'Camera Motion', 'try-aura' ) }
+				label={ __( 'Camera Motion', 'tryaura' ) }
 				labelClassName="text-[#929296]"
 				options={ [
 					{
-						label: __( 'Zoom In', 'try-aura' ),
+						label: __( 'Zoom In', 'tryaura' ),
 						value: 'zoom in',
 						icon: <ZoomIn />,
 					},
@@ -59,11 +59,11 @@ function DummyVideoConfigInputs() {
 				variant="list"
 				value={ '16:9' }
 				onChange={ () => {} }
-				label={ __( 'Aspect Ratio', 'try-aura' ) }
+				label={ __( 'Aspect Ratio', 'tryaura' ) }
 				labelClassName="text-[#929296]"
 				options={ [
 					{
-						label: __( 'Landscape (16:9)', 'try-aura' ),
+						label: __( 'Landscape (16:9)', 'tryaura' ),
 						value: '16:9',
 						icon: <RectangleHorizontal />,
 					},
@@ -77,10 +77,10 @@ function DummyVideoConfigInputs() {
 					flexDirection: 'column',
 					gap: 4,
 				} }
-				htmlFor="try-aura-video-optional-prompt"
+				htmlFor="tryaura-video-optional-prompt"
 			>
 				<span className="w-[500] text-[14px] mb-2 text-[#929296]">
-					{ __( 'Prompt (Optional)', 'try-aura' ) }
+					{ __( 'Prompt (Optional)', 'tryaura' ) }
 				</span>
 				<textarea
 					className="border border-[#E9E9E9] placeholder-[#929296]"
@@ -90,9 +90,9 @@ function DummyVideoConfigInputs() {
 					disabled={ true }
 					placeholder={ __(
 						'Add any specific instructions (optional)',
-						'try-aura'
+						'tryaura'
 					) }
-					id="try-aura-video-optional-prompt"
+					id="tryaura-video-optional-prompt"
 				/>
 			</label>
 
@@ -105,7 +105,7 @@ function DummyVideoConfigInputs() {
 					className="bg-[rgba(241,241,244,1)] text-[rgba(165,165,170,1)]"
 					isPro={ true }
 				>
-					{ __( 'Generate Video', 'try-aura' ) }
+					{ __( 'Generate Video', 'tryaura' ) }
 				</Button>
 
 				{ isHovered && (
@@ -114,7 +114,7 @@ function DummyVideoConfigInputs() {
 						onClose={ () => setIsHovered( false ) }
 						placement="top"
 						focusOnMount={ false }
-						className="tryaura try-aura-tooltip-popover"
+						className="tryaura tryaura-tooltip-popover"
 						style={ {
 							top: '-10px !important',
 						} }
@@ -127,7 +127,7 @@ function DummyVideoConfigInputs() {
 							<p className="m-0 text-[12px] leading-[1.4] font-normal">
 								{ __(
 									'Unlock advanced features and create stunning videos with a pro account.',
-									'try-aura'
+									'tryaura'
 								) }
 							</p>
 							<Button
@@ -136,7 +136,7 @@ function DummyVideoConfigInputs() {
 								target="_blank"
 								className="w-29.75 h-7 text-[12px] leading-none font-medium"
 							>
-								{ __( 'Upgrade to Pro', 'try-aura' ) }
+								{ __( 'Upgrade to Pro', 'tryaura' ) }
 							</Button>
 
 							<Play

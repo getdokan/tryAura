@@ -8,7 +8,7 @@ const ModernSelect = ( {
 	value,
 	onChange,
 	options,
-	placeholder = __( 'Select…', 'try-aura' ),
+	placeholder = __( 'Select…', 'tryaura' ),
 	className = '',
 	labelClassName = '',
 	label = '',

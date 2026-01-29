@@ -6,11 +6,11 @@ import menuFix from './utils/menu-fix.js';
 
 domReady( () => {
 	const dashboardDomNode = document.getElementById(
-		'try-aura-settings-root'
+		'tryaura-settings-root'
 	);
 	if ( dashboardDomNode ) {
 		const dashboardRoot = createRoot( dashboardDomNode! );
 		dashboardRoot.render( <App /> );
 	}
 } );
-menuFix( 'try-aura' );
+menuFix( 'tryaura' );

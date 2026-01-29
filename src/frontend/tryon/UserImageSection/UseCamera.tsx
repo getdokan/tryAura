@@ -35,7 +35,7 @@ function UseCamera( {
 						onClick={ capture }
 						disabled={ ! cameraActive || isBusy }
 					>
-						{ __( 'Capture', 'try-aura' ) }
+						{ __( 'Capture', 'tryaura' ) }
 					</button>
 				</div>
 			) }
@@ -55,7 +55,7 @@ function UseCamera( {
 						className="bg-[#000000] text-white px-[50px] py-[10px] cursor-pointer mx-auto"
 						onClick={ startCamera }
 					>
-						{ __( 'Recapture', 'try-aura' ) }
+						{ __( 'Recapture', 'tryaura' ) }
 					</button>
 				) }
 			</div>

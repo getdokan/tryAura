@@ -11,7 +11,7 @@ export default function ApiKeyInput( { apiKey, setApiKey } ) {
 				className="text-[14px] font-[500] text-[rgba(37, 37, 45, 1)] mb-[7px]"
 				htmlFor={ 'gemini-api-key' }
 			>
-				{ __( 'Gemini API KEY', 'try-aura' ) }
+				{ __( 'Gemini API KEY', 'tryaura' ) }
 			</label>
 
 			{ /* Input + Toggle */ }
@@ -35,7 +35,7 @@ export default function ApiKeyInput( { apiKey, setApiKey } ) {
 				</button>
 			</div>
 			<p className="font-[400] text-[14px] leading-[18px] text-[rgba(99,99,99,1)] m-0">
-				{ __( 'Paste the API key provided by Gemini.', 'try-aura' ) }
+				{ __( 'Paste the API key provided by Gemini.', 'tryaura' ) }
 			</p>
 		</div>
 	);

@@ -1,6 +1,6 @@
 @import "../../base-tailwind.css";
 
-.try-aura-product-video-wrapp {
+.tryaura-product-video-wrapp {
 	position: absolute !important;
 	top: 0 !important;
 	left: 0 !important;
@@ -14,7 +14,7 @@
 	opacity: 1 !important;
 	pointer-events: none !important;
 
-	.try-aura-btn {
+	.tryaura-btn {
 		width: 32px !important;
 		height: 32px !important;
 		padding: 0 !important;
@@ -23,8 +23,8 @@
 	}
 }
 
-li.image:hover .try-aura-product-video-wrapp,
-.upload_image:hover .try-aura-product-video-wrapp {
+li.image:hover .tryaura-product-video-wrapp,
+.upload_image:hover .tryaura-product-video-wrapp {
 	background-color: rgba(0, 0, 0, 0.2) !important;
 }
 

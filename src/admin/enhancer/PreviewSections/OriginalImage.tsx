@@ -79,11 +79,11 @@ function OriginalImage( {
 	let displayTitle =
 		sectionTitle ||
 		( multiple
-			? __( 'Original Images', 'try-aura' )
-			: __( 'Original Image', 'try-aura' ) );
+			? __( 'Original Images', 'tryaura' )
+			: __( 'Original Image', 'tryaura' ) );
 
 	if ( showGeneratedImage ) {
-		displayTitle = __( 'Generated Image', 'try-aura' );
+		displayTitle = __( 'Generated Image', 'tryaura' );
 	}
 
 	const toggleSelection = ( index: number ) => {
@@ -116,7 +116,7 @@ function OriginalImage( {
 					/>
 				) : (
 					<div className="w-full h-[200px] bg-gray-100 flex items-center justify-center text-gray-400">
-						{ __( 'No generated image available', 'try-aura' ) }
+						{ __( 'No generated image available', 'tryaura' ) }
 					</div>
 				) }
 			</div>

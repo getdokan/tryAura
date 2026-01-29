@@ -37,7 +37,7 @@ function ConfigFooter( {
 						} }
 						disabled={ isBusy }
 					>
-						{ __( 'Download', 'try-aura' ) }
+						{ __( 'Download', 'tryaura' ) }
 					</Button>
 				</>
 			) : (
@@ -53,8 +53,8 @@ function ConfigFooter( {
 					loading={ isBusy }
 				>
 					{ isBusy
-						? __( 'Generating…', 'try-aura' )
-						: __( 'Generate', 'try-aura' ) }
+						? __( 'Generating…', 'tryaura' )
+						: __( 'Generate', 'tryaura' ) }
 				</Button>
 			) }
 		</div>

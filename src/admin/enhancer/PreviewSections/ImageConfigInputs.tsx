@@ -47,17 +47,17 @@ function ImageConfigInputs( { doGenerate } ) {
 		'tryaura.enhancer.background_preferences',
 		[
 			{
-				label: __( 'Plain', 'try-aura' ),
+				label: __( 'Plain', 'tryaura' ),
 				value: 'plain',
 				icon: <Circle />,
 			},
 			{
-				label: __( 'Natural', 'try-aura' ),
+				label: __( 'Natural', 'tryaura' ),
 				value: 'natural',
 				icon: <Leaf />,
 			},
 			{
-				label: __( 'Studio', 'try-aura' ),
+				label: __( 'Studio', 'tryaura' ),
 				value: 'studio',
 				icon: <Wallpaper />,
 			},
@@ -66,17 +66,17 @@ function ImageConfigInputs( { doGenerate } ) {
 
 	const allOutputStyles = applyFilters( 'tryaura.enhancer.output_styles', [
 		{
-			label: __( 'Photo Realistic', 'try-aura' ),
+			label: __( 'Photo Realistic', 'tryaura' ),
 			value: 'photo-realistic',
 			icon: <Image />,
 		},
 		{
-			label: __( 'Studio Mockup', 'try-aura' ),
+			label: __( 'Studio Mockup', 'tryaura' ),
 			value: 'studio mockup',
 			icon: <Shirt />,
 		},
 		{
-			label: __( 'Model Shoot', 'try-aura' ),
+			label: __( 'Model Shoot', 'tryaura' ),
 			value: 'model shoot',
 			icon: <User />,
 		},
@@ -84,18 +84,18 @@ function ImageConfigInputs( { doGenerate } ) {
 
 	const allAspectRatios = applyFilters( 'tryaura.enhancer.aspect_ratios', [
 		{
-			label: __( 'Square (1:1)', 'try-aura' ),
+			label: __( 'Square (1:1)', 'tryaura' ),
 			value: '1:1',
 			icon: <Square />,
 		},
 		{
-			label: __( 'Landscape (16:9)', 'try-aura' ),
+			label: __( 'Landscape (16:9)', 'tryaura' ),
 			value: '16:9',
 			icon: <RectangleHorizontal />,
 			locked: ! hasPro(),
 		},
 		{
-			label: __( 'Portrait (9:16)', 'try-aura' ),
+			label: __( 'Portrait (9:16)', 'tryaura' ),
 			value: '9:16',
 			icon: <RectangleVertical />,
 			locked: ! hasPro(),
@@ -107,7 +107,7 @@ function ImageConfigInputs( { doGenerate } ) {
 			{ /* Controls */ }
 			{ isThumbnailMode && (
 				<ModernSelect
-					label={ __( 'Video Platforms', 'try-aura' ) }
+					label={ __( 'Video Platforms', 'tryaura' ) }
 					value={ imageConfigData?.videoPlatform ?? 'youtube' }
 					onChange={ ( val: any ) =>
 						setImageConfigData( {
@@ -134,7 +134,7 @@ function ImageConfigInputs( { doGenerate } ) {
 									backgroundType: val,
 								} )
 							}
-							label={ __( 'Background Preference', 'try-aura' ) }
+							label={ __( 'Background Preference', 'tryaura' ) }
 							options={ allBackgroundPrefrences }
 							disabled={ isBusy }
 						/>
@@ -146,7 +146,7 @@ function ImageConfigInputs( { doGenerate } ) {
 									styleType: val,
 								} )
 							}
-							label={ __( 'Output Style', 'try-aura' ) }
+							label={ __( 'Output Style', 'tryaura' ) }
 							options={ allOutputStyles }
 							disabled={ isBusy }
 						/>
@@ -162,7 +162,7 @@ function ImageConfigInputs( { doGenerate } ) {
 						imageSize: val,
 					} )
 				}
-				label={ __( 'Image Size', 'try-aura' ) }
+				label={ __( 'Image Size', 'tryaura' ) }
 				options={ allAspectRatios }
 				disabled={ isBusy }
 			/>
@@ -182,8 +182,8 @@ function ImageConfigInputs( { doGenerate } ) {
 						) }
 					>
 						{ isBlockEditorPage && ! isWoocommerceProductPage
-							? __( 'Prompt', 'try-aura' )
-							: __( 'Prompt (Optional)', 'try-aura' ) }
+							? __( 'Prompt', 'tryaura' )
+							: __( 'Prompt (Optional)', 'tryaura' ) }
 					</span>
 					{ ! hasPro() && <CrownIcon className="text-[16px]" /> }
 				</div>
@@ -201,10 +201,10 @@ function ImageConfigInputs( { doGenerate } ) {
 					rows={ 3 }
 					placeholder={
 						isBlockEditorPage && ! isWoocommerceProductPage
-							? __( 'Add any specific instructions', 'try-aura' )
+							? __( 'Add any specific instructions', 'tryaura' )
 							: __(
 									'Add any specific instructions (optional)',
-									'try-aura'
+									'tryaura'
 							  )
 					}
 				/>

@@ -3,7 +3,7 @@ import reducer from './reducer';
 import * as actions from './actions';
 import * as selectors from './selectors';
 
-export const STORE_NAME = 'try-aura/ai-models';
+export const STORE_NAME = 'tryaura/ai-models';
 
 const store = createReduxStore( STORE_NAME, {
 	reducer,

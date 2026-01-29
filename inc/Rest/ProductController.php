@@ -22,7 +22,7 @@ class ProductController {
 	 *
 	 * @var string api namespace.
 	 */
-	protected string $namespace = 'try-aura/v1';
+	protected string $namespace = 'tryaura/v1';
 
 	/**
 	 * Class constructor.
@@ -63,13 +63,13 @@ class ProductController {
 		$product_id = $request->get_param( 'id' );
 
 		if ( ! function_exists( 'wc_get_product' ) ) {
-			return new WP_REST_Response( array( 'message' => __( 'WooCommerce is not active', 'try-aura' ) ), 500 );
+			return new WP_REST_Response( array( 'message' => __( 'WooCommerce is not active', 'tryaura' ) ), 500 );
 		}
 
 		$product = wc_get_product( $product_id );
 
 		if ( ! $product ) {
-			return new WP_REST_Response( array( 'message' => __( 'Product not found', 'try-aura' ) ), 404 );
+			return new WP_REST_Response( array( 'message' => __( 'Product not found', 'tryaura' ) ), 404 );
 		}
 
 		$gallery_ids = $product->get_gallery_image_ids();

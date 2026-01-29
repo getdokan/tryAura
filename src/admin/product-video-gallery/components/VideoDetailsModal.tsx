@@ -90,7 +90,7 @@ const VideoDetailsModal = ( {
 
 	const openMediaModal = () => {
 		const frame = wp.media( {
-			title: __( 'Select Video', 'try-aura' ),
+			title: __( 'Select Video', 'tryaura' ),
 			multiple: false,
 			library: { type: 'video' },
 		} );
@@ -119,7 +119,7 @@ const VideoDetailsModal = ( {
 
 	const openThumbnailModal = () => {
 		const frame = wp.media( {
-			title: __( 'Select Video Thumbnail', 'try-aura' ),
+			title: __( 'Select Video Thumbnail', 'tryaura' ),
 			multiple: false,
 			library: { type: 'image' },
 			tryAuraContext: 'video_thumbnail',
@@ -142,15 +142,15 @@ const VideoDetailsModal = ( {
 
 	const handleSave = async () => {
 		if ( ! platform ) {
-			toast.error( __( 'Please select a video platform.', 'try-aura' ) );
+			toast.error( __( 'Please select a video platform.', 'tryaura' ) );
 			return;
 		}
 		if ( ! url ) {
-			toast.error( __( 'Please enter a valid video URL.', 'try-aura' ) );
+			toast.error( __( 'Please enter a valid video URL.', 'tryaura' ) );
 			return;
 		}
 		if ( ! thumbnailUrl && ! originalImageUrl && useCustomThumbnail ) {
-			toast.error( __( 'Please select a video thumbnail.', 'try-aura' ) );
+			toast.error( __( 'Please select a video thumbnail.', 'tryaura' ) );
 			return;
 		}
 
@@ -195,8 +195,8 @@ const VideoDetailsModal = ( {
 				<div className="border-b border-[rgba(233,233,233,1)] p-[16px_24px] flex justify-between items-center gap-1">
 					<h2 className="m-0">
 						{ initialData
-							? __( 'Edit Video', 'try-aura' )
-							: __( 'Add Video From URL', 'try-aura' ) }
+							? __( 'Edit Video', 'tryaura' )
+							: __( 'Add Video From URL', 'tryaura' ) }
 					</h2>
 
 					<button
@@ -213,7 +213,7 @@ const VideoDetailsModal = ( {
 				<div className="p-[27px_24px] border-b border-[rgba(233,233,233,1)] flex flex-col gap-3">
 					<div>
 						<span className="block text-sm font-medium text-gray-700 mb-2">
-							{ __( 'Video Platforms', 'try-aura' ) }
+							{ __( 'Video Platforms', 'tryaura' ) }
 						</span>
 						<ModernSelect
 							value={ platform }
@@ -223,14 +223,14 @@ const VideoDetailsModal = ( {
 							} }
 							options={ [
 								{
-									label: __( 'Youtube Video', 'try-aura' ),
+									label: __( 'Youtube Video', 'tryaura' ),
 									value: 'youtube',
 									icon: <Youtube size={ 18 } />,
 								},
 								{
 									label: __(
 										'Site stored Video',
-										'try-aura'
+										'tryaura'
 									),
 									value: 'site_stored',
 									icon: <Video size={ 18 } />,
@@ -244,18 +244,18 @@ const VideoDetailsModal = ( {
 						{ platform === 'youtube' && (
 							<>
 								<label
-									htmlFor={ `try-aura-video-url-${ platform }` }
+									htmlFor={ `tryaura-video-url-${ platform }` }
 									className="block text-sm font-medium text-gray-700 mb-2"
 								>
-									{ __( 'Video URL', 'try-aura' ) }
+									{ __( 'Video URL', 'tryaura' ) }
 								</label>
 								<div className="flex gap-2">
 									<input
-										id={ `try-aura-video-url-${ platform }` }
-										name={ `try-aura-video-url-${ platform }` }
+										id={ `tryaura-video-url-${ platform }` }
+										name={ `tryaura-video-url-${ platform }` }
 										type="text"
 										className="flex-1 border rounded-md p-[10px_16px] leading-0 border-[#E9E9E9] focus:border-primary! focus:shadow-none placeholder-[#2c333880]"
-										placeholder={ __( 'e.g. https://www.youtube.com/watch?v=...', 'try-aura' ) }
+										placeholder={ __( 'e.g. https://www.youtube.com/watch?v=...', 'tryaura' ) }
 										value={ url }
 										onChange={ ( e ) =>
 											setUrl( e.target.value )
@@ -292,7 +292,7 @@ const VideoDetailsModal = ( {
 											className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-red-50 transition-colors cursor-pointer border-0 bg-transparent"
 											aria-label={ __(
 												'Remove video',
-												'try-aura'
+												'tryaura'
 											) }
 										>
 											<X
@@ -312,7 +312,7 @@ const VideoDetailsModal = ( {
 												<span className="text-[#575757]! font-medium! text-[14px]! leading-5!">
 													{ __(
 														'Upload Video',
-														'try-aura'
+														'tryaura'
 													) }
 												</span>
 												<Upload size={ 16 } />
@@ -322,7 +322,7 @@ const VideoDetailsModal = ( {
 										<p className="text-[#828282] p-0 m-0 font-normal text-[12px]">
 											{ __(
 												'Supported files: mov, mp4',
-												'try-aura'
+												'tryaura'
 											) }
 										</p>
 									</div>
@@ -337,15 +337,15 @@ const VideoDetailsModal = ( {
 							onChange={ ( e: any ) =>
 								setUseCustomThumbnail( e.target.checked )
 							}
-							id="try-aura-video-use-custom-thumbnail"
+							id="tryaura-video-use-custom-thumbnail"
 						>
 							<label
 								className="text-[15px] font-medium text-[#7D7D7D] cursor-pointer"
-								htmlFor="try-aura-video-use-custom-thumbnail"
+								htmlFor="tryaura-video-use-custom-thumbnail"
 							>
 								{ __(
 									'Use Custom video Thumbnail?',
-									'try-aura'
+									'tryaura'
 								) }
 							</label>
 						</Checkbox>
@@ -362,7 +362,7 @@ const VideoDetailsModal = ( {
 								>
 									{ __(
 										'Select Video Thumbnail',
-										'try-aura'
+										'tryaura'
 									) }
 								</Button>
 
@@ -384,7 +384,7 @@ const VideoDetailsModal = ( {
 									<span className="block text-xs font-medium text-gray-500 mb-2">
 										{ __(
 											'Generated Preview:',
-											'try-aura'
+											'tryaura'
 										) }
 									</span>
 									<div className="rounded-lg border border-gray-200 w-50 h-50 overflow-hidden">
@@ -403,12 +403,12 @@ const VideoDetailsModal = ( {
 				<div className="flex justify-end gap-3 p-[20px_24px]">
 					<div className="flex gap-3">
 						<Button variant="outline" onClick={ onClose }>
-							{ __( 'Cancel', 'try-aura' ) }
+							{ __( 'Cancel', 'tryaura' ) }
 						</Button>
 						<Button onClick={ handleSave } loading={ isSaving }>
 							{ initialData
-								? __( 'Update Video', 'try-aura' )
-								: __( 'Add Video', 'try-aura' ) }
+								? __( 'Update Video', 'tryaura' )
+								: __( 'Add Video', 'tryaura' ) }
 						</Button>
 					</div>
 				</div>

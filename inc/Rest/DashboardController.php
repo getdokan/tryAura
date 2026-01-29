@@ -26,7 +26,7 @@ class DashboardController {
 	 *
 	 * @var string
 	 */
-	protected string $namespace = 'try-aura/v1';
+	protected string $namespace = 'tryaura/v1';
 
 	/**
 	 * Usage Manager.

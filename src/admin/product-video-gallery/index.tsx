@@ -9,10 +9,10 @@ declare const tryAuraVideo: any;
 
 ( function ( $ ) {
 	$( function () {
-		let $modalContainer = $( '#try-aura-video-modal-container' );
+		let $modalContainer = $( '#tryaura-video-modal-container' );
 		if ( ! $modalContainer.length ) {
 			$modalContainer = $(
-				'<div id="try-aura-video-modal-container" class="tryaura"></div>'
+				'<div id="tryaura-video-modal-container" class="tryaura"></div>'
 			);
 			$( 'body' ).append( $modalContainer );
 		}
@@ -46,7 +46,7 @@ declare const tryAuraVideo: any;
 				if (
 					! attachmentId ||
 					attachmentId === '-1' ||
-					$image.find( '.try-aura-product-gallery-video' ).length
+					$image.find( '.tryaura-product-gallery-video' ).length
 				) {
 					return;
 				}
@@ -63,7 +63,7 @@ declare const tryAuraVideo: any;
 					return;
 				}
 
-				const buttonClass = 'try-aura-edit-video';
+				const buttonClass = 'tryaura-edit-video';
 
 				const dataObj =
 					tryAuraVideo.videoData &&
@@ -105,8 +105,8 @@ declare const tryAuraVideo: any;
 				}
 
 				$image.append( `
-					<div class="tryaura try-aura-product-video-wrapp group">
-						<a href="#" class="try-aura-btn try-aura-product-gallery-video flex items-center justify-center bg-white/50 hover:bg-white text-white hover:text-primary no-underline ${ buttonClass }" data-attachment-id="${ attachmentId }">
+					<div class="tryaura tryaura-product-video-wrapp group">
+						<a href="#" class="tryaura-btn tryaura-product-gallery-video flex items-center justify-center bg-white/50 hover:bg-white text-white hover:text-primary no-underline ${ buttonClass }" data-attachment-id="${ attachmentId }">
 							<span class="hidden group-hover:flex text-[18px]! w-4.5! h-4.5! items-center! justify-center!">
 								<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-pencil-icon lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
 							</span>
@@ -114,7 +114,7 @@ declare const tryAuraVideo: any;
 								<svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" viewBox="0 0 24 24" fill="white" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-play-icon lucide-play"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg>
 							</span>
 						</a>
-						<input type="hidden" class="try-aura-video-data-input" name="try_aura_video_data[${ attachmentId }]" value='${ videoData }'>
+						<input type="hidden" class="tryaura-video-data-input" name="tryaura_video_data[${ attachmentId }]" value='${ videoData }'>
 					</div>
 				` );
 			};
@@ -137,13 +137,13 @@ declare const tryAuraVideo: any;
 			const $container = $( '.add_product_images' );
 			if (
 				$container.length &&
-				! $( '#try-aura-add-global-video' ).length
+				! $( '#tryaura-add-global-video' ).length
 			) {
 				const $btnWrapper = $(
-					'<div class="tryaura try-aura-add-global-video-wrapper"></div>'
+					'<div class="tryaura tryaura-add-global-video-wrapper"></div>'
 				);
 				const $btn = $( `
-					<button type="button" id="try-aura-add-global-video" class="mt-3.25 flex flex-row justify-center items-center gap-1 rounded-[5px] bg-primary px-3 py-2 text-[14px] text-white hover:bg-bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed w-full">
+					<button type="button" id="tryaura-add-global-video" class="mt-3.25 flex flex-row justify-center items-center gap-1 rounded-[5px] bg-primary px-3 py-2 text-[14px] text-white hover:bg-bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed w-full">
 						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-video" aria-hidden="true"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg>
 						${ tryAuraVideo.addVideoText }
 					</button>
@@ -168,7 +168,7 @@ declare const tryAuraVideo: any;
 								// Generate thumbnail via REST API
 								try {
 									const response = await fetch(
-										`${ tryAuraVideo.restUrl }try-aura/v1/generate-thumbnail`,
+										`${ tryAuraVideo.restUrl }tryaura/v1/generate-thumbnail`,
 										{
 											method: 'POST',
 											headers: {
@@ -292,12 +292,12 @@ declare const tryAuraVideo: any;
 
 		$( 'body' ).on(
 			'click',
-			'.try-aura-product-gallery-video',
+			'.tryaura-product-gallery-video',
 			function ( e ) {
 				e.preventDefault();
 				const $btn = $( this );
-				const $wrapp = $btn.closest( '.try-aura-product-video-wrapp' );
-				const $input = $wrapp.find( '.try-aura-video-data-input' );
+				const $wrapp = $btn.closest( '.tryaura-product-video-wrapp' );
+				const $input = $wrapp.find( '.tryaura-video-data-input' );
 				const currentData = JSON.parse( $input.val() || '{}' );
 
 				const $li = $btn.closest( 'li.image' );
@@ -319,7 +319,7 @@ declare const tryAuraVideo: any;
 							// Generate thumbnail via REST API
 							try {
 								const response = await fetch(
-									`${ tryAuraVideo.restUrl }try-aura/v1/generate-thumbnail`,
+									`${ tryAuraVideo.restUrl }tryaura/v1/generate-thumbnail`,
 									{
 										method: 'POST',
 										headers: {
@@ -398,7 +398,7 @@ declare const tryAuraVideo: any;
 							);
 							$input.attr(
 								'name',
-								`try_aura_video_data[${ targetId }]`
+								`tryaura_video_data[${ targetId }]`
 							);
 							attachmentId = targetId;
 						}
@@ -444,8 +444,8 @@ declare const tryAuraVideo: any;
 							tryAuraVideo.videoData[ attachmentId ] = saveData;
 							$input.val( JSON.stringify( saveData ) );
 
-							$btn.removeClass( 'try-aura-add-video' ).addClass(
-								'try-aura-edit-video'
+							$btn.removeClass( 'tryaura-add-video' ).addClass(
+								'tryaura-edit-video'
 							);
 							$icon
 								.removeClass( 'dashicons-plus' )
@@ -526,9 +526,9 @@ declare const tryAuraVideo: any;
 				}
 
 				const frame = wp.media( {
-					title: __( 'Update gallery image', 'try-aura' ),
+					title: __( 'Update gallery image', 'tryaura' ),
 					button: {
-						text: __( 'Use this image', 'try-aura' ),
+						text: __( 'Use this image', 'tryaura' ),
 					},
 					multiple: false,
 				} );
@@ -583,7 +583,7 @@ declare const tryAuraVideo: any;
 
 					// Update video button's data-attachment-id
 					const $videoBtn = $container.find(
-						'.try-aura-product-gallery-video'
+						'.tryaura-product-gallery-video'
 					);
 					if ( $videoBtn.length ) {
 						$videoBtn
@@ -592,12 +592,12 @@ declare const tryAuraVideo: any;
 
 						// Also update hidden input name
 						const $videoInput = $container.find(
-							'.try-aura-video-data-input'
+							'.tryaura-video-data-input'
 						);
 						if ( $videoInput.length ) {
 							$videoInput.attr(
 								'name',
-								`try_aura_video_data[${ newAttachmentId }]`
+								`tryaura_video_data[${ newAttachmentId }]`
 							);
 
 							// If there was video data for the old ID, move it to the new ID

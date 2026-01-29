@@ -18,7 +18,7 @@ function SettingDetailsContainer( { children = null, footer = null } ) {
 						>
 							<ArrowLeft className="w-4 h-4 rotate-0 opacity-100" />
 							<div className="font-medium text-[14px] leading-5 tracking-normal text-center align-middle">
-								{ __( 'Back to Settings', 'try-aura' ) }
+								{ __( 'Back to Settings', 'tryaura' ) }
 							</div>
 						</button>
 					</div>

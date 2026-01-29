@@ -25,7 +25,7 @@ const VideoModal = ( {
 	} else {
 		videoHtml = `<video width="100%" height="auto" controls autoplay><source src="${ videoUrl }" type="video/mp4">${ __(
 			'Your browser does not support the video tag.',
-			'try-aura'
+			'tryaura'
 		) }</video>`;
 	}
 
@@ -34,10 +34,10 @@ const VideoModal = ( {
 			onRequestClose={ onClose }
 			shouldCloseOnClickOutside={ true }
 			shouldCloseOnEsc={ true }
-			className="tryaura try-aura-video-modal-root"
+			className="tryaura tryaura-video-modal-root"
 			__experimentalHideHeader
 		>
-			<div className="try-aura-video-modal-player">
+			<div className="tryaura-video-modal-player">
 				<div className="w-full h-full relative">
 					<X
 						className="absolute top-1 right-1 cursor-pointer z-50 bg-red-50 rounded-full p-1 text-red-400"
@@ -53,7 +53,7 @@ const VideoModal = ( {
 let modalRoot: any = null;
 
 const openModal = ( videoUrl: string, videoPlatform: string ) => {
-	const containerId = 'try-aura-video-modal-container';
+	const containerId = 'tryaura-video-modal-container';
 	let container = document.getElementById( containerId );
 	if ( ! container ) {
 		container = document.createElement( 'div' );
@@ -96,13 +96,13 @@ document.addEventListener(
 	'click',
 	( e ) => {
 		const target = ( e.target as HTMLElement ).closest(
-			'.try-aura-video-item'
+			'.tryaura-video-item'
 		);
 		if ( target ) {
-			const videoUrl = target.getAttribute( 'data-try-aura-video-url' );
+			const videoUrl = target.getAttribute( 'data-tryaura-video-url' );
 			if ( videoUrl ) {
 				const videoPlatform =
-					target.getAttribute( 'data-try-aura-video-platform' ) || '';
+					target.getAttribute( 'data-tryaura-video-platform' ) || '';
 
 				e.preventDefault();
 				e.stopPropagation();

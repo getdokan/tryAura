@@ -47,7 +47,7 @@ const PreviewModal = ( {
 	} = useSelect(
 		( select ) => {
 			const store = select( STORE_NAME );
-			const aiModelsStore = select( 'try-aura/ai-models' );
+			const aiModelsStore = select( 'tryaura/ai-models' );
 			const settingsStore = select( SETTINGS_STORE_NAME );
 			return {
 				isBlockEditorPage: store.getIsBlockEditorPage(),
@@ -126,7 +126,7 @@ const PreviewModal = ( {
 		try {
 			setError( null );
 			setStatus( 'fetching' );
-			setMessage( __( 'Fetching images…', 'try-aura' ) );
+			setMessage( __( 'Fetching images…', 'tryaura' ) );
 			await new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
 
 			setStatus( 'generating' );
@@ -134,7 +134,7 @@ const PreviewModal = ( {
 			await new Promise( ( resolve ) => setTimeout( resolve, 2000 ) );
 
 			setStatus( 'parsing' );
-			setMessage( __( 'Processing results…', 'try-aura' ) );
+			setMessage( __( 'Processing results…', 'tryaura' ) );
 			await new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
 
 			// Use a placeholder image from picsum for testing
@@ -159,7 +159,7 @@ const PreviewModal = ( {
 
 			if ( selectedUrls.length === 0 ) {
 				throw new Error(
-					__( 'Please select at least one image.', 'try-aura' )
+					__( 'Please select at least one image.', 'tryaura' )
 				);
 			}
 
@@ -172,7 +172,7 @@ const PreviewModal = ( {
 				throw new Error(
 					__(
 						'Missing Google AI API key. Please set it on the TryAura settings page.',
-						'try-aura'
+						'tryaura'
 					)
 				);
 			}
@@ -183,7 +183,7 @@ const PreviewModal = ( {
 				'gemini-2.5-flash-image-preview';
 
 			setStatus( 'fetching' );
-			setMessage( __( 'Fetching images…', 'try-aura' ) );
+			setMessage( __( 'Fetching images…', 'tryaura' ) );
 			const encodedImages = await Promise.all(
 				selectedUrls.map( async ( url ) => {
 					const resp = await fetch( url, {
@@ -227,7 +227,7 @@ const PreviewModal = ( {
 				throw new Error(
 					__(
 						'Please provide a prompt for the image generation.',
-						'try-aura'
+						'tryaura'
 					)
 				);
 			}
@@ -296,7 +296,7 @@ const PreviewModal = ( {
 			doAction( 'tryaura.ai_enhance_prompt_after_generate', response );
 
 			setStatus( 'parsing' );
-			setMessage( __( 'Processing results…', 'try-aura' ) );
+			setMessage( __( 'Processing results…', 'tryaura' ) );
 			const parts = response?.candidates?.[ 0 ]?.content?.parts || [];
 			let data64: string | null = null;
 			let outMime: string = 'image/png';
@@ -323,7 +323,7 @@ const PreviewModal = ( {
 			const postType = ( window as any )?.tryAura?.postType;
 
 			apiFetch( {
-				path: '/try-aura/v1/log-usage',
+				path: '/tryaura/v1/log-usage',
 				method: 'POST',
 				data: {
 					type: 'image',
@@ -357,7 +357,7 @@ const PreviewModal = ( {
 			const nonce = window?.tryAura?.nonce;
 			if ( ! rest || ! nonce ) {
 				throw new Error(
-					__( 'Missing WordPress REST configuration.', 'try-aura' )
+					__( 'Missing WordPress REST configuration.', 'tryaura' )
 				);
 			}
 			const restBase = rest.replace( /\/?$/, '/' );
@@ -510,7 +510,7 @@ const PreviewModal = ( {
 						<h2 className="mt-0">
 							{ applyFilters(
 								'tryaura.enhancer.modal_title',
-								__( 'AI Product Image Generation', 'try-aura' ),
+								__( 'AI Product Image Generation', 'tryaura' ),
 								{ isThumbnailMode }
 							) }
 						</h2>
@@ -579,7 +579,7 @@ const PreviewModal = ( {
 						{ ! hasPro() && (
 							<div className="flex flex-row gap-2 items-center">
 								<span className="text-[14px] font-normal text-[rgba(130,130,130,1)]">
-									{ __( 'Powered By', 'try-aura' ) }
+									{ __( 'Powered By', 'tryaura' ) }
 								</span>
 								<div>
 									<TryauraLogoWithText className="h-5 w-auto" />
@@ -597,7 +597,7 @@ const PreviewModal = ( {
 										? __( 'Adding…' )
 										: __(
 												'Add to Media Library',
-												'try-aura'
+												'tryaura'
 										  ) }
 								</Button>
 							) }
@@ -611,7 +611,7 @@ const PreviewModal = ( {
 								onClick={ onClose }
 								disabled={ isBusy }
 							>
-								{ __( 'Close', 'try-aura' ) }
+								{ __( 'Close', 'tryaura' ) }
 							</Button>
 						</div>
 					</div>

@@ -20,7 +20,7 @@ const EnhanceButton = () => {
 			const { items } = getMediaSelectedItems();
 			if ( ! items.length ) {
 				toast.error(
-					__( 'Please select at least one image.', 'try-aura' )
+					__( 'Please select at least one image.', 'tryaura' )
 				);
 				return;
 			}
@@ -32,7 +32,7 @@ const EnhanceButton = () => {
 				toast.error(
 					__(
 						'Please select only image(s) for enhancement.',
-						'try-aura'
+						'tryaura'
 					)
 				);
 				return;
@@ -58,7 +58,7 @@ const EnhanceButton = () => {
 			// eslint-disable-next-line no-console
 			console.error( err );
 			toast.error(
-				__( 'Unable to read current selection.', 'try-aura' )
+				__( 'Unable to read current selection.', 'tryaura' )
 			);
 
 			doAction( 'tryaura.media_frame_error', err );
@@ -97,7 +97,7 @@ const EnhanceButton = () => {
 				onClick={ handleClick }
 				disabled={ loading || disable }
 			>
-				{ __( 'Enhance with AI', 'try-aura' ) }
+				{ __( 'Enhance with AI', 'tryaura' ) }
 			</button>
 			{ open && previewUrls.length > 0 && (
 				<PreviewModal

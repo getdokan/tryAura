@@ -42,7 +42,7 @@ const GeminiSettings = () => {
 		saving,
 	} = useSelect( ( select ) => {
 		const models =
-			select( 'try-aura/ai-models' ).getProviderModels( 'google' ) || {};
+			select( 'tryaura/ai-models' ).getProviderModels( 'google' ) || {};
 
 		const vModels: any[] = [];
 		const iModels: any[] = [];
@@ -64,9 +64,9 @@ const GeminiSettings = () => {
 			videoModels: vModels,
 			imageModels: iModels,
 			defaultImageModel:
-				select( 'try-aura/ai-models' ).getDefaultImageModel(),
+				select( 'tryaura/ai-models' ).getDefaultImageModel(),
 			defaultVideoModel:
-				select( 'try-aura/ai-models' ).getDefaultVideoModel(),
+				select( 'tryaura/ai-models' ).getDefaultVideoModel(),
 			settings: select( STORE_NAME ).getSettings(),
 			fetching: select( STORE_NAME ).isFetchingSettings(),
 			saving: select( STORE_NAME ).isSavingSettings(),
@@ -103,7 +103,7 @@ const GeminiSettings = () => {
 
 	const onSave = async () => {
 		if ( ! apiKey ) {
-			toast.error( __( 'API key is required', 'try-aura' ) );
+			toast.error( __( 'API key is required', 'tryaura' ) );
 			return;
 		}
 		try {
@@ -129,14 +129,14 @@ const GeminiSettings = () => {
 				window.tryAura.videoModel = newValue.google.videoModel;
 
 				toast.success(
-					__( 'Gemini API settings saved successfully!', 'try-aura' )
+					__( 'Gemini API settings saved successfully!', 'tryaura' )
 				);
 			}
 		} catch ( e: unknown ) {
 			const msg =
 				e && typeof e === 'object' && 'message' in e
 					? String( ( e as any ).message )
-					: __( 'Something went wrong', 'try-aura' );
+					: __( 'Something went wrong', 'tryaura' );
 
 			toast.error( msg );
 		}
@@ -153,7 +153,7 @@ const GeminiSettings = () => {
 							disabled={ saving }
 							loading={ saving }
 						>
-							{ __( 'Connect', 'try-aura' ) }
+							{ __( 'Connect', 'tryaura' ) }
 						</Button>
 						<Button
 							className="py-3 px-7"
@@ -162,7 +162,7 @@ const GeminiSettings = () => {
 								navigate( '/settings' );
 							} }
 						>
-							{ __( 'Cancel', 'try-aura' ) }
+							{ __( 'Cancel', 'tryaura' ) }
 						</Button>
 					</>
 				)
@@ -178,12 +178,12 @@ const GeminiSettings = () => {
 						</div>
 						<div>
 							<div className="font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[8px]">
-								{ __( 'Gemini Integration', 'try-aura' ) }
+								{ __( 'Gemini Integration', 'tryaura' ) }
 							</div>
 							<div className="text-[14px] font-[400] leading-[18.67px] text-[rgba(99,99,99,1)]">
 								{ __(
 									'Connect your Gemini account with an API key. Need help finding your',
-									'try-aura'
+									'tryaura'
 								) }
 								&nbsp;
 								<a
@@ -192,7 +192,7 @@ const GeminiSettings = () => {
 									target="_blank"
 									rel="noreferrer"
 								>
-									{ __( 'API key ?', 'try-aura' ) }
+									{ __( 'API key ?', 'tryaura' ) }
 								</a>
 							</div>
 						</div>
@@ -207,7 +207,7 @@ const GeminiSettings = () => {
 								<div>
 									<ModernSelect
 										value={ selectedImageModel }
-										label={ __( 'Select Image Model', 'try-aura' ) }
+										label={ __( 'Select Image Model', 'tryaura' ) }
 										onChange={ ( val ) => {
 											setSelectedImageModel( val );
 										} }
@@ -216,7 +216,7 @@ const GeminiSettings = () => {
 									/>
 								</div>
 								<Slot
-									name="try-aura-choose-video-model"
+									name="tryaura-choose-video-model"
 									fillProps={ {
 										ModernSelect,
 										selectedVideoModel,

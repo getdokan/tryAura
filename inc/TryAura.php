@@ -34,6 +34,6 @@ final class TryAura {
 	}
 
 	public static function is_pro_exists() {
-		return apply_filters( 'try_aura_is_pro_exists', false );
+		return apply_filters( 'tryaura_is_pro_exists', false );
 	}
 }

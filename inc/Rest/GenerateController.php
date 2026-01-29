@@ -65,13 +65,13 @@ class GenerateController {
 		$nonce  = $params['tryonNonce'] ?? '';
 
 		if( ! wp_verify_nonce( $nonce, 'tryon_nonce' ) ) {
-			return new WP_REST_Response( array( 'message' => __('unauthorized access', 'try-aura') ), 401 );
+			return new WP_REST_Response( array( 'message' => __('unauthorized access', 'tryaura') ), 401 );
 		}
 
 		$prompt     = $params['prompt'] ?? '';
 		$ref_images = $params['images'] ?? array();
 
-		$settings = get_option( 'try_aura_settings', array() );
+		$settings = get_option( 'tryaura_settings', array() );
 		$api_key  = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
 
 		$model   = isset( $settings['google']['imageModel'] ) && ! empty( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : 'gemini-2.5-flash-image';

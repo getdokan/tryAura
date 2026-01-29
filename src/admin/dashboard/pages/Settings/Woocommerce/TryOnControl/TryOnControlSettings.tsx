@@ -57,15 +57,15 @@ const TryOnControlSettings = () => {
 	const handleBulkAction = async ( enabled: boolean ) => {
 		try {
 			const response: any = await apiFetch( {
-				path: '/try-aura/v1/settings/bulk-try-on',
+				path: '/tryaura/v1/settings/bulk-try-on',
 				method: 'POST',
 				data: { enabled },
 			} );
 
-			toast.success( response.message || __( 'Success', 'try-aura' ) );
+			toast.success( response.message || __( 'Success', 'tryaura' ) );
 		} catch ( error: any ) {
 			toast.error(
-				error.message || __( 'Something went wrong', 'try-aura' )
+				error.message || __( 'Something went wrong', 'tryaura' )
 			);
 		}
 	};
@@ -91,7 +91,7 @@ const TryOnControlSettings = () => {
 			const msg =
 				e && typeof e === 'object' && 'message' in e
 					? String( ( e as any ).message )
-					: __( 'Something went wrong', 'try-aura' );
+					: __( 'Something went wrong', 'tryaura' );
 
 			toast.error( msg );
 		}
@@ -130,13 +130,13 @@ const TryOnControlSettings = () => {
 								<h2 className="p-0 m-0">
 									{ __(
 										'Are you sure you want to Enable Bulk Try-On?',
-										'try-aura'
+										'tryaura'
 									) }
 								</h2>
 								<span>
 									{ __(
 										'This setting will apply try-on functionality to all products.',
-										'try-aura'
+										'tryaura'
 									) }
 								</span>
 							</div>
@@ -146,7 +146,7 @@ const TryOnControlSettings = () => {
 									variant="outline"
 									onClick={ () => setConfirmOpen( false ) }
 								>
-									{ __( 'No, Go Back', 'try-aura' ) }
+									{ __( 'No, Go Back', 'tryaura' ) }
 								</Button>
 								<Button
 									className="py-3 px-7"
@@ -155,8 +155,8 @@ const TryOnControlSettings = () => {
 									loading={ saving }
 								>
 									{ checked
-										? __( 'Yes, Enable', 'try-aura' )
-										: __( 'Yes, Disable', 'try-aura' ) }
+										? __( 'Yes, Enable', 'tryaura' )
+										: __( 'Yes, Disable', 'tryaura' ) }
 								</Button>
 							</div>
 						</div>
@@ -171,7 +171,7 @@ const TryOnControlSettings = () => {
 								className="py-3 px-7"
 								onClick={ () => setConfirmOpen( true ) }
 							>
-								{ __( 'Save', 'try-aura' ) }
+								{ __( 'Save', 'tryaura' ) }
 							</Button>
 							<Button
 								className="py-3 px-7"
@@ -180,7 +180,7 @@ const TryOnControlSettings = () => {
 									navigate( '/settings' );
 								} }
 							>
-								{ __( 'Cancel', 'try-aura' ) }
+								{ __( 'Cancel', 'tryaura' ) }
 							</Button>
 						</>
 					)
@@ -196,12 +196,12 @@ const TryOnControlSettings = () => {
 							</div>
 							<div>
 								<div className="font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[8px]">
-									{ __( 'Bulk Try-On Control', 'try-aura' ) }
+									{ __( 'Bulk Try-On Control', 'tryaura' ) }
 								</div>
 								<div className="text-[14px] font-[400] leading-[18.67px] text-[rgba(99,99,99,1)]">
 									{ __(
 										'Enable or disable try-on for all products in your store.',
-										'try-aura'
+										'tryaura'
 									) }
 								</div>
 							</div>
@@ -216,13 +216,13 @@ const TryOnControlSettings = () => {
 									<span className="text-[rgba(37,37,45,1)] font-semibold text-[14px]">
 										{ __(
 											'Enable for All Products',
-											'try-aura'
+											'tryaura'
 										) }
 									</span>
 									<span className="text-[rgba(130,130,130,1)] font-normal text-[12px]">
 										{ __(
 											'This setting will apply try-on functionality to all products.',
-											'try-aura'
+											'tryaura'
 										) }
 									</span>
 								</div>

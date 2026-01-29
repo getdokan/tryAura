@@ -33,24 +33,24 @@ function Index() {
 	return (
 		<SettingItemCard
 			icon={ <img src={ geminiLogo } alt="gemini logo" /> }
-			title={ __( 'Gemini API', 'try-aura' ) }
+			title={ __( 'Gemini API', 'tryaura' ) }
 			badge={
 				apiKey ? (
 					<p className="bg-green-100 text-green-700 rounded m-0 py-1 px-3">
-						{ __( 'Connected', 'try-aura' ) }
+						{ __( 'Connected', 'tryaura' ) }
 					</p>
 				) : (
 					<p className="bg-red-100 text-red-700 rounded m-0 py-1 px-3">
-						{ __( 'Disconnected', 'try-aura' ) }
+						{ __( 'Disconnected', 'tryaura' ) }
 					</p>
 				)
 			}
 			subTitle={ __(
 				'This key authenticates requests between your store and TryAura services.',
-				'try-aura'
+				'tryaura'
 			) }
 			link={ '/settings/gemini' }
-			linkText={ __( 'Configure', 'try-aura' ) }
+			linkText={ __( 'Configure', 'tryaura' ) }
 			loading={fetching}
 		/>
 	);

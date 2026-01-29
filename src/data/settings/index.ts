@@ -5,7 +5,7 @@ import * as selectors from './selectors';
 import * as resolvers from './resolvers';
 import controls from './controls';
 
-export const STORE_NAME = 'try-aura/settings';
+export const STORE_NAME = 'tryaura/settings';
 
 const store = createReduxStore( STORE_NAME, {
 	reducer,

@@ -23,7 +23,7 @@ class SettingsController {
 	 *
 	 * @var string api namespace.
 	 */
-	protected string $namespace = 'try-aura/v1';
+	protected string $namespace = 'tryaura/v1';
 
 	/**
 	 * REST API base.
@@ -41,7 +41,7 @@ class SettingsController {
 	 *
 	 * @var string option key.
 	 */
-	protected string $option_key = 'try_aura_settings';
+	protected string $option_key = 'tryaura_settings';
 
 	/**
 	 * Class constructor.
@@ -159,7 +159,7 @@ class SettingsController {
 		if ( ! class_exists( 'WooCommerce' )) {
 			return new WP_REST_Response(
 				array(
-					'message' => __( 'WooCommerce is not active.', 'try-aura' ),
+					'message' => __( 'WooCommerce is not active.', 'tryaura' ),
 				),
 				400
 			);
@@ -180,7 +180,7 @@ class SettingsController {
 		if ( 0 === $total_products ) {
 			return new WP_REST_Response(
 				array(
-					'message' => __( 'No products found to update.', 'try-aura' ),
+					'message' => __( 'No products found to update.', 'tryaura' ),
 				),
 				200
 			);
@@ -191,12 +191,12 @@ class SettingsController {
 
 		foreach ( $chunks as $chunk ) {
 			WC()->queue()->add(
-				'try_aura_bulk_update_products_try_on',
+				'tryaura_bulk_update_products_try_on',
 				array(
 					'product_ids' => $chunk,
 					'enabled'     => $enabled,
 				),
-				'try-aura'
+				'tryaura'
 			);
 		}
 
@@ -204,7 +204,7 @@ class SettingsController {
 			array(
 				'message' => sprintf(
 					// translators: %1$d total products, %2$d enable/disable.
-					__( '%1$d products added to queue to %2$s try-on.', 'try-aura' ),
+					__( '%1$d products added to queue to %2$s try-on.', 'tryaura' ),
 					$total_products,
 					'yes' === $enabled ? 'enable' : 'disable'
 				),

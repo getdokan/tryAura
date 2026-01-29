@@ -147,7 +147,7 @@ class UsageManager {
 			'total_tokens'  => (int) $total_tokens,
 		);
 
-		$stats = apply_filters('try_aura_admin_dashboard_stats_data', $stats, $table, $where, $params);
+		$stats = apply_filters('tryaura_admin_dashboard_stats_data', $stats, $table, $where, $params);
 
 		if ( class_exists( 'WooCommerce' ) ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
@@ -200,7 +200,7 @@ class UsageManager {
 
 		$selectors = implode(
 			', ',
-			apply_filters('try_aura_admin_dashboard_chart_data_query_selectors',
+			apply_filters('tryaura_admin_dashboard_chart_data_query_selectors',
 				array_merge(
 					[
 						'DATE(created_at) as date',
@@ -245,7 +245,7 @@ class UsageManager {
 				$chart_item_data['tryOns'] = (int) $row['tryOns'];
 			}
 
-			$chart_data[] = apply_filters( 'try_aura_admin_dashboard_chart_data_item', $chart_item_data, $date_str, $indexed_results );
+			$chart_data[] = apply_filters( 'tryaura_admin_dashboard_chart_data_item', $chart_item_data, $date_str, $indexed_results );
 		}
 
 		wp_cache_set( $cache_key, $chart_data, self::CACHE_GROUP );
@@ -287,7 +287,7 @@ class UsageManager {
 
 		if ( $type ) {
 			$is_fetchable = ($type === 'image' || $type === 'tryon');
-			$is_fetchable = apply_filters('try_aura_recent_activity_type', $is_fetchable, $type );
+			$is_fetchable = apply_filters('tryaura_recent_activity_type', $is_fetchable, $type );
 
 			if( $is_fetchable === false ) return [];
 
@@ -302,7 +302,7 @@ class UsageManager {
 			}
 		} else {
 			$type_list    = [ 'image', 'tryon' ];
-			$type_list    = apply_filters('try_aura_recent_activity_type_list', $type_list);
+			$type_list    = apply_filters('tryaura_recent_activity_type_list', $type_list);
 			$types_quoted = [];
 
 			foreach( $type_list as $type_item ) {
@@ -326,7 +326,7 @@ class UsageManager {
 			if ( ! empty( $result['object_id'] ) ) {
 				$result['object_name'] = get_the_title( $result['object_id'] );
 			}
-			$result['human_time_diff'] = human_time_diff( strtotime( $result['created_at'] ), current_time( 'timestamp' ) ) . ' ' . __( 'ago', 'try-aura' ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
+			$result['human_time_diff'] = human_time_diff( strtotime( $result['created_at'] ), current_time( 'timestamp' ) ) . ' ' . __( 'ago', 'tryaura' ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
 		}
 
 		wp_cache_set( $cache_key, $results, self::CACHE_GROUP );

@@ -18,7 +18,7 @@ class WooCommerce {
 	 *
 	 * @since 1.0.0
 	 */
-	public const TRY_ON_META_KEY = '_try_aura_try_on_enabled';
+	public const TRY_ON_META_KEY = '_tryaura_try_on_enabled';
 
 	/**
 	 * Class constructor.
@@ -34,10 +34,10 @@ class WooCommerce {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 
 		// AJAX handler for the toggle.
-		add_action( 'wp_ajax_try_aura_toggle_try_on', array( $this, 'toggle_try_on_ajax' ) );
+		add_action( 'wp_ajax_tryaura_toggle_try_on', array( $this, 'toggle_try_on_ajax' ) );
 
 		// Action Scheduler handler for bulk update.
-		add_action( 'try_aura_bulk_update_products_try_on', array( $this, 'bulk_update_products_try_on' ), 10, 2 );
+		add_action( 'tryaura_bulk_update_products_try_on', array( $this, 'bulk_update_products_try_on' ), 10, 2 );
 	}
 
 	/**
@@ -54,7 +54,7 @@ class WooCommerce {
 		foreach ( $columns as $key => $column ) {
 			$new_columns[ $key ] = $column;
 			if ( 'featured' === $key ) {
-				$new_columns['try_aura_try_on'] = __( 'Try-on', 'try-aura' );
+				$new_columns['tryaura_try_on'] = __( 'Try-on', 'tryaura' );
 			}
 		}
 		return $new_columns;
@@ -69,7 +69,7 @@ class WooCommerce {
 	 * @param int    $product_id The product ID.
 	 **/
 	public function render_product_column( string $column, int $product_id ): void {
-		if ( 'try_aura_try_on' !== $column ) {
+		if ( 'tryaura_try_on' !== $column ) {
 			return;
 		}
 
@@ -115,21 +115,21 @@ class WooCommerce {
 		}
 
 		$script_url = plugins_url( 'build/admin/woocommerce-products-list.js', TRYAURA_FILE );
-		wp_enqueue_script( 'try-aura-woo-products', $script_url, $deps, $version, true );
+		wp_enqueue_script( 'tryaura-woo-products', $script_url, $deps, $version, true );
 
 		wp_localize_script(
-			'try-aura-woo-products',
+			'tryaura-woo-products',
 			'tryAuraWoo',
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'try_aura_toggle_nonce' ),
+				'nonce'   => wp_create_nonce( 'tryaura_toggle_nonce' ),
 			)
 		);
 
 		$css_path = TRYAURA_DIR . '/build/admin/style-woocommerce-products-list.css';
 		if ( file_exists( $css_path ) ) {
 			$css_url = plugins_url( 'build/admin/style-woocommerce-products-list.css', TRYAURA_FILE );
-			wp_enqueue_style( 'try-aura-woo-products', $css_url, array(), $version );
+			wp_enqueue_style( 'tryaura-woo-products', $css_url, array(), $version );
 		}
 	}
 
@@ -139,18 +139,18 @@ class WooCommerce {
 	 * @since 1.0.0
 	 */
 	public function toggle_try_on_ajax(): void {
-		check_ajax_referer( 'try_aura_toggle_nonce', 'nonce' );
+		check_ajax_referer( 'tryaura_toggle_nonce', 'nonce' );
 
 		// phpcs:ignore WordPress.WP.Capabilities.Unknown
 		if ( ! current_user_can( 'edit_products' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Insufficient permissions.', 'try-aura' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions.', 'tryaura' ) ) );
 		}
 
 		$product_id = isset( $_POST['product_id'] ) ? intval( $_POST['product_id'] ) : 0;
 		$enabled    = isset( $_POST['enabled'] ) && 'true' === $_POST['enabled'] ? 'yes' : 'no';
 
 		if ( ! $product_id ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid product ID.', 'try-aura' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid product ID.', 'tryaura' ) ) );
 		}
 
 		update_post_meta( $product_id, self::TRY_ON_META_KEY, $enabled );

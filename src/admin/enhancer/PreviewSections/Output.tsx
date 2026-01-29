@@ -48,7 +48,7 @@ function Output( { className = '' } ) {
 	return (
 		<div className={ className }>
 			<div className="w-[500] text-[14px] mb-[8px]">
-				{ __( 'Generated Output', 'try-aura' ) }
+				{ __( 'Generated Output', 'tryaura' ) }
 			</div>
 			{ /* eslint-disable-next-line no-nested-ternary */ }
 			{ isBusy ? (
@@ -56,7 +56,7 @@ function Output( { className = '' } ) {
 					<img
 						src={ Star }
 						className="w-8 h-8"
-						alt={ __( 'Loading…', 'try-aura' ) }
+						alt={ __( 'Loading…', 'tryaura' ) }
 					/>
 					<span>{ message }</span>
 				</div>
@@ -73,7 +73,7 @@ function Output( { className = '' } ) {
 								<img
 									src={ Congrats }
 									className="w-full h-auto"
-									alt={ __( 'Congratulations', 'try-aura' ) }
+									alt={ __( 'Congratulations', 'tryaura' ) }
 								/>
 							</div>
 						) }

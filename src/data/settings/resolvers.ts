@@ -5,7 +5,7 @@ export function* getSettings() {
 	try {
 		const result = yield {
 			type: 'API_FETCH',
-			path: '/try-aura/v1/settings',
+			path: '/tryaura/v1/settings',
 		};
 		yield setSettings( result );
 	} finally {

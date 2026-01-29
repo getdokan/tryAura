@@ -24,20 +24,20 @@ async function getProductImageUrls(): Promise< string[] > {
 		goToLogin();
 		return;
 	}
-	// disable try-aura-tryon-button button
-	const button = window?.document?.getElementById( 'try-aura-tryon-button' );
+	// disable tryaura-tryon-button button
+	const button = window?.document?.getElementById( 'tryaura-tryon-button' );
 
 	button?.setAttribute( 'disabled', '' );
 	try {
 		// Pass the apiFetch promise directly to toast.promise
 		const product: Record< number, string > = await toast.promise(
 			apiFetch( {
-				path: `/try-aura/v1/product/${ window?.tryAura?.productId }/images`,
+				path: `/tryaura/v1/product/${ window?.tryAura?.productId }/images`,
 			} ),
 			{
-				loading: __( 'Loading try-on images..', 'try-aura' ),
-				success: __( 'Images loaded!', 'try-aura' ),
-				error: __( 'No product images found to try on.', 'try-aura' ),
+				loading: __( 'Loading try-on images..', 'tryaura' ),
+				success: __( 'Images loaded!', 'tryaura' ),
+				error: __( 'No product images found to try on.', 'tryaura' ),
 			}
 		);
 
@@ -77,7 +77,7 @@ const goToLogin = () => {
 function openTryOnModal( productImages: string[] ) {
 	const containerId = applyFilters(
 		'tryaura.tryon.container_id',
-		'try-aura-tryon-modal-root'
+		'tryaura-tryon-modal-root'
 	);
 	let container = document.getElementById( containerId );
 	if ( ! container ) {
@@ -109,7 +109,7 @@ const handleTryOnBtnClick = async () => {
 function injectButton() {
 	const btnId = applyFilters(
 		'tryaura.tryon.button_id',
-		'try-aura-tryon-button'
+		'tryaura-tryon-button'
 	);
 	if ( document.getElementById( btnId ) ) {
 		return;
@@ -126,7 +126,7 @@ function injectButton() {
 	const btn = document.createElement( 'button' );
 	btn.id = btnId;
 	btn.type = 'button';
-	btn.textContent = __( 'Try on', 'try-aura' );
+	btn.textContent = __( 'Try on', 'tryaura' );
 	btn.className =
 		addToCart.className.replace( 'single_add_to_cart_button', '' ).trim() ||
 		'button';
@@ -140,7 +140,7 @@ function injectButton() {
 
 addAction(
 	'tryaura.tryon.button_added',
-	'try-aura-tryon-button-added',
+	'tryaura-tryon-button-added',
 	async () => {
 		// check if in the url there is a tryOnAutoOpen param, if so, open the modal
 		const currentUrl = new URL( window.location.href );

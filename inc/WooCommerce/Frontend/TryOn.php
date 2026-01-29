@@ -48,7 +48,7 @@ class TryOn {
 
 		// Localize data for the frontend app.
 		wp_localize_script(
-			'try-aura-tryon',
+			'tryaura-tryon',
 			'tryAura',
 			array(
 				'restUrl'    => esc_url_raw( rest_url() ),
@@ -59,8 +59,8 @@ class TryOn {
 			)
 		);
 
-		wp_enqueue_style( 'try-aura-tryon' );
-		wp_enqueue_script( 'try-aura-tryon' );
+		wp_enqueue_style( 'tryaura-tryon' );
+		wp_enqueue_script( 'tryaura-tryon' );
 	}
 
 	/**

@@ -116,7 +116,7 @@ class Plugin {
 		add_filter( 'rest_post_dispatch', array( $this, 'add_wc_existence_header' ), 10, 3 );
 
 		/**
-		 * Action to signal that try-aura has finished loading.
+		 * Action to signal that tryaura has finished loading.
 		 *
 		 * @since 1.0.0
 		 */
@@ -139,8 +139,8 @@ class Plugin {
 
 		$route = $request->get_route();
 
-		if ( strpos( $route, 'try-aura/v1' ) !== false || strpos( $route, 'generate/v1' ) !== false ) {
-			$response->header( 'X-Try-Aura-WC-Exists', class_exists( 'WooCommerce' )? 'true' : 'false' );
+		if ( strpos( $route, 'tryaura/v1' ) !== false || strpos( $route, 'generate/v1' ) !== false ) {
+			$response->header( 'X-tryaura-WC-Exists', class_exists( 'WooCommerce' ) ? 'true' : 'false' );
 		}
 
 		return $response;

@@ -36,22 +36,22 @@ function Index() {
 					<ScanFace />
 				</div>
 			}
-			title={ __( 'Bulk Try-On Control', 'try-aura' ) }
+			title={ __( 'Bulk Try-On Control', 'tryaura' ) }
 			badge={
 				woocommerceSettings && (
 					<p className="text-primary bg-primary/10 rounded m-0 py-1 px-3">
 						{ bulkTryOnEenabled
-							? __( 'Enable for All Products', 'try-aura' )
-							: __( 'Disable for All Products', 'try-aura' ) }
+							? __( 'Enable for All Products', 'tryaura' )
+							: __( 'Disable for All Products', 'tryaura' ) }
 					</p>
 				)
 			}
 			subTitle={ __(
 				'Enable or disable try-on for all products in your store.',
-				'try-aura'
+				'tryaura'
 			) }
 			link={ '/settings/try-on-control' }
-			linkText={ __( 'Configure', 'try-aura' ) }
+			linkText={ __( 'Configure', 'tryaura' ) }
 			loading={ fetching }
 		/>
 	);

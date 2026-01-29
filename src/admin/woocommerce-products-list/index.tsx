@@ -6,7 +6,7 @@ declare const tryAuraWoo: {
 
 // @ts-ignore
 jQuery( document ).ready( function ( $ ) {
-	$( '.try-aura-toggle-try-on' ).on( 'change', function () {
+	$( '.tryaura-toggle-try-on' ).on( 'change', function () {
 		const checkbox = $( this );
 		const productId = checkbox.data( 'product-id' );
 		const enabled = checkbox.is( ':checked' );
@@ -17,7 +17,7 @@ jQuery( document ).ready( function ( $ ) {
 			url: tryAuraWoo.ajaxUrl,
 			type: 'POST',
 			data: {
-				action: 'try_aura_toggle_try_on',
+				action: 'tryaura_toggle_try_on',
 				product_id: productId,
 				enabled,
 				nonce: tryAuraWoo.nonce,

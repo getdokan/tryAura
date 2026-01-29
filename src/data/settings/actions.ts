@@ -26,7 +26,7 @@ export function* updateSettings( settings: any ) {
 	try {
 		const result = yield {
 			type: 'API_FETCH',
-			path: '/try-aura/v1/settings',
+			path: '/tryaura/v1/settings',
 			method: 'POST',
 			data: settings,
 		};

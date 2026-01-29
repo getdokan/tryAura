@@ -39,7 +39,7 @@ TryAura is an AI‑powered virtual try‑on and content creation plugin for Word
 ## Configuration (API Key)
 - In WP Admin, go to: TryAura (top‑level menu)
 - Enter your Google AI API key and Save
-- The key is stored as the option: `try_aura_api_key` and is also available to the frontend/admin scripts via localization
+- The key is stored as the option: `tryaura_api_key` and is also available to the frontend/admin scripts via localization
 
 ## Build
 

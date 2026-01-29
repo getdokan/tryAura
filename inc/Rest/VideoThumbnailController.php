@@ -24,7 +24,7 @@ class VideoThumbnailController {
 	 *
 	 * @var string api namespace.
 	 */
-	protected string $namespace = 'try-aura/v1';
+	protected string $namespace = 'tryaura/v1';
 
 	/**
 	 * Class constructor.
@@ -66,7 +66,7 @@ class VideoThumbnailController {
 		$image    = $params['image'] ?? ''; // Base64 data if generated client-side
 
 		if ( empty( $platform ) || empty( $url ) ) {
-			return new WP_Error( 'missing_params', __( 'Missing platform or URL.', 'try-aura' ), array( 'status' => 400 ) );
+			return new WP_Error( 'missing_params', __( 'Missing platform or URL.', 'tryaura' ), array( 'status' => 400 ) );
 		}
 
 		$attachment_id = 0;
@@ -84,7 +84,7 @@ class VideoThumbnailController {
 		}
 
 		if ( ! $attachment_id ) {
-			return new WP_Error( 'failed', __( 'Could not generate thumbnail.', 'try-aura' ), array( 'status' => 500 ) );
+			return new WP_Error( 'failed', __( 'Could not generate thumbnail.', 'tryaura' ), array( 'status' => 500 ) );
 		}
 
 		return new WP_REST_Response(
@@ -111,12 +111,12 @@ class VideoThumbnailController {
 			$base64_data = substr( $base64_data, strpos( $base64_data, ',' ) + 1 );
 			$ext         = strtolower( $type[1] ); // jpg, png, etc.
 		} else {
-			return new WP_Error( 'invalid_image', __( 'Invalid image data.', 'try-aura' ) );
+			return new WP_Error( 'invalid_image', __( 'Invalid image data.', 'tryaura' ) );
 		}
 
 		$image_data = base64_decode( $base64_data );
 		if ( ! $image_data ) {
-			return new WP_Error( 'decode_failed', __( 'Could not decode image.', 'try-aura' ) );
+			return new WP_Error( 'decode_failed', __( 'Could not decode image.', 'tryaura' ) );
 		}
 
 		$filename = 'video-thumb-' . md5( $video_url ) . '.' . $ext;
@@ -141,7 +141,7 @@ class VideoThumbnailController {
 	private function fetch_youtube_thumbnail( string $url ) {
 		$video_id = TryAura::container()->get( 'woocommerce' )->get_youtube_id( $url );
 		if ( ! $video_id ) {
-			return new WP_Error( 'invalid_youtube_url', __( 'Invalid YouTube URL.', 'try-aura' ) );
+			return new WP_Error( 'invalid_youtube_url', __( 'Invalid YouTube URL.', 'tryaura' ) );
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';

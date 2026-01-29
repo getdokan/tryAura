@@ -6,7 +6,7 @@ export const INITIAL_STATE: EnhancerState = {
 	isBlockEditorPage: false,
 	isWoocommerceProductPage: false,
 	status: 'idle',
-	message: __( 'Ready to generate', 'try-aura' ),
+	message: __( 'Ready to generate', 'tryaura' ),
 	generatedUrl: null,
 	error: null,
 	uploading: false,

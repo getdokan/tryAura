@@ -12,7 +12,7 @@ const ProductVideoGallery = ( {
 	}
 
 	return (
-		<div className="try-aura-product-video-gallery mt-3.75">
+		<div className="tryaura-product-video-gallery mt-3.75">
 			<VideoDetailsModal
 				initialData={ editingVideo }
 				onClose={ onClose }

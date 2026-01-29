@@ -39,14 +39,14 @@ class Enhancer {
 		$post_id   = $post ? $post->ID : 0;
 		$post_type = $post ? $post->post_type : '';
 
-		$settings    = get_option( 'try_aura_settings', array() );
+		$settings    = get_option( 'tryaura_settings', array() );
 		$api_key     = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
 		$image_model = isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '';
 		$video_model = isset( $settings['google']['videoModel'] ) ? $settings['google']['videoModel'] : '';
 
 		// Pass settings (API key, REST URL, nonce) to the enhancer UI.
 		wp_localize_script(
-			'try-aura-enhancer',
+			'tryaura-enhancer',
 			'tryAura',
 			array(
 				'restUrl'         => esc_url_raw( rest_url() ),
@@ -64,11 +64,11 @@ class Enhancer {
 			)
 		);
 
-		wp_enqueue_style( 'try-aura-components' );
-		wp_enqueue_style( 'try-aura-enhancer' );
-		wp_enqueue_script( 'try-aura-ai-models' );
-		wp_enqueue_script( 'try-aura-components' );
-		wp_enqueue_script( 'try-aura-enhancer' );
+		wp_enqueue_style( 'tryaura-components' );
+		wp_enqueue_style( 'tryaura-enhancer' );
+		wp_enqueue_script( 'tryaura-ai-models' );
+		wp_enqueue_script( 'tryaura-components' );
+		wp_enqueue_script( 'tryaura-enhancer' );
 
 		do_action( 'tryaura_register_enhancer_assets' );
 	}

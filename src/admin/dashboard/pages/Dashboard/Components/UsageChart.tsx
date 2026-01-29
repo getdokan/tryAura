@@ -53,14 +53,14 @@ function UsageChart( {
 		[
 			{
 				value: 'images',
-				label: __( 'Images', 'try-aura' ),
+				label: __( 'Images', 'tryaura' ),
 				color: 'var(--color-primary)',
 			},
 			...( wcExists
 				? [
 						{
 							value: 'tryOns',
-							label: __( 'Try-Ons', 'try-aura' ),
+							label: __( 'Try-Ons', 'tryaura' ),
 							color: 'rgba(38,176,255,1)',
 						},
 				  ]
@@ -126,7 +126,7 @@ function UsageChart( {
 
 		setLoading( true );
 		apiFetch( {
-			path: addQueryArgs( '/try-aura/v1/chart-data', params ),
+			path: addQueryArgs( '/tryaura/v1/chart-data', params ),
 		} )
 			.then( ( response: any ) => {
 				setData( response );
@@ -219,7 +219,7 @@ function UsageChart( {
 				<>
 					<div className="flex flex-row flex-wrap justify-between items-center gap-6 mb-8">
 						<h2 className="text-[18px] font-semibold text-[#333333] m-0">
-							{ __( 'Content Creation Activity', 'try-aura' ) }
+							{ __( 'Content Creation Activity', 'tryaura' ) }
 						</h2>
 						<div className="flex flex-row gap-6">
 							{ chartLineItemLabels.map( ( item, index ) => {

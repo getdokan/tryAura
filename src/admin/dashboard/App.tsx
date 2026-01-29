@@ -52,7 +52,7 @@ const getAdminRoutes = () => {
 
 	routes.push( {
 		id: 'tryaura-404',
-		element: <p>{ __( 'Page not found', 'try-aura' ) }</p>,
+		element: <p>{ __( 'Page not found', 'tryaura' ) }</p>,
 		path: '*',
 	} );
 

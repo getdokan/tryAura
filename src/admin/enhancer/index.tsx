@@ -27,14 +27,14 @@ function addEnhancerButton( toolbar ) {
 		let container = toolbar.querySelector(
 			applyFilters(
 				'tryaura.admin_enhance_btn_selector',
-				'#try-aura-ai-enhance'
+				'#tryaura-ai-enhance'
 			)
 		) as HTMLElement | null;
 		const time = Date.now();
 
 		if ( ! container ) {
 			container = document.createElement( 'span' );
-			container.id = 'try-aura-ai-enhance';
+			container.id = 'tryaura-ai-enhance';
 			container.dataset[ tryauramediaroot ] = time.toString();
 			container.style.display = 'inline-block';
 			container.style.marginLeft = '8px';
@@ -115,7 +115,7 @@ function addEnhancerButton( toolbar ) {
 				.find( '.media-frame-toolbar' )
 				.find( '.media-toolbar' )
 				.find( '.media-toolbar-primary.search-form' )
-				.find( '#try-aura-ai-enhance' );
+				.find( '#tryaura-ai-enhance' );
 
 			button = applyFilters(
 				'tryaura.admin_enhance_btn_toolbar_close',

@@ -47,7 +47,7 @@ class Assets {
 			'aiProviders'       => array(
 				'google' => array(
 					'gemini-2.5-flash-image'         => array(
-						'label'        => __( 'gemini-2.5-flash-image', 'try-aura' ),
+						'label'        => __( 'gemini-2.5-flash-image', 'tryaura' ),
 						'identity'     => 'image',
 						'inputTypes'   => array( 'text', 'image' ),
 						'outputTypes'  => array( 'image' ),
@@ -70,27 +70,27 @@ class Assets {
 								'default'   => '1:1',
 								'values'    => array(
 									array(
-										'label'  => __( '1:1', 'try-aura' ),
+										'label'  => __( '1:1', 'tryaura' ),
 										'value'  => '1:1',
 										'locked' => false,
 									),
 									array(
-										'label'  => __( '16:9', 'try-aura' ),
+										'label'  => __( '16:9', 'tryaura' ),
 										'value'  => '16:9',
 										'locked' => false,
 									),
 									array(
-										'label'  => __( '9:16', 'try-aura' ),
+										'label'  => __( '9:16', 'tryaura' ),
 										'value'  => '9:16',
 										'locked' => false,
 									),
 									array(
-										'label'  => __( '4:3', 'try-aura' ),
+										'label'  => __( '4:3', 'tryaura' ),
 										'value'  => '4:3',
 										'locked' => false,
 									),
 									array(
-										'label'  => __( '3:4', 'try-aura' ),
+										'label'  => __( '3:4', 'tryaura' ),
 										'value'  => '3:4',
 										'locked' => false,
 									),
@@ -102,12 +102,12 @@ class Assets {
 								'default'   => 'allow_adult',
 								'values'    => array(
 									array(
-										'label'  => __( 'Allow Adult', 'try-aura' ),
+										'label'  => __( 'Allow Adult', 'tryaura' ),
 										'value'  => 'allow_adult',
 										'locked' => false,
 									),
 									array(
-										'label'  => __( 'Disallow', 'try-aura' ),
+										'label'  => __( 'Disallow', 'tryaura' ),
 										'value'  => 'disallow',
 										'locked' => false,
 									),
@@ -119,7 +119,7 @@ class Assets {
 								'default'   => '1',
 								'values'    => array(
 									array(
-										'label'  => __( '1 image', 'try-aura' ),
+										'label'  => __( '1 image', 'tryaura' ),
 										'value'  => '1',
 										'locked' => false,
 									),
@@ -133,7 +133,7 @@ class Assets {
 			'defaultImageModel' => 'gemini-2.5-flash-image',
 		);
 
-		wp_localize_script( 'try-aura-ai-models', 'tryAuraAiProviderModels', apply_filters( 'tryaura_ai_models', $config ) );
+		wp_localize_script( 'tryaura-ai-models', 'tryAuraAiProviderModels', apply_filters( 'tryaura_ai_models', $config ) );
 	}
 
 	/**
@@ -150,16 +150,16 @@ class Assets {
 
 		$css_path = $asset_path . 'build/admin/dashboard/style-index.css';
 		if ( file_exists( $css_path ) ) {
-			$styles['try-aura-admin'] = array(
+			$styles['tryaura-admin'] = array(
 				'src'     => $asset_url . 'build/admin/dashboard/style-index.css',
-				'deps'    => array( 'wp-components', 'try-aura-components' ),
+				'deps'    => array( 'wp-components', 'tryaura-components' ),
 				'version' => filemtime( $css_path ),
 			);
 		}
 
 		$css_path = $asset_path . 'build/admin/enhancer/style-index.css';
 		if ( file_exists( $css_path ) ) {
-			$styles['try-aura-enhancer'] = array(
+			$styles['tryaura-enhancer'] = array(
 				'src'     => $asset_url . 'build/admin/enhancer/style-index.css',
 				'deps'    => array(),
 				'version' => filemtime( $css_path ),
@@ -168,7 +168,7 @@ class Assets {
 
 		$css_path = $asset_path . 'build/style-components.css';
 		if ( file_exists( $css_path ) ) {
-			$styles['try-aura-components'] = array(
+			$styles['tryaura-components'] = array(
 				'src'     => $asset_url . 'build/style-components.css',
 				'deps'    => array(),
 				'version' => filemtime( $css_path ),
@@ -177,9 +177,9 @@ class Assets {
 
 		$css_path = $asset_path . 'build/frontend/tryon/style-index.css';
 		if ( file_exists( $css_path ) ) {
-			$styles['try-aura-tryon'] = array(
+			$styles['tryaura-tryon'] = array(
 				'src'     => $asset_url . 'build/frontend/tryon/style-index.css',
-				'deps'    => array( 'try-aura-components' ),
+				'deps'    => array( 'tryaura-components' ),
 				'version' => filemtime( $css_path ),
 			);
 		}
@@ -205,7 +205,7 @@ class Assets {
 			$deps    = $asset['dependencies'] ?? array( 'wp-data' );
 			$version = $asset['version'] ?? '1.0.0';
 
-			$scripts['try-aura-settings'] = array(
+			$scripts['tryaura-settings'] = array(
 				'version' => $version,
 				'src'     => $asset_url . 'build/data/settings.js',
 				'deps'    => $deps,
@@ -215,10 +215,10 @@ class Assets {
 		$asset_file = $asset_path . 'build/admin/dashboard/index.asset.php';
 		if ( file_exists( $asset_file ) ) {
 			$asset   = include $asset_file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
-			$deps    = $asset['dependencies'] ?? array( 'wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n', 'wp-api', 'try-aura-settings' );
+			$deps    = $asset['dependencies'] ?? array( 'wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n', 'wp-api', 'tryaura-settings' );
 			$version = $asset['version'] ?? '1.0.0';
 
-			$scripts['try-aura-admin'] = array(
+			$scripts['tryaura-admin'] = array(
 				'version' => $version,
 				'src'     => $asset_url . 'build/admin/dashboard/index.js',
 				'deps'    => $deps,
@@ -231,7 +231,7 @@ class Assets {
 			$deps    = $asset['dependencies'] ?? array( 'wp-element' );
 			$version = $asset['version'] ?? '1.0.0';
 
-			$scripts['try-aura-components'] = array(
+			$scripts['tryaura-components'] = array(
 				'version' => $version,
 				'src'     => $asset_url . 'build/components.js',
 				'deps'    => $deps,
@@ -248,7 +248,7 @@ class Assets {
 			}
 			$version = $asset['version'] ?? '1.0.0';
 
-			$scripts['try-aura-enhancer'] = array(
+			$scripts['tryaura-enhancer'] = array(
 				'version' => $version,
 				'src'     => $asset_url . 'build/admin/enhancer/index.js',
 				'deps'    => $deps,
@@ -261,7 +261,7 @@ class Assets {
 			$deps    = $asset['dependencies'] ?? array( 'wp-data' );
 			$version = $asset['version'] ?? '1.0.0';
 
-			$scripts['try-aura-ai-models'] = array(
+			$scripts['tryaura-ai-models'] = array(
 				'version' => $version,
 				'src'     => $asset_url . 'build/data/ai-models.js',
 				'deps'    => $deps,
@@ -275,7 +275,7 @@ class Assets {
 			$deps    = array_merge( $deps, array( 'wp-data', 'wp-core-data', 'wp-api-fetch' ) );
 			$version = $asset['version'] ?? '1.0.0';
 
-			$scripts['try-aura-tryon'] = array(
+			$scripts['tryaura-tryon'] = array(
 				'version' => $version,
 				'src'     => $asset_url . 'build/frontend/tryon/index.js',
 				'deps'    => $deps,
@@ -319,7 +319,7 @@ class Assets {
 			$version   = isset( $script['version'] ) ? $script['version'] : TRYAURA_PLUGIN_VERSION;
 
 			wp_register_script( $handle, $script['src'], $deps, $version, $in_footer );
-			wp_set_script_translations( $handle, 'try-aura', plugin_dir_path( TRYAURA_FILE ) . 'languages' );
+			wp_set_script_translations( $handle, 'tryaura', plugin_dir_path( TRYAURA_FILE ) . 'languages' );
 		}
 	}
 

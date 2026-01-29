@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-29T09:03:16+00:00\n"
+"POT-Creation-Date: 2026-01-29T09:33:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: tryaura\n"
@@ -369,6 +369,14 @@ msgid "No generated image available"
 msgstr ""
 
 #: build/admin/enhancer/index.js:1
+msgid "Regenerating…"
+msgstr ""
+
+#: build/admin/enhancer/index.js:1
+msgid "Regenerate"
+msgstr ""
+
+#: build/admin/enhancer/index.js:1
 #: build/frontend/tryon/index.js:171
 msgid "Download"
 msgstr ""
@@ -476,6 +484,10 @@ msgstr ""
 
 #: build/admin/enhancer/index.js:1
 msgid "Upgrade to Pro"
+msgstr ""
+
+#: build/admin/enhancer/index.js:1
+msgid "Generate Image"
 msgstr ""
 
 #: build/admin/enhancer/index.js:1

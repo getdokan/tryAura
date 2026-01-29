@@ -12,13 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Registers and enqueues the Frontend Try-On UI assets on single product pages.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class TryOn {
 	/**
 	 * Class constructor.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
@@ -28,7 +28,7 @@ class TryOn {
 	/**
 	 * Enqueue the Try-On UI only on WooCommerce single product pages.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function enqueue(): void {
 		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
@@ -66,7 +66,7 @@ class TryOn {
 	/**
 	 * If WooCommerce is active, redirect to account login page or WordPress login page.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @return string Login URL.
 	 */
@@ -81,7 +81,7 @@ class TryOn {
 	/**
 	 * Redirect to Try-On page after login if the parameter is set.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param string   $redirect the redirect URL.
 	 * @param \WP_User $user the logged in user.

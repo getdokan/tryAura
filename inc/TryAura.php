@@ -7,21 +7,21 @@ use Dokan\TryAura\DependencyManagement\Container;
 /**
  * TryAura Container Class.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 final class TryAura {
 
 	/**
 	 * Holds the container instance, initialized to null.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	private static ?Container $container = null;
 
 	/**
 	 * Returns the shared instance of the Container.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @return Container The shared Container instance.
 	 */

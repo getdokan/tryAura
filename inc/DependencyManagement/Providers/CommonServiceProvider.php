@@ -8,14 +8,14 @@ use Dokan\TryAura\Common\Assets;
 /**
  * CommonServiceProvider Class
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class CommonServiceProvider extends BaseServiceProvider {
 
 	/**
 	 * The services provided by this provider.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var array
 	 */
@@ -26,7 +26,7 @@ class CommonServiceProvider extends BaseServiceProvider {
 	/**
 	 * Register the classes.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function register(): void {
 		$filtered_services = apply_filters( 'tryaura_common_container_services', $this->services );

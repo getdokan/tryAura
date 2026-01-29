@@ -2,7 +2,7 @@
 /**
  * Template for displaying a switch to enable/disable a product.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  *
  * @var int $product_id Product ID.
  * @var bool $checked True if the product is enabled.

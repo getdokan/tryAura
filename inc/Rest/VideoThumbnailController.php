@@ -14,13 +14,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Video Thumbnail REST controller.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class VideoThumbnailController {
 	/**
 	 * REST API namespace.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string api namespace.
 	 */
@@ -29,7 +29,7 @@ class VideoThumbnailController {
 	/**
 	 * Class constructor.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
@@ -53,7 +53,7 @@ class VideoThumbnailController {
 	/**
 	 * Handle thumbnail generation request.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 *
@@ -99,7 +99,7 @@ class VideoThumbnailController {
 	/**
 	 * Save base64 image as attachment.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param string $base64_data Base64 encoded image.
 	 * @param string $video_url   Original video URL for naming.
@@ -132,7 +132,7 @@ class VideoThumbnailController {
 	/**
 	 * Fetch YouTube thumbnail and save as attachment.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param string $url YouTube video URL.
 	 *
@@ -183,7 +183,7 @@ class VideoThumbnailController {
 	/**
 	 * Create attachment from file.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param string $file      File path.
 	 * @param string $mime_type Mime type.
@@ -214,7 +214,7 @@ class VideoThumbnailController {
 	/**
 	 * Check if the current user can edit products.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function permissions_check() {
 		return current_user_can( 'edit_products' );

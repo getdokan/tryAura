@@ -12,14 +12,14 @@ use Dokan\TryAura\WooCommerce\Frontend\ProductVideoGallery as FrontendProductVid
 /**
  * WooCommerceServiceProvider Class
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class WooCommerceServiceProvider extends BaseServiceProvider {
 
 	/**
 	 * The services provided by this provider.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var array
 	 */
@@ -33,7 +33,7 @@ class WooCommerceServiceProvider extends BaseServiceProvider {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function provides( string $alias ): bool {
 		return class_exists( 'WooCommerce' )&& parent::provides( $alias );
@@ -42,7 +42,7 @@ class WooCommerceServiceProvider extends BaseServiceProvider {
 	/**
 	 * Register the classes.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function register(): void {
 		$filtered_services = apply_filters( 'tryaura_woocommerce_container_services', $this->services );

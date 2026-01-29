@@ -11,13 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Admin class for TryAura plugin.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class Admin {
 	/**
 	 * Option key for storing API key.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string
 	 */
@@ -26,7 +26,7 @@ class Admin {
 	/**
 	 * Bootstrap admin hooks.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
@@ -37,7 +37,7 @@ class Admin {
 	/**
 	 * Register the TryAura top-level admin page.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function register_admin_page(): void {
 		global $submenu;
@@ -62,7 +62,7 @@ class Admin {
 	/**
 	 * Register plugin settings (API key) and expose via REST for JS app.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function register_settings(): void {
 		register_setting(
@@ -85,7 +85,7 @@ class Admin {
 	/**
 	 * Enqueue admin assets only on our settings page.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function enqueue_assets( string $hook ): void {
 		if ( 'toplevel_page_try-aura' !== $hook ) {
@@ -128,7 +128,7 @@ class Admin {
 	/**
 	 * Render the main admin page content.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function render_page(): void {
 		echo '<div class="wrap">';

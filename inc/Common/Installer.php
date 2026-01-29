@@ -2,7 +2,7 @@
 /**
  * Installer.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  *
  * @package TryAura
  */
@@ -16,14 +16,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Installer class.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class Installer {
 
 	/**
 	 * Run the installer.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public static function activate() {
 		self::create_tables();
@@ -32,7 +32,7 @@ class Installer {
 	/**
 	 * Create required tables.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public static function create_tables() {
 		global $wpdb;

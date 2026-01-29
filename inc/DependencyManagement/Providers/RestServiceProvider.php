@@ -12,14 +12,14 @@ use Dokan\TryAura\Rest\ProductController;
 /**
  * RestServiceProvider Class
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class RestServiceProvider extends BaseServiceProvider {
 
 	/**
 	 * The services provided by this provider.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var array
 	 */
@@ -34,7 +34,7 @@ class RestServiceProvider extends BaseServiceProvider {
 	/**
 	 * Register the classes.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function register(): void {
 		$filtered_services = apply_filters( 'tryaura_rest_container_services', $this->services );

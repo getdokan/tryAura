@@ -16,13 +16,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Dashboard Controller class.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class DashboardController {
 	/**
 	 * Namespace.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string
 	 */
@@ -31,7 +31,7 @@ class DashboardController {
 	/**
 	 * Usage Manager.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var UsageManager
 	 */
@@ -40,7 +40,7 @@ class DashboardController {
 	/**
 	 * Constructor.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		$this->manager = new UsageManager();
@@ -50,7 +50,7 @@ class DashboardController {
 	/**
 	 * Register routes.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -125,7 +125,7 @@ class DashboardController {
 	/**
 	 * Permissions check.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @return bool
 	 */
@@ -136,7 +136,7 @@ class DashboardController {
 	/**
 	 * Get activities.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param WP_REST_Request $request REST Request.
 	 *
@@ -152,7 +152,7 @@ class DashboardController {
 	/**
 	 * Get chart data.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param WP_REST_Request $request REST Request.
 	 *
@@ -184,7 +184,7 @@ class DashboardController {
 	/**
 	 * Get statistics.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param WP_REST_Request $request REST Request.
 	 *
@@ -216,7 +216,7 @@ class DashboardController {
 	/**
 	 * Log usage.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param WP_REST_Request $request REST Request.
 	 *

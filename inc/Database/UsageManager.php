@@ -15,14 +15,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Usage Manager class.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class UsageManager {
 
 	/**
 	 * Cache group.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string
 	 */
@@ -31,7 +31,7 @@ class UsageManager {
 	/**
 	 * Get table name.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @return string
 	 */
@@ -43,7 +43,7 @@ class UsageManager {
 	/**
 	 * Log usage.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param array $data Usage data.
 	 *
@@ -57,7 +57,7 @@ class UsageManager {
 	/**
 	 * Insert usage record.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param Usage $usage Usage model.
 	 *
@@ -96,7 +96,7 @@ class UsageManager {
 	/**
 	 * Get statistics.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param array $args Filter arguments.
 	 *
@@ -162,7 +162,7 @@ class UsageManager {
 	/**
 	 * Get chart data.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param array $args Filter arguments.
 	 *
@@ -256,7 +256,7 @@ class UsageManager {
 	/**
 	 * Get recent activities.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param array $args Filter arguments.
 	 *

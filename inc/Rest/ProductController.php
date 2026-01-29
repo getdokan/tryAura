@@ -12,13 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Product REST controller.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class ProductController {
 	/**
 	 * REST API namespace.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string api namespace.
 	 */
@@ -27,7 +27,7 @@ class ProductController {
 	/**
 	 * Class constructor.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
@@ -36,7 +36,7 @@ class ProductController {
 	/**
 	 * Register REST routes.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function register_routes(): void {
 		register_rest_route(
@@ -53,7 +53,7 @@ class ProductController {
 	/**
 	 * Get product images.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 *
@@ -90,7 +90,7 @@ class ProductController {
 	/**
 	 * Check if the current user is logged in.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function permissions_check() {
 		return is_user_logged_in();

@@ -12,13 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin class.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class Plugin {
 	/**
 	 * Plugin version
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string
 	 */
@@ -28,7 +28,7 @@ class Plugin {
 	/**
 	 * Bootstraps the plugin.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		$this->container = TryAura::container();
@@ -41,7 +41,7 @@ class Plugin {
 	/**
 	 * Define all constants
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -59,7 +59,7 @@ class Plugin {
 		/**
 		 * Action to signal that WooCommerce has finished loading.
 		 *
-		 * @since PLUGIN_SINCE
+		 * @since 1.0.0
 		 */
 		do_action( 'tryaura_loaded', $this->container );
 	}
@@ -118,7 +118,7 @@ class Plugin {
 		/**
 		 * Action to signal that try-aura has finished loading.
 		 *
-		 * @since PLUGIN_SINCE
+		 * @since 1.0.0
 		 */
 		do_action( 'tryaura_classes_loaded', $this->container );
 	}

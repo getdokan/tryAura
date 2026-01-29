@@ -4,7 +4,7 @@
  *
  * Usage: node bin/make-zip.js
  * - Reads version from package.json
- * - Updates try-aura.php header Version and public $version in inc/Plugin.php
+ * - Updates tryaura.php header Version and public $version in inc/Plugin.php
  * - Creates dist/tryAura-<version>.zip with a curated file list
  */
 
@@ -17,7 +17,7 @@ const { replaceInFile } = require( 'replace-in-file' );
 ( async () => {
 	try {
 		const root = path.resolve( __dirname, '..' );
-		const pluginSlug = 'try-aura';
+		const pluginSlug = 'tryaura';
 
 		// 1) Read version from package.json
 		const pkgPath = path.join( root, 'package.json' );
@@ -28,7 +28,7 @@ const { replaceInFile } = require( 'replace-in-file' );
 		}
 
 		// 2) Update Version header in main plugin file and public $version in inc/Plugin.php
-		const mainFile = path.join( root, 'try-aura.php' );
+		const mainFile = path.join( root, 'tryaura.php' );
 		const pluginFile = path.join( root, 'inc/Plugin.php' );
 
 		if ( ! ( await fs.pathExists( mainFile ) ) ) {

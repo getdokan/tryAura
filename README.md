@@ -32,8 +32,8 @@ TryAura is an AI‑powered virtual try‑on and content creation plugin for Word
 - WooCommerce for the frontend try‑on button (single product templates)
 
 ## Installation
-- Place the plugin directory in `wp-content/plugins/try-aura`
-- Ensure Composer autoload is available (`vendor/autoload.php` is required by `try-aura.php`)
+- Place the plugin directory in `wp-content/plugins`
+- Ensure Composer autoload is available (`vendor/autoload.php` is required by `tryaura.php`)
 - Activate the plugin in the WordPress admin
 
 ## Configuration (API Key)
@@ -51,7 +51,7 @@ npm run build
 Build artifacts are written to `build/` and include dependency extraction `.asset.php` files for each entry.
 
 ## Key Files
-- `try-aura.php` — plugin bootstrap
+- `tryaura.php` — plugin bootstrap
 - `inc/Plugin.php` — central bootstrap (registers settings REST, Enhancer, TryOn, Admin)
 - `inc/Admin.php` — TryAura settings page and admin asset enqueue + localization (restUrl, nonce, apiKey)
 - `inc/Enhancer.php` — enqueues the editor Featured Image Enhancer (`build/enhancer.js`)
@@ -111,7 +111,7 @@ Build artifacts are written to `build/` and include dependency extraction `.asse
 - Video generation depends on external long‑running operations; large queues may increase wait times.
 
 ## License
-GPL‑2.0‑or‑later (matches the WordPress plugin header in `try-aura.php`)
+GPL‑2.0‑or‑later (matches the WordPress plugin header in `tryaura.php`)
 
 ## Credits
 - Uses `@google/genai` and WordPress `@wordpress/*` packages.

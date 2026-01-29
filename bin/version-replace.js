@@ -5,7 +5,7 @@ const pluginFiles = [
 	'inc/**/*',
 	'templates/**/*',
 	'src/**/*',
-	'try-aura.php',
+	'tryaura.php',
 ];
 
 const { version } = JSON.parse( fs.readFileSync( 'package.json' ) );

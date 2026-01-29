@@ -33,7 +33,7 @@
 	<config name="testVersion" value="7.4-"/>
 
 	<!-- Target only plugin PHP sources -->
-	<file>try-aura.php</file>
+	<file>tryaura.php</file>
 	<file>inc</file>
 	<file>templates</file>
 

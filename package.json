@@ -10,7 +10,7 @@
 		"lint:js": "wp-scripts lint-js",
 		"format": "wp-scripts format",
 		"packages-update": "wp-scripts packages-update",
-		"makepot": "wp i18n make-pot --domain='try-aura' --include='build,inc,lib,templates,try-aura.php' . --headers='{\"Report-Msgid-Bugs-To\":\"https://dokan.co/contact/\"}' --file-comment=\"Copyright (c) $(date +'%Y') Dokan Inc. All Rights Reserved.\" languages/try-aura.pot",
+		"makepot": "wp i18n make-pot --domain='try-aura' --include='build,inc,lib,templates,tryaura.php' . --headers='{\"Report-Msgid-Bugs-To\":\"https://dokan.co/contact/\"}' --file-comment=\"Copyright (c) $(date +'%Y') Dokan Inc. All Rights Reserved.\" languages/try-aura.pot",
 		"zip": "node bin/make-zip.js",
 		"version": "node bin/version-replace",
 		"release": "composer install --no-dev && composer du -o && npm install && npm run build && npm run makepot && npm run version && npm run zip"

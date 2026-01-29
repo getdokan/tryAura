@@ -43,10 +43,10 @@
 			"composer dump-autoload"
 		],
 		"phpcs": [
-			"vendor/bin/phpcs inc templates try-aura.php --standard=phpcs.xml"
+			"vendor/bin/phpcs inc templates tryaura.php --standard=phpcs.xml"
 		],
 		"phpcs:report": [
-			"vendor/bin/phpcs inc templates try-aura.php --standard=phpcs.xml --report-file='phpcs-report.txt'"
+			"vendor/bin/phpcs inc templates tryaura.php --standard=phpcs.xml --report-file='phpcs-report.txt'"
 		],
 		"phpcbf": [
 			"vendor/bin/phpcbf -p"

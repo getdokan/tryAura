@@ -8,21 +8,21 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-29T08:49:58+00:00\n"
+"POT-Creation-Date: 2026-01-29T09:03:16+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: try-aura\n"
 
 #. Plugin Name of the plugin
 #. Author of the plugin
-#: try-aura.php
+#: tryaura.php
 #: inc/Admin/Admin.php:49
 #: inc/Admin/Admin.php:50
 msgid "TryAura"
 msgstr ""
 
 #. Description of the plugin
-#: try-aura.php
+#: tryaura.php
 msgid "TryAura is an AI-powered virtual try-on and content creation platform built for fashion and eCommerce. With seamless WooCommerce integration, it allows brands and shoppers to instantly visualize clothing on models, customers, or in any scene — without costly photoshoots. From product images to lifestyle videos, TryAura helps online stores boost engagement, reduce returns, and elevate their shopping experience with cutting-edge AI."
 msgstr ""
 

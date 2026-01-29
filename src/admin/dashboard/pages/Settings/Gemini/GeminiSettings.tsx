@@ -107,8 +107,11 @@ const GeminiSettings = () => {
 			return;
 		}
 		try {
+			console.log(settings);
 			const newSettings = {
+				...settings,
 				[ data.optionKey ]: {
+					...settings[ data.optionKey ],
 					google: {
 						apiKey,
 						imageModel: selectedImageModel,

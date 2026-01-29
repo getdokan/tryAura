@@ -3,19 +3,13 @@ import { createRoot, RawHTML, render } from "@wordpress/element";
 import { __ } from '@wordpress/i18n';
 import './style.scss';
 import { X } from "lucide-react";
+import { getYoutubeId } from '../../utils/tryaura';
 
 interface VideoModalProps {
 	videoUrl: string;
 	videoPlatform: string;
 	onClose: () => void;
 }
-
-const getYoutubeId = ( url: string ) => {
-	const regExp =
-		/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-	const match = url.match( regExp );
-	return match && match[ 2 ].length === 11 ? match[ 2 ] : false;
-};
 
 const VideoModal = ( {
 	videoUrl,

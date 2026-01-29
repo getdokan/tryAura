@@ -4,6 +4,7 @@ import { Modal } from '@wordpress/components';
 import { Button, Checkbox, ModernSelect } from '../../../components';
 import { toast } from '@tryaura/components';
 import { Youtube, Video, Upload, X, CirclePlay, Play } from 'lucide-react';
+import { getYoutubeId } from '../../../utils/tryaura';
 
 declare const wp: any;
 
@@ -36,13 +37,6 @@ const VideoDetailsModal = ( {
 	const [ videoFileSize, setVideoFileSize ] = useState(
 		initialData?.videoFileSize || ''
 	);
-
-	const getYoutubeId = ( videoUrl: string ) => {
-		const pattern =
-			/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-		const match = videoUrl.match( pattern );
-		return match ? match[ 1 ] : null;
-	};
 
 	const generateFromVideo = async (): Promise< string | null > => {
 		if ( ! url ) {

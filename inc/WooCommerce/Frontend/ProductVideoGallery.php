@@ -2,6 +2,7 @@
 
 namespace Dokan\TryAura\WooCommerce\Frontend;
 
+use Dokan\TryAura\TryAura;
 use Dokan\TryAura\WooCommerce\Admin\ProductGalleryVideo as AdminProductVideo;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -60,7 +61,7 @@ class ProductVideoGallery {
 		$thumbnail_url = ! empty( $video['thumbnailUrl'] ) ? $video['thumbnailUrl'] : '';
 
 		if ( empty( $thumbnail_url ) && 'youtube' === $video['platform'] ) {
-			$video_id      = $this->get_youtube_id( $video['url'] );
+			$video_id      = TryAura::container()->get( 'woocommerce' )->get_youtube_id( $video['url']);
 			$thumbnail_url = $video_id ? "https://img.youtube.com/vi/{$video_id}/hqdefault.jpg" : '';
 		}
 
@@ -134,19 +135,5 @@ class ProductVideoGallery {
 				'video' => $video_data,
 			)
 		);
-	}
-
-	/**
-	 * Extract YouTube video ID from URL.
-	 *
-	 * @since PLUGIN_SINCE
-	 *
-	 * @param string $url YouTube URL.
-	 *
-	 * @return string|false
-	 */
-	private function get_youtube_id( string $url ) {
-		preg_match( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match );
-		return isset( $match[1] ) ? $match[1] : false;
 	}
 }

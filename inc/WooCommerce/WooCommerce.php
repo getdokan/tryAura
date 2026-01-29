@@ -173,4 +173,21 @@ class WooCommerce {
 			update_post_meta( $product_id, self::TRY_ON_META_KEY, $enabled );
 		}
 	}
+
+	/**
+	 * Extract YouTube video ID from URL.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @param string $url URL.
+	 *
+	 * @return string|bool
+	 */
+	public function get_youtube_id( string $url ) {
+		$pattern = '/(?:youtube(?:-nocookie)?\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i';
+		if ( preg_match( $pattern, $url, $match ) ) {
+			return $match[1];
+		}
+		return false;
+	}
 }

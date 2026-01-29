@@ -2,6 +2,7 @@
 
 namespace Dokan\TryAura\Rest;
 
+use Dokan\TryAura\TryAura;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;
@@ -138,7 +139,7 @@ class VideoThumbnailController {
 	 * @return int|WP_Error
 	 */
 	private function fetch_youtube_thumbnail( string $url ) {
-		$video_id = $this->get_youtube_id( $url );
+		$video_id = TryAura::container()->get( 'woocommerce' )->get_youtube_id( $url );
 		if ( ! $video_id ) {
 			return new WP_Error( 'invalid_youtube_url', __( 'Invalid YouTube URL.', 'try-aura' ) );
 		}
@@ -177,23 +178,6 @@ class VideoThumbnailController {
 		}
 
 		return $id;
-	}
-
-	/**
-	 * Extract YouTube video ID from URL.
-	 *
-	 * @since PLUGIN_SINCE
-	 *
-	 * @param string $url URL.
-	 *
-	 * @return string|bool
-	 */
-	private function get_youtube_id( string $url ) {
-		$pattern = '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i';
-		if ( preg_match( $pattern, $url, $match ) ) {
-			return $match[1];
-		}
-		return false;
 	}
 
 	/**

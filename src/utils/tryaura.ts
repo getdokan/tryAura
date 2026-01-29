@@ -46,3 +46,10 @@ export const getMediaSelectedItems = () => {
 
 	return { items, frameObj };
 };
+
+export const getYoutubeId = ( videoUrl: string ) => {
+	const pattern =
+		/(?:youtube(?:-nocookie)?\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+	const match = videoUrl.match( pattern );
+	return match ? match[ 1 ] : null;
+};

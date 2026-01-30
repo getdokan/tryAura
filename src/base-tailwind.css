@@ -1,0 +1,19 @@
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+
+.tryaura {
+  @import "tailwindcss/preflight.css" layer(base);
+  @import "tailwindcss/utilities.css" layer(utilities) important;
+}
+
+@theme {
+  --color-primary: #7047EB;
+	/* Mixes the primary color with 20% black */
+	--color-primary-dark: color-mix(in srgb, var(--color-primary), black 20%);
+}
+
+
+.tryaura-toast-root {
+	z-index: 180000 !important;
+}

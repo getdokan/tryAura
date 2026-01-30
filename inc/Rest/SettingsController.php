@@ -7,86 +7,209 @@ use WP_REST_Request;
 use WP_REST_Response;
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly.
+	exit; // Exit if accessed directly.
 }
 
 /**
  * Custom REST controller for TryAura settings.
+ *
+ * @since PLUGIN_SINCE
  */
 class SettingsController {
-    /** @var string */
-    protected string $namespace = 'try-aura/v1';
+	/**
+	 * REST API namespace.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @var string api namespace.
+	 */
+	protected string $namespace = 'try-aura/v1';
 
-    /** @var string */
-    protected string $rest_base = 'settings';
+	/**
+	 * REST API base.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @var string  rest base.
+	 */
+	protected string $rest_base = 'settings';
 
-    /** @var string */
-    protected string $option_key;
+	/**
+	 * Option key for settings.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @var string option key.
+	 */
+	protected string $option_key = 'try_aura_settings';
 
-    public function __construct( string $option_key ) {
-        $this->option_key = $option_key;
-        add_action( 'rest_api_init', [ $this, 'register_routes' ] );
-    }
+	/**
+	 * Class constructor.
+	 *
+	 * @since PLUGIN_SINCE
+	 */
+	public function __construct() {
+		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
+	}
 
-    /**
-     * Register REST routes.
-     */
-    public function register_routes(): void {
-        register_rest_route(
-            $this->namespace,
-            '/' . $this->rest_base,
-            [
-                [
-                    'methods'             => 'GET',
-                    'callback'            => [ $this, 'get_settings' ],
-                    'permission_callback' => [ $this, 'permissions_check' ],
-                ],
-                [
-                    'methods'             => 'POST',
-                    'callback'            => [ $this, 'update_settings' ],
-                    'permission_callback' => [ $this, 'permissions_check' ],
-                    'args'                => [
-                        $this->option_key => [
-                            'type'              => 'string',
-                            'required'          => false,
-                            'sanitize_callback' => 'sanitize_text_field',
-                        ],
-                    ],
-                ],
-            ]
-        );
-    }
+	/**
+	 * Register REST routes.
+	 *
+	 * @since PLUGIN_SINCE
+	 */
+	public function register_routes(): void {
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
+			array(
+				array(
+					'methods'             => 'GET',
+					'callback'            => array( $this, 'get_settings' ),
+					'permission_callback' => array( $this, 'permissions_check' ),
+				),
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'update_settings' ),
+					'permission_callback' => array( $this, 'permissions_check' ),
+					'args'                => array(
+						$this->option_key => array(
+							'type'     => 'object',
+							'required' => false,
+						),
+					),
+				),
+			)
+		);
 
-    /**
-     * Simple permissions check: only admins (manage_options).
-     */
-    public function permissions_check(): bool {
-        return current_user_can( 'manage_options' );
-    }
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/bulk-try-on',
+			array(
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'bulk_try_on' ),
+					'permission_callback' => array( $this, 'permissions_check' ),
+					'args'                => array(
+						'enabled' => array(
+							'type'     => 'boolean',
+							'required' => true,
+						),
+					),
+				),
+			)
+		);
+	}
 
-    /**
-     * GET callback: return current option value.
-     */
-    public function get_settings( WP_REST_Request $request ): WP_REST_Response {
-        $value = (string) get_option( $this->option_key, '' );
-        return new WP_REST_Response( [ $this->option_key => $value ] );
-    }
+	/**
+	 * Simple permissions check: only admins (manage_options).
+	 *
+	 * @since PLUGIN_SINCE
+	 */
+	public function permissions_check(): bool {
+		return current_user_can( 'manage_options' );
+	}
 
-    /**
-     * POST callback: update option value.
-     */
-    public function update_settings( WP_REST_Request $request ) {
-        $new_value = $request->get_param( $this->option_key );
+	/**
+	 * GET callback: return current option value.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function get_settings(): WP_REST_Response {
+		$value = get_option( $this->option_key, array() );
+		return new WP_REST_Response( array( $this->option_key => $value ) );
+	}
 
-        if ( null === $new_value ) {
-            // No value provided; return current value without error to be forgiving.
-            $current = (string) get_option( $this->option_key, '' );
-            return new WP_REST_Response( [ $this->option_key => $current ] );
-        }
+	/**
+	 * POST callback: update option value.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return WP_REST_Response
+	 * */
+	public function update_settings( WP_REST_Request $request ) {
+		$new_value = $request->get_param( $this->option_key );
 
-        $sanitized = sanitize_text_field( (string) $new_value );
-        update_option( $this->option_key, $sanitized );
+		if ( null === $new_value ) {
+			// No value provided; return current value without error to be forgiving.
+			$current = get_option( $this->option_key, array() );
+			return new WP_REST_Response( array( $this->option_key => $current ) );
+		}
 
-        return new WP_REST_Response( [ $this->option_key => $sanitized ] );
-    }
+		// Sanitize the new value recursively.
+		$new_value = map_deep( $new_value, 'sanitize_text_field' );
+		update_option( $this->option_key, $new_value );
+
+		return new WP_REST_Response( array( $this->option_key => $new_value ) );
+	}
+
+	/**
+	 * Bulk enable/disable try-on for all products.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function bulk_try_on( WP_REST_Request $request ): WP_REST_Response {
+		if ( ! TryAura::is_woocommerce_active()) {
+			return new WP_REST_Response(
+				array(
+					'message' => __( 'WooCommerce is not active.', 'try-aura' ),
+				),
+				400
+			);
+		}
+
+		$enabled = $request->get_param( 'enabled' ) ? 'yes' : 'no';
+
+		$products = wc_get_products(
+			array(
+				'limit'  => -1,
+				'return' => 'ids',
+				'status' => 'publish',
+			)
+		);
+
+		$total_products = count( $products );
+
+		if ( 0 === $total_products ) {
+			return new WP_REST_Response(
+				array(
+					'message' => __( 'No products found to update.', 'try-aura' ),
+				),
+				200
+			);
+		}
+
+		$chunk_count = 10;
+		$chunks      = array_chunk( $products, $chunk_count );
+
+		foreach ( $chunks as $chunk ) {
+			WC()->queue()->add(
+				'try_aura_bulk_update_products_try_on',
+				array(
+					'product_ids' => $chunk,
+					'enabled'     => $enabled,
+				),
+				'try-aura'
+			);
+		}
+
+		return new WP_REST_Response(
+			array(
+				'message' => sprintf(
+					// translators: %1$d total products, %2$d enable/disable.
+					__( '%1$d products added to queue to %2$s try-on.', 'try-aura' ),
+					$total_products,
+					'yes' === $enabled ? 'enable' : 'disable'
+				),
+			),
+			200
+		);
+	}
 }

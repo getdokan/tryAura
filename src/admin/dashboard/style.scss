@@ -1,0 +1,10 @@
+@import "../../base-tailwind.css";
+
+@source "../dashboard/**/*.{ts,tsx,js,jsx,php,html}";
+
+
+.tryaura {
+	svg.recharts-surface:focus {
+		outline: none;
+	}
+}

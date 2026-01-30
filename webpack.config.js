@@ -1,14 +1,55 @@
 'use strict';
 
-const path = require('path');
-const defaultConfig = require('@wordpress/scripts/config/webpack.config');
+const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
+const DependencyExtractionWebpackPlugin = require( '@wordpress/dependency-extraction-webpack-plugin' );
+const {
+	requestToExternal,
+	requestToHandle,
+} = require( './webpack-dependency-mapping' );
 
 // Extend the default @wordpress/scripts webpack config to support multiple entries.
 module.exports = {
 	...defaultConfig,
 	entry: {
-		index: path.resolve(process.cwd(), 'src', 'index.tsx'),
-		enhancer: path.resolve(process.cwd(), 'src', 'enhancer.tsx'),
-		tryon: path.resolve(process.cwd(), 'src', 'tryon.tsx'),
-	}
+		...defaultConfig.entry,
+		components: {
+			import: './src/components/index.tsx',
+			library: {
+				name: [ 'tryaura', 'components' ],
+				type: 'window',
+			},
+		},
+		'admin/dashboard/index': './src/admin/dashboard/index.tsx',
+		'admin/enhancer/index': './src/admin/enhancer/index.tsx',
+		'data/ai-models': {
+			import: './src/data/ai-models/index.ts',
+			library: {
+				name: [ 'tryaura', 'aiProvidersStore' ],
+				type: 'window',
+			},
+		},
+		'data/settings': {
+			import: './src/data/settings/index.ts',
+			library: {
+				name: [ 'tryaura', 'settingsStore' ],
+				type: 'window',
+			},
+		},
+		'frontend/tryon/index': './src/frontend/tryon/index.tsx',
+		'admin/woocommerce-products-list':
+			'./src/admin/woocommerce-products-list/index.tsx',
+		'admin/product-video-gallery/index':
+			'./src/admin/product-video-gallery/index.tsx',
+		'frontend/product-video/index': './src/frontend/product-video/index.tsx',
+	},
+	plugins: [
+		...defaultConfig.plugins.filter(
+			( plugin ) =>
+				plugin.constructor.name !== 'DependencyExtractionWebpackPlugin'
+		),
+		new DependencyExtractionWebpackPlugin( {
+			requestToExternal,
+			requestToHandle,
+		} ),
+	],
 };

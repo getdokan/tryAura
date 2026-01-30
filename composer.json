@@ -1,28 +1,67 @@
 {
-    "name": "dokan/try-aura",
-    "description": "an AI-powered virtual try-on and content creation platform built for fashion and eCommerce.",
-    "type": "wordpress-plugin",
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Dokan\\TryAura\\": "inc/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Shazahanul Islam Shohag",
-            "email": "shohag121@gmail.com"
-        }
-    ],
-    "minimum-stability": "stable",
-    "require": {},
-    "require-dev": {
-      "automattic/vipwpcs": "^3.0",
-      "phpcompatibility/phpcompatibility-wp": "*"
-    },
-    "config": {
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
-        }
-    }
+	"name": "dokan/try-aura",
+	"description": "an AI-powered virtual try-on and content creation platform built for fashion and eCommerce.",
+	"type": "wordpress-plugin",
+	"license": "MIT",
+	"autoload": {
+		"psr-4": {
+			"Dokan\\TryAura\\": "inc/",
+			"Dokan\\TryAura\\ThirdParty\\Packages\\": "lib/packages/"
+		}
+	},
+	"authors": [
+		{
+			"name": "Dokan Inc.",
+			"email": "info@dokan.co"
+		}
+	],
+	"minimum-stability": "stable",
+	"require": {
+		"php": ">=7.4"
+	},
+	"require-dev": {
+		"automattic/vipwpcs": "^3.0",
+		"phpcompatibility/phpcompatibility-wp": "*",
+		"wp-coding-standards/wpcs": "^3.0",
+		"squizlabs/php_codesniffer": "*",
+		"dealerdirect/phpcodesniffer-composer-installer": "*",
+		"league/container": "^4.2",
+		"coenjacobs/mozart": "^0.7"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	},
+	"scripts": {
+		"post-install-cmd": [
+			"[ $COMPOSER_DEV_MODE -eq 0 ] || \"vendor/bin/mozart\" compose",
+			"composer dump-autoload"
+		],
+		"post-update-cmd": [
+			"[ $COMPOSER_DEV_MODE -eq 0 ] || \"vendor/bin/mozart\" compose",
+			"composer dump-autoload"
+		],
+		"phpcs": [
+			"vendor/bin/phpcs inc templates try-aura.php --standard=phpcs.xml"
+		],
+		"phpcs:report": [
+			"vendor/bin/phpcs inc templates try-aura.php --standard=phpcs.xml --report-file='phpcs-report.txt'"
+		],
+		"phpcbf": [
+			"vendor/bin/phpcbf -p"
+		]
+	},
+	"extra": {
+		"mozart": {
+			"dep_namespace": "Dokan\\TryAura\\ThirdParty\\Packages\\",
+			"dep_directory": "/lib/packages/",
+			"classmap_directory": "/lib/classes/",
+			"classmap_prefix": "Dokan_TryAura_",
+			"packages": [
+				"league/container"
+			],
+			"delete_vendor_directories": true
+		}
+	}
 }

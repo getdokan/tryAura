@@ -222,7 +222,7 @@ class UsageManager {
 				GROUP BY DATE(created_at)
 				ORDER BY date ASC";
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared
 		$results = $wpdb->get_results( $wpdb->prepare( $query, ...$params ), ARRAY_A );
 
 		$indexed_results = [];

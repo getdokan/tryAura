@@ -14,7 +14,7 @@ function RecentActivity( {
 } ) {
 	const tabs = applyFilters('tryaura.recent.activity.tabs', [
 		{ id: '', label: __( 'All', 'tryaura' ) },
-		{ id: 'image', label: __( 'A.I. Images', 'tryaura' ) },
+		{ id: 'image', label: __( 'AI Images', 'tryaura' ) },
 		{ id: 'tryon', label: __( 'Try Ons', 'tryaura' ) },
 	]);
 
@@ -74,7 +74,7 @@ function RecentActivity( {
 		if ( activity.type === 'video' ) {
 			return __( 'New video created for', 'tryaura' ) + objectName;
 		}
-		return __( 'A.I. image generated for', 'tryaura' ) + objectName;
+		return __( 'AI image generated for', 'tryaura' ) + objectName;
 	};
 
 	return (

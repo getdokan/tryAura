@@ -38,7 +38,7 @@ function TryAuraConfiguration( { className = '' }: { className: string } ) {
 			</div>
 
 			<h2 className="text-[18px] font-[600] text-[rgba(51,51,51,1)] mb-[8px] m-0">
-				{ __( 'Try Aura Configuration', 'tryaura' ) }
+				{ __( 'TryAura Configuration', 'tryaura' ) }
 			</h2>
 			<p className="text-[14px] text-[rgba(153,153,153,1)] mb-[32px] m-0">
 				{ __( 'Configure your Gemini with API', 'tryaura' ) }

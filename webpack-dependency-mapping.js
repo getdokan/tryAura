@@ -30,15 +30,15 @@ const requestToExternal = ( request ) => {
  */
 const requestToHandle = ( request ) => {
 	if ( request === '@tryaura/components' ) {
-		return 'try-aura-components';
+		return 'tryaura-components';
 	}
 
 	if ( request === '@tryaura/ai-models' ) {
-		return 'try-aura-ai-models';
+		return 'tryaura-ai-models';
 	}
 
 	if ( request === '@tryaura/settings' ) {
-		return 'try-aura-settings';
+		return 'tryaura-settings';
 	}
 
 	return undefined;

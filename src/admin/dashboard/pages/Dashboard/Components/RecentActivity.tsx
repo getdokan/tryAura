@@ -13,9 +13,9 @@ function RecentActivity( {
 	wcExists?: boolean;
 } ) {
 	const tabs = applyFilters('tryaura.recent.activity.tabs', [
-		{ id: '', label: __( 'All', 'try-aura' ) },
-		{ id: 'image', label: __( 'A.I. Images', 'try-aura' ) },
-		{ id: 'tryon', label: __( 'Try Ons', 'try-aura' ) },
+		{ id: '', label: __( 'All', 'tryaura' ) },
+		{ id: 'image', label: __( 'AI Images', 'tryaura' ) },
+		{ id: 'tryon', label: __( 'Try Ons', 'tryaura' ) },
 	]);
 
 	const [ activeTab, setActiveTab ]   = useState( '' );
@@ -32,7 +32,7 @@ function RecentActivity( {
 	useEffect( () => {
 		setLoading( true );
 		apiFetch( {
-			path: addQueryArgs( '/try-aura/v1/activities', {
+			path: addQueryArgs( '/tryaura/v1/activities', {
 				type: activeTab,
 				limit: 5,
 			} ),
@@ -61,7 +61,7 @@ function RecentActivity( {
 		if ( activity.type === 'video' ) {
 			return 'bg-[#FF93451a]';
 		}
-		return 'bg-[#7047EB1a]';
+		return 'bg-primary/10';
 	};
 
 	const getActivityText = ( activity: any ) => {
@@ -69,19 +69,19 @@ function RecentActivity( {
 			? ` '${ activity.object_name }'`
 			: '';
 		if ( activity.generated_from === 'tryon' ) {
-			return __( 'Customer virtually tried on', 'try-aura' ) + objectName;
+			return __( 'Customer virtually tried on', 'tryaura' ) + objectName;
 		}
 		if ( activity.type === 'video' ) {
-			return __( 'New video created for', 'try-aura' ) + objectName;
+			return __( 'New video created for', 'tryaura' ) + objectName;
 		}
-		return __( 'A.I. image generated for', 'try-aura' ) + objectName;
+		return __( 'AI image generated for', 'tryaura' ) + objectName;
 	};
 
 	return (
 		<div className={ className }>
 			<div className="flex flex-row flex-wrap justify-between gap-[24px] mb-[24px]">
 				<h2 className="text-[18px] font-[600] text-[rgba(51,51,51,1)] m-0">
-					{ __( 'Recent Activity', 'try-aura' ) }
+					{ __( 'Recent Activity', 'tryaura' ) }
 				</h2>
 				<div className="flex flex-row gap-[8px]">
 					{ filteredTabs.map( ( tab ) => (
@@ -144,7 +144,7 @@ function RecentActivity( {
 
 				{ ! loading && activities.length === 0 && (
 					<div className="text-center py-[20px] text-[rgba(153,153,153,1)]">
-						{ __( 'No recent activity found.', 'try-aura' ) }
+						{ __( 'No recent activity found.', 'tryaura' ) }
 					</div>
 				) }
 			</div>

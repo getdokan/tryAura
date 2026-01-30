@@ -12,7 +12,7 @@ use Dokan\TryAura\Abstracts\Model;
 /**
  * Usage Model class.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  *
  * @property int          $id
  * @property int          $user_id

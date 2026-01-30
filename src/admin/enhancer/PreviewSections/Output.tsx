@@ -5,6 +5,7 @@ import { __ } from '@wordpress/i18n';
 import Star from '../../../images/star.gif';
 import Congrats from '../../../images/congrats.gif';
 import { Slot } from '@wordpress/components';
+import GenerateVideoBtn from './GenerateVideoBtn';
 
 function Output( { className = '' } ) {
 	const [ showCongrats, setShowCongrats ] = useState( false );
@@ -47,7 +48,7 @@ function Output( { className = '' } ) {
 	return (
 		<div className={ className }>
 			<div className="w-[500] text-[14px] mb-[8px]">
-				{ __( 'Generated Output', 'try-aura' ) }
+				{ __( 'Generated Output', 'tryaura' ) }
 			</div>
 			{ /* eslint-disable-next-line no-nested-ternary */ }
 			{ isBusy ? (
@@ -55,7 +56,7 @@ function Output( { className = '' } ) {
 					<img
 						src={ Star }
 						className="w-8 h-8"
-						alt={ __( 'Loading…', 'try-aura' ) }
+						alt={ __( 'Loading…', 'tryaura' ) }
 					/>
 					<span>{ message }</span>
 				</div>
@@ -72,11 +73,13 @@ function Output( { className = '' } ) {
 								<img
 									src={ Congrats }
 									className="w-full h-auto"
-									alt={ __( 'Congratulations', 'try-aura' ) }
+									alt={ __( 'Congratulations', 'tryaura' ) }
 								/>
 							</div>
 						) }
 					</div>
+
+					<GenerateVideoBtn />
 
 					<Slot name="TryAuraEnhancerAfterImageOutput" />
 				</div>
@@ -87,7 +90,11 @@ function Output( { className = '' } ) {
 			) }
 
 			{ error ? (
-				<div style={ { color: 'red', marginTop: 8 } }>{ error }</div>
+				<div
+					className="text-red-400 mt-2 max-h-25 overflow-auto"
+				>
+					{ error }
+				</div>
 			) : null }
 		</div>
 	);

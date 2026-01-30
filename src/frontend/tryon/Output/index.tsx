@@ -31,7 +31,7 @@ function Index( { generatedUrl, message, isBusy, status } ) {
 	return (
 		<div className="w-full sm:w-1/3">
 			<div className="font-[500] text-[14px] text-[#25252D] mb-[20px]">
-				{ __( 'Generated', 'try-aura' ) }
+				{ __( 'Generated', 'tryaura' ) }
 			</div>
 			{ generatedUrl && ! isBusy ? (
 				<div className="relative w-full h-auto">
@@ -45,7 +45,7 @@ function Index( { generatedUrl, message, isBusy, status } ) {
 							<img
 								src={ Congrats }
 								className="w-full h-auto"
-								alt={ __( 'Congratulations', 'try-aura' ) }
+								alt={ __( 'Congratulations', 'tryaura' ) }
 							/>
 						</div>
 					) }
@@ -56,7 +56,7 @@ function Index( { generatedUrl, message, isBusy, status } ) {
 						<img
 							src={ Star }
 							className="w-8 h-8"
-							alt={ __( 'Loading', 'try-aura' ) }
+							alt={ __( 'Loading', 'tryaura' ) }
 						/>
 					) }
 					<span>{ message }</span>
@@ -71,7 +71,7 @@ function Index( { generatedUrl, message, isBusy, status } ) {
 						href={ isBusy ? undefined : generatedUrl }
 						download={ isBusy ? undefined : 'tryon.png' }
 					>
-						{ __( 'Download', 'try-aura' ) }
+						{ __( 'Download', 'tryaura' ) }
 					</Button>
 				</div>
 			) : null }

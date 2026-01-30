@@ -51,12 +51,12 @@ function Index() {
 
 		setLoading( true );
 		apiFetch( {
-			path: addQueryArgs( '/try-aura/v1/stats', params ),
+			path: addQueryArgs( '/tryaura/v1/stats', params ),
 			parse: false,
 		} )
 			.then( ( response: any ) => {
 				setWcExists(
-					response.headers.get( 'X-Try-Aura-WC-Exists' ) === 'true'
+					response.headers.get( 'X-tryaura-WC-Exists' ) === 'true'
 				);
 				if ( ! response.ok ) {
 					return response.json().then( ( err: any ) => {
@@ -76,7 +76,7 @@ function Index() {
 		<div>
 			<div className="flex flex-row justify-between flex-wrap mt-5">
 				<h1 className="font-[600] text-[20px] leading-[28px] text-[rgba(51,51,51,0.8)]">
-					{ __( 'Dashboard', 'try-aura' ) }
+					{ __( 'Dashboard', 'tryaura' ) }
 				</h1>
 
 				<div>
@@ -86,14 +86,14 @@ function Index() {
 
 			<div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
 				<StateCardItem
-					title={ __( 'Total Images Generated', 'try-aura' ) }
+					title={ __( 'Total Images Generated', 'tryaura' ) }
 					value={ stats.image_count }
 					iconColor="var(--color-primary)"
 					Icon={ Image }
 					loading={ loading }
 				/>
 				<Slot
-					name="try-aura-generated-video-count-card"
+					name="tryaura-generated-video-count-card"
 					fillProps={{
 						StateCardItem,
 						stats,
@@ -103,7 +103,7 @@ function Index() {
 				/>
 				{ wcExists && (
 					<StateCardItem
-						title={ __( 'Virtual Try-Ons', 'try-aura' ) }
+						title={ __( 'Virtual Try-Ons', 'tryaura' ) }
 						value={ stats.tryon_count?.toLocaleString() || 0 }
 						iconColor="#0ea5e9"
 						Icon={ Eye }
@@ -111,14 +111,14 @@ function Index() {
 					/>
 				) }
 				<StateCardItem
-					title={ __( 'API Token Counts', 'try-aura' ) }
+					title={ __( 'API Token Counts', 'tryaura' ) }
 					value={ stats.total_tokens.toLocaleString() }
 					iconColor="#47BF73"
 					Icon={ Sparkles }
 					loading={ loading }
 				/>
 				<Slot
-					name="try-aura-generated-video-duration-card"
+					name="tryaura-generated-video-duration-card"
 					fillProps={{
 						StateCardItem,
 						stats,

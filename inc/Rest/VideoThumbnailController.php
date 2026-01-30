@@ -2,6 +2,7 @@
 
 namespace Dokan\TryAura\Rest;
 
+use Dokan\TryAura\TryAura;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;
@@ -13,22 +14,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Video Thumbnail REST controller.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class VideoThumbnailController {
 	/**
 	 * REST API namespace.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string api namespace.
 	 */
-	protected string $namespace = 'try-aura/v1';
+	protected string $namespace = 'tryaura/v1';
 
 	/**
 	 * Class constructor.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
@@ -52,7 +53,7 @@ class VideoThumbnailController {
 	/**
 	 * Handle thumbnail generation request.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 *
@@ -65,7 +66,7 @@ class VideoThumbnailController {
 		$image    = $params['image'] ?? ''; // Base64 data if generated client-side
 
 		if ( empty( $platform ) || empty( $url ) ) {
-			return new WP_Error( 'missing_params', __( 'Missing platform or URL.', 'try-aura' ), array( 'status' => 400 ) );
+			return new WP_Error( 'missing_params', __( 'Missing platform or URL.', 'tryaura' ), array( 'status' => 400 ) );
 		}
 
 		$attachment_id = 0;
@@ -83,7 +84,7 @@ class VideoThumbnailController {
 		}
 
 		if ( ! $attachment_id ) {
-			return new WP_Error( 'failed', __( 'Could not generate thumbnail.', 'try-aura' ), array( 'status' => 500 ) );
+			return new WP_Error( 'failed', __( 'Could not generate thumbnail.', 'tryaura' ), array( 'status' => 500 ) );
 		}
 
 		return new WP_REST_Response(
@@ -98,7 +99,7 @@ class VideoThumbnailController {
 	/**
 	 * Save base64 image as attachment.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param string $base64_data Base64 encoded image.
 	 * @param string $video_url   Original video URL for naming.
@@ -110,12 +111,12 @@ class VideoThumbnailController {
 			$base64_data = substr( $base64_data, strpos( $base64_data, ',' ) + 1 );
 			$ext         = strtolower( $type[1] ); // jpg, png, etc.
 		} else {
-			return new WP_Error( 'invalid_image', __( 'Invalid image data.', 'try-aura' ) );
+			return new WP_Error( 'invalid_image', __( 'Invalid image data.', 'tryaura' ) );
 		}
 
 		$image_data = base64_decode( $base64_data );
 		if ( ! $image_data ) {
-			return new WP_Error( 'decode_failed', __( 'Could not decode image.', 'try-aura' ) );
+			return new WP_Error( 'decode_failed', __( 'Could not decode image.', 'tryaura' ) );
 		}
 
 		$filename = 'video-thumb-' . md5( $video_url ) . '.' . $ext;
@@ -131,16 +132,16 @@ class VideoThumbnailController {
 	/**
 	 * Fetch YouTube thumbnail and save as attachment.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param string $url YouTube video URL.
 	 *
 	 * @return int|WP_Error
 	 */
 	private function fetch_youtube_thumbnail( string $url ) {
-		$video_id = $this->get_youtube_id( $url );
+		$video_id = TryAura::container()->get( 'woocommerce' )->get_youtube_id( $url );
 		if ( ! $video_id ) {
-			return new WP_Error( 'invalid_youtube_url', __( 'Invalid YouTube URL.', 'try-aura' ) );
+			return new WP_Error( 'invalid_youtube_url', __( 'Invalid YouTube URL.', 'tryaura' ) );
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -180,26 +181,9 @@ class VideoThumbnailController {
 	}
 
 	/**
-	 * Extract YouTube video ID from URL.
-	 *
-	 * @since PLUGIN_SINCE
-	 *
-	 * @param string $url URL.
-	 *
-	 * @return string|bool
-	 */
-	private function get_youtube_id( string $url ) {
-		$pattern = '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i';
-		if ( preg_match( $pattern, $url, $match ) ) {
-			return $match[1];
-		}
-		return false;
-	}
-
-	/**
 	 * Create attachment from file.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param string $file      File path.
 	 * @param string $mime_type Mime type.
@@ -230,7 +214,7 @@ class VideoThumbnailController {
 	/**
 	 * Check if the current user can edit products.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function permissions_check() {
 		return current_user_can( 'edit_products' );

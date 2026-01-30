@@ -45,19 +45,26 @@ function UsageChart( {
 } ) {
 	const [ data, setData ] = useState( [] );
 	const [ loading, setLoading ] = useState( true );
+	// @ts-ignore
+	const wcExists = window?.tryAura?.wcExists ?? false;
+
 	const chartLineItemLabels = applyFilters(
 		'tryaura.dashboard.usage-chart.line-item-labels',
 		[
 			{
 				value: 'images',
-				label: __( 'Images', 'try-aura' ),
-				color: 'rgba(112,71,235,1)',
+				label: __( 'Images', 'tryaura' ),
+				color: 'var(--color-primary)',
 			},
-			{
-				value: 'tryOns',
-				label: __( 'Try-Ons', 'try-aura' ),
-				color: 'rgba(38,176,255,1)',
-			},
+			...( wcExists
+				? [
+						{
+							value: 'tryOns',
+							label: __( 'Try-Ons', 'tryaura' ),
+							color: 'rgba(38,176,255,1)',
+						},
+				  ]
+				: [] ),
 		]
 	);
 	const lines: Array< object > = applyFilters(
@@ -67,30 +74,34 @@ function UsageChart( {
 				type: 'monotone',
 				dataKey: 'images',
 				name: 'images',
-				stroke: 'rgba(112, 71, 235, 1)',
+				stroke: 'var(--color-primary)',
 				strokeWidth: 2.5,
 				dot: false,
 				activeDot: {
 					r: 6,
-					stroke: 'rgba(112, 71, 235, 1)',
+					stroke: 'var(--color-primary)',
 					strokeWidth: 2,
 					fill: '#fff',
 				},
 			},
-			{
-				type: 'monotone',
-				dataKey: 'tryOns',
-				name: 'tryOns',
-				stroke: 'rgba(38, 176, 255, 1)',
-				strokeWidth: 2,
-				dot: false,
-				activeDot: {
-					r: 6,
-					stroke: 'rgba(38, 176, 255, 1)',
-					strokeWidth: 2,
-					fill: '#fff',
-				},
-			},
+			...( wcExists
+				? [
+						{
+							type: 'monotone',
+							dataKey: 'tryOns',
+							name: 'tryOns',
+							stroke: 'rgba(38, 176, 255, 1)',
+							strokeWidth: 2,
+							dot: false,
+							activeDot: {
+								r: 6,
+								stroke: 'rgba(38, 176, 255, 1)',
+								strokeWidth: 2,
+								fill: '#fff',
+							},
+						},
+				  ]
+				: [] ),
 		]
 	);
 
@@ -115,7 +126,7 @@ function UsageChart( {
 
 		setLoading( true );
 		apiFetch( {
-			path: addQueryArgs( '/try-aura/v1/chart-data', params ),
+			path: addQueryArgs( '/tryaura/v1/chart-data', params ),
 		} )
 			.then( ( response: any ) => {
 				setData( response );
@@ -208,7 +219,7 @@ function UsageChart( {
 				<>
 					<div className="flex flex-row flex-wrap justify-between items-center gap-6 mb-8">
 						<h2 className="text-[18px] font-semibold text-[#333333] m-0">
-							{ __( 'Content Creation Activity', 'try-aura' ) }
+							{ __( 'Content Creation Activity', 'tryaura' ) }
 						</h2>
 						<div className="flex flex-row gap-6">
 							{ chartLineItemLabels.map( ( item, index ) => {
@@ -221,7 +232,7 @@ function UsageChart( {
 											className="w-2 h-2 rounded-full"
 											style={ {
 												backgroundColor: item.color,
-											}}
+											} }
 										/>
 										<span className="text-sm font-medium text-[rgba(99,99,99,1)]">
 											{ item.label }

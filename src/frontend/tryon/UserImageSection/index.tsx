@@ -22,7 +22,7 @@ function Index( {
 	return (
 		<div className="w-full sm:w-1/3 max-h-[533px] overflow-auto">
 			<div className="font-[500] text-[14px] text-[#25252D] mb-[20px]">
-				{ __( 'Your Image', 'try-aura' ) }
+				{ __( 'Your Image', 'tryaura' ) }
 			</div>
 			<GroupButton
 				options={ [

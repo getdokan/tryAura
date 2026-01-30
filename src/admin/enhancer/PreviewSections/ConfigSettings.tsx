@@ -7,6 +7,8 @@ import { applyFilters } from '@wordpress/hooks';
 import ConfigFooter from './ConfigFooter';
 
 import { Slot } from '@wordpress/components';
+import { hasPro } from '../../../utils/tryaura';
+import DummyVideoConfigInputs from './DummyVideoConfigInputs';
 
 function ConfigSettings( { doGenerate, className = '' } ) {
 	const { activeTab, isBusy, isThumbnailMode } = useSelect( ( select ) => {
@@ -29,7 +31,7 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 		{
 			label: __( 'Generate Video', 'tryaura' ),
 			value: 'video',
-			disabled: true,
+			disabled: isBusy,
 			locked: true,
 		},
 	] );
@@ -46,9 +48,15 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 			) }
 
 			<div className="flex flex-col gap-[12px]">
-				{ activeTab === 'image' ? (
+				{ activeTab === 'image' && (
 					<ImageConfigInputs doGenerate={ doGenerate } />
-				) : (
+				) }
+
+				{ activeTab === 'video' && ! hasPro() && (
+					<DummyVideoConfigInputs />
+				) }
+
+				{ hasPro() && (
 					<>
 						<Slot
 							name="TryAuraEnhancerConfig"

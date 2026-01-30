@@ -2,7 +2,7 @@
 
 namespace Dokan\TryAura\Rest;
 
-use WP_Error;
+use Dokan\TryAura\TryAura;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -13,22 +13,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Custom REST controller for TryAura settings.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class SettingsController {
 	/**
 	 * REST API namespace.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string api namespace.
 	 */
-	protected string $namespace = 'try-aura/v1';
+	protected string $namespace = 'tryaura/v1';
 
 	/**
 	 * REST API base.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string  rest base.
 	 */
@@ -37,16 +37,16 @@ class SettingsController {
 	/**
 	 * Option key for settings.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string option key.
 	 */
-	protected string $option_key = 'try_aura_settings';
+	protected string $option_key = 'tryaura_settings';
 
 	/**
 	 * Class constructor.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
@@ -55,7 +55,7 @@ class SettingsController {
 	/**
 	 * Register REST routes.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function register_routes(): void {
 		register_rest_route(
@@ -103,7 +103,7 @@ class SettingsController {
 	/**
 	 * Simple permissions check: only admins (manage_options).
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function permissions_check(): bool {
 		return current_user_can( 'manage_options' );
@@ -112,7 +112,7 @@ class SettingsController {
 	/**
 	 * GET callback: return current option value.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @return WP_REST_Response
 	 */
@@ -124,7 +124,7 @@ class SettingsController {
 	/**
 	 * POST callback: update option value.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 *
@@ -149,17 +149,17 @@ class SettingsController {
 	/**
 	 * Bulk enable/disable try-on for all products.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return WP_REST_Response
 	 */
 	public function bulk_try_on( WP_REST_Request $request ): WP_REST_Response {
-		if ( ! TryAura::is_woocommerce_active()) {
+		if ( ! class_exists( 'WooCommerce' )) {
 			return new WP_REST_Response(
 				array(
-					'message' => __( 'WooCommerce is not active.', 'try-aura' ),
+					'message' => __( 'WooCommerce is not active.', 'tryaura' ),
 				),
 				400
 			);
@@ -180,7 +180,7 @@ class SettingsController {
 		if ( 0 === $total_products ) {
 			return new WP_REST_Response(
 				array(
-					'message' => __( 'No products found to update.', 'try-aura' ),
+					'message' => __( 'No products found to update.', 'tryaura' ),
 				),
 				200
 			);
@@ -191,12 +191,12 @@ class SettingsController {
 
 		foreach ( $chunks as $chunk ) {
 			WC()->queue()->add(
-				'try_aura_bulk_update_products_try_on',
+				'tryaura_bulk_update_products_try_on',
 				array(
 					'product_ids' => $chunk,
 					'enabled'     => $enabled,
 				),
-				'try-aura'
+				'tryaura'
 			);
 		}
 
@@ -204,7 +204,7 @@ class SettingsController {
 			array(
 				'message' => sprintf(
 					// translators: %1$d total products, %2$d enable/disable.
-					__( '%1$d products added to queue to %2$s try-on.', 'try-aura' ),
+					__( '%1$d products added to queue to %2$s try-on.', 'tryaura' ),
 					$total_products,
 					'yes' === $enabled ? 'enable' : 'disable'
 				),

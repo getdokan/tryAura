@@ -13,13 +13,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Gemini REST controller.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class GenerateController {
 	/**
 	 * REST API namespace.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string api namespace.
 	 */
@@ -28,7 +28,7 @@ class GenerateController {
 	/**
 	 * Class constructor.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
@@ -37,7 +37,7 @@ class GenerateController {
 	/**
 	 * Register REST routes.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function register_routes(): void {
 		register_rest_route(
@@ -54,7 +54,7 @@ class GenerateController {
 	/**
 	 * Handle generation request.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 *
@@ -65,13 +65,13 @@ class GenerateController {
 		$nonce  = $params['tryonNonce'] ?? '';
 
 		if( ! wp_verify_nonce( $nonce, 'tryon_nonce' ) ) {
-			return new WP_REST_Response( array( 'message' => __('unauthorized access', 'try-aura') ), 401 );
+			return new WP_REST_Response( array( 'message' => __('unauthorized access', 'tryaura') ), 401 );
 		}
 
 		$prompt     = $params['prompt'] ?? '';
 		$ref_images = $params['images'] ?? array();
 
-		$settings = get_option( 'try_aura_settings', array() );
+		$settings = get_option( 'tryaura_settings', array() );
 		$api_key  = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
 
 		$model   = isset( $settings['google']['imageModel'] ) && ! empty( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : 'gemini-2.5-flash-image';
@@ -157,7 +157,7 @@ class GenerateController {
 	/**
 	 * Check if the current user is logged in.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function permissions_check() {
 		return is_user_logged_in();

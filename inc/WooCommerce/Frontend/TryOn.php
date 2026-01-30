@@ -2,6 +2,7 @@
 
 namespace Dokan\TryAura\WooCommerce\Frontend;
 
+use Dokan\TryAura\TryAura;
 use Dokan\TryAura\WooCommerce\WooCommerce;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -11,13 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Registers and enqueues the Frontend Try-On UI assets on single product pages.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class TryOn {
 	/**
 	 * Class constructor.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
@@ -27,7 +28,7 @@ class TryOn {
 	/**
 	 * Enqueue the Try-On UI only on WooCommerce single product pages.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function enqueue(): void {
 		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
@@ -47,24 +48,25 @@ class TryOn {
 
 		// Localize data for the frontend app.
 		wp_localize_script(
-			'try-aura-tryon',
+			'tryaura-tryon',
 			'tryAura',
 			array(
 				'restUrl'    => esc_url_raw( rest_url() ),
 				'tryonNonce' => wp_create_nonce( 'tryon_nonce' ),
 				'productId'  => $product_id,
 				'loginUrl'   => $this->get_login_url(),
+				'hasPro'     => (bool) TryAura::is_pro_exists(),
 			)
 		);
 
-		wp_enqueue_style( 'try-aura-tryon' );
-		wp_enqueue_script( 'try-aura-tryon' );
+		wp_enqueue_style( 'tryaura-tryon' );
+		wp_enqueue_script( 'tryaura-tryon' );
 	}
 
 	/**
 	 * If WooCommerce is active, redirect to account login page or WordPress login page.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @return string Login URL.
 	 */
@@ -79,7 +81,7 @@ class TryOn {
 	/**
 	 * Redirect to Try-On page after login if the parameter is set.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param string   $redirect the redirect URL.
 	 * @param \WP_User $user the logged in user.

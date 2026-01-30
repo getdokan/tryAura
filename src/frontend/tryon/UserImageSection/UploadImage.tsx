@@ -34,18 +34,18 @@ function UploadImage( {
 						<User size={ 20 } className="mx-auto text-[#828282]" />
 
 						<p className="m-0 mt-[6px] text-[14px] font-[600] text-primary">
-							{ __( 'Add Your Image', 'try-aura' ) }
+							{ __( 'Add Your Image', 'tryaura' ) }
 						</p>
 
 						<p className="m-0 mt-[6px] text-[12px] leading-[18px] font-[400] text-[#828282]">
 							{ __(
 								'Supports: jpg, png, and img formats.',
-								'try-aura'
+								'tryaura'
 							) }
 							<br />
 							{ __(
-								'File size must be under 25 MB.',
-								'try-aura'
+								'File size must be under 20 MB.',
+								'tryaura'
 							) }
 						</p>
 					</div>

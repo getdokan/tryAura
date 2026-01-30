@@ -4,7 +4,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 // @ts-ignore
 import { STORE_NAME as SETTINGS_STORE_NAME } from '@tryaura/settings';
 import { STORE_NAME } from './store';
-import { Button } from '../../components';
+import { Button, TryauraLogoWithText } from '../../components';
 import { __ } from '@wordpress/i18n';
 import { X } from 'lucide-react';
 import OriginalImage from './PreviewSections/OriginalImage';
@@ -14,6 +14,8 @@ import { applyFilters, doAction } from '@wordpress/hooks';
 import { Modal, Slot, SlotFillProvider } from '@wordpress/components';
 import { PluginArea } from '@wordpress/plugins';
 import { GoogleGenAI } from '@google/genai';
+import { hasPro } from '../../utils/tryaura';
+import { twMerge } from 'tailwind-merge';
 
 declare const wp: any;
 
@@ -45,7 +47,7 @@ const PreviewModal = ( {
 	} = useSelect(
 		( select ) => {
 			const store = select( STORE_NAME );
-			const aiModelsStore = select( 'try-aura/ai-models' );
+			const aiModelsStore = select( 'tryaura/ai-models' );
 			const settingsStore = select( SETTINGS_STORE_NAME );
 			return {
 				isBlockEditorPage: store.getIsBlockEditorPage(),
@@ -124,7 +126,7 @@ const PreviewModal = ( {
 		try {
 			setError( null );
 			setStatus( 'fetching' );
-			setMessage( __( 'Fetching images…', 'try-aura' ) );
+			setMessage( __( 'Fetching images…', 'tryaura' ) );
 			await new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
 
 			setStatus( 'generating' );
@@ -132,7 +134,7 @@ const PreviewModal = ( {
 			await new Promise( ( resolve ) => setTimeout( resolve, 2000 ) );
 
 			setStatus( 'parsing' );
-			setMessage( __( 'Processing results…', 'try-aura' ) );
+			setMessage( __( 'Processing results…', 'tryaura' ) );
 			await new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
 
 			// Use a placeholder image from picsum for testing
@@ -157,7 +159,7 @@ const PreviewModal = ( {
 
 			if ( selectedUrls.length === 0 ) {
 				throw new Error(
-					__( 'Please select at least one image.', 'try-aura' )
+					__( 'Please select at least one image.', 'tryaura' )
 				);
 			}
 
@@ -170,7 +172,7 @@ const PreviewModal = ( {
 				throw new Error(
 					__(
 						'Missing Google AI API key. Please set it on the TryAura settings page.',
-						'try-aura'
+						'tryaura'
 					)
 				);
 			}
@@ -181,7 +183,7 @@ const PreviewModal = ( {
 				'gemini-2.5-flash-image-preview';
 
 			setStatus( 'fetching' );
-			setMessage( __( 'Fetching images…', 'try-aura' ) );
+			setMessage( __( 'Fetching images…', 'tryaura' ) );
 			const encodedImages = await Promise.all(
 				selectedUrls.map( async ( url ) => {
 					const resp = await fetch( url, {
@@ -217,11 +219,15 @@ const PreviewModal = ( {
 			const safetyInstruction =
 				'Do not generate any nudity, harassment, or abuse.';
 
-			if ( isBlockPage && ! imageConfigData?.optionalPrompt?.trim() ) {
+			if (
+				hasPro() &&
+				isBlockPage &&
+				! imageConfigData?.optionalPrompt?.trim()
+			) {
 				throw new Error(
 					__(
 						'Please provide a prompt for the image generation.',
-						'try-aura'
+						'tryaura'
 					)
 				);
 			}
@@ -239,19 +245,20 @@ const PreviewModal = ( {
 					  )
 					: '';
 
-			let promptText: string = isBlockPage
-				? `Generate a high-quality AI image based on the provided image(s) and user instructions.\n\nInstructions: ${ imageConfigData?.optionalPrompt?.trim() }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }`
-				: applyFilters(
-						'tryaura.ai_enhance_image_prompt_base',
-						`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ extras }${ multiHint }`,
-						{
-							imageConfigData,
-							safetyInstruction,
-							extras,
-							multiHint,
-							isThumbnailMode,
-						}
-				  );
+			let promptText: string =
+				isBlockPage && hasPro()
+					? `Generate a high-quality AI image based on the provided image(s) and user instructions.\n\nInstructions: ${ imageConfigData?.optionalPrompt?.trim() }\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }`
+					: applyFilters(
+							'tryaura.ai_enhance_image_prompt_base',
+							`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ extras }${ multiHint }`,
+							{
+								imageConfigData,
+								safetyInstruction,
+								extras,
+								multiHint,
+								isThumbnailMode,
+							}
+					  );
 			promptText = applyFilters(
 				'tryaura.ai_enhance_prompt_text',
 				promptText,
@@ -289,7 +296,7 @@ const PreviewModal = ( {
 			doAction( 'tryaura.ai_enhance_prompt_after_generate', response );
 
 			setStatus( 'parsing' );
-			setMessage( __( 'Processing results…', 'try-aura' ) );
+			setMessage( __( 'Processing results…', 'tryaura' ) );
 			const parts = response?.candidates?.[ 0 ]?.content?.parts || [];
 			let data64: string | null = null;
 			let outMime: string = 'image/png';
@@ -316,7 +323,7 @@ const PreviewModal = ( {
 			const postType = ( window as any )?.tryAura?.postType;
 
 			apiFetch( {
-				path: '/try-aura/v1/log-usage',
+				path: '/tryaura/v1/log-usage',
 				method: 'POST',
 				data: {
 					type: 'image',
@@ -350,7 +357,7 @@ const PreviewModal = ( {
 			const nonce = window?.tryAura?.nonce;
 			if ( ! rest || ! nonce ) {
 				throw new Error(
-					__( 'Missing WordPress REST configuration.', 'try-aura' )
+					__( 'Missing WordPress REST configuration.', 'tryaura' )
 				);
 			}
 			const restBase = rest.replace( /\/?$/, '/' );
@@ -503,7 +510,7 @@ const PreviewModal = ( {
 						<h2 className="mt-0">
 							{ applyFilters(
 								'tryaura.enhancer.modal_title',
-								__( 'AI Product Image Generation', 'try-aura' ),
+								__( 'AI Product Image Generation', 'tryaura' ),
 								{ isThumbnailMode }
 							) }
 						</h2>
@@ -518,7 +525,7 @@ const PreviewModal = ( {
 					</div>
 
 					<div className="grid grid-cols-1 md:grid-cols-11 md:flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
-						{ activeTab === 'image' && (
+						{ ( activeTab === 'image' || ! hasPro() ) && (
 							<OriginalImage
 								imageUrls={ imageUrls }
 								multiple={ multiple }
@@ -548,7 +555,7 @@ const PreviewModal = ( {
 							className="col-span-1 md:col-span-4 flex flex-col gap-[32px]"
 						/>
 
-						{ activeTab === 'image' && (
+						{ ( activeTab === 'image' || ! hasPro() ) && (
 							<Output
 								supportsVideo={ supportsVideo }
 								className="col-span-1 md:col-span-4"
@@ -563,30 +570,50 @@ const PreviewModal = ( {
 						/>
 					</div>
 					{ /* Actions */ }
-					<div className="mt-[24px] border-t-[1px] border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-[12px]">
-						{ generatedUrl && 'image' === activeTab && (
-							<Button
-								onClick={ setInMediaSelection }
-								disabled={ disabledImageAddToMedia }
-								loading={ uploading }
-							>
-								{ uploading
-									? __( 'Adding…' )
-									: __( 'Add to Media Library', 'try-aura' ) }
-							</Button>
+					<div
+						className={ twMerge(
+							'mt-6 border-t border-t-[#E9E9E9] p-[16px_24px] flex flex-row justify-between',
+							hasPro() && 'justify-end'
 						) }
+					>
+						{ ! hasPro() && (
+							<div className="flex flex-row gap-2 items-center">
+								<span className="text-[14px] font-normal text-[rgba(130,130,130,1)]">
+									{ __( 'Powered By', 'tryaura' ) }
+								</span>
+								<div>
+									<TryauraLogoWithText className="h-5 w-auto" />
+								</div>
+							</div>
+						) }
+						<div className="flex flex-row justify-end gap-3">
+							{ generatedUrl && 'image' === activeTab && (
+								<Button
+									onClick={ setInMediaSelection }
+									disabled={ disabledImageAddToMedia }
+									loading={ uploading }
+								>
+									{ uploading
+										? __( 'Adding…' )
+										: __(
+												'Add to Media Library',
+												'tryaura'
+										  ) }
+								</Button>
+							) }
 
-						<Slot name="TryAuraEnhancerFooterActions" />
+							<Slot name="TryAuraEnhancerFooterActions" />
 
-						<PluginArea scope="tryaura-enhancer" />
+							<PluginArea scope="tryaura-enhancer" />
 
-						<Button
-							variant="outline"
-							onClick={ onClose }
-							disabled={ isBusy }
-						>
-							{ __( 'Close', 'try-aura' ) }
-						</Button>
+							<Button
+								variant="outline"
+								onClick={ onClose }
+								disabled={ isBusy }
+							>
+								{ __( 'Close', 'tryaura' ) }
+							</Button>
+						</div>
 					</div>
 				</div>
 			</SlotFillProvider>

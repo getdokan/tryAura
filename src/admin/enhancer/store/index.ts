@@ -3,7 +3,7 @@ import reducer from './reducer';
 import * as actions from './actions';
 import * as selectors from './selectors';
 
-export const STORE_NAME = 'try-aura/enhancer';
+export const STORE_NAME = 'tryaura/enhancer';
 
 const store = createReduxStore( STORE_NAME, {
 	reducer,

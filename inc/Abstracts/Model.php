@@ -10,7 +10,7 @@ abstract class Model {
 	/**
 	 * Data holder.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var array
 	 */
@@ -19,7 +19,7 @@ abstract class Model {
 	/**
 	 * Constructor.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param array $data Model data.
 	 */
@@ -30,7 +30,7 @@ abstract class Model {
 	/**
 	 * Magic getter.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param string $name Property name.
 	 *
@@ -43,7 +43,7 @@ abstract class Model {
 	/**
 	 * Magic setter.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param string $name  Property name.
 	 * @param mixed  $value Property value.
@@ -55,7 +55,7 @@ abstract class Model {
 	/**
 	 * Convert model to array.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @return array
 	 */

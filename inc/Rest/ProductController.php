@@ -12,22 +12,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Product REST controller.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class ProductController {
 	/**
 	 * REST API namespace.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string api namespace.
 	 */
-	protected string $namespace = 'try-aura/v1';
+	protected string $namespace = 'tryaura/v1';
 
 	/**
 	 * Class constructor.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
@@ -36,7 +36,7 @@ class ProductController {
 	/**
 	 * Register REST routes.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function register_routes(): void {
 		register_rest_route(
@@ -53,7 +53,7 @@ class ProductController {
 	/**
 	 * Get product images.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 *
@@ -63,13 +63,13 @@ class ProductController {
 		$product_id = $request->get_param( 'id' );
 
 		if ( ! function_exists( 'wc_get_product' ) ) {
-			return new WP_REST_Response( array( 'message' => __( 'WooCommerce is not active', 'try-aura' ) ), 500 );
+			return new WP_REST_Response( array( 'message' => __( 'WooCommerce is not active', 'tryaura' ) ), 500 );
 		}
 
 		$product = wc_get_product( $product_id );
 
 		if ( ! $product ) {
-			return new WP_REST_Response( array( 'message' => __( 'Product not found', 'try-aura' ) ), 404 );
+			return new WP_REST_Response( array( 'message' => __( 'Product not found', 'tryaura' ) ), 404 );
 		}
 
 		$gallery_ids = $product->get_gallery_image_ids();
@@ -90,7 +90,7 @@ class ProductController {
 	/**
 	 * Check if the current user is logged in.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function permissions_check() {
 		return is_user_logged_in();

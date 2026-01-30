@@ -1,5 +1,6 @@
 import { Button } from '../../../components';
 import { __ } from '@wordpress/i18n';
+import { hasPro } from '../../../utils/tryaura';
 
 function ConfigFooter( {
 	generatedUrl,
@@ -36,7 +37,7 @@ function ConfigFooter( {
 						} }
 						disabled={ isBusy }
 					>
-						{ __( 'Download', 'try-aura' ) }
+						{ __( 'Download', 'tryaura' ) }
 					</Button>
 				</>
 			) : (
@@ -45,13 +46,15 @@ function ConfigFooter( {
 					disabled={
 						isBusy ||
 						uploading ||
-						( isBlockEditorPage && optionalPrompt.trim() === '' )
+						( hasPro() &&
+							isBlockEditorPage &&
+							optionalPrompt.trim() === '' )
 					}
 					loading={ isBusy }
 				>
 					{ isBusy
-						? __( 'Generating…', 'try-aura' )
-						: __( 'Generate', 'try-aura' ) }
+						? __( 'Generating…', 'tryaura' )
+						: __( 'Generate', 'tryaura' ) }
 				</Button>
 			) }
 		</div>

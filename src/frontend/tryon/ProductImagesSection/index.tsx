@@ -16,7 +16,7 @@ function Index( {
 	return (
 		<div className="w-full sm:w-1/3">
 			<div className="font-[500] text-[14px] text-[#25252D] mb-[20px]">
-				{ __( 'Product Images', 'try-aura' ) }
+				{ __( 'Product Images', 'tryaura' ) }
 			</div>
 			<div className="grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] gap-2">
 				{ productImages.map( ( url, i ) => {

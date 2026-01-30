@@ -38,28 +38,28 @@ function TryAuraConfiguration( { className = '' }: { className: string } ) {
 			</div>
 
 			<h2 className="text-[18px] font-[600] text-[rgba(51,51,51,1)] mb-[8px] m-0">
-				{ __( 'Try Aura Configuration', 'try-aura' ) }
+				{ __( 'TryAura Configuration', 'tryaura' ) }
 			</h2>
 			<p className="text-[14px] text-[rgba(153,153,153,1)] mb-[32px] m-0">
-				{ __( 'Configure your Gemini with API', 'try-aura' ) }
+				{ __( 'Configure your Gemini with API', 'tryaura' ) }
 			</p>
 
 			<Link
 				to="/settings/gemini"
-				className="bg-primary text-white px-[32px] py-[12px] rounded-[8px] text-[16px] font-[500] hover:bg-[#5f3bc7] transition-colors no-underline"
+				className="bg-primary text-white px-[32px] py-[12px] rounded-[8px] text-[16px] font-[500] hover:bg-primary-dark transition-colors no-underline"
 			>
-				{ __( 'Configure', 'try-aura' ) }
+				{ __( 'Configure', 'tryaura' ) }
 			</Link>
 
 			<div className="mt-[40px] text-[14px] text-[rgba(153,153,153,1)]">
-				{ __( 'Need help configuring', 'try-aura' ) }{ ' ' }
+				{ __( 'Need help configuring', 'tryaura' ) }{ ' ' }
 				<a
 					href="https://aistudio.google.com/app/apikey"
 					target="_blank"
 					rel="noreferrer"
 					className="text-primary no-underline hover:underline"
 				>
-					{ __( 'API Keys', 'try-aura' ) }?
+					{ __( 'API Keys', 'tryaura' ) }?
 				</a>
 			</div>
 		</div>

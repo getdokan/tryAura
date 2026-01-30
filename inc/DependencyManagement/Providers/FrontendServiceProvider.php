@@ -7,14 +7,14 @@ use Dokan\TryAura\DependencyManagement\BaseServiceProvider;
 /**
  * FrontendServiceProvider Class
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class FrontendServiceProvider extends BaseServiceProvider {
 
 	/**
 	 * The services provided by this provider.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var array
 	 */
@@ -23,7 +23,7 @@ class FrontendServiceProvider extends BaseServiceProvider {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function provides( string $alias ): bool {
 		return ! is_admin() && parent::provides( $alias );
@@ -32,7 +32,7 @@ class FrontendServiceProvider extends BaseServiceProvider {
 	/**
 	 * Register the classes.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function register(): void {
 		$filtered_services = apply_filters( 'tryaura_frontend_container_services', $this->services );

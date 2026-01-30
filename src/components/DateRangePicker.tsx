@@ -76,7 +76,7 @@ const DateRangePicker = ( props: Props ) => {
 						<CalendarDays size={ 16 } className="text-gray-500" />
 						<span className="text-sm text-gray-700">
 							{ displayValue ||
-								__( 'Select Date Range', 'try-aura' ) }
+								__( 'Select Date Range', 'tryaura' ) }
 						</span>
 					</>
 				) }
@@ -133,7 +133,7 @@ const DateRangePicker = ( props: Props ) => {
 								variant="primary"
 								className="bg-primary hover:bg-primary-hover text-white"
 							>
-								{ __( 'Ok', 'try-aura' ) }
+								{ __( 'Ok', 'tryaura' ) }
 							</Button>
 						</div>
 					</div>

@@ -3,7 +3,8 @@ import { __ } from '@wordpress/i18n';
 import { Modal } from '@wordpress/components';
 import { Button, Checkbox, ModernSelect } from '../../../components';
 import { toast } from '@tryaura/components';
-import { Youtube, Video, Upload, X } from 'lucide-react';
+import { Youtube, Video, Upload, X, CirclePlay, Play } from 'lucide-react';
+import { getYoutubeId } from '../../../utils/tryaura';
 
 declare const wp: any;
 
@@ -30,13 +31,12 @@ const VideoDetailsModal = ( {
 	);
 	const [ generatedThumbnail, setGeneratedThumbnail ] = useState( '' );
 	const [ isSaving, setIsSaving ] = useState( false );
-
-	const getYoutubeId = ( videoUrl: string ) => {
-		const pattern =
-			/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-		const match = videoUrl.match( pattern );
-		return match ? match[ 1 ] : null;
-	};
+	const [ videoFileName, setVideoFileName ] = useState(
+		initialData?.videoFileName || ''
+	);
+	const [ videoFileSize, setVideoFileSize ] = useState(
+		initialData?.videoFileSize || ''
+	);
 
 	const generateFromVideo = async (): Promise< string | null > => {
 		if ( ! url ) {
@@ -70,9 +70,7 @@ const VideoDetailsModal = ( {
 								canvas.width,
 								canvas.height
 							);
-							const thumbUrl = canvas.toDataURL(
-								'image/jpeg'
-							);
+							const thumbUrl = canvas.toDataURL( 'image/jpeg' );
 							setGeneratedThumbnail( thumbUrl );
 							resolve( thumbUrl );
 						} else {
@@ -92,7 +90,7 @@ const VideoDetailsModal = ( {
 
 	const openMediaModal = () => {
 		const frame = wp.media( {
-			title: __( 'Select Video', 'try-aura' ),
+			title: __( 'Select Video', 'tryaura' ),
 			multiple: false,
 			library: { type: 'video' },
 		} );
@@ -103,15 +101,25 @@ const VideoDetailsModal = ( {
 				.get( 'selection' )
 				.first()
 				.toJSON();
+			setPlatform( 'site_stored' );
 			setUrl( attachment.url );
+			setVideoFileName( attachment.filename || attachment.title || '' );
+			setVideoFileSize( attachment.filesizeHumanReadable || '' );
 		} );
 
 		frame.open();
 	};
 
+	const clearVideo = () => {
+		setUrl( '' );
+		setVideoFileName( '' );
+		setVideoFileSize( '' );
+		setGeneratedThumbnail( '' );
+	};
+
 	const openThumbnailModal = () => {
 		const frame = wp.media( {
-			title: __( 'Select Video Thumbnail', 'try-aura' ),
+			title: __( 'Select Video Thumbnail', 'tryaura' ),
 			multiple: false,
 			library: { type: 'image' },
 			tryAuraContext: 'video_thumbnail',
@@ -134,15 +142,15 @@ const VideoDetailsModal = ( {
 
 	const handleSave = async () => {
 		if ( ! platform ) {
-			toast.error( __( 'Please select a video platform.', 'try-aura' ) );
+			toast.error( __( 'Please select a video platform.', 'tryaura' ) );
 			return;
 		}
 		if ( ! url ) {
-			toast.error( __( 'Please enter a valid video URL.', 'try-aura' ) );
+			toast.error( __( 'Please enter a valid video URL.', 'tryaura' ) );
 			return;
 		}
 		if ( ! thumbnailUrl && ! originalImageUrl && useCustomThumbnail ) {
-			toast.error( __( 'Please select a video thumbnail.', 'try-aura' ) );
+			toast.error( __( 'Please select a video thumbnail.', 'tryaura' ) );
 			return;
 		}
 
@@ -161,6 +169,8 @@ const VideoDetailsModal = ( {
 				thumbnailId,
 				thumbnailUrl,
 				generatedThumbnail: currentGeneratedThumbnail,
+				videoFileName,
+				videoFileSize,
 			} );
 		} catch ( e ) {
 			// eslint-disable-next-line no-console
@@ -185,8 +195,8 @@ const VideoDetailsModal = ( {
 				<div className="border-b border-[rgba(233,233,233,1)] p-[16px_24px] flex justify-between items-center gap-1">
 					<h2 className="m-0">
 						{ initialData
-							? __( 'Edit Video', 'try-aura' )
-							: __( 'Add Video From URL', 'try-aura' ) }
+							? __( 'Edit Video', 'tryaura' )
+							: __( 'Add Video From URL', 'tryaura' ) }
 					</h2>
 
 					<button
@@ -203,7 +213,7 @@ const VideoDetailsModal = ( {
 				<div className="p-[27px_24px] border-b border-[rgba(233,233,233,1)] flex flex-col gap-3">
 					<div>
 						<span className="block text-sm font-medium text-gray-700 mb-2">
-							{ __( 'Video Platforms', 'try-aura' ) }
+							{ __( 'Video Platforms', 'tryaura' ) }
 						</span>
 						<ModernSelect
 							value={ platform }
@@ -213,14 +223,14 @@ const VideoDetailsModal = ( {
 							} }
 							options={ [
 								{
-									label: __( 'Youtube Video', 'try-aura' ),
+									label: __( 'Youtube Video', 'tryaura' ),
 									value: 'youtube',
 									icon: <Youtube size={ 18 } />,
 								},
 								{
 									label: __(
 										'Site stored Video',
-										'try-aura'
+										'tryaura'
 									),
 									value: 'site_stored',
 									icon: <Video size={ 18 } />,
@@ -231,37 +241,94 @@ const VideoDetailsModal = ( {
 					</div>
 
 					<div>
-						<label
-							htmlFor={ `try-aura-video-url-${ platform }` }
-							className="block text-sm font-medium text-gray-700 mb-2"
-						>
-							{ __( 'Video URL', 'try-aura' ) }
-						</label>
-						<div className="flex gap-2">
-							<input
-								id={ `try-aura-video-url-${ platform }` }
-								name={ `try-aura-video-url-${ platform }` }
-								type="text"
-								className="flex-1 border rounded-md p-[10px_16px] leading-0 border-[#E9E9E9] focus:border-primary! focus:shadow-none"
-								placeholder={
-									platform === 'youtube'
-										? 'e.g. https://www.youtube.com/watch?v=...'
-										: __( 'Video URL', 'try-aura' )
-								}
-								value={ url }
-								onChange={ ( e ) => setUrl( e.target.value ) }
-								readOnly={ platform === 'site_stored' }
-								disabled={ platform === 'site_stored' }
-							/>
-							{ platform === 'site_stored' && (
-								<Button
-									variant="outline-primary"
-									onClick={ openMediaModal }
+						{ platform === 'youtube' && (
+							<>
+								<label
+									htmlFor={ `tryaura-video-url-${ platform }` }
+									className="block text-sm font-medium text-gray-700 mb-2"
 								>
-									<Upload size={ 18 } />
-								</Button>
-							) }
-						</div>
+									{ __( 'Video URL', 'tryaura' ) }
+								</label>
+								<div className="flex gap-2">
+									<input
+										id={ `tryaura-video-url-${ platform }` }
+										name={ `tryaura-video-url-${ platform }` }
+										type="text"
+										className="flex-1 border rounded-md p-[10px_16px] leading-0 border-[#E9E9E9] focus:border-primary! focus:shadow-none placeholder-[#2c333880]"
+										placeholder={ __( 'e.g. https://www.youtube.com/watch?v=...', 'tryaura' ) }
+										value={ url }
+										onChange={ ( e ) =>
+											setUrl( e.target.value )
+										}
+									/>
+								</div>
+							</>
+						) }
+						{ platform === 'site_stored' && (
+							<div className="w-full">
+								{ url && videoFileName ? (
+									<div className="flex items-center gap-3 p-4 rounded-[5px] bg-[#F8F9F8]">
+										<div className="flex items-center justify-center w-9 h-9 rounded-md border border-neutral-200">
+											<div className="w-6 h-6 bg-neutral-400 rounded-full flex items-center justify-center">
+												<Play
+													size={ 9 }
+													className="text-white fill-white"
+												/>
+											</div>
+										</div>
+										<div className="flex-1 flex flex-col gap-1 min-w-0">
+											<p className="text-[13px] font-semibold text-[#575757] truncate m-0">
+												{ videoFileName }
+											</p>
+											<p className="text-[12px] font-normal text-[#828282] m-0">
+												{ videoFileSize }
+											</p>
+										</div>
+										<button
+											onClick={ ( e ) => {
+												e.preventDefault();
+												clearVideo();
+											} }
+											className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-red-50 transition-colors cursor-pointer border-0 bg-transparent"
+											aria-label={ __(
+												'Remove video',
+												'tryaura'
+											) }
+										>
+											<X
+												size={ 20 }
+												className="text-neutral-500 hover:text-red-500"
+											/>
+										</button>
+									</div>
+								) : (
+									<div className="flex flex-col p-5 gap-2.5 justify-center items-center rounded-[5px] border-2 border-dashed border-neutral-200 bg-neutral-50 text-center hover:border-neutral-400 transition-colors duration-200">
+										<Button
+											variant="outline"
+											className="border-neutral-200!"
+											onClick={ openMediaModal }
+										>
+											<div className="flex items-center gap-2">
+												<span className="text-[#575757]! font-medium! text-[14px]! leading-5!">
+													{ __(
+														'Upload Video',
+														'tryaura'
+													) }
+												</span>
+												<Upload size={ 16 } />
+											</div>
+										</Button>
+
+										<p className="text-[#828282] p-0 m-0 font-normal text-[12px]">
+											{ __(
+												'Supported files: mov, mp4',
+												'tryaura'
+											) }
+										</p>
+									</div>
+								) }
+							</div>
+						) }
 					</div>
 
 					<div className="flex flex-col gap-[32px]">
@@ -270,15 +337,15 @@ const VideoDetailsModal = ( {
 							onChange={ ( e: any ) =>
 								setUseCustomThumbnail( e.target.checked )
 							}
-							id="try-aura-video-use-custom-thumbnail"
+							id="tryaura-video-use-custom-thumbnail"
 						>
 							<label
 								className="text-[15px] font-medium text-[#7D7D7D] cursor-pointer"
-								htmlFor="try-aura-video-use-custom-thumbnail"
+								htmlFor="tryaura-video-use-custom-thumbnail"
 							>
 								{ __(
 									'Use Custom video Thumbnail?',
-									'try-aura'
+									'tryaura'
 								) }
 							</label>
 						</Checkbox>
@@ -295,7 +362,7 @@ const VideoDetailsModal = ( {
 								>
 									{ __(
 										'Select Video Thumbnail',
-										'try-aura'
+										'tryaura'
 									) }
 								</Button>
 
@@ -317,7 +384,7 @@ const VideoDetailsModal = ( {
 									<span className="block text-xs font-medium text-gray-500 mb-2">
 										{ __(
 											'Generated Preview:',
-											'try-aura'
+											'tryaura'
 										) }
 									</span>
 									<div className="rounded-lg border border-gray-200 w-50 h-50 overflow-hidden">
@@ -336,12 +403,12 @@ const VideoDetailsModal = ( {
 				<div className="flex justify-end gap-3 p-[20px_24px]">
 					<div className="flex gap-3">
 						<Button variant="outline" onClick={ onClose }>
-							{ __( 'Cancel', 'try-aura' ) }
+							{ __( 'Cancel', 'tryaura' ) }
 						</Button>
 						<Button onClick={ handleSave } loading={ isSaving }>
 							{ initialData
-								? __( 'Update Video', 'try-aura' )
-								: __( 'Add Video', 'try-aura' ) }
+								? __( 'Update Video', 'tryaura' )
+								: __( 'Add Video', 'tryaura' ) }
 						</Button>
 					</div>
 				</div>

@@ -12,13 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin class.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class Plugin {
 	/**
 	 * Plugin version
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @var string
 	 */
@@ -28,7 +28,7 @@ class Plugin {
 	/**
 	 * Bootstraps the plugin.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		$this->container = TryAura::container();
@@ -41,7 +41,7 @@ class Plugin {
 	/**
 	 * Define all constants
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @return void
 	 */
@@ -59,7 +59,7 @@ class Plugin {
 		/**
 		 * Action to signal that WooCommerce has finished loading.
 		 *
-		 * @since PLUGIN_SINCE
+		 * @since 1.0.0
 		 */
 		do_action( 'tryaura_loaded', $this->container );
 	}
@@ -116,9 +116,9 @@ class Plugin {
 		add_filter( 'rest_post_dispatch', array( $this, 'add_wc_existence_header' ), 10, 3 );
 
 		/**
-		 * Action to signal that try-aura has finished loading.
+		 * Action to signal that tryaura has finished loading.
 		 *
-		 * @since PLUGIN_SINCE
+		 * @since 1.0.0
 		 */
 		do_action( 'tryaura_classes_loaded', $this->container );
 	}
@@ -139,8 +139,8 @@ class Plugin {
 
 		$route = $request->get_route();
 
-		if ( strpos( $route, 'try-aura/v1' ) !== false || strpos( $route, 'generate/v1' ) !== false ) {
-			$response->header( 'X-Try-Aura-WC-Exists', TryAura::is_woocommerce_active()? 'true' : 'false' );
+		if ( strpos( $route, 'tryaura/v1' ) !== false || strpos( $route, 'generate/v1' ) !== false ) {
+			$response->header( 'X-tryaura-WC-Exists', class_exists( 'WooCommerce' ) ? 'true' : 'false' );
 		}
 
 		return $response;

@@ -6,6 +6,7 @@ import { createHashRouter, RouterProvider } from 'react-router-dom';
 import Settings from './pages/Settings';
 import Dashboard from './pages/Dashboard';
 import GeminiSettings from './pages/Settings/Gemini/GeminiSettings';
+import TryOnControlSettings from './pages/Settings/Woocommerce/TryOnControl/TryOnControlSettings';
 
 export type TryAuraAdminRoute = {
 	id: string;
@@ -15,6 +16,9 @@ export type TryAuraAdminRoute = {
 };
 
 const getAdminRoutes = () => {
+	// @ts-ignore
+	const wcExists = window?.tryAura?.wcExists ?? false;
+
 	let routes: Array< TryAuraAdminRoute > = [
 		{
 			id: 'dashboard',
@@ -32,6 +36,13 @@ const getAdminRoutes = () => {
 			path: '/settings/gemini',
 		},
 	];
+	if ( wcExists ) {
+		routes.push( {
+			id: 'try-on-control',
+			element: <TryOnControlSettings />,
+			path: '/settings/try-on-control',
+		} );
+	}
 
 	// @ts-ignore
 	routes = applyFilters(
@@ -41,7 +52,7 @@ const getAdminRoutes = () => {
 
 	routes.push( {
 		id: 'tryaura-404',
-		element: <p>{ __( 'Page not found', 'try-aura' ) }</p>,
+		element: <p>{ __( 'Page not found', 'tryaura' ) }</p>,
 		path: '*',
 	} );
 

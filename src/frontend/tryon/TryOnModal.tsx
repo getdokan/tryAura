@@ -6,7 +6,9 @@ import UserImageSection from './UserImageSection';
 import ProductImagesSection from './ProductImagesSection';
 import Output from './Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
-import { Button } from '../../components';
+import { Button, TryauraLogoWithText } from '../../components';
+import { hasPro } from '../../utils/tryaura';
+import { twMerge } from 'tailwind-merge';
 
 type TryOnModalProps = {
 	productImages: string[];
@@ -21,7 +23,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 	const [ message, setMessage ] = useState< string >(
 		__(
 			'Select or capture one or more photos, then click Try On',
-			'try-aura'
+			'tryaura'
 		)
 	);
 	const [ error, setError ] = useState< string | null >( null );
@@ -40,16 +42,16 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 	const canvasRef = useRef< HTMLCanvasElement | null >( null );
 
 	useEffect( () => {
-		document.body.classList.add( 'try-aura-tryon-open' );
+		document.body.classList.add( 'tryaura-tryon-open' );
 		return () => {
-			document.body.classList.remove( 'try-aura-tryon-open' );
+			document.body.classList.remove( 'tryaura-tryon-open' );
 			stopCamera();
 		};
 	}, [] );
 
 	const startCamera = async () => {
 		try {
-			doAction( 'try-aura.before_camera_start', {
+			doAction( 'tryaura.before_camera_start', {
 				videoRef,
 				streamRef,
 				canvasRef,
@@ -70,7 +72,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			setMessage( 'Camera active — click Capture when ready' );
 			setError( null );
 
-			doAction( 'try-aura.after_camera_start', {
+			doAction( 'tryaura.after_camera_start', {
 				videoRef,
 				streamRef,
 				canvasRef,
@@ -87,7 +89,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		streamRef.current = null;
 		setCameraActive( false );
 		doAction(
-			'try-aura.after_camera_stop',
+			'tryaura.after_camera_stop',
 			videoRef,
 			streamRef,
 			canvasRef
@@ -134,7 +136,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			setError(
 				__(
 					'Camera not ready yet. Please wait a moment and try again.',
-					'try-aura'
+					'tryaura'
 				)
 			);
 			return;
@@ -151,12 +153,12 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			setError(
 				__(
 					'Camera not ready yet. Please wait a moment and try again.',
-					'try-aura'
+					'tryaura'
 				)
 			);
 			return;
 		}
-		doAction( 'try-aura.before_photo_capture', { videoRef, canvasRef } );
+		doAction( 'tryaura.before_photo_capture', { videoRef, canvasRef } );
 		if ( ! canvasRef.current ) {
 			canvasRef.current = document.createElement( 'canvas' );
 		}
@@ -176,7 +178,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		setMessage( 'Photo captured. Click Try to generate.' );
 		stopCamera();
 
-		doAction( 'try-aura.after_photo_capture', {
+		doAction( 'tryaura.after_photo_capture', {
 			videoRef,
 			canvasRef,
 			dataUrl,
@@ -203,7 +205,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 		}
 		Promise.all( readers )
 			.then( ( results ) => {
-				doAction( 'try-aura.photo_selected_before', {
+				doAction( 'tryaura.photo_selected_before', {
 					files,
 					results,
 				} );
@@ -211,14 +213,14 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				setMessage(
 					__(
 						'Photo(s) selected. Click Try to generate.',
-						'try-aura'
+						'tryaura'
 					)
 				);
-				doAction( 'try-aura.photo_selected_after', { files, results } );
+				doAction( 'tryaura.photo_selected_after', { files, results } );
 			} )
 			.catch( () => {
 				setError(
-					__( 'Failed to read one or more files.', 'try-aura' )
+					__( 'Failed to read one or more files.', 'tryaura' )
 				);
 			} );
 		try {
@@ -281,20 +283,20 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 	const doTry = async () => {
 		if ( userImages.length === 0 ) {
 			setError(
-				__( 'Please select or capture your photo first.', 'try-aura' )
+				__( 'Please select or capture your photo first.', 'tryaura' )
 			);
 			return;
 		}
 		if ( selectedProductImages.length === 0 ) {
 			setError(
-				__( 'Please select at least one product image.', 'try-aura' )
+				__( 'Please select at least one product image.', 'tryaura' )
 			);
 			return;
 		}
 		try {
 			setError( null );
 			setStatus( 'fetching' );
-			setMessage( __( 'Preparing images…', 'try-aura' ) );
+			setMessage( __( 'Preparing images…', 'tryaura' ) );
 
 			const primaryUserImage = userImages[ 0 ];
 			const userInline = await toInlineData( primaryUserImage );
@@ -310,7 +312,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			];
 
 			setStatus( 'generating' );
-			setMessage( __( 'Generating try-on preview…', 'try-aura' ) );
+			setMessage( __( 'Generating try-on preview…', 'tryaura' ) );
 
 			const promptText = applyFilters(
 				'tryaura.tryon.prompt_text',
@@ -324,7 +326,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 
 			if ( ! restUrl || ! nonce ) {
 				throw new Error(
-					__( 'REST API not configured properly.', 'try-aura' )
+					__( 'REST API not configured properly.', 'tryaura' )
 				);
 			}
 
@@ -351,16 +353,16 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 				const dataUrl = `data:image/png;base64,${ data.image }`;
 				setGeneratedUrl( dataUrl );
 				setStatus( 'done' );
-				setMessage( __( 'Done', 'try-aura' ) );
+				setMessage( __( 'Done', 'tryaura' ) );
 			} else {
 				throw new Error(
-					__( 'Model did not return an image.', 'try-aura' )
+					__( 'Model did not return an image.', 'tryaura' )
 				);
 			}
 		} catch ( e: any ) {
-			setError( e?.message || __( 'Generation failed.', 'try-aura' ) );
+			setError( e?.message || __( 'Generation failed.', 'tryaura' ) );
 			setStatus( 'error' );
-			setMessage( __( 'Generation failed.', 'try-aura' ) );
+			setMessage( __( 'Generation failed.', 'tryaura' ) );
 		}
 	};
 
@@ -388,8 +390,8 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			<div className="ai-enhancer-modal fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-200000">
 				<div className="ai-enhancer-modal__content bg-white rounded-[3px] max-w-250 w-[90vw] h-auto max-h-[90vh] overflow-y-auto">
 					<div className="flex flex-row justify-between border-b border-b-[#E9E9E9] p-[16px_24px]">
-						<h2 className="m-0 font-[700] font-bold text-[18px] text-[#25252D]">
-							{ __( 'Try-On Product', 'try-aura' ) }
+						<h2 className="m-0 font-bold text-[18px] text-[#25252D]">
+							{ __( 'Try-On Product', 'tryaura' ) }
 						</h2>
 						<button
 							className="w-4 h-4 cursor-pointer p-0 m-0 bg-transparent"
@@ -433,28 +435,45 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 						/>
 					</div>
 					{ /* Actions */ }
-					<div className="mt-6 border-t border-t-[#E9E9E9] flex flex-row justify-end p-[16px_24px] gap-3">
-						<Button
-							className="bg-black hover:bg-black/90 disabled:bg-[rgba(241,241,244,1)] disabled:text-[rgba(165,165,170,1)]"
-							onClick={ doTry }
-							disabled={
-								isBusy ||
-								userImages.length === 0 ||
-								selectedProductImages.length === 0
-							}
-							loading={ isBusy }
-						>
-							{ isBusy
-								? __( 'Trying…', 'try-aura' )
-								: __( 'TRY ON', 'try-aura' ) }
-						</Button>
-						<Button
-							onClick={ addToCart }
-							variant="outline"
-							disabled={ isBusy }
-						>
-							{ __( 'Add To cart', 'try-aura' ) }
-						</Button>
+					<div
+						className={ twMerge(
+							'mt-6 border-t border-t-[#E9E9E9] flex flex-row p-[16px_24px]',
+							hasPro() ? 'justify-end' : 'justify-between'
+						) }
+					>
+						{ ! hasPro() && (
+							<div className="flex flex-row gap-2 items-center">
+								<span className="text-[14px] font-normal text-[rgba(130,130,130,1)]">
+									{ __( 'Powered By', 'tryaura' ) }
+								</span>
+								<div>
+									<TryauraLogoWithText className="h-5 w-auto" />
+								</div>
+							</div>
+						) }
+						<div className="flex flex-row gap-3">
+							<Button
+								className="bg-black hover:bg-black/90 disabled:bg-[rgba(241,241,244,1)] disabled:text-[rgba(165,165,170,1)]"
+								onClick={ doTry }
+								disabled={
+									isBusy ||
+									userImages.length === 0 ||
+									selectedProductImages.length === 0
+								}
+								loading={ isBusy }
+							>
+								{ isBusy
+									? __( 'Trying…', 'tryaura' )
+									: __( 'TRY ON', 'tryaura' ) }
+							</Button>
+							<Button
+								onClick={ addToCart }
+								variant="outline"
+								disabled={ isBusy }
+							>
+								{ __( 'Add To cart', 'tryaura' ) }
+							</Button>
+						</div>
 					</div>
 				</div>
 			</div>

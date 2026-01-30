@@ -23,7 +23,7 @@ TryAura is an AI-powered virtual try-on and content creation platform built for 
 
 == Installation ==
 
-1. Upload the `try-aura` folder to the `/wp-content/plugins/` directory.
+1. Upload the `tryaura` folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Navigate to the 'TryAura' menu in the admin dashboard to enter your Google AI API key.
 

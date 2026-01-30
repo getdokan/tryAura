@@ -4,11 +4,28 @@ namespace Dokan\TryAura;
 
 use Dokan\TryAura\DependencyManagement\Container;
 
+/**
+ * TryAura Container Class.
+ *
+ * @since 1.0.0
+ */
 final class TryAura {
+
+	/**
+	 * Holds the container instance, initialized to null.
+	 *
+	 * @since 1.0.0
+	 */
 	private static ?Container $container = null;
 
-	public static function container(): Container
-	{
+	/**
+	 * Returns the shared instance of the Container.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return Container The shared Container instance.
+	 */
+	public static function container(): Container {
 		if (! self::$container) {
 			self::$container = new Container();
 		}
@@ -16,9 +33,7 @@ final class TryAura {
 		return self::$container;
 	}
 
-	public static function is_woocommerce_active(): bool
-	{
-		return true;
-		return class_exists( 'WooCommerce' );
+	public static function is_pro_exists() {
+		return apply_filters( 'tryaura_is_pro_exists', false );
 	}
 }

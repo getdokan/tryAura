@@ -11,7 +11,7 @@ domReady( () => {
 			if ( isThumbnailMode ) {
 				return __(
 					'AI Product Video Thumbnail Generation',
-					'try-aura'
+					'tryaura'
 				);
 			}
 			return title;

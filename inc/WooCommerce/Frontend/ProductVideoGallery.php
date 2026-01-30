@@ -2,6 +2,7 @@
 
 namespace Dokan\TryAura\WooCommerce\Frontend;
 
+use Dokan\TryAura\TryAura;
 use Dokan\TryAura\WooCommerce\Admin\ProductGalleryVideo as AdminProductVideo;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -11,14 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Handles Product Gallery Video functionality on the frontend.
  *
- * @since PLUGIN_SINCE
+ * @since 1.0.0
  */
 class ProductVideoGallery {
 
 	/**
 	 * Class constructor.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function __construct() {
 		// Use filters for better theme compatibility.
@@ -31,7 +32,7 @@ class ProductVideoGallery {
 	/**
 	 * Render video gallery item when the attachment has video data.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 *
 	 * @param string $html          The original HTML.
 	 * @param int    $attachment_id The attachment ID.
@@ -60,7 +61,7 @@ class ProductVideoGallery {
 		$thumbnail_url = ! empty( $video['thumbnailUrl'] ) ? $video['thumbnailUrl'] : '';
 
 		if ( empty( $thumbnail_url ) && 'youtube' === $video['platform'] ) {
-			$video_id      = $this->get_youtube_id( $video['url'] );
+			$video_id      = TryAura::container()->get( 'woocommerce' )->get_youtube_id( $video['url']);
 			$thumbnail_url = $video_id ? "https://img.youtube.com/vi/{$video_id}/hqdefault.jpg" : '';
 		}
 
@@ -75,13 +76,13 @@ class ProductVideoGallery {
 		// Add video-related data attributes to the existing gallery item
 		$html = preg_replace(
 			'/class=["\']/',
-			'data-try-aura-video-url="' . esc_url( $video['url'] ) . '" data-try-aura-video-platform="' . esc_attr( $video['platform'] ) . '" $0try-aura-video-item try-aura-video-thumbnail ',
+			'data-tryaura-video-url="' . esc_url( $video['url'] ) . '" data-tryaura-video-platform="' . esc_attr( $video['platform'] ) . '" $0tryaura-video-item tryaura-video-thumbnail ',
 			$html,
 			1
 		);
 
 		// Insert video icon overlay before the closing tag of the gallery image wrapper
-		$video_overlay = '<div class="try-aura-video-icon-overlay"><svg viewBox="0 0 24 24" width="48" height="48" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg></div>';
+		$video_overlay = '<div class="tryaura-video-icon-overlay"><svg viewBox="0 0 24 24" width="48" height="48" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg></div>';
 
 		if ( strpos( $html, '</' ) !== false ) {
 			$html = preg_replace( '/<\/[a-z0-9]+>\s*$/i', $video_overlay . '$0', $html );
@@ -93,7 +94,7 @@ class ProductVideoGallery {
 	/**
 	 * Enqueue frontend assets.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 1.0.0
 	 */
 	public function enqueue_assets(): void {
 		if ( ! is_product() ) {
@@ -114,10 +115,10 @@ class ProductVideoGallery {
 		}
 
 		if ( file_exists( TRYAURA_DIR . '/' . $style_path ) ) {
-			wp_enqueue_style( 'try-aura-product-video-frontend', plugins_url( $style_path, TRYAURA_FILE ), array( 'wp-components' ), $version );
+			wp_enqueue_style( 'tryaura-product-video-frontend', plugins_url( $style_path, TRYAURA_FILE ), array( 'wp-components' ), $version );
 		}
 
-		wp_enqueue_script( 'try-aura-product-video-frontend', plugins_url( $script_path, TRYAURA_FILE ), $deps, $version, true );
+		wp_enqueue_script( 'tryaura-product-video-frontend', plugins_url( $script_path, TRYAURA_FILE ), $deps, $version, true );
 
 		global $post;
 
@@ -128,25 +129,11 @@ class ProductVideoGallery {
 		$video_data = get_post_meta( $post->ID, AdminProductVideo::VIDEO_META_KEY, true );
 
 		wp_localize_script(
-			'try-aura-product-video-frontend',
+			'tryaura-product-video-frontend',
 			'tryAuraVideoData',
 			array(
 				'video' => $video_data,
 			)
 		);
-	}
-
-	/**
-	 * Extract YouTube video ID from URL.
-	 *
-	 * @since PLUGIN_SINCE
-	 *
-	 * @param string $url YouTube URL.
-	 *
-	 * @return string|false
-	 */
-	private function get_youtube_id( string $url ) {
-		preg_match( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match );
-		return isset( $match[1] ) ? $match[1] : false;
 	}
 }

@@ -1,7 +1,6 @@
 ### Composer template
 composer.phar
 /vendor/
-/lib/
 /.idea/
 /build
 

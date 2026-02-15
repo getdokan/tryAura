@@ -75,7 +75,7 @@ class DefinitionAggregate implements DefinitionAggregateInterface
             }
         }
 
-        throw new NotFoundException(sprintf('Alias (%s) is not being handled as a definition.', $id));
+        throw new NotFoundException(sprintf('Alias (%s) is not being handled as a definition.', esc_html($id)));
     }
 
     public function resolve(string $id)

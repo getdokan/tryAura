@@ -99,8 +99,8 @@ trait ArgumentResolverTrait
 
             throw new NotFoundException(sprintf(
                 'Unable to resolve a value for parameter (%s) in the function/method (%s)',
-                $name,
-                $method->getName()
+                esc_html($name),
+                esc_html($method->getName())
             ));
         }
 

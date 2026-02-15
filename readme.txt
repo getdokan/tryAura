@@ -1,4 +1,4 @@
-=== TryAura - AI Visual Studio & Virtual Try On for WooCommerce ===
+=== TryAura ===
 Contributors: wedevs, tareq1988, nizamuddinbabu
 Tags: virtual try on, product visualization, try-on, virtual mirror
 Requires at least: 6.6

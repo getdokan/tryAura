@@ -175,21 +175,21 @@ This plugin is a good fit if you:
 This plugin connects to the Google Gemini API to provide AI-powered image generation, video generation, and virtual try-on features.
 
 Data sent to Google Gemini:
-- Product images uploaded by the merchant
-- Customer photos submitted for virtual try-on (frontend)
-- Text prompts for image/video generation
-- Selected AI model preferences
+* Product images uploaded by the merchant
+* Customer photos submitted for virtual try-on (frontend)
+* Text prompts for image/video generation
+* Selected AI model preferences
 
 This connection happens when:
-- A merchant generates or enhances a product image
-- A merchant generates a product video
-- A customer uses the Virtual Try-On feature on the storefront
+* A merchant generates or enhances a product image
+* A merchant generates a product video
+* A customer uses the Virtual Try-On feature on the storefront
 
 Google Gemini is a service by Google LLC.
-- Service homepage: https://ai.google.dev
-- Terms of Service: https://ai.google.dev/terms
-- Privacy Policy: https://policies.google.com/privacy
-- API Endpoints: https://generativelanguage.googleapis.com, https://aiplatform.googleapis.com
+* Service homepage: https://ai.google.dev
+* Terms of Service: https://ai.google.dev/terms
+* Privacy Policy: https://policies.google.com/privacy
+* API Endpoints: https://generativelanguage.googleapis.com, https://aiplatform.googleapis.com
 
 == Frequently Asked Questions ==
 

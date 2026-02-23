@@ -223,6 +223,8 @@ Yes. TryAura includes built-in presets and visual controls that help generate co
 === Is TryAura a WooCommerce-specific ecommerce tool? ===
 Yes. TryAura is built specifically for WooCommerce and integrates directly with the WooCommerce product editor and WordPress dashboard.
 
+= Contribute =
+This may have bugs and lack of many features. If you want to contribute on this project, you are more than welcome. Please fork the repository from [Github](https://github.com/getdokan/tryAura).
 
 == Installation ==
 

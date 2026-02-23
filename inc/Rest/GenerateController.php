@@ -137,9 +137,9 @@ class GenerateController {
 					'input_tokens'   => $usage['promptTokenCount'] ?? 0,
 					'output_tokens'  => $usage['candidatesTokenCount'] ?? $usage['responseTokenCount'] ?? 0,
 					'total_tokens'   => $usage['totalTokenCount'] ?? 0,
-					'generated_from' => $params['generated_from'] ?? 'tryon',
-					'object_id'      => $params['object_id'] ?? null,
-					'object_type'    => $params['object_type'] ?? null,
+					'generated_from' => sanitize_text_field( $params['generated_from'] ?? 'tryon' ),
+					'object_id'      => sanitize_text_field( $params['object_id'] ?? null ),
+					'object_type'    => sanitize_text_field( $params['object_type'] ?? null ),
 					'status'         => 'success',
 				)
 			);

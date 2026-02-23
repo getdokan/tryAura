@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-02-23T06:54:35+00:00\n"
+"POT-Creation-Date: 2026-02-23T07:28:58+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: tryaura\n"
@@ -85,7 +85,7 @@ msgstr ""
 msgid "ago"
 msgstr ""
 
-#: inc/Rest/GenerateController.php:68
+#: inc/Rest/GenerateController.php:101
 msgid "unauthorized access"
 msgstr ""
 

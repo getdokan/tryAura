@@ -69,17 +69,53 @@ class Admin {
 			'tryaura',
 			$this->option_key,
 			array(
-				'type'          => 'object',
-				'default'       => array(),
-				'show_in_rest'  => array(
+				'type'              => 'object',
+				'default'           => array(),
+				'show_in_rest'      => array(
 					'name'   => $this->option_key,
 					'schema' => array( 'type' => 'object' ),
 				),
-				'auth_callback' => function () {
+				'sanitize_callback' => array( $this, 'sanitize_settings' ),
+				'auth_callback'     => function () {
 					return current_user_can( 'manage_options' );
 				},
 			)
 		);
+	}
+
+	/**
+	 * Sanitize the plugin settings before saving.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param mixed $value The unsanitized setting value.
+	 *
+	 * @return array Sanitized settings array.
+	 */
+	public function sanitize_settings( $value ): array {
+		if ( ! is_array( $value ) ) {
+			return array();
+		}
+
+		$sanitized = array();
+
+		if ( isset( $value['google'] ) && is_array( $value['google'] ) ) {
+			$sanitized['google'] = array();
+
+			if ( isset( $value['google']['apiKey'] ) ) {
+				$sanitized['google']['apiKey'] = sanitize_text_field( $value['google']['apiKey'] );
+			}
+
+			if ( isset( $value['google']['imageModel'] ) ) {
+				$sanitized['google']['imageModel'] = sanitize_text_field( $value['google']['imageModel'] );
+			}
+
+			if ( isset( $value['google']['videoModel'] ) ) {
+				$sanitized['google']['videoModel'] = sanitize_text_field( $value['google']['videoModel'] );
+			}
+		}
+
+		return $sanitized;
 	}
 
 	/**

@@ -93,34 +93,45 @@ class Admin {
 						),
 					),
 				),
-				'sanitize_callback' => function ( $value ) {
-					if ( ! is_array( $value ) ) {
-						return array();
-					}
-
-					$sanitized = array();
-
-					if ( isset( $value['google'] ) && is_array( $value['google'] ) ) {
-						$sanitized['google'] = array(
-							'apiKey'     => isset( $value['google']['apiKey'] ) ? sanitize_text_field( $value['google']['apiKey'] ) : '',
-							'imageModel' => isset( $value['google']['imageModel'] ) ? sanitize_text_field( $value['google']['imageModel'] ) : '',
-							'videoModel' => isset( $value['google']['videoModel'] ) ? sanitize_text_field( $value['google']['videoModel'] ) : '',
-						);
-					}
-
-					if ( isset( $value['woocommerce'] ) && is_array( $value['woocommerce'] ) ) {
-						$sanitized['woocommerce'] = array(
-							'bulkTryOnEenabled' => isset( $value['woocommerce']['bulkTryOnEenabled'] ) ? rest_sanitize_boolean( $value['woocommerce']['bulkTryOnEenabled'] ) : false,
-						);
-					}
-
-					return $sanitized;
-				},
+				'sanitize_callback' => array( $this, 'sanitize_settings' ),
 				'auth_callback'     => function () {
 					return current_user_can( 'manage_options' );
 				},
 			)
 		);
+	}
+
+	/**
+	 * Sanitize the plugin settings before saving.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param mixed $value The unsanitized setting value.
+	 *
+	 * @return array Sanitized settings array.
+	 */
+	public function sanitize_settings( $value ): array {
+		if ( ! is_array( $value ) ) {
+			return array();
+		}
+
+		$sanitized = array();
+
+		if ( isset( $value['google'] ) && is_array( $value['google'] ) ) {
+			$sanitized['google'] = array(
+				'apiKey'     => isset( $value['google']['apiKey'] ) ? sanitize_text_field( $value['google']['apiKey'] ) : '',
+				'imageModel' => isset( $value['google']['imageModel'] ) ? sanitize_text_field( $value['google']['imageModel'] ) : '',
+				'videoModel' => isset( $value['google']['videoModel'] ) ? sanitize_text_field( $value['google']['videoModel'] ) : '',
+			);
+		}
+
+		if ( isset( $value['woocommerce'] ) && is_array( $value['woocommerce'] ) ) {
+			$sanitized['woocommerce'] = array(
+				'bulkTryOnEenabled' => isset( $value['woocommerce']['bulkTryOnEenabled'] ) ? rest_sanitize_boolean( $value['woocommerce']['bulkTryOnEenabled'] ) : false,
+			);
+		}
+
+		return $sanitized;
 	}
 
 	/**

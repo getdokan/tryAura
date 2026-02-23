@@ -68,7 +68,7 @@ class GenerateController {
 			return new WP_REST_Response( array( 'message' => __('unauthorized access', 'tryaura') ), 401 );
 		}
 
-		$prompt     = $params['prompt'] ?? '';
+		$prompt     = sanitize_text_field( $params['prompt'] ?? '' );
 		$ref_images = $params['images'] ?? array();
 
 		$settings = get_option( 'tryaura_settings', array() );

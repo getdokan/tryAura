@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-30T11:40:19+00:00\n"
+"POT-Creation-Date: 2026-02-23T10:05:07+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: tryaura\n"
@@ -85,7 +85,7 @@ msgstr ""
 msgid "ago"
 msgstr ""
 
-#: inc/Rest/GenerateController.php:68
+#: inc/Rest/GenerateController.php:101
 msgid "unauthorized access"
 msgstr ""
 
@@ -111,23 +111,19 @@ msgstr ""
 msgid "%1$d products added to queue to %2$s try-on."
 msgstr ""
 
-#: inc/Rest/VideoThumbnailController.php:69
-msgid "Missing platform or URL."
-msgstr ""
-
-#: inc/Rest/VideoThumbnailController.php:87
+#: inc/Rest/VideoThumbnailController.php:99
 msgid "Could not generate thumbnail."
 msgstr ""
 
-#: inc/Rest/VideoThumbnailController.php:114
+#: inc/Rest/VideoThumbnailController.php:126
 msgid "Invalid image data."
 msgstr ""
 
-#: inc/Rest/VideoThumbnailController.php:119
+#: inc/Rest/VideoThumbnailController.php:131
 msgid "Could not decode image."
 msgstr ""
 
-#: inc/Rest/VideoThumbnailController.php:144
+#: inc/Rest/VideoThumbnailController.php:156
 msgid "Invalid YouTube URL."
 msgstr ""
 

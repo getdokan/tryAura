@@ -1,4 +1,4 @@
-=== TryAura - AI Visual Studio & Virtual Try On for WooCommerce ===
+=== TryAura ===
 Contributors: wedevs, tareq1988, nizamuddinbabu
 Tags: virtual try on, product visualization, try-on, virtual mirror
 Requires at least: 6.6
@@ -170,6 +170,27 @@ This plugin is a good fit if you:
 * Use existing product images
 * Prefer managing everything inside WordPress
 
+== External Services ==
+
+This plugin connects to the Google Gemini API to provide AI-powered image generation, video generation, and virtual try-on features.
+
+Data sent to Google Gemini:
+* Product images uploaded by the merchant
+* Customer photos submitted for virtual try-on (frontend)
+* Text prompts for image/video generation
+* Selected AI model preferences
+
+This connection happens when:
+* A merchant generates or enhances a product image
+* A merchant generates a product video
+* A customer uses the Virtual Try-On feature on the storefront
+
+Google Gemini is a service by Google LLC.
+* Service homepage: https://ai.google.dev
+* Terms of Service: https://ai.google.dev/terms
+* Privacy Policy: https://policies.google.com/privacy
+* API Endpoints: https://generativelanguage.googleapis.com, https://aiplatform.googleapis.com
+
 == Frequently Asked Questions ==
 
 === What types of products work best with TryAura Virtual Try On? ===
@@ -202,13 +223,17 @@ Yes. TryAura includes built-in presets and visual controls that help generate co
 === Is TryAura a WooCommerce-specific ecommerce tool? ===
 Yes. TryAura is built specifically for WooCommerce and integrates directly with the WooCommerce product editor and WordPress dashboard.
 
+= Contribute =
+This may have bugs and lack of many features. If you want to contribute on this project, you are more than welcome. Please fork the repository from [Github](https://github.com/getdokan/tryAura).
 
 == Installation ==
 
-1. Install using the WordPress Plugin Installer, or upload the plugin to the `wp-content/plugins/` directory
-2. Activate the plugin through the ‘Plugins’ menu in WordPress.
-3. Ensure WooCommerce is installed and active
-4. Utilize TryAura Features for maximum visual impact
+1. Install using the WordPress Plugin Installer, or upload the plugin to the `wp-content/plugins/` directory.
+2. Activate the plugin through the Plugins menu in WordPress.
+3. Ensure WooCommerce is installed and active.
+4. Go to TryAura > Settings and enter your Google Gemini API key.
+5. Open any WooCommerce product, generate visuals, or enable virtual try-on from the product editor.
+6. Save and publish the product.
 
 == Support ==
 We provide ongoing support to help you use TryAura effectively.
@@ -218,3 +243,8 @@ We provide ongoing support to help you use TryAura effectively.
 * Documentation and guides available on our website
 
 Support covers usage questions, setup guidance, and known issues. Custom development or theme-specific customizations may require additional review.
+
+== Changelog ==
+
+= 1.0.0 =
+* Initial release

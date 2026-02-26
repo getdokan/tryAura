@@ -1,6 +1,6 @@
 === TryAura ===
 Contributors: wedevs, tareq1988, nizamuddinbabu
-Tags: virtual tryon, product visualization, tryon, virtual mirror
+Tags: virtual try on, product visualization, try-on, virtual mirror
 Requires at least: 6.6
 Tested up to: 6.9
 Requires PHP: 7.4

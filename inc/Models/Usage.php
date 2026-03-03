@@ -7,6 +7,10 @@
 
 namespace Dokan\TryAura\Models;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 use Dokan\TryAura\Abstracts\Model;
 
 /**

@@ -69,7 +69,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 					await video.play?.();
 				} catch {}
 			}
-			setMessage( 'Camera active — click Capture when ready' );
+			setMessage( __( 'Camera active — click Capture when ready', 'tryaura' ) );
 			setError( null );
 
 			doAction( 'tryaura.after_camera_start', {
@@ -175,7 +175,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			canvas.toDataURL( 'image/jpeg', 0.95 )
 		);
 		setUserImages( [ dataUrl ] );
-		setMessage( 'Photo captured. Click Try to generate.' );
+		setMessage( __( 'Photo captured. Click Try to generate.', 'tryaura' ) );
 		stopCamera();
 
 		doAction( 'tryaura.after_photo_capture', {

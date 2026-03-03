@@ -46,6 +46,16 @@ class ProductController {
 				'methods'             => 'GET',
 				'callback'            => array( $this, 'get_product_images' ),
 				'permission_callback' => array( $this, 'permissions_check' ),
+				'args'                => array(
+					'id' => array(
+						'type'              => 'integer',
+						'required'          => true,
+						'sanitize_callback' => 'absint',
+						'validate_callback' => function ( $param ) {
+							return is_numeric( $param ) && $param > 0;
+						},
+					),
+				),
 			)
 		);
 	}
@@ -88,11 +98,13 @@ class ProductController {
 	}
 
 	/**
-	 * Check if the current user is logged in.
+	 * Check if the current user has permission to view product images.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return bool
 	 */
 	public function permissions_check() {
-		return is_user_logged_in();
+		return current_user_can( 'read' );
 	}
 }

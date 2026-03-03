@@ -149,7 +149,7 @@ class Admin {
 		$image_model = isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '';
 		$video_model = isset( $settings['google']['videoModel'] ) ? $settings['google']['videoModel'] : '';
 
-		// Localize data for the app.
+		// Localize data for the admin app (admin-only page, requires manage_options).
 		wp_localize_script(
 			'tryaura-admin',
 			'tryAura',

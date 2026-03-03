@@ -2,6 +2,10 @@
 
 namespace Dokan\TryAura\DependencyManagement\Providers;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 use Dokan\TryAura\DependencyManagement\BaseServiceProvider;
 use Dokan\TryAura\Admin\Admin;
 use Dokan\TryAura\Admin\Enhancer;

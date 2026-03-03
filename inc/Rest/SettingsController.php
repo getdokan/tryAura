@@ -73,8 +73,14 @@ class SettingsController {
 					'permission_callback' => array( $this, 'permissions_check' ),
 					'args'                => array(
 						$this->option_key => array(
-							'type'     => 'object',
-							'required' => false,
+							'type'              => 'object',
+							'required'          => false,
+							'sanitize_callback' => function ( $value ) {
+								if ( ! is_array( $value ) ) {
+									return array();
+								}
+								return map_deep( $value, 'sanitize_text_field' );
+							},
 						),
 					),
 				),

@@ -237,9 +237,6 @@ class UsageManager {
 			$params
 		);
 
-		error_log( print_r( $selector_parts, 1 ) );
-
-
 		$selectors = implode( ', ', $selector_parts );
 
 		// Group by date

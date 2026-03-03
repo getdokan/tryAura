@@ -170,6 +170,41 @@ This plugin is a good fit if you:
 * Use existing product images
 * Prefer managing everything inside WordPress
 
+== External Services ==
+
+This plugin connects to the Google Gemini API to provide AI-powered image generation, video generation, and virtual try-on features.
+
+Data sent to Google Gemini:
+* Product images uploaded by the merchant
+* Customer photos submitted for virtual try-on (frontend)
+* Text prompts for image/video generation
+* Selected AI model preferences
+
+This connection happens when:
+* A merchant generates or enhances a product image
+* A merchant generates a product video
+* A customer uses the Virtual Try-On feature on the storefront
+
+Google Gemini is a service by Google LLC.
+* Service homepage: https://ai.google.dev
+* Terms of Service: https://ai.google.dev/terms
+* Privacy Policy: https://policies.google.com/privacy
+* API Endpoints: https://generativelanguage.googleapis.com, https://aiplatform.googleapis.com
+
+This plugin optionally embeds YouTube videos on product pages when a merchant adds a YouTube video URL to a product gallery.
+
+Data sent to YouTube:
+* The YouTube video ID is used to construct an embed URL
+* Standard browser data is sent to YouTube when the embed loads on the frontend
+
+This connection happens when:
+* A visitor views a product page that has a YouTube video attached by the merchant
+
+YouTube is a service by Google LLC.
+* Service homepage: https://www.youtube.com
+* Terms of Service: https://www.youtube.com/t/terms
+* Privacy Policy: https://policies.google.com/privacy
+
 == Frequently Asked Questions ==
 
 === What types of products work best with TryAura Virtual Try On? ===
@@ -218,3 +253,11 @@ We provide ongoing support to help you use TryAura effectively.
 * Documentation and guides available on our website
 
 Support covers usage questions, setup guidance, and known issues. Custom development or theme-specific customizations may require additional review.
+
+= Contribute =
+This may have bugs and lack of many features. If you want to contribute on this project, you are more than welcome. Please fork the repository from [Github](https://github.com/getdokan/tryAura).
+
+== Changelog ==
+
+= 1.0.0 =
+* Initial release

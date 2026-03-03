@@ -2,6 +2,10 @@
 
 namespace Dokan\TryAura\Abstracts;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * Abstract Model class.
  */

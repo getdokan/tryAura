@@ -2,6 +2,10 @@
 
 namespace Dokan\TryAura\DependencyManagement;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 use Dokan\TryAura\ThirdParty\Packages\League\Container\ServiceProvider\BootableServiceProviderInterface;
 
 /**

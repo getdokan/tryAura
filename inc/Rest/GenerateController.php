@@ -47,8 +47,43 @@ class GenerateController {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'handle_generation' ),
 				'permission_callback' => array( $this, 'permissions_check' ),
+				'args'                => array(
+					'prompt'         => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'images'         => array(
+						'type'    => 'array',
+						'default' => array(),
+						'items'   => array(
+							'type' => 'string',
+						),
+					),
+					'object_id'      => array(
+						'type'              => 'integer',
+						'default'           => 0,
+						'sanitize_callback' => 'absint',
+					),
+					'object_type'    => array(
+						'type'              => 'string',
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'generated_from' => array(
+						'type'              => 'string',
+						'default'           => 'tryon',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'tryonNonce'     => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
 			)
 		);
+
 	}
 
 	/**
@@ -61,15 +96,14 @@ class GenerateController {
 	 * @return WP_REST_Response
 	 */
 	public function handle_generation( WP_REST_Request $request ) {
-		$params = $request->get_json_params();
-		$nonce  = $params['tryonNonce'] ?? '';
+		$nonce = $request->get_param( 'tryonNonce' );
 
-		if( ! wp_verify_nonce( $nonce, 'tryon_nonce' ) ) {
-			return new WP_REST_Response( array( 'message' => __('unauthorized access', 'tryaura') ), 401 );
+		if ( ! wp_verify_nonce( $nonce, 'tryon_nonce' ) ) {
+			return new WP_REST_Response( array( 'message' => __( 'Unauthorized access.', 'tryaura' ) ), 401 );
 		}
 
-		$prompt     = $params['prompt'] ?? '';
-		$ref_images = $params['images'] ?? array();
+		$prompt     = $request->get_param( 'prompt' );
+		$ref_images = $request->get_param( 'images' ) ?? array();
 
 		$settings = get_option( 'tryaura_settings', array() );
 		$api_key  = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
@@ -137,9 +171,9 @@ class GenerateController {
 					'input_tokens'   => $usage['promptTokenCount'] ?? 0,
 					'output_tokens'  => $usage['candidatesTokenCount'] ?? $usage['responseTokenCount'] ?? 0,
 					'total_tokens'   => $usage['totalTokenCount'] ?? 0,
-					'generated_from' => $params['generated_from'] ?? 'tryon',
-					'object_id'      => $params['object_id'] ?? null,
-					'object_type'    => $params['object_type'] ?? null,
+					'generated_from' => $request->get_param( 'generated_from' ) ?? 'tryon',
+					'object_id'      => $request->get_param( 'object_id' ) ?? 0,
+					'object_type'    => $request->get_param( 'object_type' ) ?? '',
 					'status'         => 'success',
 				)
 			);
@@ -155,11 +189,13 @@ class GenerateController {
 	}
 
 	/**
-	 * Check if the current user is logged in.
+	 * Check if the current user has permission to generate images.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return bool
 	 */
 	public function permissions_check() {
-		return is_user_logged_in();
+		return current_user_can( 'read' );
 	}
 }

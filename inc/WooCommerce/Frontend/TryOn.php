@@ -46,16 +46,17 @@ class TryOn {
 			return;
 		}
 
-		// Localize data for the frontend app.
+		// Localize data for the frontend app. No API key exposed here.
 		wp_localize_script(
 			'tryaura-tryon',
 			'tryAura',
 			array(
-				'restUrl'    => esc_url_raw( rest_url() ),
-				'tryonNonce' => wp_create_nonce( 'tryon_nonce' ),
-				'productId'  => $product_id,
-				'loginUrl'   => $this->get_login_url(),
-				'hasPro'     => (bool) TryAura::is_pro_exists(),
+				'restUrl'       => esc_url_raw( rest_url() ),
+				'tryonNonce'    => wp_create_nonce( 'tryon_nonce' ),
+				'redirectNonce' => wp_create_nonce( 'tryaura_redirect_to_nonce' ),
+				'productId'     => $product_id,
+				'loginUrl'      => $this->get_login_url(),
+				'hasPro'        => (bool) TryAura::is_pro_exists(),
 			)
 		);
 
@@ -89,11 +90,16 @@ class TryOn {
 	 * @return string Redirect URL.
 	 */
 	public function redirect_to_try_on( $redirect, $user ) {
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		if ( ! empty( $_GET['tryaura_redirect_to'] ) ) {
-			return esc_url_raw( wp_unslash( $_GET['tryaura_redirect_to'] ) );
+		if ( ! empty( $_GET['tryaura_redirect_to'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified below before using the value.
+			$nonce = isset( $_GET['_tryaura_nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_tryaura_nonce'] ) ) : '';
+
+			if ( wp_verify_nonce( $nonce, 'tryaura_redirect_to_nonce' ) && user_can( $user, 'read' ) ) {
+				return wp_validate_redirect(
+					esc_url_raw( wp_unslash( $_GET['tryaura_redirect_to'] ) ),
+					$redirect
+				);
+			}
 		}
-		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		return $redirect;
 	}

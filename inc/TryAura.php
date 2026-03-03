@@ -2,6 +2,10 @@
 
 namespace Dokan\TryAura;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 use Dokan\TryAura\DependencyManagement\Container;
 
 /**

@@ -86,7 +86,29 @@ class UsageManager {
 			'created_at'     => $usage->created_at ?? current_time( 'mysql' ),
 		);
 
-		$wpdb->insert( self::get_table_name(), $insert_data ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			self::get_table_name(),
+			$insert_data,
+			array(
+				'%d', // user_id
+				'%s', // provider
+				'%s', // model
+				'%s', // type
+				'%s', // generated_from
+				'%s', // prompt
+				'%d', // input_tokens
+				'%d', // output_tokens
+				'%d', // total_tokens
+				'%f', // video_seconds
+				'%d', // output_count
+				'%s', // status
+				'%s', // error_message
+				'%d', // object_id
+				'%s', // object_type
+				'%s', // meta
+				'%s', // created_at
+			)
+		);
 
 		wp_cache_set( 'last_changed', microtime(), self::CACHE_GROUP );
 
@@ -198,21 +220,16 @@ class UsageManager {
 		$where   .= ' AND created_at <= %s';
 		$params[] = $end_date . ' 23:59:59';
 
-		$selectors = implode(
-			', ',
-			apply_filters('tryaura_admin_dashboard_chart_data_query_selectors',
-				array_merge(
-					[
-						'DATE(created_at) as date',
-						"SUM(CASE WHEN type = 'image' THEN output_count ELSE 0 END) as images",
-					],
-					( $is_woocommerce_active ? [ "SUM(CASE WHEN generated_from = 'tryon' THEN output_count ELSE 0 END) as tryOns" ] : [] )
-				),
-				$table,
-				$where,
-				$params
-			)
+		$selector_parts = array(
+			'DATE(created_at) as date',
+			"SUM(CASE WHEN type = 'image' THEN output_count ELSE 0 END) as images",
 		);
+
+		if ( $is_woocommerce_active ) {
+			$selector_parts[] = "SUM(CASE WHEN generated_from = 'tryon' THEN output_count ELSE 0 END) as tryOns";
+		}
+
+		$selectors = implode( ', ', $selector_parts );
 
 		// Group by date
 		$query = "SELECT
@@ -301,16 +318,14 @@ class UsageManager {
 				$params[] = $type;
 			}
 		} else {
-			$type_list    = [ 'image', 'tryon' ];
-			$type_list    = apply_filters('tryaura_recent_activity_type_list', $type_list);
-			$types_quoted = [];
+			$type_list = array( 'image', 'tryon' );
+			$type_list = apply_filters( 'tryaura_recent_activity_type_list', $type_list );
 
-			foreach( $type_list as $type_item ) {
-				$types_quoted[] = "'$type_item'";
-			}
-
-			$all_types  = '(' . implode(', ', $types_quoted) . ')';
-			$where     .= ' AND type in '. $all_types;
+			// Sanitize each type value and use prepare placeholders.
+			$type_list      = array_map( 'sanitize_text_field', $type_list );
+			$placeholders   = implode( ', ', array_fill( 0, count( $type_list ), '%s' ) );
+			$where         .= " AND type IN ($placeholders)";
+			$params         = array_merge( $params, $type_list );
 		}
 
 		if ( ! class_exists( 'WooCommerce' )) {

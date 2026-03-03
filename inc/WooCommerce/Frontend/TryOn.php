@@ -91,7 +91,7 @@ class TryOn {
 	 */
 	public function redirect_to_try_on( $redirect, $user ) {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		if ( ! empty( $_GET['tryaura_redirect_to'] ) ) {
+		if ( ! empty( sanitize_text_field( wp_unslash( $_GET['tryaura_redirect_to'] ) ) ) ) {
 			$nonce = isset( $_GET['_tryaura_nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_tryaura_nonce'] ) ) : '';
 
 			if ( wp_verify_nonce( $nonce, 'tryaura_redirect_to_nonce' ) && user_can( $user, 'read' )  ) {

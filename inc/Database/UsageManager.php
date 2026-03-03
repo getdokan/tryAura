@@ -229,6 +229,17 @@ class UsageManager {
 			$selector_parts[] = "SUM(CASE WHEN generated_from = 'tryon' THEN output_count ELSE 0 END) as tryOns";
 		}
 
+		$selector_parts = apply_filters(
+			'tryaura_admin_dashboard_chart_data_query_selectors',
+			$selector_parts,
+			$table,
+			$where,
+			$params
+		);
+
+		error_log( print_r( $selector_parts, 1 ) );
+
+
 		$selectors = implode( ', ', $selector_parts );
 
 		// Group by date

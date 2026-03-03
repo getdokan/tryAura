@@ -95,7 +95,7 @@ class TryOn {
 			$nonce = isset( $_GET['_tryaura_nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_tryaura_nonce'] ) ) : '';
 
 			if ( wp_verify_nonce( $nonce, 'tryaura_redirect_to_nonce' ) && user_can( $user, 'read' )  ) {
-				return wp_validate_redirect( wp_unslash( $_GET['tryaura_redirect_to'] ), $redirect );
+				return wp_validate_redirect( sanitize_text_field( wp_unslash( $_GET['tryaura_redirect_to'] ) ), $redirect );
 			}
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended

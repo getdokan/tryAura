@@ -48,6 +48,11 @@ class GenerateController {
 				'callback'            => array( $this, 'handle_generation' ),
 				'permission_callback' => array( $this, 'permissions_check' ),
 				'args'                => array(
+					'tryonNonce'     => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
 					'prompt'         => array(
 						'type'              => 'string',
 						'required'          => true,
@@ -60,30 +65,24 @@ class GenerateController {
 							'type' => 'string',
 						),
 					),
+					'generated_from' => array(
+						'type'              => 'string',
+						'default'           => 'tryon',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
 					'object_id'      => array(
-						'type'              => 'integer',
-						'default'           => 0,
-						'sanitize_callback' => 'absint',
+						'type'              => 'string',
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
 					),
 					'object_type'    => array(
 						'type'              => 'string',
 						'default'           => '',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
-					'generated_from' => array(
-						'type'              => 'string',
-						'default'           => 'tryon',
-						'sanitize_callback' => 'sanitize_text_field',
-					),
-					'tryonNonce'     => array(
-						'type'              => 'string',
-						'required'          => true,
-						'sanitize_callback' => 'sanitize_text_field',
-					),
 				),
 			)
 		);
-
 	}
 
 	/**

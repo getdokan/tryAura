@@ -4,7 +4,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 // @ts-ignore
 import { STORE_NAME as SETTINGS_STORE_NAME } from '@tryaura/settings';
 import { STORE_NAME } from './store';
-import { Button, TryauraLogoWithText } from '../../components';
+import { Button } from '../../components';
 import { __ } from '@wordpress/i18n';
 import { X } from 'lucide-react';
 import OriginalImage from './PreviewSections/OriginalImage';
@@ -572,20 +572,9 @@ const PreviewModal = ( {
 					{ /* Actions */ }
 					<div
 						className={ twMerge(
-							'mt-6 border-t border-t-[#E9E9E9] p-[16px_24px] flex flex-row justify-between',
-							hasPro() && 'justify-end'
+							'mt-6 border-t border-t-[#E9E9E9] p-[16px_24px] flex flex-row justify-end'
 						) }
 					>
-						{ ! hasPro() && (
-							<div className="flex flex-row gap-2 items-center">
-								<span className="text-[14px] font-normal text-[rgba(130,130,130,1)]">
-									{ __( 'Powered By', 'tryaura' ) }
-								</span>
-								<div>
-									<TryauraLogoWithText className="h-5 w-auto" />
-								</div>
-							</div>
-						) }
 						<div className="flex flex-row justify-end gap-3">
 							{ generatedUrl && 'image' === activeTab && (
 								<Button

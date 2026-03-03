@@ -15,8 +15,10 @@ declare global {
 			nonce?: string;
 			tryonNonce?: string;
 			redirectNonce?: string;
+			apiKey?: string;
 			productId?: number;
 			loginUrl?: string;
+			wcExists?: boolean;
 		};
 	}
 }

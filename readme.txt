@@ -1,4 +1,4 @@
-=== TryAura - AI Visual Studio & Virtual Try On for WooCommerce ===
+=== TryAura ===
 Contributors: wedevs, tareq1988, nizamuddinbabu
 Tags: virtual try on, product visualization, try-on, virtual mirror
 Requires at least: 6.6
@@ -240,10 +240,12 @@ Yes. TryAura is built specifically for WooCommerce and integrates directly with 
 
 == Installation ==
 
-1. Install using the WordPress Plugin Installer, or upload the plugin to the `wp-content/plugins/` directory
-2. Activate the plugin through the ‘Plugins’ menu in WordPress.
-3. Ensure WooCommerce is installed and active
-4. Utilize TryAura Features for maximum visual impact
+1. Install using the WordPress Plugin Installer, or upload the plugin to the `wp-content/plugins/` directory.
+2. Activate the plugin through the Plugins menu in WordPress.
+3. Ensure WooCommerce is installed and active.
+4. Go to TryAura > Settings and enter your Google Gemini API key.
+5. Open any WooCommerce product, generate visuals, or enable virtual try-on from the product editor.
+6. Save and publish the product.
 
 == Support ==
 We provide ongoing support to help you use TryAura effectively.

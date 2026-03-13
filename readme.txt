@@ -259,6 +259,15 @@ Support covers usage questions, setup guidance, and known issues. Custom develop
 = Contribute =
 This may have bugs and lack of many features. If you want to contribute on this project, you are more than welcome. Please fork the repository from [Github](https://github.com/getdokan/tryAura).
 
+== Screenshots ==
+
+1. Screenshot 1
+2. Screenshot 2
+3. Screenshot 3
+4. Screenshot 4
+5. Screenshot 5
+6. Screenshot 6
+
 == Changelog ==
 
 = 1.0.0 =

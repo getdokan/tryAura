@@ -259,6 +259,15 @@ Support covers usage questions, setup guidance, and known issues. Custom develop
 = Contribute =
 This may have bugs and lack of many features. If you want to contribute on this project, you are more than welcome. Please fork the repository from [Github](https://github.com/getdokan/tryAura).
 
+== Screenshots ==
+
+1. TryAura - Generate Product Photos
+2. TryAura - Visual Styles & Presets
+3. TryAura - Generate Product Videos
+4. TryAura - Virtual TryOn
+5. TryAura - Why Choose TryAura
+6. TryAura - Unlimited Generations With Your Own Key
+
 == Changelog ==
 
 = 1.0.0 =

@@ -6,7 +6,7 @@ import UserImageSection from './UserImageSection';
 import ProductImagesSection from './ProductImagesSection';
 import Output from './Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
-import { Button, TryauraLogoWithText } from '../../components';
+import { Button } from '../../components';
 import { hasPro } from '../../utils/tryaura';
 import { twMerge } from 'tailwind-merge';
 
@@ -69,7 +69,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 					await video.play?.();
 				} catch {}
 			}
-			setMessage( 'Camera active — click Capture when ready' );
+			setMessage( __( 'Camera active — click Capture when ready', 'tryaura' ) );
 			setError( null );
 
 			doAction( 'tryaura.after_camera_start', {
@@ -175,7 +175,7 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 			canvas.toDataURL( 'image/jpeg', 0.95 )
 		);
 		setUserImages( [ dataUrl ] );
-		setMessage( 'Photo captured. Click Try to generate.' );
+		setMessage( __( 'Photo captured. Click Try to generate.', 'tryaura' ) );
 		stopCamera();
 
 		doAction( 'tryaura.after_photo_capture', {
@@ -437,20 +437,9 @@ const TryOnModal = ( { productImages, onClose }: TryOnModalProps ) => {
 					{ /* Actions */ }
 					<div
 						className={ twMerge(
-							'mt-6 border-t border-t-[#E9E9E9] flex flex-row p-[16px_24px]',
-							hasPro() ? 'justify-end' : 'justify-between'
+							'mt-6 border-t border-t-[#E9E9E9] flex flex-row p-[16px_24px] justify-end'
 						) }
 					>
-						{ ! hasPro() && (
-							<div className="flex flex-row gap-2 items-center">
-								<span className="text-[14px] font-normal text-[rgba(130,130,130,1)]">
-									{ __( 'Powered By', 'tryaura' ) }
-								</span>
-								<div>
-									<TryauraLogoWithText className="h-5 w-auto" />
-								</div>
-							</div>
-						) }
 						<div className="flex flex-row gap-3">
 							<Button
 								className="bg-black hover:bg-black/90 disabled:bg-[rgba(241,241,244,1)] disabled:text-[rgba(165,165,170,1)]"

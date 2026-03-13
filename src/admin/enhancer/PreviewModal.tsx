@@ -4,7 +4,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 // @ts-ignore
 import { STORE_NAME as SETTINGS_STORE_NAME } from '@tryaura/settings';
 import { STORE_NAME } from './store';
-import { Button, TryauraLogoWithText } from '../../components';
+import { Button } from '../../components';
 import { __ } from '@wordpress/i18n';
 import { X } from 'lucide-react';
 import OriginalImage from './PreviewSections/OriginalImage';
@@ -130,7 +130,7 @@ const PreviewModal = ( {
 			await new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
 
 			setStatus( 'generating' );
-			setMessage( 'Thinking and generating…' );
+			setMessage( __( 'Thinking and generating…', 'tryaura' ) );
 			await new Promise( ( resolve ) => setTimeout( resolve, 2000 ) );
 
 			setStatus( 'parsing' );
@@ -141,10 +141,10 @@ const PreviewModal = ( {
 			const placeholderImage = window?.tryAura?.testImage || '';
 			setGeneratedUrl( placeholderImage );
 			setStatus( 'done' );
-			setMessage( 'Done' );
+			setMessage( __( 'Done', 'tryaura' ) );
 			setError( null );
 		} catch ( e: any ) {
-			setError( e?.message || 'Testing generation failed.' );
+			setError( e?.message || __( 'Testing generation failed.', 'tryaura' ) );
 			setStatus( 'error' );
 			setMessage( 'Generation failed.' );
 		}
@@ -212,7 +212,7 @@ const PreviewModal = ( {
 			);
 
 			setStatus( 'generating' );
-			setMessage( 'Thinking and generating…' );
+			setMessage( __( 'Thinking and generating…', 'tryaura' ) );
 			const ai = new GoogleGenAI( { apiKey } );
 
 			const isBlockPage = isBlockEditorPage && ! isWoocommerceProductPage;
@@ -309,13 +309,13 @@ const PreviewModal = ( {
 			}
 
 			if ( ! data64 ) {
-				throw new Error( 'Model did not return an image.' );
+				throw new Error( __( 'Model did not return an image.', 'tryaura' ) );
 			}
 
 			const dataUrl = `data:${ outMime };base64,${ data64 }`;
 			setGeneratedUrl( dataUrl );
 			setStatus( 'done' );
-			setMessage( 'Done' );
+			setMessage( __( 'Done', 'tryaura' ) );
 			setError( null );
 
 			const usage = response?.usageMetadata;
@@ -341,9 +341,9 @@ const PreviewModal = ( {
 				// ignore logging errors
 			} );
 		} catch ( e: any ) {
-			setError( e?.message || 'Generation failed.' );
+			setError( e?.message || __( 'Generation failed.', 'tryaura' ) );
 			setStatus( 'error' );
-			setMessage( 'Generation failed.' );
+			setMessage( __( 'Generation failed.', 'tryaura' ) );
 		}
 	};
 
@@ -415,7 +415,7 @@ const PreviewModal = ( {
 			if ( ! newId ) {
 				doAction( 'tryaura.ai_enhance_upload_failed', filename, blob );
 				throw new Error(
-					'Upload succeeded but no attachment ID returned.'
+					__( 'Upload succeeded but no attachment ID returned.', 'tryaura' )
 				);
 			}
 
@@ -488,7 +488,7 @@ const PreviewModal = ( {
 
 			onClose();
 		} catch ( e: any ) {
-			setError( e?.message || 'Failed to set image.' );
+			setError( e?.message || __( 'Failed to set image.', 'tryaura' ) );
 		} finally {
 			setUploading( false );
 		}
@@ -572,20 +572,9 @@ const PreviewModal = ( {
 					{ /* Actions */ }
 					<div
 						className={ twMerge(
-							'mt-6 border-t border-t-[#E9E9E9] p-[16px_24px] flex flex-row justify-between',
-							hasPro() && 'justify-end'
+							'mt-6 border-t border-t-[#E9E9E9] p-[16px_24px] flex flex-row justify-end'
 						) }
 					>
-						{ ! hasPro() && (
-							<div className="flex flex-row gap-2 items-center">
-								<span className="text-[14px] font-normal text-[rgba(130,130,130,1)]">
-									{ __( 'Powered By', 'tryaura' ) }
-								</span>
-								<div>
-									<TryauraLogoWithText className="h-5 w-auto" />
-								</div>
-							</div>
-						) }
 						<div className="flex flex-row justify-end gap-3">
 							{ generatedUrl && 'image' === activeTab && (
 								<Button
@@ -594,7 +583,7 @@ const PreviewModal = ( {
 									loading={ uploading }
 								>
 									{ uploading
-										? __( 'Adding…' )
+										? __( 'Adding…', 'tryaura' )
 										: __(
 												'Add to Media Library',
 												'tryaura'

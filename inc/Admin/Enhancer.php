@@ -44,7 +44,7 @@ class Enhancer {
 		$image_model = isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '';
 		$video_model = isset( $settings['google']['videoModel'] ) ? $settings['google']['videoModel'] : '';
 
-		// Pass settings (API key, REST URL, nonce) to the enhancer UI.
+		// Pass settings to the enhancer UI (admin-only, requires post editing capability).
 		wp_localize_script(
 			'tryaura-enhancer',
 			'tryAura',

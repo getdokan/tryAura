@@ -62,6 +62,16 @@ class DashboardController {
 				'methods'             => 'GET',
 				'callback'            => array( $this, 'get_stats' ),
 				'permission_callback' => array( $this, 'permissions_check' ),
+				'args'                => array(
+					'start_date' => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'end_date'   => array(
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
 			)
 		);
 
@@ -89,7 +99,59 @@ class DashboardController {
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'log_usage' ),
-				'permission_callback' => array( $this, 'permissions_check' ),
+				'permission_callback' => array( $this, 'log_usage_permissions_check' ),
+				'args'                => array(
+					'type'           => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'model'          => array(
+						'type'              => 'string',
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'prompt'         => array(
+						'type'              => 'string',
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'input_tokens'   => array(
+						'type'              => 'integer',
+						'default'           => 0,
+						'sanitize_callback' => 'absint',
+					),
+					'output_tokens'  => array(
+						'type'              => 'integer',
+						'default'           => 0,
+						'sanitize_callback' => 'absint',
+					),
+					'total_tokens'   => array(
+						'type'              => 'integer',
+						'default'           => 0,
+						'sanitize_callback' => 'absint',
+					),
+					'generated_from' => array(
+						'type'              => 'string',
+						'default'           => 'admin',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'object_id'      => array(
+						'type'              => 'integer',
+						'default'           => 0,
+						'sanitize_callback' => 'absint',
+					),
+					'object_type'    => array(
+						'type'              => 'string',
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'status'         => array(
+						'type'              => 'string',
+						'default'           => 'success',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
 			)
 		);
 
@@ -214,6 +276,19 @@ class DashboardController {
 	}
 
 	/**
+	 * Permissions check for log usage endpoint.
+	 *
+	 * Allows any logged-in user since frontend tryon users also log usage.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool
+	 */
+	public function log_usage_permissions_check() {
+		return current_user_can( 'read' );
+	}
+
+	/**
 	 * Log usage.
 	 *
 	 * @since 1.0.0
@@ -223,7 +298,7 @@ class DashboardController {
 	 * @return WP_REST_Response
 	 */
 	public function log_usage( WP_REST_Request $request ) {
-		$params = $request->get_json_params();
+		$params = $request->get_params();
 		$id     = $this->manager->log_usage( $params );
 
 		return new WP_REST_Response(

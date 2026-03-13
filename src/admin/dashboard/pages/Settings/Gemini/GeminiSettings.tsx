@@ -107,7 +107,6 @@ const GeminiSettings = () => {
 			return;
 		}
 		try {
-			console.log(settings);
 			const newSettings = {
 				...settings,
 				[ data.optionKey ]: {

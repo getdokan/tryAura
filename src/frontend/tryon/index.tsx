@@ -13,8 +13,12 @@ declare global {
 		tryAura?: {
 			restUrl?: string;
 			nonce?: string;
+			tryonNonce?: string;
+			redirectNonce?: string;
 			apiKey?: string;
 			productId?: number;
+			loginUrl?: string;
+			wcExists?: boolean;
 		};
 	}
 }
@@ -68,10 +72,11 @@ const goToLogin = () => {
 
 	// add your custom param
 	currentUrl.searchParams.set( 'tryOnAutoOpen', 'true' );
+	const nonce = window?.tryAura?.redirectNonce ?? '';
 	// Redirect to My Account with the current product URL as a parameter
 	window.location.href = `${ loginUrl }?tryaura_redirect_to=${ encodeURIComponent(
 		currentUrl.toString()
-	) }`;
+	) }&_tryaura_nonce=${ nonce }`;
 };
 
 function openTryOnModal( productImages: string[] ) {

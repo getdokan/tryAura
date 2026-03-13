@@ -20,7 +20,7 @@ export default function ApiKeyInput( { apiKey, setApiKey } ) {
 					type={ isHidden ? 'password' : 'text' }
 					value={ apiKey }
 					onChange={ ( e ) => setApiKey( e.target.value ) }
-					placeholder="Enter your API key"
+					placeholder={ __( 'Enter your API key', 'tryaura' ) }
 					className="w-full pr-16 border border-[#E9E9E9] rounded-[5px] px-3 py-1"
 					id={ 'gemini-api-key' }
 				/>
@@ -31,7 +31,7 @@ export default function ApiKeyInput( { apiKey, setApiKey } ) {
 					onClick={ () => setIsHidden( ! isHidden ) }
 					className="absolute inset-y-0 right-0 px-3 py-2 text-sm font-medium"
 				>
-					{ isHidden ? 'Show' : 'Hide' }
+					{ isHidden ? __( 'Show', 'tryaura' ) : __( 'Hide', 'tryaura' ) }
 				</button>
 			</div>
 			<p className="font-[400] text-[14px] leading-[18px] text-[rgba(99,99,99,1)] m-0">

@@ -158,6 +158,10 @@ class ProductGalleryVideo {
 			return;
 		}
 
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
 		$video_data = isset( $_POST['tryaura_video_data'] ) ? wp_unslash( $_POST['tryaura_video_data'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$product_settings = array();
 

@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-30T11:40:19+00:00\n"
+"POT-Creation-Date: 2026-03-03T09:42:10+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: tryaura\n"
@@ -81,53 +81,49 @@ msgstr ""
 msgid "1 image"
 msgstr ""
 
-#: inc/Database/UsageManager.php:329
+#: inc/Database/UsageManager.php:352
 msgid "ago"
 msgstr ""
 
-#: inc/Rest/GenerateController.php:68
-msgid "unauthorized access"
+#: inc/Rest/GenerateController.php:101
+msgid "Unauthorized access."
 msgstr ""
 
-#: inc/Rest/ProductController.php:66
+#: inc/Rest/ProductController.php:76
 msgid "WooCommerce is not active"
 msgstr ""
 
-#: inc/Rest/ProductController.php:72
+#: inc/Rest/ProductController.php:82
 msgid "Product not found"
 msgstr ""
 
-#: inc/Rest/SettingsController.php:162
+#: inc/Rest/SettingsController.php:168
 msgid "WooCommerce is not active."
 msgstr ""
 
-#: inc/Rest/SettingsController.php:183
+#: inc/Rest/SettingsController.php:189
 msgid "No products found to update."
 msgstr ""
 
 #. translators: %1$d total products, %2$d enable/disable.
-#: inc/Rest/SettingsController.php:207
+#: inc/Rest/SettingsController.php:213
 #, php-format
 msgid "%1$d products added to queue to %2$s try-on."
 msgstr ""
 
-#: inc/Rest/VideoThumbnailController.php:69
-msgid "Missing platform or URL."
-msgstr ""
-
-#: inc/Rest/VideoThumbnailController.php:87
+#: inc/Rest/VideoThumbnailController.php:99
 msgid "Could not generate thumbnail."
 msgstr ""
 
-#: inc/Rest/VideoThumbnailController.php:114
+#: inc/Rest/VideoThumbnailController.php:126
 msgid "Invalid image data."
 msgstr ""
 
-#: inc/Rest/VideoThumbnailController.php:119
+#: inc/Rest/VideoThumbnailController.php:131
 msgid "Could not decode image."
 msgstr ""
 
-#: inc/Rest/VideoThumbnailController.php:144
+#: inc/Rest/VideoThumbnailController.php:156
 msgid "Invalid YouTube URL."
 msgstr ""
 
@@ -261,6 +257,18 @@ msgstr ""
 
 #: build/admin/dashboard/index.js:171
 msgid "Gemini API KEY"
+msgstr ""
+
+#: build/admin/dashboard/index.js:171
+msgid "Enter your API key"
+msgstr ""
+
+#: build/admin/dashboard/index.js:171
+msgid "Show"
+msgstr ""
+
+#: build/admin/dashboard/index.js:171
+msgid "Hide"
 msgstr ""
 
 #: build/admin/dashboard/index.js:171
@@ -517,7 +525,20 @@ msgid "Fetching images…"
 msgstr ""
 
 #: build/admin/enhancer/index.js:1
+msgid "Thinking and generating…"
+msgstr ""
+
+#: build/admin/enhancer/index.js:1
 msgid "Processing results…"
+msgstr ""
+
+#: build/admin/enhancer/index.js:1
+#: build/frontend/tryon/index.js:171
+msgid "Done"
+msgstr ""
+
+#: build/admin/enhancer/index.js:1
+msgid "Testing generation failed."
 msgstr ""
 
 #: build/admin/enhancer/index.js:1
@@ -533,16 +554,33 @@ msgid "Please provide a prompt for the image generation."
 msgstr ""
 
 #: build/admin/enhancer/index.js:1
-msgid "AI Product Image Generation"
+#: build/frontend/tryon/index.js:171
+msgid "Model did not return an image."
 msgstr ""
 
 #: build/admin/enhancer/index.js:1
 #: build/frontend/tryon/index.js:171
-msgid "Powered By"
+msgid "Generation failed."
+msgstr ""
+
+#: build/admin/enhancer/index.js:1
+msgid "AI Product Image Generation"
 msgstr ""
 
 #: build/admin/enhancer/index.js:1
 msgid "Missing WordPress REST configuration."
+msgstr ""
+
+#: build/admin/enhancer/index.js:1
+msgid "Upload succeeded but no attachment ID returned."
+msgstr ""
+
+#: build/admin/enhancer/index.js:1
+msgid "Failed to set image."
+msgstr ""
+
+#: build/admin/enhancer/index.js:1
+msgid "Adding…"
 msgstr ""
 
 #: build/admin/enhancer/index.js:1
@@ -678,6 +716,14 @@ msgid "Your Image"
 msgstr ""
 
 #: build/frontend/tryon/index.js:171
+msgid "Upload Image"
+msgstr ""
+
+#: build/frontend/tryon/index.js:171
+msgid "Use Camera"
+msgstr ""
+
+#: build/frontend/tryon/index.js:171
 msgid "Product Images"
 msgstr ""
 
@@ -710,6 +756,14 @@ msgid "Camera not ready yet. Please wait a moment and try again."
 msgstr ""
 
 #: build/frontend/tryon/index.js:171
+msgid "Photo captured. Click Try to generate."
+msgstr ""
+
+#: build/frontend/tryon/index.js:171
+msgid "Camera active — click Capture when ready"
+msgstr ""
+
+#: build/frontend/tryon/index.js:171
 msgid "Preparing images…"
 msgstr ""
 
@@ -719,18 +773,6 @@ msgstr ""
 
 #: build/frontend/tryon/index.js:171
 msgid "REST API not configured properly."
-msgstr ""
-
-#: build/frontend/tryon/index.js:171
-msgid "Model did not return an image."
-msgstr ""
-
-#: build/frontend/tryon/index.js:171
-msgid "Done"
-msgstr ""
-
-#: build/frontend/tryon/index.js:171
-msgid "Generation failed."
 msgstr ""
 
 #: build/frontend/tryon/index.js:171

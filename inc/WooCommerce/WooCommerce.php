@@ -147,7 +147,7 @@ class WooCommerce {
 		}
 
 		$product_id = isset( $_POST['product_id'] ) ? intval( $_POST['product_id'] ) : 0;
-		$enabled    = isset( $_POST['enabled'] ) && 'true' === $_POST['enabled'] ? 'yes' : 'no';
+		$enabled    = isset( $_POST['enabled'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['enabled'] ) ) ? 'yes' : 'no';
 
 		if ( ! $product_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid product ID.', 'tryaura' ) ) );

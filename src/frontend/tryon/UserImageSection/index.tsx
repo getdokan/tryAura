@@ -27,13 +27,13 @@ function Index( {
 			<GroupButton
 				options={ [
 					{
-						label: 'Upload Image',
+						label: __( 'Upload Image', 'tryaura' ),
 						value: 'upload',
 						icon: <UploadCloud size={ 16 } />,
 						className: 'w-1/2',
 					},
 					{
-						label: 'Use Camera',
+						label: __( 'Use Camera', 'tryaura' ),
 						value: 'camera',
 						icon: <Camera size={ 16 } />,
 						className: 'w-1/2',

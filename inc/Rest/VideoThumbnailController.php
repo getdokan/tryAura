@@ -46,6 +46,23 @@ class VideoThumbnailController {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'handle_generate_thumbnail' ),
 				'permission_callback' => array( $this, 'permissions_check' ),
+				'args'                => array(
+					'platform' => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'url'      => array(
+						'type'              => 'string',
+						'required'          => true,
+						'sanitize_callback' => 'esc_url_raw',
+					),
+					'image'    => array(
+						'type'              => 'string',
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
 			)
 		);
 	}
@@ -60,14 +77,9 @@ class VideoThumbnailController {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function handle_generate_thumbnail( WP_REST_Request $request ) {
-		$params   = $request->get_json_params();
-		$platform = $params['platform'] ?? '';
-		$url      = $params['url'] ?? '';
-		$image    = $params['image'] ?? ''; // Base64 data if generated client-side
-
-		if ( empty( $platform ) || empty( $url ) ) {
-			return new WP_Error( 'missing_params', __( 'Missing platform or URL.', 'tryaura' ), array( 'status' => 400 ) );
-		}
+		$platform = $request->get_param( 'platform' );
+		$url      = $request->get_param( 'url' );
+		$image    = $request->get_param( 'image' );
 
 		$attachment_id = 0;
 

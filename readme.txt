@@ -261,12 +261,12 @@ This may have bugs and lack of many features. If you want to contribute on this 
 
 == Screenshots ==
 
-1. Screenshot 1
-2. Screenshot 2
-3. Screenshot 3
-4. Screenshot 4
-5. Screenshot 5
-6. Screenshot 6
+1. TryAura - Generate Product Photos
+2. TryAura - Visual Styles & Presets
+3. TryAura - Generate Product Videos
+4. TryAura - Virtual TryOn
+5. TryAura - Why Choose TryAura
+6. TryAura - Unlimited Generations With Your Own Key
 
 == Changelog ==
 

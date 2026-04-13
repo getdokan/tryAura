@@ -51,7 +51,8 @@ function Index() {
 			) }
 			link={ '/settings/gemini' }
 			linkText={ __( 'Configure', 'tryaura' ) }
-			loading={fetching}
+			loading={ fetching }
+			disabledLink={ data.isGeminiSettingsReadonly === '1' || false }
 		/>
 	);
 }

@@ -9,6 +9,7 @@ function SettingsItemCard( {
 	link,
 	linkText,
 	loading = false,
+	disabledLink = false,
 }: {
 	icon: JSX.Element;
 	title: string;
@@ -17,6 +18,7 @@ function SettingsItemCard( {
 	link: string;
 	linkText: string;
 	loading?: boolean;
+	disabledLink?: boolean;
 } ) {
 	const navigate = useNavigate();
 
@@ -75,6 +77,7 @@ function SettingsItemCard( {
 					onClick={ () => {
 						navigate( link );
 					} }
+					disabled={ disabledLink }
 				>
 					{ linkText }
 				</Button>

@@ -30,17 +30,20 @@ const getAdminRoutes = () => {
 			element: <Settings />,
 			path: '/settings',
 		},
-		{
-			id: 'settings-gemini',
-			element: <GeminiSettings />,
-			path: '/settings/gemini',
-		},
 	];
 	if ( wcExists ) {
 		routes.push( {
 			id: 'try-on-control',
 			element: <TryOnControlSettings />,
 			path: '/settings/try-on-control',
+		} );
+	}
+
+	if ( ( window.tryAura as any )?.isGeminiSettingsReadonly !== '1' ) {
+		routes.push( {
+			id: 'settings-gemini',
+			element: <GeminiSettings />,
+			path: '/settings/gemini',
 		} );
 	}
 

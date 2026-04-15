@@ -154,13 +154,26 @@ class Admin {
 			'tryaura-admin',
 			'tryAura',
 			array(
-				'restUrl'    => esc_url_raw( rest_url() ),
-				'nonce'      => wp_create_nonce( 'wp_rest' ),
-				'apiKey'     => $api_key,
-				'imageModel' => $image_model,
-				'videoModel' => $video_model,
-				'optionKey'  => $this->option_key,
-				'wcExists'   => class_exists( 'WooCommerce' ),
+				'restUrl'        => esc_url_raw( rest_url() ),
+				'nonce'          => wp_create_nonce( 'wp_rest' ),
+				'apiKey'         => $api_key,
+				'imageModel'     => $image_model,
+				'videoModel'     => $video_model,
+				'optionKey'      => $this->option_key,
+				'wcExists'       => class_exists( 'WooCommerce' ),
+				/**
+				 * Controls whether the Gemini API settings page is read-only.
+				 *
+				 * When true, the Connect button is disabled and the API key
+				 * field becomes read-only. Useful for demo environments.
+				 *
+				 * Usage in functions.php:
+				 *   add_filter( 'tryaura_is_gemini_settings_readonly', '__return_true' );
+				 *
+				 * @since 1.0.0
+				 * @param bool $readonly Default false.
+				 */
+				'isGeminiSettingsReadonly' => (int) apply_filters( 'tryaura_is_gemini_settings_readonly', false ),
 			)
 		);
 

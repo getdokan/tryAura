@@ -1,13 +1,18 @@
 import { ArrowLeft } from 'lucide-react';
 import geminiLogo from '../assets/geminiLogo.svg';
 import openrouterLogo from '../assets/openrouterLogo.svg';
-import { Settings, Button, type SettingsElement } from '../../../../../utils/plugin-ui';
+import {
+	Settings,
+	Button,
+	type SettingsElement,
+} from '../../../../../utils/plugin-ui';
 import { toast } from '@tryaura/components';
 import { useMemo, useState, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useNavigate } from 'react-router-dom';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { applyFilters } from '@wordpress/hooks';
+import './registerModelSelectorField';
 // @ts-ignore
 import { STORE_NAME } from '@tryaura/settings';
 
@@ -16,7 +21,15 @@ type ProviderId = 'google' | 'openrouter';
 type FlatSettingsValues = {
 	'credentials.provider': ProviderId;
 	'credentials.gemini.api_key': string;
+	'credentials.gemini.image_model': string;
+	'credentials.gemini.image_model_label': string;
+	'credentials.gemini.video_model': string;
+	'credentials.gemini.video_model_label': string;
 	'credentials.openrouter.api_key': string;
+	'credentials.openrouter.image_model': string;
+	'credentials.openrouter.image_model_label': string;
+	'credentials.openrouter.video_model': string;
+	'credentials.openrouter.video_model_label': string;
 };
 
 declare global {
@@ -57,6 +70,44 @@ const getDefaultModelsForProvider = ( provider: ProviderId ) => {
 	};
 };
 
+const getProviderModelSettingKey = (
+	provider: ProviderId,
+	modelType: 'image' | 'video',
+	suffix: '' | 'Label' = ''
+) => {
+	const providerPrefix = provider === 'google' ? 'gemini' : 'openrouter';
+	const modelPrefix = modelType === 'image' ? 'Image' : 'Video';
+
+	return `${ providerPrefix }${ modelPrefix }Model${ suffix }`;
+};
+
+const getStoredModelValue = (
+	settings: Record< string, any >,
+	provider: ProviderId,
+	modelType: 'image' | 'video',
+	fallback: string
+) => {
+	const activeKey = modelType === 'image' ? 'imageModel' : 'videoModel';
+	const providerKey = getProviderModelSettingKey( provider, modelType );
+
+	return (
+		settings?.[ providerKey ] ||
+		( settings?.provider === provider ? settings?.[ activeKey ] : '' ) ||
+		fallback
+	);
+};
+
+const getStoredModelLabel = (
+	settings: Record< string, any >,
+	provider: ProviderId,
+	modelType: 'image' | 'video',
+	fallback: string
+) => {
+	const labelKey = getProviderModelSettingKey( provider, modelType, 'Label' );
+
+	return settings?.[ labelKey ] || fallback;
+};
+
 async function validateApiKey(
 	provider: ProviderId,
 	key: string
@@ -85,7 +136,7 @@ async function validateApiKey(
 	}
 }
 
-const getSchema = (): SettingsElement[] => [
+const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
 	{
 		id: 'ai_credentials_page',
 		type: 'page',
@@ -176,6 +227,46 @@ const getSchema = (): SettingsElement[] => [
 								dependency_key: 'credentials.gemini.api_key',
 								value: '',
 							},
+							{
+								id: 'gemini_image_model',
+								type: 'field',
+								variant: 'model_selector',
+								label: __( 'Image Model', 'tryaura' ),
+								description: __(
+									'Fetch and select the Gemini image model TryAura should use.',
+									'tryaura'
+								),
+								dependency_key: 'credentials.gemini.image_model',
+								label_key: 'credentials.gemini.image_model_label',
+								value: '',
+								provider: 'google',
+								model_type: 'image',
+								api_key: values[ 'credentials.gemini.api_key' ],
+								saved_label:
+									values[
+										'credentials.gemini.image_model_label'
+									],
+							},
+							{
+								id: 'gemini_video_model',
+								type: 'field',
+								variant: 'model_selector',
+								label: __( 'Video Model', 'tryaura' ),
+								description: __(
+									'Fetch and select the Gemini video model TryAura should use.',
+									'tryaura'
+								),
+								dependency_key: 'credentials.gemini.video_model',
+								label_key: 'credentials.gemini.video_model_label',
+								value: '',
+								provider: 'google',
+								model_type: 'video',
+								api_key: values[ 'credentials.gemini.api_key' ],
+								saved_label:
+									values[
+										'credentials.gemini.video_model_label'
+									],
+							},
 						],
 					},
 					{
@@ -237,6 +328,52 @@ const getSchema = (): SettingsElement[] => [
 								dependency_key: 'credentials.openrouter.api_key',
 								value: '',
 							},
+							{
+								id: 'openrouter_image_model',
+								type: 'field',
+								variant: 'model_selector',
+								label: __( 'Image Model', 'tryaura' ),
+								description: __(
+									'Fetch and select the OpenRouter image model TryAura should use.',
+									'tryaura'
+								),
+								dependency_key: 'credentials.openrouter.image_model',
+								label_key:
+									'credentials.openrouter.image_model_label',
+								value: '',
+								provider: 'openrouter',
+								model_type: 'image',
+								api_key: values[
+									'credentials.openrouter.api_key'
+								],
+								saved_label:
+									values[
+										'credentials.openrouter.image_model_label'
+									],
+							},
+							{
+								id: 'openrouter_video_model',
+								type: 'field',
+								variant: 'model_selector',
+								label: __( 'Video Model', 'tryaura' ),
+								description: __(
+									'Fetch and select the OpenRouter video model TryAura should use.',
+									'tryaura'
+								),
+								dependency_key: 'credentials.openrouter.video_model',
+								label_key:
+									'credentials.openrouter.video_model_label',
+								value: '',
+								provider: 'openrouter',
+								model_type: 'video',
+								api_key: values[
+									'credentials.openrouter.api_key'
+								],
+								saved_label:
+									values[
+										'credentials.openrouter.video_model_label'
+									],
+							},
 						],
 					},
 				],
@@ -260,6 +397,32 @@ const GeminiSettings = () => {
 
 	const initialFlatValues = useMemo< FlatSettingsValues >( () => {
 		const googleSettings = settings?.[ data.optionKey ]?.google ?? {};
+		const geminiDefaults = getDefaultModelsForProvider( 'google' );
+		const openrouterDefaults = getDefaultModelsForProvider( 'openrouter' );
+		const geminiImageModel = getStoredModelValue(
+			googleSettings,
+			'google',
+			'image',
+			geminiDefaults.imageModel
+		);
+		const geminiVideoModel = getStoredModelValue(
+			googleSettings,
+			'google',
+			'video',
+			geminiDefaults.videoModel
+		);
+		const openrouterImageModel = getStoredModelValue(
+			googleSettings,
+			'openrouter',
+			'image',
+			openrouterDefaults.imageModel
+		);
+		const openrouterVideoModel = getStoredModelValue(
+			googleSettings,
+			'openrouter',
+			'video',
+			openrouterDefaults.videoModel
+		);
 
 		return {
 			'credentials.provider': (
@@ -270,11 +433,39 @@ const GeminiSettings = () => {
 				( googleSettings.provider === 'google'
 					? googleSettings.apiKey || ''
 					: '' ),
+			'credentials.gemini.image_model': geminiImageModel,
+			'credentials.gemini.image_model_label': getStoredModelLabel(
+				googleSettings,
+				'google',
+				'image',
+				geminiImageModel
+			),
+			'credentials.gemini.video_model': geminiVideoModel,
+			'credentials.gemini.video_model_label': getStoredModelLabel(
+				googleSettings,
+				'google',
+				'video',
+				geminiVideoModel
+			),
 			'credentials.openrouter.api_key':
 				googleSettings.openrouterApiKey ||
 				( googleSettings.provider === 'openrouter'
 					? googleSettings.apiKey || ''
 					: '' ),
+			'credentials.openrouter.image_model': openrouterImageModel,
+			'credentials.openrouter.image_model_label': getStoredModelLabel(
+				googleSettings,
+				'openrouter',
+				'image',
+				openrouterImageModel
+			),
+			'credentials.openrouter.video_model': openrouterVideoModel,
+			'credentials.openrouter.video_model_label': getStoredModelLabel(
+				googleSettings,
+				'openrouter',
+				'video',
+				openrouterVideoModel
+			),
 		};
 	}, [ settings, data.optionKey ] );
 
@@ -286,7 +477,7 @@ const GeminiSettings = () => {
 		setValues( initialFlatValues );
 	}, [ initialFlatValues ] );
 
-	const schema = useMemo( () => getSchema(), [] );
+	const schema = useMemo( () => getSchema( values ), [ values ] );
 
 	const handleSave = async (
 		_scopeId: string,
@@ -302,12 +493,56 @@ const GeminiSettings = () => {
 			flatValues[ 'credentials.openrouter.api_key' ] || '';
 		const apiKey =
 			provider === 'openrouter' ? openrouterApiKey : geminiApiKey;
+		const geminiDefaults = getDefaultModelsForProvider( 'google' );
+		const openrouterDefaults = getDefaultModelsForProvider( 'openrouter' );
+		const geminiImageModel =
+			flatValues[ 'credentials.gemini.image_model' ] ||
+			geminiDefaults.imageModel;
+		const geminiImageModelLabel =
+			flatValues[ 'credentials.gemini.image_model_label' ] ||
+			geminiImageModel;
+		const geminiVideoModel =
+			flatValues[ 'credentials.gemini.video_model' ] ||
+			geminiDefaults.videoModel;
+		const geminiVideoModelLabel =
+			flatValues[ 'credentials.gemini.video_model_label' ] ||
+			geminiVideoModel;
+		const openrouterImageModel =
+			flatValues[ 'credentials.openrouter.image_model' ] ||
+			openrouterDefaults.imageModel;
+		const openrouterImageModelLabel =
+			flatValues[ 'credentials.openrouter.image_model_label' ] ||
+			openrouterImageModel;
+		const openrouterVideoModel =
+			flatValues[ 'credentials.openrouter.video_model' ] ||
+			openrouterDefaults.videoModel;
+		const openrouterVideoModelLabel =
+			flatValues[ 'credentials.openrouter.video_model_label' ] ||
+			openrouterVideoModel;
+		const activeImageModel =
+			provider === 'openrouter'
+				? openrouterImageModel
+				: geminiImageModel;
+		const activeVideoModel =
+			provider === 'openrouter'
+				? openrouterVideoModel
+				: geminiVideoModel;
 
 		if ( ! apiKey ) {
 			toast.error(
 				provider === 'openrouter'
 					? __( 'OpenRouter API key is required.', 'tryaura' )
 					: __( 'Gemini API key is required.', 'tryaura' )
+			);
+			return;
+		}
+
+		if ( ! activeImageModel || ! activeVideoModel ) {
+			toast.error(
+				__(
+					'Please fetch and select both image and video models before saving.',
+					'tryaura'
+				)
 			);
 			return;
 		}
@@ -323,11 +558,6 @@ const GeminiSettings = () => {
 		}
 
 		const currentGoogleSettings = settings?.[ data.optionKey ]?.google ?? {};
-		const previousProvider = (
-			currentGoogleSettings.provider || 'google'
-		) as ProviderId;
-		const providerDefaults = getDefaultModelsForProvider( provider );
-		const shouldResetModels = previousProvider !== provider;
 
 		const nextGoogleSettings = {
 			...currentGoogleSettings,
@@ -335,12 +565,16 @@ const GeminiSettings = () => {
 			apiKey,
 			geminiApiKey,
 			openrouterApiKey,
-			imageModel: shouldResetModels
-				? providerDefaults.imageModel
-				: currentGoogleSettings.imageModel || providerDefaults.imageModel,
-			videoModel: shouldResetModels
-				? providerDefaults.videoModel
-				: currentGoogleSettings.videoModel || providerDefaults.videoModel,
+			imageModel: activeImageModel,
+			videoModel: activeVideoModel,
+			geminiImageModel,
+			geminiImageModelLabel,
+			geminiVideoModel,
+			geminiVideoModelLabel,
+			openrouterImageModel,
+			openrouterImageModelLabel,
+			openrouterVideoModel,
+			openrouterVideoModelLabel,
 		};
 
 		const nextSettings = {
@@ -368,8 +602,8 @@ const GeminiSettings = () => {
 
 			toast.success(
 				provider === 'openrouter'
-					? __( 'OpenRouter credential saved.', 'tryaura' )
-					: __( 'Gemini credential saved.', 'tryaura' )
+					? __( 'OpenRouter credential and models saved.', 'tryaura' )
+					: __( 'Gemini credential and models saved.', 'tryaura' )
 			);
 		} catch ( error: unknown ) {
 			const message =

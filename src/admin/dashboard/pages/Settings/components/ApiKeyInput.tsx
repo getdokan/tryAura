@@ -9,9 +9,9 @@ export default function ApiKeyInput( { apiKey, setApiKey } ) {
 			{ /* Label */ }
 			<label
 				className="text-[14px] font-[500] text-[rgba(37, 37, 45, 1)] mb-[7px]"
-				htmlFor={ 'gemini-api-key' }
+				htmlFor={ 'openrouter-api-key' }
 			>
-				{ __( 'Gemini API KEY', 'tryaura' ) }
+				{ __( 'OpenRouter API Key', 'tryaura' ) }
 			</label>
 
 			{ /* Input + Toggle */ }
@@ -22,7 +22,7 @@ export default function ApiKeyInput( { apiKey, setApiKey } ) {
 					onChange={ ( e ) => setApiKey( e.target.value ) }
 					placeholder={ __( 'Enter your API key', 'tryaura' ) }
 					className="w-full pr-16 border border-[#E9E9E9] rounded-[5px] px-3 py-1"
-					id={ 'gemini-api-key' }
+					id={ 'openrouter-api-key' }
 				/>
 
 				{ /* Show/Hide button */ }
@@ -35,7 +35,7 @@ export default function ApiKeyInput( { apiKey, setApiKey } ) {
 				</button>
 			</div>
 			<p className="font-[400] text-[14px] leading-[18px] text-[rgba(99,99,99,1)] m-0">
-				{ __( 'Paste the API key provided by Gemini.', 'tryaura' ) }
+				{ __( 'Paste the API key provided by OpenRouter.', 'tryaura' ) }
 			</p>
 		</div>
 	);

@@ -42,7 +42,9 @@ const GeminiSettings = () => {
 		saving,
 	} = useSelect( ( select ) => {
 		const models =
-			select( 'tryaura/ai-models' ).getProviderModels( 'google' ) || {};
+			select( 'tryaura/ai-models' ).getProviderModels( 'openrouter' ) ||
+			select( 'tryaura/ai-models' ).getProviderModels( 'google' ) ||
+			{};
 
 		const vModels: any[] = [];
 		const iModels: any[] = [];
@@ -87,13 +89,14 @@ const GeminiSettings = () => {
 	// On mount or when settings change, update local state
 	useEffect( () => {
 		const current = settings[ data.optionKey ];
-		if ( current && typeof current === 'object' && current.google ) {
-			setApiKey( current.google.apiKey || '' );
+		const providerSettings = current?.openrouter || current?.google;
+		if ( current && typeof current === 'object' && providerSettings ) {
+			setApiKey( providerSettings.apiKey || '' );
 			setSelectedImageModel(
-				current.google.imageModel || defaultImageModel
+				providerSettings.imageModel || defaultImageModel
 			);
 			setSelectedVideoModel(
-				current.google.videoModel || defaultVideoModel
+				providerSettings.videoModel || defaultVideoModel
 			);
 		} else {
 			setSelectedImageModel( defaultImageModel );
@@ -111,7 +114,7 @@ const GeminiSettings = () => {
 				...settings,
 				[ data.optionKey ]: {
 					...settings[ data.optionKey ],
-					google: {
+					openrouter: {
 						apiKey,
 						imageModel: selectedImageModel,
 						videoModel: selectedVideoModel,
@@ -122,13 +125,13 @@ const GeminiSettings = () => {
 			const res = await updateSettings( newSettings );
 
 			const newValue = ( res as Record< string, any > )[ data.optionKey ];
-			if ( newValue && newValue.google ) {
-				window.tryAura.apiKey = newValue.google.apiKey;
-				window.tryAura.imageModel = newValue.google.imageModel;
-				window.tryAura.videoModel = newValue.google.videoModel;
+			if ( newValue && newValue.openrouter ) {
+				window.tryAura.apiKey = newValue.openrouter.apiKey;
+				window.tryAura.imageModel = newValue.openrouter.imageModel;
+				window.tryAura.videoModel = newValue.openrouter.videoModel;
 
 				toast.success(
-					__( 'Gemini API settings saved successfully!', 'tryaura' )
+					__( 'OpenRouter API settings saved successfully!', 'tryaura' )
 				);
 			}
 		} catch ( e: unknown ) {
@@ -173,20 +176,20 @@ const GeminiSettings = () => {
 				<div className="flex flex-col w-full md:w-[550px]">
 					<div className="flex flex-col gap-[24px] mb-[36px]">
 						<div>
-							<img src={ geminiLogo } alt="Gemini Logo" />
+							<img src={ geminiLogo } alt="OpenRouter Logo" />
 						</div>
 						<div>
 							<div className="font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[8px]">
-								{ __( 'Gemini Integration', 'tryaura' ) }
+								{ __( 'OpenRouter Integration', 'tryaura' ) }
 							</div>
 							<div className="text-[14px] font-[400] leading-[18.67px] text-[rgba(99,99,99,1)]">
 								{ __(
-									'Connect your Gemini account with an API key. Need help finding your',
+									'Connect your OpenRouter account with an API key. Need help finding your',
 									'tryaura'
 								) }
 								&nbsp;
 								<a
-									href="https://aistudio.google.com/api-keys"
+									href="https://openrouter.ai/keys"
 									className="text-primary underline hover:text-primary-dark"
 									target="_blank"
 									rel="noreferrer"

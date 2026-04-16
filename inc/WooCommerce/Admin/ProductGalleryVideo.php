@@ -110,8 +110,8 @@ class ProductGalleryVideo {
 		$video_data = get_post_meta( $product_id, self::VIDEO_META_KEY, true );
 
 		$settings    = get_option( 'tryaura_settings', array() );
-		$api_key     = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
-		$image_model = isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '';
+		$api_key     = isset( $settings['openrouter']['apiKey'] ) ? $settings['openrouter']['apiKey'] : ( isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '' );
+		$image_model = isset( $settings['openrouter']['imageModel'] ) ? $settings['openrouter']['imageModel'] : ( isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '' );
 
 		$script_path = 'build/admin/product-video-gallery/index.js';
 		$style_path  = 'build/admin/product-video-gallery/style-index.css';

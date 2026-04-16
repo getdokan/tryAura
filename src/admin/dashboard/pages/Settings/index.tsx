@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import Gemini from './Gemini';
+import OpenRouterSettings from './Gemini';
 import TryOnControl from './Woocommerce/TryOnControl';
 
 const Index = () => {
@@ -13,7 +13,7 @@ const Index = () => {
 			</h1>
 
 			<div className="flex flex-col gap-8">
-				<Gemini />
+				<OpenRouterSettings />
 				{ wcExists && <TryOnControl /> }
 			</div>
 		</div>

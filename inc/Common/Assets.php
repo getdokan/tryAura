@@ -45,9 +45,9 @@ class Assets {
 	public function localize_scripts() {
 		$config = array(
 			'aiProviders'       => array(
-				'google' => array(
-					'gemini-2.5-flash-image'         => array(
-						'label'        => __( 'gemini-2.5-flash-image', 'tryaura' ),
+				'openrouter' => array(
+					'google/gemini-2.5-flash-image'  => array(
+						'label'        => __( 'google/gemini-2.5-flash-image', 'tryaura' ),
 						'identity'     => 'image',
 						'inputTypes'   => array( 'text', 'image' ),
 						'outputTypes'  => array( 'image' ),
@@ -129,8 +129,8 @@ class Assets {
 					),
 				),
 			),
-			'defaultProvider'   => 'google',
-			'defaultImageModel' => 'gemini-2.5-flash-image',
+			'defaultProvider'   => 'openrouter',
+			'defaultImageModel' => 'google/gemini-2.5-flash-image',
 		);
 
 		wp_localize_script( 'tryaura-ai-models', 'tryAuraAiProviderModels', apply_filters( 'tryaura_ai_models', $config ) );

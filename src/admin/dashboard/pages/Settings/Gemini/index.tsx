@@ -28,12 +28,14 @@ function Index() {
 	}, [] );
 
 	const data = window.tryAura!;
-	const apiKey = settings[ data.optionKey ]?.google?.apiKey;
+	const apiKey =
+		settings[ data.optionKey ]?.openrouter?.apiKey ||
+		settings[ data.optionKey ]?.google?.apiKey;
 
 	return (
 		<SettingItemCard
 			icon={ <img src={ geminiLogo } alt="gemini logo" /> }
-			title={ __( 'Gemini API', 'tryaura' ) }
+			title={ __( 'OpenRouter API', 'tryaura' ) }
 			badge={
 				apiKey ? (
 					<p className="bg-green-100 text-green-700 rounded m-0 py-1 px-3">
@@ -49,10 +51,14 @@ function Index() {
 				'This key authenticates requests between your store and TryAura services.',
 				'tryaura'
 			) }
-			link={ '/settings/gemini' }
+			link={ '/settings/openrouter' }
 			linkText={ __( 'Configure', 'tryaura' ) }
 			loading={ fetching }
-			disabledLink={ data.isGeminiSettingsReadonly === '1' || false }
+			disabledLink={
+				data.isOpenRouterSettingsReadonly === '1' ||
+				data.isGeminiSettingsReadonly === '1' ||
+				false
+			}
 		/>
 	);
 }

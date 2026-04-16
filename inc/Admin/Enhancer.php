@@ -40,9 +40,9 @@ class Enhancer {
 		$post_type = $post ? $post->post_type : '';
 
 		$settings    = get_option( 'tryaura_settings', array() );
-		$api_key     = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
-		$image_model = isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '';
-		$video_model = isset( $settings['google']['videoModel'] ) ? $settings['google']['videoModel'] : '';
+		$api_key     = isset( $settings['openrouter']['apiKey'] ) ? $settings['openrouter']['apiKey'] : ( isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '' );
+		$image_model = isset( $settings['openrouter']['imageModel'] ) ? $settings['openrouter']['imageModel'] : ( isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '' );
+		$video_model = isset( $settings['openrouter']['videoModel'] ) ? $settings['openrouter']['videoModel'] : ( isset( $settings['google']['videoModel'] ) ? $settings['google']['videoModel'] : '' );
 
 		// Pass settings to the enhancer UI (admin-only, requires post editing capability).
 		wp_localize_script(

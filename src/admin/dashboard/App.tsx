@@ -39,11 +39,14 @@ const getAdminRoutes = () => {
 		} );
 	}
 
-	if ( ( window.tryAura as any )?.isGeminiSettingsReadonly !== '1' ) {
+	if (
+		( window.tryAura as any )?.isOpenRouterSettingsReadonly !== '1' &&
+		( window.tryAura as any )?.isGeminiSettingsReadonly !== '1'
+	) {
 		routes.push( {
-			id: 'settings-gemini',
+			id: 'settings-openrouter',
 			element: <GeminiSettings />,
-			path: '/settings/gemini',
+			path: '/settings/openrouter',
 		} );
 	}
 

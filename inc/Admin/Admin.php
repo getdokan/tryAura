@@ -117,8 +117,14 @@ class Admin {
 
 		$sanitized = array();
 
-		if ( isset( $value['google'] ) && is_array( $value['google'] ) ) {
-			$sanitized['google'] = array(
+		if ( isset( $value['openrouter'] ) && is_array( $value['openrouter'] ) ) {
+			$sanitized['openrouter'] = array(
+				'apiKey'     => isset( $value['openrouter']['apiKey'] ) ? sanitize_text_field( $value['openrouter']['apiKey'] ) : '',
+				'imageModel' => isset( $value['openrouter']['imageModel'] ) ? sanitize_text_field( $value['openrouter']['imageModel'] ) : '',
+				'videoModel' => isset( $value['openrouter']['videoModel'] ) ? sanitize_text_field( $value['openrouter']['videoModel'] ) : '',
+			);
+		} elseif ( isset( $value['google'] ) && is_array( $value['google'] ) ) {
+			$sanitized['openrouter'] = array(
 				'apiKey'     => isset( $value['google']['apiKey'] ) ? sanitize_text_field( $value['google']['apiKey'] ) : '',
 				'imageModel' => isset( $value['google']['imageModel'] ) ? sanitize_text_field( $value['google']['imageModel'] ) : '',
 				'videoModel' => isset( $value['google']['videoModel'] ) ? sanitize_text_field( $value['google']['videoModel'] ) : '',
@@ -145,9 +151,14 @@ class Admin {
 		}
 
 		$settings    = get_option( $this->option_key, array() );
-		$api_key     = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
-		$image_model = isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '';
-		$video_model = isset( $settings['google']['videoModel'] ) ? $settings['google']['videoModel'] : '';
+		$api_key     = isset( $settings['openrouter']['apiKey'] ) ? $settings['openrouter']['apiKey'] : ( isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '' );
+		$image_model = isset( $settings['openrouter']['imageModel'] ) ? $settings['openrouter']['imageModel'] : ( isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '' );
+		$video_model = isset( $settings['openrouter']['videoModel'] ) ? $settings['openrouter']['videoModel'] : ( isset( $settings['google']['videoModel'] ) ? $settings['google']['videoModel'] : '' );
+
+		$readonly = (int) apply_filters(
+			'tryaura_is_openrouter_settings_readonly',
+			apply_filters( 'tryaura_is_gemini_settings_readonly', false )
+		);
 
 		// Localize data for the admin app (admin-only page, requires manage_options).
 		wp_localize_script(
@@ -162,18 +173,19 @@ class Admin {
 				'optionKey'      => $this->option_key,
 				'wcExists'       => class_exists( 'WooCommerce' ),
 				/**
-				 * Controls whether the Gemini API settings page is read-only.
+				 * Controls whether the OpenRouter API settings page is read-only.
 				 *
 				 * When true, the Connect button is disabled and the API key
 				 * field becomes read-only. Useful for demo environments.
 				 *
 				 * Usage in functions.php:
-				 *   add_filter( 'tryaura_is_gemini_settings_readonly', '__return_true' );
+				 *   add_filter( 'tryaura_is_openrouter_settings_readonly', '__return_true' );
 				 *
 				 * @since 1.0.0
 				 * @param bool $readonly Default false.
 				 */
-				'isGeminiSettingsReadonly' => (int) apply_filters( 'tryaura_is_gemini_settings_readonly', false ),
+				'isOpenRouterSettingsReadonly' => $readonly,
+				'isGeminiSettingsReadonly' => $readonly,
 			)
 		);
 

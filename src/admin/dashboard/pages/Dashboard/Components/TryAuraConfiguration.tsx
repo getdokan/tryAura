@@ -41,11 +41,11 @@ function TryAuraConfiguration( { className = '' }: { className: string } ) {
 				{ __( 'TryAura Configuration', 'tryaura' ) }
 			</h2>
 			<p className="text-[14px] text-[rgba(153,153,153,1)] mb-[32px] m-0">
-				{ __( 'Configure your Gemini with API', 'tryaura' ) }
+				{ __( 'Configure OpenRouter API access', 'tryaura' ) }
 			</p>
 
 			<Link
-				to="/settings/gemini"
+				to="/settings/openrouter"
 				className="bg-primary text-white px-[32px] py-[12px] rounded-[8px] text-[16px] font-[500] hover:bg-primary-dark transition-colors no-underline"
 			>
 				{ __( 'Configure', 'tryaura' ) }
@@ -54,7 +54,7 @@ function TryAuraConfiguration( { className = '' }: { className: string } ) {
 			<div className="mt-[40px] text-[14px] text-[rgba(153,153,153,1)]">
 				{ __( 'Need help configuring', 'tryaura' ) }{ ' ' }
 				<a
-					href="https://aistudio.google.com/app/apikey"
+					href="https://openrouter.ai/keys"
 					target="_blank"
 					rel="noreferrer"
 					className="text-primary no-underline hover:underline"

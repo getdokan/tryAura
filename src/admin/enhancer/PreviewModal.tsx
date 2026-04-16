@@ -13,7 +13,6 @@ import Output from './PreviewSections/Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
 import { Modal, Slot, SlotFillProvider } from '@wordpress/components';
 import { PluginArea } from '@wordpress/plugins';
-import { GoogleGenAI } from '@google/genai';
 import { hasPro } from '../../utils/tryaura';
 import { twMerge } from 'tailwind-merge';
 
@@ -144,7 +143,9 @@ const PreviewModal = ( {
 			setMessage( __( 'Done', 'tryaura' ) );
 			setError( null );
 		} catch ( e: any ) {
-			setError( e?.message || __( 'Testing generation failed.', 'tryaura' ) );
+			setError(
+				e?.message || __( 'Testing generation failed.', 'tryaura' )
+			);
 			setStatus( 'error' );
 			setMessage( 'Generation failed.' );
 		}
@@ -164,14 +165,18 @@ const PreviewModal = ( {
 			}
 
 			const aura = ( window as any )?.tryAura;
+			const openrouter = settings?.[ aura?.optionKey ]?.openrouter;
 			const google = settings?.[ aura?.optionKey ]?.google;
-			const apiKey = google?.apiKey || aura?.apiKey;
-			const savedImageModel = google?.imageModel || aura?.imageModel;
+			const apiKey = openrouter?.apiKey || google?.apiKey || aura?.apiKey;
+			const savedImageModel =
+				openrouter?.imageModel ||
+				google?.imageModel ||
+				aura?.imageModel;
 
 			if ( ! apiKey ) {
 				throw new Error(
 					__(
-						'Missing Google AI API key. Please set it on the TryAura settings page.',
+						'Missing OpenRouter API key. Please set it on the TryAura settings page.',
 						'tryaura'
 					)
 				);
@@ -180,7 +185,7 @@ const PreviewModal = ( {
 			const imageModel =
 				savedImageModel ||
 				defaultImageModel ||
-				'gemini-2.5-flash-image-preview';
+				'google/gemini-2.5-flash-image';
 
 			setStatus( 'fetching' );
 			setMessage( __( 'Fetching images…', 'tryaura' ) );
@@ -213,7 +218,6 @@ const PreviewModal = ( {
 
 			setStatus( 'generating' );
 			setMessage( __( 'Thinking and generating…', 'tryaura' ) );
-			const ai = new GoogleGenAI( { apiKey } );
 
 			const isBlockPage = isBlockEditorPage && ! isWoocommerceProductPage;
 			const safetyInstruction =
@@ -269,47 +273,97 @@ const PreviewModal = ( {
 				isWoocommerceProductPage
 			);
 			const prompt = applyFilters( 'tryaura.ai_enhance_prompt', [
-				{ text: promptText },
+				{
+					type: 'text',
+					text: promptText,
+				},
 				...encodedImages.map( ( img ) => ( {
-					inlineData: { mimeType: img.mimeType, data: img.base64 },
+					type: 'image_url',
+					image_url: {
+						url: `data:${ img.mimeType };base64,${ img.base64 }`,
+					},
 				} ) ),
 			] );
 
 			doAction( 'tryaura.ai_enhance_prompt_before_generate', prompt );
+
 			const contentParams = {
 				model: imageModel,
-				contents: prompt,
-				config: {
-					responseModalities: [ 'IMAGE' ],
-					candidateCount: 1,
-					imageConfig: {
-						aspectRatio: imageConfigData?.imageSize || '1:1',
+				messages: [
+					{
+						role: 'user',
+						content: prompt,
 					},
+				],
+				modalities: [ 'image', 'text' ],
+				stream: false,
+				image_config: {
+					aspect_ratio: imageConfigData?.imageSize || '1:1',
 				},
 			};
-			const response: any = await ( ai as any ).models.generateContent(
-				applyFilters(
-					'tryaura.ai_enhance_model_content',
-					contentParams
-				)
+			const requestBody: any = applyFilters(
+				'tryaura.ai_enhance_model_content',
+				contentParams
 			);
+			const openRouterResponse = await fetch(
+				'https://openrouter.ai/api/v1/chat/completions',
+				{
+					method: 'POST',
+					headers: {
+						Authorization: `Bearer ${ apiKey }`,
+						'Content-Type': 'application/json',
+						'HTTP-Referer': window?.location?.origin || '',
+						'X-OpenRouter-Title': 'TryAura',
+					},
+					body: JSON.stringify( requestBody ),
+				}
+			);
+
+			if ( ! openRouterResponse.ok ) {
+				let errorMessage: string = String(
+					__( 'OpenRouter request failed.', 'tryaura' )
+				);
+				try {
+					const errJson: any = await openRouterResponse.json();
+					errorMessage =
+						errJson?.error?.message ||
+						errJson?.message ||
+						errorMessage;
+				} catch {
+					const errText = await openRouterResponse.text();
+					if ( errText ) {
+						errorMessage = errText;
+					}
+				}
+				throw new Error( errorMessage );
+			}
+
+			const response: any = await openRouterResponse.json();
 			doAction( 'tryaura.ai_enhance_prompt_after_generate', response );
 
 			setStatus( 'parsing' );
 			setMessage( __( 'Processing results…', 'tryaura' ) );
-			const parts = response?.candidates?.[ 0 ]?.content?.parts || [];
+			const imageUrl: string | undefined =
+				response?.choices?.[ 0 ]?.message?.images?.[ 0 ]?.imageUrl
+					?.url ||
+				response?.choices?.[ 0 ]?.message?.images?.[ 0 ]?.image_url
+					?.url;
+
 			let data64: string | null = null;
 			let outMime: string = 'image/png';
-			for ( const part of parts ) {
-				if ( part.inlineData ) {
-					data64 = part.inlineData.data;
-					outMime = part.inlineData.mimeType || outMime;
-					break;
-				}
+			if ( imageUrl && imageUrl.startsWith( 'data:' ) ) {
+				const comma = imageUrl.indexOf( ',' );
+				const header = imageUrl.substring( 0, Math.max( 0, comma ) );
+				const match = /^data:([^;]+)/.exec( header );
+				outMime = match?.[ 1 ] || outMime;
+				data64 =
+					comma >= 0 ? imageUrl.substring( comma + 1 ) : imageUrl;
 			}
 
 			if ( ! data64 ) {
-				throw new Error( __( 'Model did not return an image.', 'tryaura' ) );
+				throw new Error(
+					__( 'Model did not return an image.', 'tryaura' )
+				);
 			}
 
 			const dataUrl = `data:${ outMime };base64,${ data64 }`;
@@ -318,7 +372,7 @@ const PreviewModal = ( {
 			setMessage( __( 'Done', 'tryaura' ) );
 			setError( null );
 
-			const usage = response?.usageMetadata;
+			const usage = response?.usage;
 			const postId = ( window as any )?.tryAura?.postId;
 			const postType = ( window as any )?.tryAura?.postType;
 
@@ -329,9 +383,9 @@ const PreviewModal = ( {
 					type: 'image',
 					model: imageModel,
 					prompt: promptText,
-					input_tokens: usage?.promptTokenCount,
-					output_tokens: usage?.responseTokenCount,
-					total_tokens: usage?.totalTokenCount,
+					input_tokens: usage?.prompt_tokens,
+					output_tokens: usage?.completion_tokens,
+					total_tokens: usage?.total_tokens,
 					generated_from: 'admin',
 					object_id: postId,
 					object_type: postType,
@@ -415,7 +469,10 @@ const PreviewModal = ( {
 			if ( ! newId ) {
 				doAction( 'tryaura.ai_enhance_upload_failed', filename, blob );
 				throw new Error(
-					__( 'Upload succeeded but no attachment ID returned.', 'tryaura' )
+					__(
+						'Upload succeeded but no attachment ID returned.',
+						'tryaura'
+					)
 				);
 			}
 

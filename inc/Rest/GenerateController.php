@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Gemini REST controller.
+ * OpenRouter REST controller.
  *
  * @since 1.0.0
  */
@@ -105,10 +105,15 @@ class GenerateController {
 		$ref_images = $request->get_param( 'images' ) ?? array();
 
 		$settings = get_option( 'tryaura_settings', array() );
-		$api_key  = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
+		$provider = isset( $settings['openrouter'] ) && is_array( $settings['openrouter'] ) ? $settings['openrouter'] : ( isset( $settings['google'] ) ? $settings['google'] : array() );
+		$api_key  = isset( $provider['apiKey'] ) ? $provider['apiKey'] : '';
 
-		$model   = isset( $settings['google']['imageModel'] ) && ! empty( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : 'gemini-2.5-flash-image';
-		$api_url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$api_key}";
+		if ( empty( $api_key ) ) {
+			return new WP_REST_Response( array( 'message' => __( 'Missing OpenRouter API key.', 'tryaura' ) ), 400 );
+		}
+
+		$model   = isset( $provider['imageModel'] ) && ! empty( $provider['imageModel'] ) ? $provider['imageModel'] : 'google/gemini-2.5-flash-image';
+		$api_url = 'https://openrouter.ai/api/v1/chat/completions';
 
 		$prepared_images = array();
 		foreach ( $ref_images as $base64_data ) {
@@ -124,26 +129,41 @@ class GenerateController {
 			);
 		}
 
-		$parts = array( array( 'text' => $prompt ) );
+		$parts = array(
+			array(
+				'type' => 'text',
+				'text' => $prompt,
+			),
+		);
 		foreach ( $prepared_images as $img ) {
 			$parts[] = array(
-				'inline_data' => array(
-					'mime_type' => $img['mime_type'],
-					'data'      => $img['data'],
+				'type'      => 'image_url',
+				'image_url' => array(
+					'url' => 'data:' . $img['mime_type'] . ';base64,' . $img['data'],
 				),
 			);
 		}
 
 		$body = array(
-			'contents'         => array( array( 'parts' => $parts ) ),
-			'generationConfig' => array( 'responseModalities' => array( 'IMAGE' ) ),
+			'model'      => $model,
+			'messages'   => array(
+				array(
+					'role'    => 'user',
+					'content' => $parts,
+				),
+			),
+			'modalities' => array( 'image', 'text' ),
+			'stream'     => false,
 		);
 
 		$response = wp_remote_post(
 			$api_url,
 			array(
 				'body'    => wp_json_encode( $body ),
-				'headers' => array( 'Content-Type' => 'application/json' ),
+				'headers' => array(
+					'Content-Type'  => 'application/json',
+					'Authorization' => 'Bearer ' . $api_key,
+				),
 				'timeout' => 120,
 			)
 		);
@@ -158,8 +178,14 @@ class GenerateController {
 			return new WP_REST_Response( $data['error'], 400 );
 		}
 
-		$image = $data['candidates'][0]['content']['parts'][0]['inlineData']['data'] ?? null;
-		$usage = $data['usageMetadata'] ?? null;
+		$image_data_url = $data['choices'][0]['message']['images'][0]['image_url']['url'] ?? $data['choices'][0]['message']['images'][0]['imageUrl']['url'] ?? null;
+		$image          = null;
+
+		if ( is_string( $image_data_url ) && 0 === strpos( $image_data_url, 'data:' ) ) {
+			$image = substr( $image_data_url, strpos( $image_data_url, ',' ) + 1 );
+		}
+
+		$usage = $data['usage'] ?? null;
 
 		if ( $image ) {
 			( new UsageManager() )->log_usage(
@@ -167,9 +193,9 @@ class GenerateController {
 					'type'           => 'image',
 					'model'          => $model,
 					'prompt'         => $prompt,
-					'input_tokens'   => $usage['promptTokenCount'] ?? 0,
-					'output_tokens'  => $usage['candidatesTokenCount'] ?? $usage['responseTokenCount'] ?? 0,
-					'total_tokens'   => $usage['totalTokenCount'] ?? 0,
+					'input_tokens'   => $usage['prompt_tokens'] ?? 0,
+					'output_tokens'  => $usage['completion_tokens'] ?? 0,
+					'total_tokens'   => $usage['total_tokens'] ?? 0,
 					'generated_from' => $request->get_param( 'generated_from' ) ?? 'tryon',
 					'object_id'      => $request->get_param( 'object_id' ) ?? 0,
 					'object_type'    => $request->get_param( 'object_type' ) ?? '',

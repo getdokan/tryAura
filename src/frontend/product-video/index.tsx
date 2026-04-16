@@ -1,8 +1,8 @@
 import { Modal } from '@wordpress/components';
-import { createRoot, RawHTML, render } from "@wordpress/element";
+import { createRoot, RawHTML, render } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import './style.scss';
-import { X } from "lucide-react";
+import './style.css';
+import { X } from 'lucide-react';
 import { getYoutubeId } from '../../utils/tryaura';
 
 interface VideoModalProps {

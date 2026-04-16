@@ -13,7 +13,6 @@ import Output from './PreviewSections/Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
 import { Modal, Slot, SlotFillProvider } from '@wordpress/components';
 import { PluginArea } from '@wordpress/plugins';
-import { GoogleGenAI } from '@google/genai';
 import { hasPro } from '../../utils/tryaura';
 import { twMerge } from 'tailwind-merge';
 
@@ -165,22 +164,18 @@ const PreviewModal = ( {
 
 			const aura = ( window as any )?.tryAura;
 			const google = settings?.[ aura?.optionKey ]?.google;
-			const apiKey = google?.apiKey || aura?.apiKey;
-			const savedImageModel = google?.imageModel || aura?.imageModel;
+			const restUrl = aura?.restUrl;
+			const wpNonce = aura?.nonce;
+			const tryonNonce = aura?.tryonNonce;
 
-			if ( ! apiKey ) {
+			if ( ! restUrl || ! wpNonce || ! tryonNonce ) {
 				throw new Error(
 					__(
-						'Missing Google AI API key. Please set it on the TryAura settings page.',
+						'REST API not configured properly.',
 						'tryaura'
 					)
 				);
 			}
-
-			const imageModel =
-				savedImageModel ||
-				defaultImageModel ||
-				'gemini-2.5-flash-image-preview';
 
 			setStatus( 'fetching' );
 			setMessage( __( 'Fetching images…', 'tryaura' ) );
@@ -213,8 +208,6 @@ const PreviewModal = ( {
 
 			setStatus( 'generating' );
 			setMessage( __( 'Thinking and generating…', 'tryaura' ) );
-			const ai = new GoogleGenAI( { apiKey } );
-
 			const isBlockPage = isBlockEditorPage && ! isWoocommerceProductPage;
 			const safetyInstruction =
 				'Do not generate any nudity, harassment, or abuse.';
@@ -274,72 +267,41 @@ const PreviewModal = ( {
 					inlineData: { mimeType: img.mimeType, data: img.base64 },
 				} ) ),
 			] );
+			const images = encodedImages.map(
+				( img ) => `data:${ img.mimeType };base64,${ img.base64 }`
+			);
 
 			doAction( 'tryaura.ai_enhance_prompt_before_generate', prompt );
-			const contentParams = {
-				model: imageModel,
-				contents: prompt,
-				config: {
-					responseModalities: [ 'IMAGE' ],
-					candidateCount: 1,
-					imageConfig: {
-						aspectRatio: imageConfigData?.imageSize || '1:1',
-					},
+			const response: any = await apiFetch( {
+				url: `${ restUrl.replace( /\/?$/, '/' ) }generate/v1/image`,
+				method: 'POST',
+				headers: {
+					'X-WP-Nonce': wpNonce,
 				},
-			};
-			const response: any = await ( ai as any ).models.generateContent(
-				applyFilters(
-					'tryaura.ai_enhance_model_content',
-					contentParams
-				)
-			);
+				data: {
+					prompt: promptText,
+					images,
+					object_id: aura?.postId,
+					object_type: aura?.postType,
+					generated_from: 'admin',
+					tryonNonce,
+				},
+			} );
 			doAction( 'tryaura.ai_enhance_prompt_after_generate', response );
 
 			setStatus( 'parsing' );
 			setMessage( __( 'Processing results…', 'tryaura' ) );
-			const parts = response?.candidates?.[ 0 ]?.content?.parts || [];
-			let data64: string | null = null;
-			let outMime: string = 'image/png';
-			for ( const part of parts ) {
-				if ( part.inlineData ) {
-					data64 = part.inlineData.data;
-					outMime = part.inlineData.mimeType || outMime;
-					break;
-				}
-			}
+			const data64 = response?.image || null;
 
 			if ( ! data64 ) {
 				throw new Error( __( 'Model did not return an image.', 'tryaura' ) );
 			}
 
-			const dataUrl = `data:${ outMime };base64,${ data64 }`;
+			const dataUrl = `data:image/png;base64,${ data64 }`;
 			setGeneratedUrl( dataUrl );
 			setStatus( 'done' );
 			setMessage( __( 'Done', 'tryaura' ) );
 			setError( null );
-
-			const usage = response?.usageMetadata;
-			const postId = ( window as any )?.tryAura?.postId;
-			const postType = ( window as any )?.tryAura?.postType;
-
-			apiFetch( {
-				path: '/tryaura/v1/log-usage',
-				method: 'POST',
-				data: {
-					type: 'image',
-					model: imageModel,
-					prompt: promptText,
-					input_tokens: usage?.promptTokenCount,
-					output_tokens: usage?.responseTokenCount,
-					total_tokens: usage?.totalTokenCount,
-					generated_from: 'admin',
-					object_id: postId,
-					object_type: postType,
-					status: 'success',
-				},
-			} ).catch( () => {
-				// ignore logging errors
-			} );
 		} catch ( e: any ) {
 			setError( e?.message || __( 'Generation failed.', 'tryaura' ) );
 			setStatus( 'error' );

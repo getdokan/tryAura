@@ -1,5 +1,5 @@
 import { createRoot } from '@wordpress/element';
-import './style.scss';
+import './style.css';
 import { applyFilters, doAction } from '@wordpress/hooks';
 import EnhanceButton from './EnhanceButton';
 import { dispatch } from '@wordpress/data';

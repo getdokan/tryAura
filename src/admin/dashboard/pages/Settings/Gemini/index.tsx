@@ -34,9 +34,7 @@ function Index() {
 	const provider = settings[ data.optionKey ]?.google?.provider || 'google';
 	const isOpenRouter = provider === 'openrouter';
 	const logo = isOpenRouter ? openrouterLogo : geminiLogo;
-	const title = isOpenRouter
-		? __( 'OpenRouter API', 'tryaura' )
-		: __( 'Gemini API', 'tryaura' );
+	const title = __( 'AI Credentials', 'tryaura' );
 
 	return (
 		<SettingItemCard
@@ -54,7 +52,7 @@ function Index() {
 				)
 			}
 			subTitle={ __(
-				'This key authenticates requests between your store and TryAura services.',
+				'Configure the active Gemini or OpenRouter credential used by TryAura.',
 				'tryaura'
 			) }
 			link={ '/settings/gemini' }

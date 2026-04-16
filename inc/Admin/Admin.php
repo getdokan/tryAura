@@ -79,7 +79,10 @@ class Admin {
 							'google'      => array(
 								'type'       => 'object',
 								'properties' => array(
+									'provider'       => array( 'type' => 'string' ),
 									'apiKey'     => array( 'type' => 'string' ),
+									'geminiApiKey'   => array( 'type' => 'string' ),
+									'openrouterApiKey' => array( 'type' => 'string' ),
 									'imageModel' => array( 'type' => 'string' ),
 									'videoModel' => array( 'type' => 'string' ),
 								),
@@ -119,7 +122,10 @@ class Admin {
 
 		if ( isset( $value['google'] ) && is_array( $value['google'] ) ) {
 			$sanitized['google'] = array(
+				'provider'       => isset( $value['google']['provider'] ) ? sanitize_text_field( $value['google']['provider'] ) : 'google',
 				'apiKey'     => isset( $value['google']['apiKey'] ) ? sanitize_text_field( $value['google']['apiKey'] ) : '',
+				'geminiApiKey'   => isset( $value['google']['geminiApiKey'] ) ? sanitize_text_field( $value['google']['geminiApiKey'] ) : '',
+				'openrouterApiKey' => isset( $value['google']['openrouterApiKey'] ) ? sanitize_text_field( $value['google']['openrouterApiKey'] ) : '',
 				'imageModel' => isset( $value['google']['imageModel'] ) ? sanitize_text_field( $value['google']['imageModel'] ) : '',
 				'videoModel' => isset( $value['google']['videoModel'] ) ? sanitize_text_field( $value['google']['videoModel'] ) : '',
 			);
@@ -146,6 +152,7 @@ class Admin {
 
 		$settings    = get_option( $this->option_key, array() );
 		$api_key     = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
+		$provider    = isset( $settings['google']['provider'] ) ? $settings['google']['provider'] : 'google';
 		$image_model = isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '';
 		$video_model = isset( $settings['google']['videoModel'] ) ? $settings['google']['videoModel'] : '';
 
@@ -157,6 +164,7 @@ class Admin {
 				'restUrl'        => esc_url_raw( rest_url() ),
 				'nonce'          => wp_create_nonce( 'wp_rest' ),
 				'apiKey'         => $api_key,
+				'provider'       => $provider,
 				'imageModel'     => $image_model,
 				'videoModel'     => $video_model,
 				'optionKey'      => $this->option_key,

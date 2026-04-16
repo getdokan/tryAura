@@ -1,5 +1,5 @@
 import { createRoot } from '@wordpress/element';
-import './style.scss';
+import './style.css';
 import TryOnModal from './TryOnModal';
 import { addAction, applyFilters, doAction } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';

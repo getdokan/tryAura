@@ -1,4 +1,4 @@
-import './style.scss';
+import './style.css';
 import Button from './Button';
 import Toggle from './Toggle';
 import WpBtn from './WpBtn';
@@ -34,6 +34,11 @@ domReady( () => {
 		const div = document.createElement( 'div' );
 		div.id = 'aura-toaster';
 		document.body.appendChild( div );
-		createRoot( div ).render( <Toaster position="bottom-right" containerClassName="tryaura-toast-root" /> );
+		createRoot( div ).render(
+			<Toaster
+				position="bottom-right"
+				containerClassName="tryaura-toast-root"
+			/>
+		);
 	}
 } );

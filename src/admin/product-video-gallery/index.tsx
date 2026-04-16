@@ -1,5 +1,5 @@
 import { createRoot } from '@wordpress/element';
-import './style.scss';
+import './style.css';
 import ProductVideoGallery from './components/ProductVideoGallery';
 import { Toaster } from 'react-hot-toast';
 import { __ } from '@wordpress/i18n';

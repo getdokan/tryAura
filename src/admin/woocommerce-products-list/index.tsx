@@ -1,4 +1,4 @@
-import './style.scss';
+import './style.css';
 declare const tryAuraWoo: {
 	ajaxUrl: string;
 	nonce: string;

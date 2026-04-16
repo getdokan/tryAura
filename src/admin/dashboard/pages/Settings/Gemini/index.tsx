@@ -1,4 +1,5 @@
 import geminiLogo from '../assets/geminiLogo.svg';
+import openrouterLogo from '../assets/openrouterLogo.svg';
 import { Button } from '../../../../../components';
 import { useNavigate } from 'react-router-dom';
 import { __ } from '@wordpress/i18n';
@@ -15,6 +16,7 @@ declare global {
 			nonce: string;
 			apiKey: string;
 			optionKey: string;
+			provider?: 'google' | 'openrouter';
 		};
 	}
 }
@@ -29,11 +31,17 @@ function Index() {
 
 	const data = window.tryAura!;
 	const apiKey = settings[ data.optionKey ]?.google?.apiKey;
+	const provider = settings[ data.optionKey ]?.google?.provider || 'google';
+	const isOpenRouter = provider === 'openrouter';
+	const logo = isOpenRouter ? openrouterLogo : geminiLogo;
+	const title = isOpenRouter
+		? __( 'OpenRouter API', 'tryaura' )
+		: __( 'Gemini API', 'tryaura' );
 
 	return (
 		<SettingItemCard
-			icon={ <img src={ geminiLogo } alt="gemini logo" /> }
-			title={ __( 'Gemini API', 'tryaura' ) }
+			icon={ <img src={ logo } alt={ isOpenRouter ? 'OpenRouter logo' : 'Gemini logo' } /> }
+			title={ title }
 			badge={
 				apiKey ? (
 					<p className="bg-green-100 text-green-700 rounded m-0 py-1 px-3">

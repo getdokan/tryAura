@@ -1,5 +1,5 @@
 import * as TYPES from './constants';
-import { Status, ActiveTab } from './types';
+import { Status, ActiveTab, VideoJobStatus } from './types';
 
 const actions = {};
 
@@ -80,6 +80,26 @@ export const setSupportsVideo = ( supportsVideo: boolean ) => ( {
 export const setIsVideoBusy = ( isVideoBusy: boolean ) => ( {
 	type: TYPES.SET_IS_VIDEO_BUSY,
 	isVideoBusy,
+} );
+
+export const setVideoJobId = ( videoJobId: string | null ) => ( {
+	type: TYPES.SET_VIDEO_JOB_ID,
+	videoJobId,
+} );
+
+export const setVideoJobStatus = ( videoJobStatus: VideoJobStatus ) => ( {
+	type: TYPES.SET_VIDEO_JOB_STATUS,
+	videoJobStatus,
+} );
+
+export const setVideoResultUrl = ( videoResultUrl: string | null ) => ( {
+	type: TYPES.SET_VIDEO_RESULT_URL,
+	videoResultUrl,
+} );
+
+export const setVideoError = ( videoError: string | null ) => ( {
+	type: TYPES.SET_VIDEO_ERROR,
+	videoError,
 } );
 
 export const resetState = () => ( {

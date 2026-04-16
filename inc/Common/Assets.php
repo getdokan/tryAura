@@ -45,7 +45,7 @@ class Assets {
 	public function localize_scripts() {
 		$config = array(
 			'aiProviders'       => array(
-				'google' => array(
+				'google'     => array(
 					'gemini-2.5-flash-image'         => array(
 						'label'        => __( 'gemini-2.5-flash-image', 'tryaura' ),
 						'identity'     => 'image',
@@ -127,10 +127,226 @@ class Assets {
 							),
 						),
 					),
+					'veo-3.1-generate-preview'       => array(
+						'label'        => __( 'veo-3.1', 'tryaura' ),
+						'identity'     => 'video',
+						'inputTypes'   => array( 'text', 'image' ),
+						'outputTypes'  => array( 'video' ),
+						'supported'    => true,
+						'locked'       => false,
+						'capabilities' => array(
+							'video'  => array(
+								'supported' => true,
+								'locked'    => false,
+							),
+							'prompt' => array(
+								'supported' => true,
+								'locked'    => false,
+							),
+						),
+						'parameters'   => array(
+							'aspectRatio' => array(
+								'supported' => true,
+								'locked'    => false,
+								'default'   => '16:9',
+								'values'    => array(
+									array(
+										'label'  => __( '16:9', 'tryaura' ),
+										'value'  => '16:9',
+										'locked' => false,
+									),
+									array(
+										'label'  => __( '9:16', 'tryaura' ),
+										'value'  => '9:16',
+										'locked' => false,
+									),
+								),
+							),
+							'resolution'  => array(
+								'supported' => true,
+								'locked'    => false,
+								'default'   => '720p',
+								'values'    => array(
+									array(
+										'label'  => __( '720p', 'tryaura' ),
+										'value'  => '720p',
+										'locked' => false,
+									),
+									array(
+										'label'  => __( '1080p', 'tryaura' ),
+										'value'  => '1080p',
+										'locked' => false,
+									),
+								),
+							),
+						),
+					),
+				),
+				'openrouter' => array(
+					'google/gemini-2.5-flash-preview-05-20:generateImage' => array(
+						'label'        => __( 'gemini-2.5-flash (OpenRouter)', 'tryaura' ),
+						'identity'     => 'image',
+						'inputTypes'   => array( 'text', 'image' ),
+						'outputTypes'  => array( 'image' ),
+						'supported'    => true,
+						'locked'       => false,
+						'capabilities' => array(
+							'image'  => array(
+								'supported' => true,
+								'locked'    => false,
+							),
+							'prompt' => array(
+								'supported' => true,
+								'locked'    => false,
+							),
+						),
+						'parameters'   => array(
+							'aspectRatio'      => array(
+								'supported' => true,
+								'locked'    => false,
+								'default'   => '1:1',
+								'values'    => array(
+									array(
+										'label'  => __( '1:1', 'tryaura' ),
+										'value'  => '1:1',
+										'locked' => false,
+									),
+									array(
+										'label'  => __( '16:9', 'tryaura' ),
+										'value'  => '16:9',
+										'locked' => false,
+									),
+									array(
+										'label'  => __( '9:16', 'tryaura' ),
+										'value'  => '9:16',
+										'locked' => false,
+									),
+									array(
+										'label'  => __( '4:3', 'tryaura' ),
+										'value'  => '4:3',
+										'locked' => false,
+									),
+									array(
+										'label'  => __( '3:4', 'tryaura' ),
+										'value'  => '3:4',
+										'locked' => false,
+									),
+								),
+							),
+							'personGeneration' => array(
+								'supported' => true,
+								'locked'    => false,
+								'default'   => 'allow_adult',
+								'values'    => array(
+									array(
+										'label'  => __( 'Allow Adult', 'tryaura' ),
+										'value'  => 'allow_adult',
+										'locked' => false,
+									),
+									array(
+										'label'  => __( 'Disallow', 'tryaura' ),
+										'value'  => 'disallow',
+										'locked' => false,
+									),
+								),
+							),
+							'candidateCount'   => array(
+								'supported' => true,
+								'locked'    => false,
+								'default'   => '1',
+								'values'    => array(
+									array(
+										'label'  => __( '1 image', 'tryaura' ),
+										'value'  => '1',
+										'locked' => false,
+									),
+								),
+							),
+						),
+					),
+					'google/veo-3.1'                                      => array(
+						'label'        => __( 'veo-3.1 (OpenRouter)', 'tryaura' ),
+						'identity'     => 'video',
+						'inputTypes'   => array( 'text', 'image' ),
+						'outputTypes'  => array( 'video' ),
+						'supported'    => true,
+						'locked'       => false,
+						'capabilities' => array(
+							'video'  => array(
+								'supported' => true,
+								'locked'    => false,
+							),
+							'prompt' => array(
+								'supported' => true,
+								'locked'    => false,
+							),
+						),
+						'parameters'   => array(
+							'aspectRatio' => array(
+								'supported' => true,
+								'locked'    => false,
+								'default'   => '16:9',
+								'values'    => array(
+									array(
+										'label'  => __( '16:9', 'tryaura' ),
+										'value'  => '16:9',
+										'locked' => false,
+									),
+									array(
+										'label'  => __( '9:16', 'tryaura' ),
+										'value'  => '9:16',
+										'locked' => false,
+									),
+									array(
+										'label'  => __( '1:1', 'tryaura' ),
+										'value'  => '1:1',
+										'locked' => false,
+									),
+								),
+							),
+							'duration'    => array(
+								'supported' => true,
+								'locked'    => false,
+								'default'   => '5',
+								'values'    => array(
+									array(
+										'label'  => __( '5 seconds', 'tryaura' ),
+										'value'  => '5',
+										'locked' => false,
+									),
+									array(
+										'label'  => __( '10 seconds', 'tryaura' ),
+										'value'  => '10',
+										'locked' => false,
+									),
+								),
+							),
+							'resolution'  => array(
+								'supported' => true,
+								'locked'    => false,
+								'default'   => '720p',
+								'values'    => array(
+									array(
+										'label'  => __( '720p', 'tryaura' ),
+										'value'  => '720p',
+										'locked' => false,
+									),
+									array(
+										'label'  => __( '1080p', 'tryaura' ),
+										'value'  => '1080p',
+										'locked' => false,
+									),
+								),
+							),
+						),
+					),
 				),
 			),
-			'defaultProvider'   => 'google',
-			'defaultImageModel' => 'gemini-2.5-flash-image',
+			'defaultProvider'              => 'google',
+			'defaultImageModel'            => 'gemini-2.5-flash-image',
+			'defaultVideoModel'            => 'veo-3.1-generate-preview',
+			'defaultOpenRouterImageModel'   => 'google/gemini-2.5-flash-preview-05-20:generateImage',
+			'defaultOpenRouterVideoModel'   => 'google/veo-3.1',
 		);
 
 		wp_localize_script( 'tryaura-ai-models', 'tryAuraAiProviderModels', apply_filters( 'tryaura_ai_models', $config ) );

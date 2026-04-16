@@ -9,6 +9,7 @@ import ConfigFooter from './ConfigFooter';
 import { Slot } from '@wordpress/components';
 import { hasPro } from '../../../utils/tryaura';
 import DummyVideoConfigInputs from './DummyVideoConfigInputs';
+import VideoConfigInputs from './VideoConfigInputs';
 
 function ConfigSettings( { doGenerate, className = '' } ) {
 	const { activeTab, isBusy, isThumbnailMode } = useSelect( ( select ) => {
@@ -32,7 +33,7 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 			label: __( 'Generate Video', 'tryaura' ),
 			value: 'video',
 			disabled: isBusy,
-			locked: true,
+			locked: ! hasPro(),
 		},
 	] );
 
@@ -54,6 +55,10 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 
 				{ activeTab === 'video' && ! hasPro() && (
 					<DummyVideoConfigInputs />
+				) }
+
+				{ activeTab === 'video' && hasPro() && (
+					<VideoConfigInputs />
 				) }
 
 				{ hasPro() && (

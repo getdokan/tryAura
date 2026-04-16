@@ -15,6 +15,14 @@ export interface ImageConfigData {
 	videoPlatform?: string;
 }
 
+export type VideoJobStatus =
+	| 'idle'
+	| 'submitting'
+	| 'pending'
+	| 'in_progress'
+	| 'completed'
+	| 'failed';
+
 export interface EnhancerState {
 	isBlockEditorPage: boolean;
 	isWoocommerceProductPage: boolean;
@@ -31,4 +39,8 @@ export interface EnhancerState {
 	attachmentIds: number[];
 	supportsVideo: boolean;
 	isVideoBusy: boolean;
+	videoJobId: string | null;
+	videoJobStatus: VideoJobStatus;
+	videoResultUrl: string | null;
+	videoError: string | null;
 }

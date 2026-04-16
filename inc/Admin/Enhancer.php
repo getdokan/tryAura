@@ -40,18 +40,21 @@ class Enhancer {
 		$post_type = $post ? $post->post_type : '';
 
 		$settings    = get_option( 'tryaura_settings', array() );
+		$provider    = isset( $settings['google']['provider'] ) ? $settings['google']['provider'] : 'google';
 		$api_key     = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
 		$image_model = isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '';
 		$video_model = isset( $settings['google']['videoModel'] ) ? $settings['google']['videoModel'] : '';
 
 		// Pass settings to the enhancer UI (admin-only, requires post editing capability).
+		// When using OpenRouter, the API key stays server-side — all calls go through PHP REST endpoints.
 		wp_localize_script(
 			'tryaura-enhancer',
 			'tryAura',
 			array(
 				'restUrl'         => esc_url_raw( rest_url() ),
 				'nonce'           => wp_create_nonce( 'wp_rest' ),
-				'apiKey'          => $api_key,
+				'provider'        => $provider,
+				'apiKey'          => 'openrouter' === $provider ? '' : $api_key,
 				'imageModel'      => $image_model,
 				'videoModel'      => $video_model,
 				'postId'          => $post_id,

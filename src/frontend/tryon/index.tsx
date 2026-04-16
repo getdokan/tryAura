@@ -16,6 +16,7 @@ declare global {
 			tryonNonce?: string;
 			redirectNonce?: string;
 			apiKey?: string;
+			provider?: 'google' | 'openrouter';
 			productId?: number;
 			loginUrl?: string;
 			wcExists?: boolean;

@@ -22,6 +22,13 @@ export const getAttachmentIds = ( state: EnhancerState ) => state.attachmentIds;
 export const getSupportsVideo = ( state: EnhancerState ) => state.supportsVideo;
 export const getIsVideoBusy = ( state: EnhancerState ) => state.isVideoBusy;
 
+export const getVideoJobId = ( state: EnhancerState ) => state.videoJobId;
+export const getVideoJobStatus = ( state: EnhancerState ) =>
+	state.videoJobStatus;
+export const getVideoResultUrl = ( state: EnhancerState ) =>
+	state.videoResultUrl;
+export const getVideoError = ( state: EnhancerState ) => state.videoError;
+
 export const isBusy = ( state: EnhancerState ) =>
 	state.status === 'fetching' ||
 	state.status === 'generating' ||

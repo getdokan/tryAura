@@ -197,3 +197,31 @@
 .tryaura-toast-root {
 	z-index: 180000 !important;
 }
+
+.components-modal__screen-overlay {
+	z-index: 160000;
+}
+.ai-enhancer-preview-modal {
+	border-radius: 3px;
+	width: 100%;
+	max-width: 1000px;
+	height: auto;
+	max-height: 90vh;
+
+	.components-modal__content {
+		padding: 0;
+		margin: 0;
+		overflow-x: hidden !important;
+	}
+}
+
+.tryaura-pro-tooltip-popover {
+	top: -10px !important;
+	.components-popover__content {
+		background: black !important;
+		border: none !important;
+		border-radius: 8px !important;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		padding: 0 !important;
+	}
+}

@@ -15,6 +15,12 @@ declare global {
 			apiKey?: string;
 			restUrl?: string;
 			nonce?: string;
+			provider?: 'google' | 'openrouter';
+			imageModel?: string;
+			videoModel?: string;
+			postId?: number;
+			postType?: string;
+			hasPro?: boolean;
 		};
 	}
 }

@@ -24,6 +24,10 @@ export const INITIAL_STATE: EnhancerState = {
 	attachmentIds: [],
 	supportsVideo: false,
 	isVideoBusy: false,
+	videoJobId: null,
+	videoJobStatus: 'idle',
+	videoResultUrl: null,
+	videoError: null,
 };
 
 const reducer = (
@@ -73,6 +77,14 @@ const reducer = (
 			return { ...state, supportsVideo: action.supportsVideo };
 		case TYPES.SET_IS_VIDEO_BUSY:
 			return { ...state, isVideoBusy: action.isVideoBusy };
+		case TYPES.SET_VIDEO_JOB_ID:
+			return { ...state, videoJobId: action.videoJobId };
+		case TYPES.SET_VIDEO_JOB_STATUS:
+			return { ...state, videoJobStatus: action.videoJobStatus };
+		case TYPES.SET_VIDEO_RESULT_URL:
+			return { ...state, videoResultUrl: action.videoResultUrl };
+		case TYPES.SET_VIDEO_ERROR:
+			return { ...state, videoError: action.videoError };
 		case TYPES.RESET_STATE:
 			return {
 				...INITIAL_STATE,

@@ -32,6 +32,7 @@
 		"node": ">=18"
 	},
 	"dependencies": {
+		"@wedevs/plugin-ui": "github:getdokan/plugin-ui",
 		"@google/genai": "^1.34.0",
 		"@tailwindcss/postcss": "^4.1.18",
 		"@wordpress/api-fetch": "^7.36.0",

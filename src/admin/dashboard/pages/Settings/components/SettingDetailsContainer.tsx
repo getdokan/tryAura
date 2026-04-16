@@ -1,9 +1,24 @@
 import { ArrowLeft } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { useNavigate } from 'react-router-dom';
+import type { ReactNode } from '@wordpress/element';
 
-function SettingDetailsContainer( { children = null, footer = null } ) {
+type SettingDetailsContainerProps = {
+	children?: ReactNode;
+	footer?: ReactNode;
+	fullWidthContent?: boolean;
+};
+
+function SettingDetailsContainer( {
+	children = null,
+	footer = null,
+	fullWidthContent = false,
+}: SettingDetailsContainerProps ) {
 	const navigate = useNavigate();
+	const contentClasses = fullWidthContent
+		? 'flex flex-col w-full m-5.5'
+		: 'flex flex-col items-center justify-center m-5.5 sm:my-25';
+
 	return (
 		<div className="bg-white rounded-2xl min-h-[90vh] flex flex-col justify-between">
 			<div>
@@ -23,7 +38,7 @@ function SettingDetailsContainer( { children = null, footer = null } ) {
 						</button>
 					</div>
 				</div>
-				<div className="flex flex-col items-center justify-center m-5.5 sm:my-25">
+				<div className={ contentClasses }>
 					{ children }
 				</div>
 			</div>

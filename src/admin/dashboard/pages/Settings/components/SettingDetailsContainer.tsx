@@ -2,7 +2,12 @@ import { ArrowLeft } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { useNavigate } from 'react-router-dom';
 
-function SettingDetailsContainer( { children = null, footer = null } ) {
+type Props = {
+	children?: any;
+	footer?: any;
+};
+
+function SettingDetailsContainer( { children = null, footer = null }: Props ) {
 	const navigate = useNavigate();
 	return (
 		<div className="bg-white rounded-2xl min-h-[90vh] flex flex-col justify-between">

@@ -9,7 +9,6 @@ import ConfigFooter from './ConfigFooter';
 import { Slot } from '@wordpress/components';
 import { hasPro } from '../../../utils/tryaura';
 import DummyVideoConfigInputs from './DummyVideoConfigInputs';
-import VideoConfigInputs from './VideoConfigInputs';
 
 function ConfigSettings({ doGenerate, className = '' }) {
 	const { activeTab, isBusy, isThumbnailMode } = useSelect((select) => {
@@ -57,17 +56,13 @@ function ConfigSettings({ doGenerate, className = '' }) {
 					<DummyVideoConfigInputs />
 				)}
 
-				{activeTab === 'video' && hasPro() && <VideoConfigInputs />}
-
-				{hasPro() && (
-					<>
-						<Slot
-							name="TryAuraEnhancerConfig"
-							fillProps={{
-								ConfigFooter,
-							}}
-						/>
-					</>
+				{activeTab === 'video' && hasPro() && (
+					<Slot
+						name="TryAuraEnhancerConfig"
+						fillProps={{
+							ConfigFooter,
+						}}
+					/>
 				)}
 			</div>
 		</div>

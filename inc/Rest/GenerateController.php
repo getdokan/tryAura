@@ -17,6 +17,107 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class GenerateController {
 	/**
+	 * Normalize an incoming image payload into a data URL or raw string.
+	 *
+	 * @param mixed $image_payload Image payload from request or API response.
+	 *
+	 * @return string
+	 */
+	private function normalize_image_payload( $image_payload ): string {
+		if ( is_string( $image_payload ) ) {
+			return trim( $image_payload );
+		}
+
+		if ( is_array( $image_payload ) ) {
+			if ( isset( $image_payload['url'] ) && is_string( $image_payload['url'] ) ) {
+				return trim( $image_payload['url'] );
+			}
+
+			if ( isset( $image_payload['image_url'] ) && is_string( $image_payload['image_url'] ) ) {
+				return trim( $image_payload['image_url'] );
+			}
+
+			if ( isset( $image_payload['data'] ) && is_string( $image_payload['data'] ) ) {
+				return trim( $image_payload['data'] );
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Normalize an OpenRouter response image into raw base64 when possible.
+	 *
+	 * @param mixed $image_payload Image payload from OpenRouter response.
+	 *
+	 * @return string|null
+	 */
+	private function extract_openrouter_image_data( $image_payload ): ?string {
+		$image_value = $this->normalize_image_payload( $image_payload );
+
+		if ( '' === $image_value ) {
+			return null;
+		}
+
+		if ( preg_match( '/^data:image\/[\w.+-]+;base64,(.+)$/', $image_value, $matches ) ) {
+			return $matches[1];
+		}
+
+		return $image_value;
+	}
+
+	/**
+	 * Recursively search an OpenRouter response payload for an image.
+	 *
+	 * @param mixed $payload Response payload or fragment.
+	 *
+	 * @return string|null
+	 */
+	private function find_openrouter_image_in_payload( $payload ): ?string {
+		$image = $this->extract_openrouter_image_data( $payload );
+
+		if ( ! empty( $image ) ) {
+			return $image;
+		}
+
+		if ( ! is_array( $payload ) ) {
+			return null;
+		}
+
+		$priority_keys = array(
+			'images',
+			'image',
+			'image_url',
+			'url',
+			'data',
+			'b64_json',
+			'b64',
+			'content',
+			'message',
+		);
+
+		foreach ( $priority_keys as $key ) {
+			if ( ! array_key_exists( $key, $payload ) ) {
+				continue;
+			}
+
+			$found = $this->find_openrouter_image_in_payload( $payload[ $key ] );
+			if ( ! empty( $found ) ) {
+				return $found;
+			}
+		}
+
+		foreach ( $payload as $value ) {
+			$found = $this->find_openrouter_image_in_payload( $value );
+			if ( ! empty( $found ) ) {
+				return $found;
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * REST API namespace.
 	 *
 	 * @since 1.0.0
@@ -133,7 +234,13 @@ class GenerateController {
 		$api_url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$api_key}";
 
 		$prepared_images = array();
-		foreach ( $ref_images as $base64_data ) {
+		foreach ( $ref_images as $image_payload ) {
+			$base64_data = $this->normalize_image_payload( $image_payload );
+
+			if ( '' === $base64_data ) {
+				continue;
+			}
+
 			if ( preg_match( '/^data:image\/(\w+);base64,/', $base64_data, $type ) ) {
 				$base64_data = substr( $base64_data, strpos( $base64_data, ',' ) + 1 );
 				$mime_type   = 'image/' . $type[1];
@@ -232,7 +339,13 @@ class GenerateController {
 		);
 
 		// Add reference images as image_url content parts.
-		foreach ( $ref_images as $base64_data ) {
+		foreach ( $ref_images as $image_payload ) {
+			$base64_data = $this->normalize_image_payload( $image_payload );
+
+			if ( '' === $base64_data ) {
+				continue;
+			}
+
 			$content[] = array(
 				'type'      => 'image_url',
 				'image_url' => array(
@@ -280,15 +393,8 @@ class GenerateController {
 		$usage_data = $data['usage'] ?? null;
 		$choices    = $data['choices'] ?? array();
 
-		if ( ! empty( $choices[0]['message']['images'] ) ) {
-			// Images returned as data URLs (base64).
-			$image_url = $choices[0]['message']['images'][0];
-			// Strip the data URL prefix to get raw base64.
-			if ( preg_match( '/^data:image\/\w+;base64,(.+)$/', $image_url, $matches ) ) {
-				$image = $matches[1];
-			} else {
-				$image = $image_url;
-			}
+		if ( ! empty( $choices ) ) {
+			$image = $this->find_openrouter_image_in_payload( $choices[0] );
 		}
 
 		if ( $image ) {

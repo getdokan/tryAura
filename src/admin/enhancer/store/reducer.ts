@@ -6,7 +6,7 @@ export const INITIAL_STATE: EnhancerState = {
 	isBlockEditorPage: false,
 	isWoocommerceProductPage: false,
 	status: 'idle',
-	message: __( 'Ready to generate', 'tryaura' ),
+	message: __('Ready to generate', 'tryaura'),
 	generatedUrl: null,
 	error: null,
 	uploading: false,
@@ -18,7 +18,7 @@ export const INITIAL_STATE: EnhancerState = {
 		videoPlatform: 'youtube',
 	},
 	activeTab: 'image',
-	selectedImageIndices: [ 0 ],
+	selectedImageIndices: [0],
 	isThumbnailMode: false,
 	imageUrls: [],
 	attachmentIds: [],
@@ -32,9 +32,9 @@ export const INITIAL_STATE: EnhancerState = {
 
 const reducer = (
 	state = INITIAL_STATE,
-	action: { type: string; [ key: string ]: any }
+	action: { type: string; [key: string]: any }
 ): EnhancerState => {
-	switch ( action.type ) {
+	switch (action.type) {
 		case TYPES.SET_IS_BLOCK_EDITOR_PAGE:
 			return { ...state, isBlockEditorPage: action.isBlockEditorPage };
 		case TYPES.SET_IS_WOOCOMMERCE_PRODUCT_PAGE:

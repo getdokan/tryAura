@@ -1,335 +1,648 @@
 import { ArrowLeft } from 'lucide-react';
 import geminiLogo from '../assets/geminiLogo.svg';
 import openrouterLogo from '../assets/openrouterLogo.svg';
-import ApiKeyInput from '../components/ApiKeyInput';
-import { ModernSelect, Button } from '../../../../../components';
+import {
+	Settings,
+	Button,
+	type SettingsElement,
+} from '../../../../../utils/plugin-ui';
 import { toast } from '@tryaura/components';
-import { useEffect, useState } from '@wordpress/element';
+import { useMemo, useState, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useNavigate } from 'react-router-dom';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { Slot } from '@wordpress/components';
+import { applyFilters } from '@wordpress/hooks';
+import './registerModelSelectorField';
 // @ts-ignore
 import { STORE_NAME } from '@tryaura/settings';
-import SettingDetailsContainer from '../components/SettingDetailsContainer';
+
+type ProviderId = 'google' | 'openrouter';
+
+type FlatSettingsValues = {
+	'credentials.provider': ProviderId;
+	'credentials.gemini.api_key': string;
+	'credentials.gemini.image_model': string;
+	'credentials.gemini.image_model_label': string;
+	'credentials.gemini.video_model': string;
+	'credentials.gemini.video_model_label': string;
+	'credentials.openrouter.api_key': string;
+	'credentials.openrouter.image_model': string;
+	'credentials.openrouter.image_model_label': string;
+	'credentials.openrouter.video_model': string;
+	'credentials.openrouter.video_model_label': string;
+};
+
+declare global {
+	interface Window {
+		tryAuraAiProviderModels?: {
+			defaultImageModel?: string;
+			defaultVideoModel?: string;
+			defaultOpenRouterImageModel?: string;
+			defaultOpenRouterVideoModel?: string;
+		};
+	}
+}
 
 const PROVIDER_OPTIONS = [
-	{ label: __( 'Gemini', 'tryaura' ), value: 'google' },
-	{ label: __( 'OpenRouter', 'tryaura' ), value: 'openrouter' },
+	{ label: __('Gemini', 'tryaura'), value: 'google' },
+	{ label: __('OpenRouter', 'tryaura'), value: 'openrouter' },
 ];
 
-/**
- * Validate an API key against the selected provider's API.
- */
+const getDefaultModelsForProvider = (provider: ProviderId) => {
+	const providerConfig = window.tryAuraAiProviderModels ?? {};
+
+	if (provider === 'openrouter') {
+		return {
+			imageModel:
+				providerConfig.defaultOpenRouterImageModel ||
+				'google/gemini-2.5-flash-preview-05-20:generateImage',
+			videoModel:
+				providerConfig.defaultOpenRouterVideoModel ||
+				'bytedance/seedance-2.0-fast',
+		};
+	}
+
+	return {
+		imageModel:
+			providerConfig.defaultImageModel || 'gemini-2.5-flash-image',
+		videoModel:
+			providerConfig.defaultVideoModel || 'veo-3.1-generate-preview',
+	};
+};
+
+const getProviderModelSettingKey = (
+	provider: ProviderId,
+	modelType: 'image' | 'video',
+	suffix: '' | 'Label' = ''
+) => {
+	const providerPrefix = provider === 'google' ? 'gemini' : 'openrouter';
+	const modelPrefix = modelType === 'image' ? 'Image' : 'Video';
+
+	return `${providerPrefix}${modelPrefix}Model${suffix}`;
+};
+
+const getStoredModelValue = (
+	settings: Record<string, any>,
+	provider: ProviderId,
+	modelType: 'image' | 'video',
+	fallback: string
+) => {
+	const activeKey = modelType === 'image' ? 'imageModel' : 'videoModel';
+	const providerKey = getProviderModelSettingKey(provider, modelType);
+
+	return (
+		settings?.[providerKey] ||
+		(settings?.provider === provider ? settings?.[activeKey] : '') ||
+		fallback
+	);
+};
+
+const getStoredModelLabel = (
+	settings: Record<string, any>,
+	provider: ProviderId,
+	modelType: 'image' | 'video',
+	fallback: string
+) => {
+	const labelKey = getProviderModelSettingKey(provider, modelType, 'Label');
+
+	return settings?.[labelKey] || fallback;
+};
+
 async function validateApiKey(
-	provider: string,
+	provider: ProviderId,
 	key: string
-): Promise< boolean > {
+): Promise<boolean> {
 	try {
-		if ( provider === 'openrouter' ) {
-			const res = await fetch(
-				'https://openrouter.ai/api/v1/models',
-				{
-					method: 'GET',
-					headers: { Authorization: `Bearer ${ key }` },
-				}
-			);
+		if (provider === 'openrouter') {
+			const res = await fetch('https://openrouter.ai/api/v1/models', {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${key}`,
+				},
+			});
+
 			return res.ok;
 		}
 
-		// Gemini: lightweight model list call.
 		const res = await fetch(
-			`https://generativelanguage.googleapis.com/v1beta/models?key=${ encodeURIComponent(
+			`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(
 				key
-			) }`
+			)}`
 		);
+
 		return res.ok;
 	} catch {
 		return false;
 	}
 }
 
-const InitialLoader = () => {
+const createModelSelectorField = (
+	id: string,
+	label: string,
+	description: string,
+	dependencyKey: string,
+	labelKey: string,
+	provider: ProviderId,
+	modelType: 'image' | 'video',
+	apiKey: string,
+	savedLabel: string
+): SettingsElement => ({
+	id,
+	type: 'field',
+	variant: 'model_selector',
+	label,
+	description,
+	dependency_key: dependencyKey,
+	label_key: labelKey,
+	value: '',
+	provider,
+	model_type: modelType,
+	api_key: apiKey,
+	saved_label: savedLabel,
+});
+
+const getSchema = (values: FlatSettingsValues): SettingsElement[] => {
+	const geminiChildren = applyFilters(
+		'tryaura.admin.ai_provider_fields',
+		[
+			{
+				id: 'gemini_api_info',
+				type: 'field',
+				variant: 'base_field_label',
+				label: __('Gemini API', 'tryaura'),
+				description: __(
+					'Connect your Gemini account with your website.',
+					'tryaura'
+				),
+				image_url: geminiLogo,
+			},
+			{
+				id: 'gemini_api_notice',
+				type: 'field',
+				variant: 'info',
+				title: __('Need help finding your key?', 'tryaura'),
+				link_url: 'https://aistudio.google.com/app/apikey',
+				link_title: __('Gemini Account', 'tryaura'),
+			},
+			{
+				id: 'gemini_api_key',
+				type: 'field',
+				variant: 'show_hide',
+				label: __('API Key', 'tryaura'),
+				description: __(
+					'Paste the API key provided by Gemini.',
+					'tryaura'
+				),
+				placeholder: __('Enter your Gemini API key', 'tryaura'),
+				dependency_key: 'credentials.gemini.api_key',
+				value: '',
+			},
+			createModelSelectorField(
+				'gemini_image_model',
+				__('Image Model', 'tryaura'),
+				__(
+					'Fetch and select the Gemini image model TryAura should use.',
+					'tryaura'
+				),
+				'credentials.gemini.image_model',
+				'credentials.gemini.image_model_label',
+				'google',
+				'image',
+				values['credentials.gemini.api_key'],
+				values['credentials.gemini.image_model_label']
+			),
+		],
+		{
+			provider: 'google',
+			values,
+		}
+	) as SettingsElement[];
+
+	const openRouterChildren = applyFilters(
+		'tryaura.admin.ai_provider_fields',
+		[
+			{
+				id: 'openrouter_api_info',
+				type: 'field',
+				variant: 'base_field_label',
+				label: __('OpenRouter API', 'tryaura'),
+				description: __(
+					'Connect your OpenRouter account with your website.',
+					'tryaura'
+				),
+				image_url: openrouterLogo,
+			},
+			{
+				id: 'openrouter_api_notice',
+				type: 'field',
+				variant: 'info',
+				title: __('Need help finding your key?', 'tryaura'),
+				link_url: 'https://openrouter.ai/settings/keys',
+				link_title: __('OpenRouter Account', 'tryaura'),
+			},
+			{
+				id: 'openrouter_api_key',
+				type: 'field',
+				variant: 'show_hide',
+				label: __('API Key', 'tryaura'),
+				description: __(
+					'Paste the API key provided by OpenRouter.',
+					'tryaura'
+				),
+				placeholder: __('Enter your OpenRouter API key', 'tryaura'),
+				dependency_key: 'credentials.openrouter.api_key',
+				value: '',
+			},
+			createModelSelectorField(
+				'openrouter_image_model',
+				__('Image Model', 'tryaura'),
+				__(
+					'Fetch and select the OpenRouter image model TryAura should use.',
+					'tryaura'
+				),
+				'credentials.openrouter.image_model',
+				'credentials.openrouter.image_model_label',
+				'openrouter',
+				'image',
+				values['credentials.openrouter.api_key'],
+				values['credentials.openrouter.image_model_label']
+			),
+		],
+		{
+			provider: 'openrouter',
+			values,
+		}
+	) as SettingsElement[];
+
+	return [
+		{
+			id: 'ai_credentials_page',
+			type: 'page',
+			label: __('AI Credentials', 'tryaura'),
+			description: __(
+				'Configure the active provider credential used by TryAura.',
+				'tryaura'
+			),
+			children: [
+				{
+					id: 'provider',
+					type: 'field',
+					variant: 'select',
+					label: __('AI Engine', 'tryaura'),
+					description: __(
+						'Choose which provider TryAura should use.',
+						'tryaura'
+					),
+					dependency_key: 'credentials.provider',
+					value: 'google',
+					options: PROVIDER_OPTIONS,
+				},
+				{
+					id: 'gemini_group',
+					type: 'fieldgroup',
+					dependencies: [
+						{
+							key: 'credentials.provider',
+							value: 'google',
+							to_self: true,
+							attribute: 'display',
+							effect: 'show',
+							comparison: '===',
+							self: 'gemini_group',
+						},
+						{
+							key: 'credentials.provider',
+							value: 'google',
+							to_self: true,
+							attribute: 'display',
+							effect: 'hide',
+							comparison: '!==',
+							self: 'gemini_group',
+						},
+					],
+					children: geminiChildren,
+				},
+				{
+					id: 'openrouter_group',
+					type: 'fieldgroup',
+					dependencies: [
+						{
+							key: 'credentials.provider',
+							value: 'openrouter',
+							to_self: true,
+							attribute: 'display',
+							effect: 'show',
+							comparison: '===',
+							self: 'openrouter_group',
+						},
+						{
+							key: 'credentials.provider',
+							value: 'openrouter',
+							to_self: true,
+							attribute: 'display',
+							effect: 'hide',
+							comparison: '!==',
+							self: 'openrouter_group',
+						},
+					],
+					children: openRouterChildren,
+				},
+			],
+		},
+	];
+};
+
+const GeminiSettings = () => {
+	const { settings, fetching, saving } = useSelect((select) => {
+		return {
+			settings: select(STORE_NAME).getSettings(),
+			fetching: select(STORE_NAME).isFetchingSettings(),
+			saving: select(STORE_NAME).isSavingSettings(),
+		};
+	}, []);
+
+	const { updateSettings } = useDispatch(STORE_NAME);
+	const navigate = useNavigate();
+	const data = window.tryAura!;
+	const hasVideoModelSettings = !!applyFilters(
+		'tryaura.admin.ai_video_settings_enabled',
+		false
+	);
+
+	const initialFlatValues = useMemo<FlatSettingsValues>(() => {
+		const googleSettings = settings?.[data.optionKey]?.google ?? {};
+		const geminiDefaults = getDefaultModelsForProvider('google');
+		const openrouterDefaults = getDefaultModelsForProvider('openrouter');
+		const geminiImageModel = getStoredModelValue(
+			googleSettings,
+			'google',
+			'image',
+			geminiDefaults.imageModel
+		);
+		const geminiVideoModel = getStoredModelValue(
+			googleSettings,
+			'google',
+			'video',
+			geminiDefaults.videoModel
+		);
+		const openrouterImageModel = getStoredModelValue(
+			googleSettings,
+			'openrouter',
+			'image',
+			openrouterDefaults.imageModel
+		);
+		const openrouterVideoModel = getStoredModelValue(
+			googleSettings,
+			'openrouter',
+			'video',
+			openrouterDefaults.videoModel
+		);
+
+		return {
+			'credentials.provider': (googleSettings.provider ||
+				'google') as ProviderId,
+			'credentials.gemini.api_key':
+				googleSettings.geminiApiKey ||
+				(googleSettings.provider === 'google'
+					? googleSettings.apiKey || ''
+					: ''),
+			'credentials.gemini.image_model': geminiImageModel,
+			'credentials.gemini.image_model_label': getStoredModelLabel(
+				googleSettings,
+				'google',
+				'image',
+				geminiImageModel
+			),
+			'credentials.gemini.video_model': geminiVideoModel,
+			'credentials.gemini.video_model_label': getStoredModelLabel(
+				googleSettings,
+				'google',
+				'video',
+				geminiVideoModel
+			),
+			'credentials.openrouter.api_key':
+				googleSettings.openrouterApiKey ||
+				(googleSettings.provider === 'openrouter'
+					? googleSettings.apiKey || ''
+					: ''),
+			'credentials.openrouter.image_model': openrouterImageModel,
+			'credentials.openrouter.image_model_label': getStoredModelLabel(
+				googleSettings,
+				'openrouter',
+				'image',
+				openrouterImageModel
+			),
+			'credentials.openrouter.video_model': openrouterVideoModel,
+			'credentials.openrouter.video_model_label': getStoredModelLabel(
+				googleSettings,
+				'openrouter',
+				'video',
+				openrouterVideoModel
+			),
+		};
+	}, [settings, data.optionKey]);
+
+	const [values, setValues] = useState<FlatSettingsValues>(initialFlatValues);
+
+	useEffect(() => {
+		setValues(initialFlatValues);
+	}, [initialFlatValues]);
+
+	const schema = useMemo(() => getSchema(values), [values]);
+
+	const handleSave = async (
+		_scopeId: string,
+		_treeValues: Record<string, any>,
+		flatValues: Record<string, any>
+	) => {
+		const provider = flatValues['credentials.provider'] as ProviderId;
+		const geminiApiKey = flatValues['credentials.gemini.api_key'] || '';
+		const openrouterApiKey =
+			flatValues['credentials.openrouter.api_key'] || '';
+		const apiKey =
+			provider === 'openrouter' ? openrouterApiKey : geminiApiKey;
+		const geminiDefaults = getDefaultModelsForProvider('google');
+		const openrouterDefaults = getDefaultModelsForProvider('openrouter');
+		const geminiImageModel =
+			flatValues['credentials.gemini.image_model'] ||
+			geminiDefaults.imageModel;
+		const geminiImageModelLabel =
+			flatValues['credentials.gemini.image_model_label'] ||
+			geminiImageModel;
+		const geminiVideoModel =
+			flatValues['credentials.gemini.video_model'] ||
+			geminiDefaults.videoModel;
+		const geminiVideoModelLabel =
+			flatValues['credentials.gemini.video_model_label'] ||
+			geminiVideoModel;
+		const openrouterImageModel =
+			flatValues['credentials.openrouter.image_model'] ||
+			openrouterDefaults.imageModel;
+		const openrouterImageModelLabel =
+			flatValues['credentials.openrouter.image_model_label'] ||
+			openrouterImageModel;
+		const openrouterVideoModel =
+			flatValues['credentials.openrouter.video_model'] ||
+			openrouterDefaults.videoModel;
+		const openrouterVideoModelLabel =
+			flatValues['credentials.openrouter.video_model_label'] ||
+			openrouterVideoModel;
+		const activeImageModel =
+			provider === 'openrouter' ? openrouterImageModel : geminiImageModel;
+		const activeVideoModel =
+			provider === 'openrouter' ? openrouterVideoModel : geminiVideoModel;
+
+		if (!apiKey) {
+			toast.error(
+				provider === 'openrouter'
+					? __('OpenRouter API key is required.', 'tryaura')
+					: __('Gemini API key is required.', 'tryaura')
+			);
+			return;
+		}
+
+		if (!activeImageModel || (hasVideoModelSettings && !activeVideoModel)) {
+			toast.error(
+				hasVideoModelSettings
+					? __(
+							'Please fetch and select both image and video models before saving.',
+							'tryaura'
+						)
+					: __(
+							'Please fetch and select an image model before saving.',
+							'tryaura'
+						)
+			);
+			return;
+		}
+
+		const isValid = await validateApiKey(provider, apiKey);
+		if (!isValid) {
+			toast.error(
+				provider === 'openrouter'
+					? __('Invalid OpenRouter API key.', 'tryaura')
+					: __('Invalid Gemini API key.', 'tryaura')
+			);
+			return;
+		}
+
+		const currentGoogleSettings = settings?.[data.optionKey]?.google ?? {};
+
+		const nextGoogleSettings = {
+			...currentGoogleSettings,
+			provider,
+			apiKey,
+			geminiApiKey,
+			openrouterApiKey,
+			imageModel: activeImageModel,
+			videoModel: activeVideoModel,
+			geminiImageModel,
+			geminiImageModelLabel,
+			geminiVideoModel,
+			geminiVideoModelLabel,
+			openrouterImageModel,
+			openrouterImageModelLabel,
+			openrouterVideoModel,
+			openrouterVideoModelLabel,
+		};
+
+		const nextSettings = {
+			...settings,
+			[data.optionKey]: {
+				...settings?.[data.optionKey],
+				google: nextGoogleSettings,
+			},
+		};
+
+		try {
+			const response = await updateSettings(nextSettings);
+			const savedSettings = response?.[data.optionKey]?.google;
+
+			if (savedSettings) {
+				window.tryAura.provider = savedSettings.provider || 'google';
+				window.tryAura.apiKey =
+					savedSettings.provider === 'openrouter'
+						? ''
+						: savedSettings.apiKey || '';
+				window.tryAura.imageModel = savedSettings.imageModel || '';
+				window.tryAura.videoModel = savedSettings.videoModel || '';
+			}
+
+			toast.success(
+				provider === 'openrouter'
+					? __('OpenRouter credential and models saved.', 'tryaura')
+					: __('Gemini credential and models saved.', 'tryaura')
+			);
+		} catch (error: unknown) {
+			const message =
+				error && typeof error === 'object' && 'message' in error
+					? String((error as { message: string }).message)
+					: __('Something went wrong.', 'tryaura');
+
+			toast.error(message);
+		}
+	};
+
 	return (
-		<div className="flex flex-col gap-[30px] w-full md:w-[550px] animate-pulse">
-			<div className="flex flex-col gap-[24px]">
-				<span className="block w-[63px] h-[62px] bg-gray-300 rounded-md"></span>
-				<div>
-					<span className="block h-[28px] w-[250px] bg-gray-300 rounded-md mb-[8px]"></span>
-					<span className="block h-[18px] w-full bg-gray-300 rounded-md"></span>
-				</div>
-				<div>
-					<span className="block h-[22px] w-[150px] bg-gray-300 rounded-md mb-[8px]"></span>
-					<span className="block h-[40px] w-full bg-gray-300 rounded-md mb-[8px]"></span>
-					<span className="block h-[15px] w-[250px] bg-gray-300 rounded-md"></span>
-				</div>
+		<div className="bg-white rounded-2xl min-h-[90vh] overflow-hidden">
+			<div className="border-b border-solid border-[#f0e5e5]">
+				<button
+					type="button"
+					className="inline-flex items-center gap-1.5 m-5.5 hover:cursor-pointer hover:underline bg-transparent border-none p-0"
+					onClick={() => navigate('/settings')}
+				>
+					<ArrowLeft className="w-4 h-4" />
+					<div className="font-medium text-[14px] leading-5 text-center">
+						{__('Back to Settings', 'tryaura')}
+					</div>
+				</button>
+			</div>
+
+			<div className="p-5.5">
+				<Settings
+					schema={schema}
+					values={values}
+					loading={fetching}
+					title={__('TryAura Settings', 'tryaura')}
+					hookPrefix="tryaura"
+					applyFilters={applyFilters}
+					onChange={(
+						_scopeId: string,
+						key: string,
+						value: string
+					) => {
+						setValues((previous) => ({
+							...previous,
+							[key]: value,
+						}));
+					}}
+					onSave={handleSave}
+					renderSaveButton={({ dirty, hasErrors, onSave }) => (
+						<div className="flex gap-2.5">
+							<Button
+								onClick={onSave}
+								disabled={saving || hasErrors || !dirty}
+							>
+								{saving
+									? __('Saving…', 'tryaura')
+									: __('Save Credentials', 'tryaura')}
+							</Button>
+							<Button
+								variant="outline"
+								onClick={() => {
+									setValues(initialFlatValues);
+									navigate('/settings');
+								}}
+								disabled={saving}
+							>
+								{__('Cancel', 'tryaura')}
+							</Button>
+						</div>
+					)}
+				/>
 			</div>
 		</div>
 	);
 };
 
-const GeminiSettings = () => {
-	const {
-		videoModels,
-		imageModels,
-		defaultImageModel,
-		defaultVideoModel,
-		settings,
-		fetching,
-		saving,
-	} = useSelect( ( select ) => {
-		const providerKey =
-			select( STORE_NAME ).getSettings()?.[ window.tryAura?.optionKey ?? '' ]
-				?.google?.provider || 'google';
-
-		const models =
-			select( 'tryaura/ai-models' ).getProviderModels( providerKey ) || {};
-
-		const vModels: any[] = [];
-		const iModels: any[] = [];
-
-		Object.keys( models ).forEach( ( key ) => {
-			const model = {
-				label: models[ key ].label,
-				value: key,
-			};
-
-			if ( models[ key ].identity === 'video' ) {
-				vModels.push( model );
-			} else if ( models[ key ].identity === 'image' ) {
-				iModels.push( model );
-			}
-		} );
-
-		return {
-			videoModels: vModels,
-			imageModels: iModels,
-			defaultImageModel:
-				select( 'tryaura/ai-models' ).getDefaultImageModel(),
-			defaultVideoModel:
-				select( 'tryaura/ai-models' ).getDefaultVideoModel(),
-			settings: select( STORE_NAME ).getSettings(),
-			fetching: select( STORE_NAME ).isFetchingSettings(),
-			saving: select( STORE_NAME ).isSavingSettings(),
-		};
-	}, [] );
-
-	const { updateSettings } = useDispatch( STORE_NAME );
-
-	const navigate = useNavigate();
-	const data = window.tryAura!;
-	const [ apiKey, setApiKey ] = useState< string >( '' );
-	const [ selectedProvider, setSelectedProvider ] = useState< string >( 'google' );
-
-	const [ selectedImageModel, setSelectedImageModel ] =
-		useState< string >( '' );
-	const [ selectedVideoModel, setSelectedVideoModel ] =
-		useState< string >( '' );
-
-	const isOpenRouter = selectedProvider === 'openrouter';
-
-	// On mount or when settings change, update local state
-	useEffect( () => {
-		const current = settings[ data.optionKey ];
-		if ( current && typeof current === 'object' && current.google ) {
-			setApiKey( current.google.apiKey || '' );
-			setSelectedProvider( current.google.provider || 'google' );
-			setSelectedImageModel(
-				current.google.imageModel || defaultImageModel
-			);
-			setSelectedVideoModel(
-				current.google.videoModel || defaultVideoModel
-			);
-		} else {
-			setSelectedImageModel( defaultImageModel );
-			setSelectedVideoModel( defaultVideoModel );
-		}
-	}, [ settings, data.optionKey, defaultImageModel, defaultVideoModel ] );
-
-	const onSave = async () => {
-		if ( ! apiKey ) {
-			toast.error( __( 'API key is required', 'tryaura' ) );
-			return;
-		}
-
-		// Validate API key against selected provider.
-		const isValid = await validateApiKey( selectedProvider, apiKey );
-		if ( ! isValid ) {
-			toast.error(
-				isOpenRouter
-					? __( 'Invalid OpenRouter API key.', 'tryaura' )
-					: __( 'Invalid Gemini API key.', 'tryaura' )
-			);
-			return;
-		}
-
-		try {
-			const googleSettings: Record< string, string > = {
-				provider: selectedProvider,
-				apiKey,
-				imageModel: selectedImageModel,
-			};
-
-			// Preserve the video model; include it for both providers.
-			if ( selectedVideoModel ) {
-				googleSettings.videoModel = selectedVideoModel;
-			}
-
-			const newSettings = {
-				...settings,
-				[ data.optionKey ]: {
-					...settings[ data.optionKey ],
-					google: googleSettings,
-				},
-			};
-
-			const res = await updateSettings( newSettings );
-
-			const newValue = ( res as Record< string, any > )[ data.optionKey ];
-			if ( newValue && newValue.google ) {
-				// Update window.tryAura so enhancer/tryon pick up changes without reload.
-				window.tryAura!.provider = newValue.google.provider || 'google';
-				window.tryAura!.imageModel = newValue.google.imageModel;
-				window.tryAura!.videoModel = newValue.google.videoModel;
-
-				// Only expose API key for Gemini; OpenRouter calls go through PHP REST.
-				window.tryAura!.apiKey =
-					newValue.google.provider === 'openrouter'
-						? ''
-						: newValue.google.apiKey;
-
-				const providerLabel = isOpenRouter ? 'OpenRouter' : 'Gemini';
-				toast.success(
-					/* translators: %s: provider name */
-					__(
-						`${ providerLabel } API settings saved successfully!`,
-						'tryaura'
-					)
-				);
-			}
-		} catch ( e: unknown ) {
-			const msg =
-				e && typeof e === 'object' && 'message' in e
-					? String( ( e as any ).message )
-					: __( 'Something went wrong', 'tryaura' );
-
-			toast.error( msg );
-		}
-	};
-
-	const logo = isOpenRouter ? openrouterLogo : geminiLogo;
-	const titleText = isOpenRouter
-		? __( 'OpenRouter Integration', 'tryaura' )
-		: __( 'Gemini Integration', 'tryaura' );
-	const helpUrl = isOpenRouter
-		? 'https://openrouter.ai/settings/keys'
-		: 'https://aistudio.google.com/api-keys';
-	const helpText = isOpenRouter
-		? __( 'API key ?', 'tryaura' )
-		: __( 'API key ?', 'tryaura' );
-
-	return (
-		<SettingDetailsContainer
-			footer={
-				! fetching && (
-					<>
-						<Button
-							className="py-3 px-7"
-							onClick={ onSave }
-							disabled={ saving }
-							loading={ saving }
-						>
-							{ __( 'Connect', 'tryaura' ) }
-						</Button>
-						<Button
-							className="py-3 px-7"
-							variant="outline"
-							onClick={ () => {
-								navigate( '/settings' );
-							} }
-						>
-							{ __( 'Cancel', 'tryaura' ) }
-						</Button>
-					</>
-				)
-			}
-		>
-			{ fetching ? (
-				<InitialLoader />
-			) : (
-				<div className="flex flex-col w-full md:w-[550px]">
-					<div className="flex flex-col gap-[24px] mb-[36px]">
-						<div>
-							<img src={ logo } alt={ `${ titleText } logo` } />
-						</div>
-						<div>
-							<div className="font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[8px]">
-								{ titleText }
-							</div>
-							<div className="text-[14px] font-[400] leading-[18.67px] text-[rgba(99,99,99,1)]">
-								{ __(
-									'Connect your account with an API key. Need help finding your',
-									'tryaura'
-								) }
-								&nbsp;
-								<a
-									href={ helpUrl }
-									className="text-primary underline hover:text-primary-dark"
-									target="_blank"
-									rel="noreferrer"
-								>
-									{ helpText }
-								</a>
-							</div>
-						</div>
-					</div>
-					<div className="flex flex-col gap-[24px]">
-						<ModernSelect
-							value={ selectedProvider }
-							label={ __( 'AI Engine', 'tryaura' ) }
-							onChange={ ( val: string ) => {
-								setSelectedProvider( val );
-								// Reset models when switching providers.
-								setSelectedImageModel( '' );
-								setSelectedVideoModel( '' );
-							} }
-							options={ PROVIDER_OPTIONS }
-							variant="list"
-						/>
-
-						<ApiKeyInput
-							apiKey={ apiKey }
-							setApiKey={ setApiKey }
-						/>
-						{ apiKey && (
-							<>
-								<div>
-									<ModernSelect
-										value={ selectedImageModel }
-										label={ __( 'Select Image Model', 'tryaura' ) }
-										onChange={ ( val: string ) => {
-											setSelectedImageModel( val );
-										} }
-										options={ imageModels }
-										variant="list"
-									/>
-								</div>
-								<Slot
-									name="tryaura-choose-video-model"
-									fillProps={ {
-										ModernSelect,
-										selectedVideoModel,
-										setSelectedVideoModel,
-										videoModels,
-										selectedProvider,
-									} }
-								/>
-							</>
-						) }
-					</div>
-				</div>
-			) }
-		</SettingDetailsContainer>
-	);
-};
 export default GeminiSettings;

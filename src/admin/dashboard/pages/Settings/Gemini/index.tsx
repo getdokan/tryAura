@@ -22,45 +22,48 @@ declare global {
 }
 
 function Index() {
-	const { settings, fetching } = useSelect( ( select ) => {
+	const { settings, fetching } = useSelect((select) => {
 		return {
-			settings: select( STORE_NAME ).getSettings(),
-			fetching: select( STORE_NAME ).isFetchingSettings(),
+			settings: select(STORE_NAME).getSettings(),
+			fetching: select(STORE_NAME).isFetchingSettings(),
 		};
-	}, [] );
+	}, []);
 
 	const data = window.tryAura!;
-	const apiKey = settings[ data.optionKey ]?.google?.apiKey;
-	const provider = settings[ data.optionKey ]?.google?.provider || 'google';
+	const apiKey = settings[data.optionKey]?.google?.apiKey;
+	const provider = settings[data.optionKey]?.google?.provider || 'google';
 	const isOpenRouter = provider === 'openrouter';
 	const logo = isOpenRouter ? openrouterLogo : geminiLogo;
-	const title = isOpenRouter
-		? __( 'OpenRouter API', 'tryaura' )
-		: __( 'Gemini API', 'tryaura' );
+	const title = __('AI Credentials', 'tryaura');
 
 	return (
 		<SettingItemCard
-			icon={ <img src={ logo } alt={ isOpenRouter ? 'OpenRouter logo' : 'Gemini logo' } /> }
-			title={ title }
+			icon={
+				<img
+					src={logo}
+					alt={isOpenRouter ? 'OpenRouter logo' : 'Gemini logo'}
+				/>
+			}
+			title={title}
 			badge={
 				apiKey ? (
 					<p className="bg-green-100 text-green-700 rounded m-0 py-1 px-3">
-						{ __( 'Connected', 'tryaura' ) }
+						{__('Connected', 'tryaura')}
 					</p>
 				) : (
 					<p className="bg-red-100 text-red-700 rounded m-0 py-1 px-3">
-						{ __( 'Disconnected', 'tryaura' ) }
+						{__('Disconnected', 'tryaura')}
 					</p>
 				)
 			}
-			subTitle={ __(
-				'This key authenticates requests between your store and TryAura services.',
+			subTitle={__(
+				'Configure the active Gemini or OpenRouter credential used by TryAura.',
 				'tryaura'
-			) }
-			link={ '/settings/gemini' }
-			linkText={ __( 'Configure', 'tryaura' ) }
-			loading={ fetching }
-			disabledLink={ data.isGeminiSettingsReadonly === '1' || false }
+			)}
+			link={'/settings/gemini'}
+			linkText={__('Configure', 'tryaura')}
+			loading={fetching}
+			disabledLink={data.isGeminiSettingsReadonly === '1' || false}
 		/>
 	);
 }

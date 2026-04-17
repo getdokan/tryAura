@@ -1,14 +1,14 @@
 export interface Capability {
 	supported: boolean;
 	locked: boolean;
-	[ key: string ]: any;
+	[key: string]: any;
 }
 
 export interface ParameterValue {
 	label: string;
 	value: string | number | boolean;
 	locked: boolean;
-	[ key: string ]: any;
+	[key: string]: any;
 }
 
 export interface Parameter {
@@ -16,7 +16,7 @@ export interface Parameter {
 	locked: boolean;
 	default: string | number | boolean;
 	values: ParameterValue[];
-	[ key: string ]: any;
+	[key: string]: any;
 }
 
 export interface Model {
@@ -24,17 +24,17 @@ export interface Model {
 	identity: string;
 	supported: boolean;
 	locked: boolean;
-	capabilities: Record< string, Capability >;
-	parameters: Record< string, Parameter >;
-	[ key: string ]: any;
+	capabilities: Record<string, Capability>;
+	parameters: Record<string, Parameter>;
+	[key: string]: any;
 }
 
 export interface Provider {
-	[ modelId: string ]: Model;
+	[modelId: string]: Model;
 }
 
 export interface AIStoreState {
-	aiProviders: Record< string, Provider >;
+	aiProviders: Record<string, Provider>;
 	defaultProvider: string;
 	defaultImageModel: string;
 	defaultVideoModel: string;

@@ -8,61 +8,61 @@ import { getYoutubeId } from '../../../utils/tryaura';
 
 declare const wp: any;
 
-const VideoDetailsModal = ( {
+const VideoDetailsModal = ({
 	initialData,
 	onClose,
 	onSave,
 	originalImageUrl,
-} ) => {
-	const [ platform, setPlatform ] = useState(
+}) => {
+	const [platform, setPlatform] = useState(
 		initialData?.platform || 'youtube'
 	);
-	const [ url, setUrl ] = useState( initialData?.url || '' );
-	const [ useCustomThumbnail, setUseCustomThumbnail ] = useState(
+	const [url, setUrl] = useState(initialData?.url || '');
+	const [useCustomThumbnail, setUseCustomThumbnail] = useState(
 		initialData?.useCustomThumbnail !== undefined
 			? initialData.useCustomThumbnail
 			: false
 	);
-	const [ thumbnailId, setThumbnailId ] = useState(
+	const [thumbnailId, setThumbnailId] = useState(
 		initialData?.thumbnailId || null
 	);
-	const [ thumbnailUrl, setThumbnailUrl ] = useState(
+	const [thumbnailUrl, setThumbnailUrl] = useState(
 		initialData?.thumbnailUrl || ''
 	);
-	const [ generatedThumbnail, setGeneratedThumbnail ] = useState( '' );
-	const [ isSaving, setIsSaving ] = useState( false );
-	const [ videoFileName, setVideoFileName ] = useState(
+	const [generatedThumbnail, setGeneratedThumbnail] = useState('');
+	const [isSaving, setIsSaving] = useState(false);
+	const [videoFileName, setVideoFileName] = useState(
 		initialData?.videoFileName || ''
 	);
-	const [ videoFileSize, setVideoFileSize ] = useState(
+	const [videoFileSize, setVideoFileSize] = useState(
 		initialData?.videoFileSize || ''
 	);
 
-	const generateFromVideo = async (): Promise< string | null > => {
-		if ( ! url ) {
+	const generateFromVideo = async (): Promise<string | null> => {
+		if (!url) {
 			return null;
 		}
 
-		if ( platform === 'youtube' ) {
-			const videoId = getYoutubeId( url );
-			if ( videoId ) {
-				const thumbUrl = `https://img.youtube.com/vi/${ videoId }/hqdefault.jpg`;
-				setGeneratedThumbnail( thumbUrl );
+		if (platform === 'youtube') {
+			const videoId = getYoutubeId(url);
+			if (videoId) {
+				const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+				setGeneratedThumbnail(thumbUrl);
 				return thumbUrl;
 			}
-		} else if ( platform === 'site_stored' ) {
-			return new Promise( ( resolve ) => {
+		} else if (platform === 'site_stored') {
+			return new Promise((resolve) => {
 				try {
-					const video = document.createElement( 'video' );
+					const video = document.createElement('video');
 					video.src = url;
 					video.crossOrigin = 'anonymous';
 					video.currentTime = 1;
 					video.onloadeddata = () => {
-						const canvas = document.createElement( 'canvas' );
+						const canvas = document.createElement('canvas');
 						canvas.width = video.videoWidth;
 						canvas.height = video.videoHeight;
-						const ctx = canvas.getContext( '2d' );
-						if ( ctx ) {
+						const ctx = canvas.getContext('2d');
+						if (ctx) {
 							ctx.drawImage(
 								video,
 								0,
@@ -70,99 +70,89 @@ const VideoDetailsModal = ( {
 								canvas.width,
 								canvas.height
 							);
-							const thumbUrl = canvas.toDataURL( 'image/jpeg' );
-							setGeneratedThumbnail( thumbUrl );
-							resolve( thumbUrl );
+							const thumbUrl = canvas.toDataURL('image/jpeg');
+							setGeneratedThumbnail(thumbUrl);
+							resolve(thumbUrl);
 						} else {
-							resolve( null );
+							resolve(null);
 						}
 					};
-					video.onerror = () => resolve( null );
-				} catch ( e ) {
+					video.onerror = () => resolve(null);
+				} catch (e) {
 					// eslint-disable-next-line no-console
-					console.error( 'Error generating thumbnail', e );
-					resolve( null );
+					console.error('Error generating thumbnail', e);
+					resolve(null);
 				}
-			} );
+			});
 		}
 		return null;
 	};
 
 	const openMediaModal = () => {
-		const frame = wp.media( {
-			title: __( 'Select Video', 'tryaura' ),
+		const frame = wp.media({
+			title: __('Select Video', 'tryaura'),
 			multiple: false,
 			library: { type: 'video' },
-		} );
+		});
 
-		frame.on( 'select', () => {
-			const attachment = frame
-				.state()
-				.get( 'selection' )
-				.first()
-				.toJSON();
-			setPlatform( 'site_stored' );
-			setUrl( attachment.url );
-			setVideoFileName( attachment.filename || attachment.title || '' );
-			setVideoFileSize( attachment.filesizeHumanReadable || '' );
-		} );
+		frame.on('select', () => {
+			const attachment = frame.state().get('selection').first().toJSON();
+			setPlatform('site_stored');
+			setUrl(attachment.url);
+			setVideoFileName(attachment.filename || attachment.title || '');
+			setVideoFileSize(attachment.filesizeHumanReadable || '');
+		});
 
 		frame.open();
 	};
 
 	const clearVideo = () => {
-		setUrl( '' );
-		setVideoFileName( '' );
-		setVideoFileSize( '' );
-		setGeneratedThumbnail( '' );
+		setUrl('');
+		setVideoFileName('');
+		setVideoFileSize('');
+		setGeneratedThumbnail('');
 	};
 
 	const openThumbnailModal = () => {
-		const frame = wp.media( {
-			title: __( 'Select Video Thumbnail', 'tryaura' ),
+		const frame = wp.media({
+			title: __('Select Video Thumbnail', 'tryaura'),
 			multiple: false,
 			library: { type: 'image' },
 			tryAuraContext: 'video_thumbnail',
-		} );
+		});
 
-		frame.on( 'select', () => {
-			const attachment = frame
-				.state()
-				.get( 'selection' )
-				.first()
-				.toJSON();
-			setThumbnailId( attachment.id );
-			setThumbnailUrl(
-				attachment.sizes?.thumbnail?.url || attachment.url
-			);
-		} );
+		frame.on('select', () => {
+			const attachment = frame.state().get('selection').first().toJSON();
+			setThumbnailId(attachment.id);
+			setThumbnailUrl(attachment.sizes?.thumbnail?.url || attachment.url);
+		});
 
 		frame.open();
 	};
 
 	const handleSave = async () => {
-		if ( ! platform ) {
-			toast.error( __( 'Please select a video platform.', 'tryaura' ) );
+		if (!platform) {
+			toast.error(__('Please select a video platform.', 'tryaura'));
 			return;
 		}
-		if ( ! url ) {
-			toast.error( __( 'Please enter a valid video URL.', 'tryaura' ) );
+		if (!url) {
+			toast.error(__('Please enter a valid video URL.', 'tryaura'));
 			return;
 		}
-		if ( ! thumbnailUrl && ! originalImageUrl && useCustomThumbnail ) {
-			toast.error( __( 'Please select a video thumbnail.', 'tryaura' ) );
+		if (!thumbnailUrl && !originalImageUrl && useCustomThumbnail) {
+			toast.error(__('Please select a video thumbnail.', 'tryaura'));
 			return;
 		}
 
-		setIsSaving( true );
+		setIsSaving(true);
 
 		try {
 			let currentGeneratedThumbnail = generatedThumbnail;
-			if ( ! useCustomThumbnail ) {
+			if (!useCustomThumbnail) {
 				currentGeneratedThumbnail = await generateFromVideo();
 			}
 
-			await onSave( {
+			await onSave({
 				platform,
 				url,
 				useCustomThumbnail,
@@ -171,132 +161,130 @@ const VideoDetailsModal = ( {
 				generatedThumbnail: currentGeneratedThumbnail,
 				videoFileName,
 				videoFileSize,
-			} );
-		} catch ( e ) {
+			});
+		} catch (e) {
 			// eslint-disable-next-line no-console
-			console.error( 'Save error', e );
+			console.error('Save error', e);
 		} finally {
-			setIsSaving( false );
+			setIsSaving(false);
 		}
 	};
 
 	return (
 		<Modal
-			onRequestClose={ () => {
+			onRequestClose={() => {
 				return '';
-			} }
+			}}
 			className="tryaura tryaura-add-video-modal-url rounded-[3px] [&_.components-modal__content]:p-0 [&_.components-modal__content]:m-0"
 			__experimentalHideHeader
 			size="medium"
-			style={ { maxHeight: '90vh', overflowY: 'auto' } }
-			shouldCloseOnClickOutside={ false }
+			style={{ maxHeight: '90vh', overflowY: 'auto' }}
+			shouldCloseOnClickOutside={false}
 		>
 			<div>
 				<div className="border-b border-[rgba(233,233,233,1)] p-[16px_24px] flex justify-between items-center gap-1">
 					<h2 className="m-0">
-						{ initialData
-							? __( 'Edit Video', 'tryaura' )
-							: __( 'Add Video From URL', 'tryaura' ) }
+						{initialData
+							? __('Edit Video', 'tryaura')
+							: __('Add Video From URL', 'tryaura')}
 					</h2>
 
 					<button
-						onClick={ ( e ) => {
+						onClick={(e) => {
 							e.preventDefault();
 							onClose();
-						} }
+						}}
 						className="cursor-pointer text-[rgba(130,130,130,1)]"
 					>
-						<X size={ 20 } />
+						<X size={20} />
 					</button>
 				</div>
 
 				<div className="p-[27px_24px] border-b border-[rgba(233,233,233,1)] flex flex-col gap-3">
 					<div>
 						<span className="block text-sm font-medium text-gray-700 mb-2">
-							{ __( 'Video Platforms', 'tryaura' ) }
+							{__('Video Platforms', 'tryaura')}
 						</span>
 						<ModernSelect
-							value={ platform }
-							onChange={ ( val: any ) => {
-								setUrl( '' );
-								setPlatform( val );
-							} }
-							options={ [
+							value={platform}
+							onChange={(val: any) => {
+								setUrl('');
+								setPlatform(val);
+							}}
+							options={[
 								{
-									label: __( 'Youtube Video', 'tryaura' ),
+									label: __('Youtube Video', 'tryaura'),
 									value: 'youtube',
-									icon: <Youtube size={ 18 } />,
+									icon: <Youtube size={18} />,
 								},
 								{
-									label: __(
-										'Site stored Video',
-										'tryaura'
-									),
+									label: __('Site stored Video', 'tryaura'),
 									value: 'site_stored',
-									icon: <Video size={ 18 } />,
+									icon: <Video size={18} />,
 								},
-							] }
+							]}
 							variant="list"
 						/>
 					</div>
 
 					<div>
-						{ platform === 'youtube' && (
+						{platform === 'youtube' && (
 							<>
 								<label
-									htmlFor={ `tryaura-video-url-${ platform }` }
+									htmlFor={`tryaura-video-url-${platform}`}
 									className="block text-sm font-medium text-gray-700 mb-2"
 								>
-									{ __( 'Video URL', 'tryaura' ) }
+									{__('Video URL', 'tryaura')}
 								</label>
 								<div className="flex gap-2">
 									<input
-										id={ `tryaura-video-url-${ platform }` }
-										name={ `tryaura-video-url-${ platform }` }
+										id={`tryaura-video-url-${platform}`}
+										name={`tryaura-video-url-${platform}`}
 										type="text"
 										className="flex-1 border rounded-md p-[10px_16px] leading-0 border-[#E9E9E9] focus:border-primary! focus:shadow-none placeholder-[#2c333880]"
-										placeholder={ __( 'e.g. https://www.youtube.com/watch?v=...', 'tryaura' ) }
-										value={ url }
-										onChange={ ( e ) =>
-											setUrl( e.target.value )
-										}
+										placeholder={__(
+											'e.g. https://www.youtube.com/watch?v=…',
+											'tryaura'
+										)}
+										value={url}
+										onChange={(e) => setUrl(e.target.value)}
 									/>
 								</div>
 							</>
-						) }
-						{ platform === 'site_stored' && (
+						)}
+						{platform === 'site_stored' && (
 							<div className="w-full">
-								{ url && videoFileName ? (
+								{url && videoFileName ? (
 									<div className="flex items-center gap-3 p-4 rounded-[5px] bg-[#F8F9F8]">
 										<div className="flex items-center justify-center w-9 h-9 rounded-md border border-neutral-200">
 											<div className="w-6 h-6 bg-neutral-400 rounded-full flex items-center justify-center">
 												<Play
-													size={ 9 }
+													size={9}
 													className="text-white fill-white"
 												/>
 											</div>
 										</div>
 										<div className="flex-1 flex flex-col gap-1 min-w-0">
 											<p className="text-[13px] font-semibold text-[#575757] truncate m-0">
-												{ videoFileName }
+												{videoFileName}
 											</p>
 											<p className="text-[12px] font-normal text-[#828282] m-0">
-												{ videoFileSize }
+												{videoFileSize}
 											</p>
 										</div>
 										<button
-											onClick={ ( e ) => {
+											onClick={(e) => {
 												e.preventDefault();
 												clearVideo();
-											} }
+											}}
 											className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-red-50 transition-colors cursor-pointer border-0 bg-transparent"
-											aria-label={ __(
+											aria-label={__(
 												'Remove video',
 												'tryaura'
-											) }
+											)}
 										>
 											<X
-												size={ 20 }
+												size={20}
 												className="text-neutral-500 hover:text-red-500"
 											/>
 										</button>
@@ -306,36 +294,36 @@ const VideoDetailsModal = ( {
 										<Button
 											variant="outline"
 											className="border-neutral-200!"
-											onClick={ openMediaModal }
+											onClick={openMediaModal}
 										>
 											<div className="flex items-center gap-2">
 												<span className="text-[#575757]! font-medium! text-[14px]! leading-5!">
-													{ __(
+													{__(
 														'Upload Video',
 														'tryaura'
-													) }
+													)}
 												</span>
-												<Upload size={ 16 } />
+												<Upload size={16} />
 											</div>
 										</Button>
 
 										<p className="text-[#828282] p-0 m-0 font-normal text-[12px]">
-											{ __(
+											{__(
 												'Supported files: mov, mp4',
 												'tryaura'
-											) }
+											)}
 										</p>
 									</div>
-								) }
+								)}
 							</div>
-						) }
+						)}
 					</div>
 
 					<div className="flex flex-col gap-[32px]">
 						<Checkbox
-							checked={ useCustomThumbnail }
-							onChange={ ( e: any ) =>
-								setUseCustomThumbnail( e.target.checked )
+							checked={useCustomThumbnail}
+							onChange={(e: any) =>
+								setUseCustomThumbnail(e.target.checked)
 							}
 							id="tryaura-video-use-custom-thumbnail"
 						>
@@ -343,30 +331,24 @@ const VideoDetailsModal = ( {
 								className="text-[15px] font-medium text-[#7D7D7D] cursor-pointer"
 								htmlFor="tryaura-video-use-custom-thumbnail"
 							>
-								{ __(
-									'Use Custom video Thumbnail?',
-									'tryaura'
-								) }
+								{__('Use Custom video Thumbnail?', 'tryaura')}
 							</label>
 						</Checkbox>
 
-						{ useCustomThumbnail ? (
+						{useCustomThumbnail ? (
 							<div className="">
 								<Button
 									variant="outline-primary"
 									className="w-full justify-center"
-									onClick={ ( e ) => {
+									onClick={(e) => {
 										e.preventDefault();
 										openThumbnailModal();
-									} }
+									}}
 								>
-									{ __(
-										'Select Video Thumbnail',
-										'tryaura'
-									) }
+									{__('Select Video Thumbnail', 'tryaura')}
 								</Button>
 
-								{ ( thumbnailUrl || originalImageUrl ) && (
+								{(thumbnailUrl || originalImageUrl) && (
 									<div className="rounded-lg border border-gray-200 w-50 h-50 overflow-hidden mt-8">
 										<img
 											src={
@@ -376,39 +358,36 @@ const VideoDetailsModal = ( {
 											className="object-fill h-full w-full"
 										/>
 									</div>
-								) }
+								)}
 							</div>
 						) : (
 							generatedThumbnail && (
 								<div className="">
 									<span className="block text-xs font-medium text-gray-500 mb-2">
-										{ __(
-											'Generated Preview:',
-											'tryaura'
-										) }
+										{__('Generated Preview:', 'tryaura')}
 									</span>
 									<div className="rounded-lg border border-gray-200 w-50 h-50 overflow-hidden">
 										<img
-											src={ generatedThumbnail }
+											src={generatedThumbnail}
 											alt="Generated thumbnail preview"
 											className="object-fill h-full w-full"
 										/>
 									</div>
 								</div>
 							)
-						) }
+						)}
 					</div>
 				</div>
 
 				<div className="flex justify-end gap-3 p-[20px_24px]">
 					<div className="flex gap-3">
-						<Button variant="outline" onClick={ onClose }>
-							{ __( 'Cancel', 'tryaura' ) }
+						<Button variant="outline" onClick={onClose}>
+							{__('Cancel', 'tryaura')}
 						</Button>
-						<Button onClick={ handleSave } loading={ isSaving }>
-							{ initialData
-								? __( 'Update Video', 'tryaura' )
-								: __( 'Add Video', 'tryaura' ) }
+						<Button onClick={handleSave} loading={isSaving}>
+							{initialData
+								? __('Update Video', 'tryaura')
+								: __('Add Video', 'tryaura')}
 						</Button>
 					</div>
 				</div>

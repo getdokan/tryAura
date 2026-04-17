@@ -13,7 +13,7 @@ export default function reducer(
 	state = initialState,
 	action: any
 ): AIStoreState {
-	switch ( action.type ) {
+	switch (action.type) {
 		case actionTypes.SET_PROVIDERS:
 			return action.providers;
 
@@ -22,9 +22,9 @@ export default function reducer(
 				...state,
 				aiProviders: {
 					...state.aiProviders,
-					[ action.providerId ]: {
+					[action.providerId]: {
 						...action.providerData,
-						...( state.aiProviders[ action.providerId ] || {} ),
+						...(state.aiProviders[action.providerId] || {}),
 					},
 				},
 			};
@@ -34,9 +34,9 @@ export default function reducer(
 				...state,
 				aiProviders: {
 					...state.aiProviders,
-					[ action.providerId ]: {
-						...( state.aiProviders[ action.providerId ] || {} ),
-						[ action.modelId ]: action.modelData,
+					[action.providerId]: {
+						...(state.aiProviders[action.providerId] || {}),
+						[action.modelId]: action.modelData,
 					},
 				},
 			};
@@ -46,12 +46,12 @@ export default function reducer(
 				...state,
 				aiProviders: {
 					...state.aiProviders,
-					[ action.providerId ]: {
-						...( state.aiProviders[ action.providerId ] || {} ),
-						[ action.modelId ]: {
-							...( state.aiProviders[ action.providerId ]?.[
+					[action.providerId]: {
+						...(state.aiProviders[action.providerId] || {}),
+						[action.modelId]: {
+							...(state.aiProviders[action.providerId]?.[
 								action.modelId
-							] || {} ),
+							] || {}),
 							...action.modelData,
 						},
 					},
@@ -63,22 +63,21 @@ export default function reducer(
 				...state,
 				aiProviders: {
 					...state.aiProviders,
-					[ action.providerId ]: {
-						...( state.aiProviders[ action.providerId ] || {} ),
-						[ action.modelId ]: {
-							...( state.aiProviders[ action.providerId ]?.[
+					[action.providerId]: {
+						...(state.aiProviders[action.providerId] || {}),
+						[action.modelId]: {
+							...(state.aiProviders[action.providerId]?.[
 								action.modelId
-							] || {} ),
+							] || {}),
 							capabilities: {
-								...( state.aiProviders[ action.providerId ]?.[
+								...(state.aiProviders[action.providerId]?.[
 									action.modelId
-								]?.capabilities || {} ),
-								[ action.capabilityId ]: {
-									...( state.aiProviders[
-										action.providerId
-									]?.[ action.modelId ]?.capabilities?.[
-										action.capabilityId
-									] || {} ),
+								]?.capabilities || {}),
+								[action.capabilityId]: {
+									...(state.aiProviders[action.providerId]?.[
+										action.modelId
+									]?.capabilities?.[action.capabilityId] ||
+										{}),
 									...action.capabilityData,
 								},
 							},
@@ -92,22 +91,20 @@ export default function reducer(
 				...state,
 				aiProviders: {
 					...state.aiProviders,
-					[ action.providerId ]: {
-						...( state.aiProviders[ action.providerId ] || {} ),
-						[ action.modelId ]: {
-							...( state.aiProviders[ action.providerId ]?.[
+					[action.providerId]: {
+						...(state.aiProviders[action.providerId] || {}),
+						[action.modelId]: {
+							...(state.aiProviders[action.providerId]?.[
 								action.modelId
-							] || {} ),
+							] || {}),
 							parameters: {
-								...( state.aiProviders[ action.providerId ]?.[
+								...(state.aiProviders[action.providerId]?.[
 									action.modelId
-								]?.parameters || {} ),
-								[ action.parameterId ]: {
-									...( state.aiProviders[
-										action.providerId
-									]?.[ action.modelId ]?.parameters?.[
-										action.parameterId
-									] || {} ),
+								]?.parameters || {}),
+								[action.parameterId]: {
+									...(state.aiProviders[action.providerId]?.[
+										action.modelId
+									]?.parameters?.[action.parameterId] || {}),
 									...action.parameterData,
 								},
 							},

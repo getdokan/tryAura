@@ -18,15 +18,15 @@ declare global {
 }
 
 function Index() {
-	const { settings, fetching } = useSelect( ( select ) => {
+	const { settings, fetching } = useSelect((select) => {
 		return {
-			settings: select( STORE_NAME ).getSettings(),
-			fetching: select( STORE_NAME ).isFetchingSettings(),
+			settings: select(STORE_NAME).getSettings(),
+			fetching: select(STORE_NAME).isFetchingSettings(),
 		};
-	}, [] );
+	}, []);
 
 	const data = window.tryAura!;
-	const woocommerceSettings = settings[ data.optionKey ]?.woocommerce;
+	const woocommerceSettings = settings[data.optionKey]?.woocommerce;
 	const bulkTryOnEenabled = woocommerceSettings?.bulkTryOnEenabled;
 
 	return (
@@ -36,23 +36,23 @@ function Index() {
 					<ScanFace />
 				</div>
 			}
-			title={ __( 'Bulk Try-On Control', 'tryaura' ) }
+			title={__('Bulk Try-On Control', 'tryaura')}
 			badge={
 				woocommerceSettings && (
 					<p className="text-primary bg-primary/10 rounded m-0 py-1 px-3">
-						{ bulkTryOnEenabled
-							? __( 'Enable for All Products', 'tryaura' )
-							: __( 'Disable for All Products', 'tryaura' ) }
+						{bulkTryOnEenabled
+							? __('Enable for All Products', 'tryaura')
+							: __('Disable for All Products', 'tryaura')}
 					</p>
 				)
 			}
-			subTitle={ __(
+			subTitle={__(
 				'Enable or disable try-on for all products in your store.',
 				'tryaura'
-			) }
-			link={ '/settings/try-on-control' }
-			linkText={ __( 'Configure', 'tryaura' ) }
-			loading={ fetching }
+			)}
+			link={'/settings/try-on-control'}
+			linkText={__('Configure', 'tryaura')}
+			loading={fetching}
 		/>
 	);
 }

@@ -12,4 +12,4 @@ export {
 	useSettings,
 } from '../../../plugin-ui/dist/index.js';
 
-export type SettingsElement = Record< string, any >;
+export type SettingsElement = Record<string, any>;

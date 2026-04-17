@@ -32,41 +32,39 @@ const InitialLoader = () => {
 };
 
 const TryOnControlSettings = () => {
-	const [ confirmOpen, setConfirmOpen ] = useState( false );
-	const { settings, fetching, saving } = useSelect( ( select ) => {
+	const [confirmOpen, setConfirmOpen] = useState(false);
+	const { settings, fetching, saving } = useSelect((select) => {
 		return {
-			settings: select( STORE_NAME ).getSettings(),
-			fetching: select( STORE_NAME ).isFetchingSettings(),
-			saving: select( STORE_NAME ).isSavingSettings(),
+			settings: select(STORE_NAME).getSettings(),
+			fetching: select(STORE_NAME).isFetchingSettings(),
+			saving: select(STORE_NAME).isSavingSettings(),
 		};
-	}, [] );
+	}, []);
 
-	const { updateSettings } = useDispatch( STORE_NAME );
+	const { updateSettings } = useDispatch(STORE_NAME);
 
 	const navigate = useNavigate();
 	const data = window.tryAura!;
 
-	const [ checked, setChecked ] = useState( false );
+	const [checked, setChecked] = useState(false);
 
 	// On mount or when settings change, update local state
-	useEffect( () => {
-		const current = settings[ data.optionKey ];
-		setChecked( !! current?.woocommerce?.bulkTryOnEenabled );
-	}, [ settings, data.optionKey ] );
+	useEffect(() => {
+		const current = settings[data.optionKey];
+		setChecked(!!current?.woocommerce?.bulkTryOnEenabled);
+	}, [settings, data.optionKey]);
 
-	const handleBulkAction = async ( enabled: boolean ) => {
+	const handleBulkAction = async (enabled: boolean) => {
 		try {
-			const response: any = await apiFetch( {
+			const response: any = await apiFetch({
 				path: '/tryaura/v1/settings/bulk-try-on',
 				method: 'POST',
 				data: { enabled },
-			} );
+			});
 
-			toast.success( response.message || __( 'Success', 'tryaura' ) );
-		} catch ( error: any ) {
-			toast.error(
-				error.message || __( 'Something went wrong', 'tryaura' )
-			);
+			toast.success(response.message || __('Success', 'tryaura'));
+		} catch (error: any) {
+			toast.error(error.message || __('Something went wrong', 'tryaura'));
 		}
 	};
 
@@ -74,119 +72,119 @@ const TryOnControlSettings = () => {
 		try {
 			const newSettings = {
 				...settings,
-				[ data.optionKey ]: {
-					...settings[ data.optionKey ],
+				[data.optionKey]: {
+					...settings[data.optionKey],
 					woocommerce: {
-						...settings[ data.optionKey ]?.woocommerce,
+						...settings[data.optionKey]?.woocommerce,
 						bulkTryOnEenabled: checked,
 					},
 				},
 			};
 
-			await updateSettings( newSettings );
-			await handleBulkAction( checked );
+			await updateSettings(newSettings);
+			await handleBulkAction(checked);
 
-			setConfirmOpen( false );
-		} catch ( e: unknown ) {
+			setConfirmOpen(false);
+		} catch (e: unknown) {
 			const msg =
 				e && typeof e === 'object' && 'message' in e
-					? String( ( e as any ).message )
-					: __( 'Something went wrong', 'tryaura' );
+					? String((e as any).message)
+					: __('Something went wrong', 'tryaura');
 
-			toast.error( msg );
+			toast.error(msg);
 		}
 	};
 
 	return (
 		<>
-			{ confirmOpen && (
+			{confirmOpen && (
 				<Modal
-					onRequestClose={ () => setConfirmOpen( false ) }
+					onRequestClose={() => setConfirmOpen(false)}
 					className="tryaura tryaura-bulk-tryon-confirm-modal"
 					__experimentalHideHeader
 					size="medium"
-					style={ {
+					style={{
 						maxHeight: '90vh',
 						maxWidth: '512px',
 						overflowY: 'auto',
-					} }
-					shouldCloseOnClickOutside={ false }
+					}}
+					shouldCloseOnClickOutside={false}
 				>
 					<div>
 						<div className="flex justify-end items-center">
 							<button
-								onClick={ ( e ) => {
+								onClick={(e) => {
 									e.preventDefault();
-									setConfirmOpen( false );
-								} }
+									setConfirmOpen(false);
+								}}
 								className="cursor-pointer text-[rgba(130,130,130,1)] hover:bg-red-50 hover:text-red-400 p-1.25 m-3.5 rounded-md"
 							>
-								<X size={ 20 } />
+								<X size={20} />
 							</button>
 						</div>
 
 						<div className="flex flex-col">
 							<div className="flex flex-col gap-5 px-8">
 								<h2 className="p-0 m-0">
-									{ __(
+									{__(
 										'Are you sure you want to Enable Bulk Try-On?',
 										'tryaura'
-									) }
+									)}
 								</h2>
 								<span>
-									{ __(
+									{__(
 										'This setting will apply try-on functionality to all products.',
 										'tryaura'
-									) }
+									)}
 								</span>
 							</div>
 							<div className="flex justify-end gap-3 p-[20px_32px] mt-3">
 								<Button
 									className="py-3 px-7"
 									variant="outline"
-									onClick={ () => setConfirmOpen( false ) }
+									onClick={() => setConfirmOpen(false)}
 								>
-									{ __( 'No, Go Back', 'tryaura' ) }
+									{__('No, Go Back', 'tryaura')}
 								</Button>
 								<Button
 									className="py-3 px-7"
-									onClick={ onSave }
-									disabled={ saving }
-									loading={ saving }
+									onClick={onSave}
+									disabled={saving}
+									loading={saving}
 								>
-									{ checked
-										? __( 'Yes, Enable', 'tryaura' )
-										: __( 'Yes, Disable', 'tryaura' ) }
+									{checked
+										? __('Yes, Enable', 'tryaura')
+										: __('Yes, Disable', 'tryaura')}
 								</Button>
 							</div>
 						</div>
 					</div>
 				</Modal>
-			) }
+			)}
 			<SettingDetailsContainer
 				footer={
-					! fetching && (
+					!fetching && (
 						<>
 							<Button
 								className="py-3 px-7"
-								onClick={ () => setConfirmOpen( true ) }
+								onClick={() => setConfirmOpen(true)}
 							>
-								{ __( 'Save', 'tryaura' ) }
+								{__('Save', 'tryaura')}
 							</Button>
 							<Button
 								className="py-3 px-7"
 								variant="outline"
-								onClick={ () => {
-									navigate( '/settings' );
-								} }
+								onClick={() => {
+									navigate('/settings');
+								}}
 							>
-								{ __( 'Cancel', 'tryaura' ) }
+								{__('Cancel', 'tryaura')}
 							</Button>
 						</>
 					)
 				}
 			>
-				{ fetching ? (
+				{fetching ? (
 					<InitialLoader />
 				) : (
 					<div className="flex flex-col w-full md:w-[550px]">
@@ -196,40 +194,40 @@ const TryOnControlSettings = () => {
 							</div>
 							<div>
 								<div className="font-semibold text-[20px] leading-[28px] tracking-normal align-middle mb-[8px]">
-									{ __( 'Bulk Try-On Control', 'tryaura' ) }
+									{__('Bulk Try-On Control', 'tryaura')}
 								</div>
 								<div className="text-[14px] font-[400] leading-[18.67px] text-[rgba(99,99,99,1)]">
-									{ __(
+									{__(
 										'Enable or disable try-on for all products in your store.',
 										'tryaura'
-									) }
+									)}
 								</div>
 							</div>
 						</div>
 						<div className="flex flex-col gap-6">
 							<div className="flex flex-row gap-3">
 								<Toggle
-									checked={ checked }
-									onChange={ ( val ) => setChecked( val ) }
+									checked={checked}
+									onChange={(val) => setChecked(val)}
 								/>
 								<div className="flex flex-col gap-2">
 									<span className="text-[rgba(37,37,45,1)] font-semibold text-[14px]">
-										{ __(
+										{__(
 											'Enable for All Products',
 											'tryaura'
-										) }
+										)}
 									</span>
 									<span className="text-[rgba(130,130,130,1)] font-normal text-[12px]">
-										{ __(
+										{__(
 											'This setting will apply try-on functionality to all products.',
 											'tryaura'
-										) }
+										)}
 									</span>
 								</div>
 							</div>
 						</div>
 					</div>
-				) }
+				)}
 			</SettingDetailsContainer>
 		</>
 	);

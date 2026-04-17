@@ -2,9 +2,9 @@ import { __ } from '@wordpress/i18n';
 import { Wand2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-function TryAuraConfiguration( { className = '' }: { className: string } ) {
+function TryAuraConfiguration({ className = '' }: { className: string }) {
 	return (
-		<div className={ className }>
+		<div className={className}>
 			<div className="w-[80px] h-[80px] rounded-[16px] border border-[rgba(230,230,230,1)] flex items-center justify-center mb-[24px]">
 				<svg
 					width="32"
@@ -38,28 +38,28 @@ function TryAuraConfiguration( { className = '' }: { className: string } ) {
 			</div>
 
 			<h2 className="text-[18px] font-[600] text-[rgba(51,51,51,1)] mb-[8px] m-0">
-				{ __( 'TryAura Configuration', 'tryaura' ) }
+				{__('TryAura Configuration', 'tryaura')}
 			</h2>
 			<p className="text-[14px] text-[rgba(153,153,153,1)] mb-[32px] m-0">
-				{ __( 'Configure your Gemini with API', 'tryaura' ) }
+				{__('Configure your Gemini with API', 'tryaura')}
 			</p>
 
 			<Link
 				to="/settings/gemini"
 				className="bg-primary text-white px-[32px] py-[12px] rounded-[8px] text-[16px] font-[500] hover:bg-primary-dark transition-colors no-underline"
 			>
-				{ __( 'Configure', 'tryaura' ) }
+				{__('Configure', 'tryaura')}
 			</Link>
 
 			<div className="mt-[40px] text-[14px] text-[rgba(153,153,153,1)]">
-				{ __( 'Need help configuring', 'tryaura' ) }{ ' ' }
+				{__('Need help configuring', 'tryaura')}{' '}
 				<a
 					href="https://aistudio.google.com/app/apikey"
 					target="_blank"
 					rel="noreferrer"
 					className="text-primary no-underline hover:underline"
 				>
-					{ __( 'API Keys', 'tryaura' ) }?
+					{__('API Keys', 'tryaura')}?
 				</a>
 			</div>
 		</div>

@@ -25,12 +25,12 @@ type PreviewProps = {
 	supportsVideo?: boolean;
 };
 
-const PreviewModal = ( {
+const PreviewModal = ({
 	imageUrls,
 	attachmentIds,
 	onClose,
 	supportsVideo,
-}: PreviewProps ) => {
+}: PreviewProps) => {
 	const {
 		isBlockEditorPage,
 		isWoocommerceProductPage,
@@ -44,10 +44,10 @@ const PreviewModal = ( {
 		defaultImageModel,
 		settings,
 	} = useSelect(
-		( select ) => {
-			const store = select( STORE_NAME );
-			const aiModelsStore = select( 'tryaura/ai-models' );
-			const settingsStore = select( SETTINGS_STORE_NAME );
+		(select) => {
+			const store = select(STORE_NAME);
+			const aiModelsStore = select('tryaura/ai-models');
+			const settingsStore = select(SETTINGS_STORE_NAME);
 			return {
 				isBlockEditorPage: store.getIsBlockEditorPage(),
 				isWoocommerceProductPage: store.getIsWoocommerceProductPage(),
@@ -62,7 +62,7 @@ const PreviewModal = ( {
 				settings: settingsStore.getSettings(),
 			};
 		},
-		[ STORE_NAME ]
+		[STORE_NAME]
 	);
 
 	const {
@@ -78,18 +78,18 @@ const PreviewModal = ( {
 		setAttachmentIds,
 		setSupportsVideo,
 		resetState,
-	} = useDispatch( STORE_NAME );
+	} = useDispatch(STORE_NAME);
 
 	const multiple = imageUrls.length > 1;
 
-	useEffect( () => {
+	useEffect(() => {
 		resetState();
-		setImageUrls( imageUrls );
-		setAttachmentIds( attachmentIds );
-		setSupportsVideo( !! supportsVideo );
-	}, [ imageUrls, attachmentIds, supportsVideo, resetState ] );
+		setImageUrls(imageUrls);
+		setAttachmentIds(attachmentIds);
+		setSupportsVideo(!!supportsVideo);
+	}, [imageUrls, attachmentIds, supportsVideo, resetState]);
 
-	useEffect( () => {
+	useEffect(() => {
 		setIsBlockEditorPage(
 			document.body.classList.contains(
 				applyFilters(
@@ -119,103 +119,100 @@ const PreviewModal = ( {
 					'ai-enhancer-modal-open'
 				)
 			);
-	}, [] );
+	}, []);
 
 	const doTestGenerate = async () => {
 		try {
-			setError( null );
-			setStatus( 'fetching' );
-			setMessage( __( 'Fetching images…', 'tryaura' ) );
-			await new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
+			setError(null);
+			setStatus('fetching');
+			setMessage(__('Fetching images…', 'tryaura'));
+			await new Promise((resolve) => setTimeout(resolve, 1000));
 
-			setStatus( 'generating' );
-			setMessage( __( 'Thinking and generating…', 'tryaura' ) );
-			await new Promise( ( resolve ) => setTimeout( resolve, 2000 ) );
+			setStatus('generating');
+			setMessage(__('Thinking and generating…', 'tryaura'));
+			await new Promise((resolve) => setTimeout(resolve, 2000));
 
-			setStatus( 'parsing' );
-			setMessage( __( 'Processing results…', 'tryaura' ) );
-			await new Promise( ( resolve ) => setTimeout( resolve, 1000 ) );
+			setStatus('parsing');
+			setMessage(__('Processing results…', 'tryaura'));
+			await new Promise((resolve) => setTimeout(resolve, 1000));
 
 			// Use a placeholder image from picsum for testing
 			const placeholderImage = window?.tryAura?.testImage || '';
-			setGeneratedUrl( placeholderImage );
-			setStatus( 'done' );
-			setMessage( __( 'Done', 'tryaura' ) );
-			setError( null );
-		} catch ( e: any ) {
-			setError( e?.message || __( 'Testing generation failed.', 'tryaura' ) );
-			setStatus( 'error' );
-			setMessage( 'Generation failed.' );
+			setGeneratedUrl(placeholderImage);
+			setStatus('done');
+			setMessage(__('Done', 'tryaura'));
+			setError(null);
+		} catch (e: any) {
+			setError(e?.message || __('Testing generation failed.', 'tryaura'));
+			setStatus('error');
+			setMessage('Generation failed.');
 		}
 	};
 
 	const doGenerate = async () => {
 		try {
-			setError( null );
-			const selectedUrls = imageUrls.filter( ( _, idx ) =>
-				selectedImageIndices.includes( idx )
+			setError(null);
+			const selectedUrls = imageUrls.filter((_, idx) =>
+				selectedImageIndices.includes(idx)
 			);
 
-			if ( selectedUrls.length === 0 ) {
+			if (selectedUrls.length === 0) {
 				throw new Error(
-					__( 'Please select at least one image.', 'tryaura' )
+					__('Please select at least one image.', 'tryaura')
 				);
 			}
 
-			const aura = ( window as any )?.tryAura;
-			const google = settings?.[ aura?.optionKey ]?.google;
+			const aura = (window as any)?.tryAura;
+			const google = settings?.[aura?.optionKey]?.google;
 			const restUrl = aura?.restUrl;
 			const wpNonce = aura?.nonce;
 			const tryonNonce = aura?.tryonNonce;
 
-			if ( ! restUrl || ! wpNonce || ! tryonNonce ) {
+			if (!restUrl || !wpNonce || !tryonNonce) {
 				throw new Error(
-					__(
-						'REST API not configured properly.',
-						'tryaura'
-					)
+					__('REST API not configured properly.', 'tryaura')
 				);
 			}
 
-			setStatus( 'fetching' );
-			setMessage( __( 'Fetching images…', 'tryaura' ) );
+			setStatus('fetching');
+			setMessage(__('Fetching images…', 'tryaura'));
 			const encodedImages = await Promise.all(
-				selectedUrls.map( async ( url ) => {
-					const resp = await fetch( url, {
+				selectedUrls.map(async (url) => {
+					const resp = await fetch(url, {
 						credentials: 'same-origin',
-					} );
+					});
 					const blob = await resp.blob();
 					const mimeType = blob.type || 'image/png';
-					const base64 = await new Promise< string >(
-						( resolve, reject ) => {
+					const base64 = await new Promise<string>(
+						(resolve, reject) => {
 							const reader = new FileReader();
 							reader.onloadend = () => {
 								const result = reader.result as string;
-								const comma = result.indexOf( ',' );
+								const comma = result.indexOf(',');
 								resolve(
 									comma >= 0
-										? result.substring( comma + 1 )
+										? result.substring(comma + 1)
 										: result
 								);
 							};
 							reader.onerror = reject;
-							reader.readAsDataURL( blob );
+							reader.readAsDataURL(blob);
 						}
 					);
 					return { mimeType, base64 };
-				} )
+				})
 			);
 
-			setStatus( 'generating' );
-			setMessage( __( 'Thinking and generating…', 'tryaura' ) );
-			const isBlockPage = isBlockEditorPage && ! isWoocommerceProductPage;
+			setStatus('generating');
+			setMessage(__('Thinking and generating…', 'tryaura'));
+			const isBlockPage = isBlockEditorPage && !isWoocommerceProductPage;
 			const safetyInstruction =
 				'Do not generate any nudity, harassment, or abuse.';
 
 			if (
 				hasPro() &&
 				isBlockPage &&
-				! imageConfigData?.optionalPrompt?.trim()
+				!imageConfigData?.optionalPrompt?.trim()
 			) {
 				throw new Error(
 					__(
@@ -228,22 +225,22 @@ const PreviewModal = ( {
 			const extras =
 				imageConfigData?.optionalPrompt &&
 				imageConfigData?.optionalPrompt.trim().length
-					? `\n\nAdditional instruction from user: ${ imageConfigData?.optionalPrompt.trim() }`
+					? `\n\nAdditional instruction from user: ${imageConfigData?.optionalPrompt.trim()}`
 					: '';
 			const multiHint =
 				selectedUrls.length > 1
 					? applyFilters(
 							'tryaura.ai_enhance_multi_image_hint',
 							'\n\nNote: Multiple input images provided. If a person/model photo and separate product images are present, compose the result with the model wearing/using the product(s) while keeping the background as requested.'
-					  )
+						)
 					: '';
 
 			let promptText: string =
 				isBlockPage && hasPro()
-					? `Generate a high-quality AI image based on the provided image(s) and user instructions.\n\nInstructions: ${ imageConfigData?.optionalPrompt?.trim() }\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }`
+					? `Generate a high-quality AI image based on the provided image(s) and user instructions.\n\nInstructions: ${imageConfigData?.optionalPrompt?.trim()}\n\nPreferences:\n- Background preference: ${imageConfigData?.backgroundType}\n- Output style: ${imageConfigData?.styleType}\n\nRequirements: Maintain professional composition and a brand-safe output. ${safetyInstruction}`
 					: applyFilters(
 							'tryaura.ai_enhance_image_prompt_base',
-							`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ extras }${ multiHint }`,
+							`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${imageConfigData?.backgroundType}\n- Output style: ${imageConfigData?.styleType}\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${safetyInstruction}${extras}${multiHint}`,
 							{
 								imageConfigData,
 								safetyInstruction,
@@ -251,7 +248,7 @@ const PreviewModal = ( {
 								multiHint,
 								isThumbnailMode,
 							}
-					  );
+						);
 			promptText = applyFilters(
 				'tryaura.ai_enhance_prompt_text',
 				promptText,
@@ -261,19 +258,19 @@ const PreviewModal = ( {
 				isBlockEditorPage,
 				isWoocommerceProductPage
 			);
-			const prompt = applyFilters( 'tryaura.ai_enhance_prompt', [
+			const prompt = applyFilters('tryaura.ai_enhance_prompt', [
 				{ text: promptText },
-				...encodedImages.map( ( img ) => ( {
+				...encodedImages.map((img) => ({
 					inlineData: { mimeType: img.mimeType, data: img.base64 },
-				} ) ),
-			] );
+				})),
+			]);
 			const images = encodedImages.map(
-				( img ) => `data:${ img.mimeType };base64,${ img.base64 }`
+				(img) => `data:${img.mimeType};base64,${img.base64}`
 			);
 
-			doAction( 'tryaura.ai_enhance_prompt_before_generate', prompt );
-			const response: any = await apiFetch( {
-				url: `${ restUrl.replace( /\/?$/, '/' ) }generate/v1/image`,
+			doAction('tryaura.ai_enhance_prompt_before_generate', prompt);
+			const response: any = await apiFetch({
+				url: `${restUrl.replace(/\/?$/, '/')}generate/v1/image`,
 				method: 'POST',
 				headers: {
 					'X-WP-Nonce': wpNonce,
@@ -286,61 +283,61 @@ const PreviewModal = ( {
 					generated_from: 'admin',
 					tryonNonce,
 				},
-			} );
-			doAction( 'tryaura.ai_enhance_prompt_after_generate', response );
+			});
+			doAction('tryaura.ai_enhance_prompt_after_generate', response);
 
-			setStatus( 'parsing' );
-			setMessage( __( 'Processing results…', 'tryaura' ) );
+			setStatus('parsing');
+			setMessage(__('Processing results…', 'tryaura'));
 			const data64 = response?.image || null;
 
-			if ( ! data64 ) {
-				throw new Error( __( 'Model did not return an image.', 'tryaura' ) );
+			if (!data64) {
+				throw new Error(
+					__('Model did not return an image.', 'tryaura')
+				);
 			}
 
-			const dataUrl = `data:image/png;base64,${ data64 }`;
-			setGeneratedUrl( dataUrl );
-			setStatus( 'done' );
-			setMessage( __( 'Done', 'tryaura' ) );
-			setError( null );
-		} catch ( e: any ) {
-			setError( e?.message || __( 'Generation failed.', 'tryaura' ) );
-			setStatus( 'error' );
-			setMessage( __( 'Generation failed.', 'tryaura' ) );
+			const dataUrl = `data:image/png;base64,${data64}`;
+			setGeneratedUrl(dataUrl);
+			setStatus('done');
+			setMessage(__('Done', 'tryaura'));
+			setError(null);
+		} catch (e: any) {
+			setError(e?.message || __('Generation failed.', 'tryaura'));
+			setStatus('error');
+			setMessage(__('Generation failed.', 'tryaura'));
 		}
 	};
 
 	const setInMediaSelection = async () => {
-		if ( ! generatedUrl ) {
+		if (!generatedUrl) {
 			return;
 		}
 		try {
-			setUploading( true );
+			setUploading(true);
 			const rest = window?.tryAura?.restUrl;
 			const nonce = window?.tryAura?.nonce;
-			if ( ! rest || ! nonce ) {
+			if (!rest || !nonce) {
 				throw new Error(
-					__( 'Missing WordPress REST configuration.', 'tryaura' )
+					__('Missing WordPress REST configuration.', 'tryaura')
 				);
 			}
-			const restBase = rest.replace( /\/?$/, '/' );
+			const restBase = rest.replace(/\/?$/, '/');
 
 			// Convert data URL to Blob by fetching it (works for data: URLs too)
-			const blob = await fetch( generatedUrl ).then( ( r ) => r.blob() );
+			const blob = await fetch(generatedUrl).then((r) => r.blob());
 			const mime = blob.type || 'image/png';
-			const ext = ( mime.split( '/' )?.[ 1 ] || 'png' ).split(
-				'+'
-			)?.[ 0 ];
+			const ext = (mime.split('/')?.[1] || 'png').split('+')?.[0];
 			const primaryAttachmentId = applyFilters(
 				'tryaura.ai_enhance_primary_attachment_id',
 				attachmentIds && attachmentIds.length > 0
-					? attachmentIds[ 0 ]
+					? attachmentIds[0]
 					: null
 			);
 			const filename = applyFilters(
 				'tryaura.ai_enhance_filename',
 				primaryAttachmentId
-					? `enhanced-${ primaryAttachmentId }-${ Date.now() }.${ ext }`
-					: `enhanced-${ Date.now() }.${ ext }`
+					? `enhanced-${primaryAttachmentId}-${Date.now()}.${ext}`
+					: `enhanced-${Date.now()}.${ext}`
 			);
 
 			doAction(
@@ -350,18 +347,18 @@ const PreviewModal = ( {
 				nonce,
 				restBase
 			);
-			const uploadRes = await apiFetch( {
+			const uploadRes = await apiFetch({
 				url: applyFilters(
 					'tryaura.media_upload_rest_api',
-					`${ restBase }wp/v2/media`
+					`${restBase}wp/v2/media`
 				),
 				method: 'POST',
 				headers: {
-					'Content-Disposition': `attachment; filename="${ filename }"`,
+					'Content-Disposition': `attachment; filename="${filename}"`,
 					'Content-Type': mime,
 				},
 				body: blob,
-			} ).catch( ( e: any ) => {
+			}).catch((e: any) => {
 				const text = e?.message || 'Upload failed.';
 				doAction(
 					'tryaura.ai_enhance_upload_failed',
@@ -369,15 +366,18 @@ const PreviewModal = ( {
 					blob,
 					text
 				);
-				throw new Error( text );
-			} );
+				throw new Error(text);
+			});
 
 			const json: any = uploadRes;
 			const newId = json?.id;
-			if ( ! newId ) {
-				doAction( 'tryaura.ai_enhance_upload_failed', filename, blob );
+			if (!newId) {
+				doAction('tryaura.ai_enhance_upload_failed', filename, blob);
 				throw new Error(
-					__( 'Upload succeeded but no attachment ID returned.', 'tryaura' )
+					__(
+						'Upload succeeded but no attachment ID returned.',
+						'tryaura'
+					)
 				);
 			}
 
@@ -392,51 +392,50 @@ const PreviewModal = ( {
 			try {
 				const frameObj =
 					wp?.media?.frame ||
-					( wp?.media?.featuredImage?.frame
+					(wp?.media?.featuredImage?.frame
 						? wp.media.featuredImage.frame()
-						: null );
+						: null);
 				let isFeaturedContext = false;
-				if ( frameObj ) {
+				if (frameObj) {
 					// Detect context via frame options/state id when possible.
 					const state =
 						typeof frameObj.state === 'function'
 							? frameObj.state()
 							: null;
 					const stateId =
-						( state &&
-							( state.id ||
-								( state.get && state.get( 'id' ) ) ||
-								( state.attributes &&
-									state.attributes.id ) ) ) ||
-						( frameObj.options && frameObj.options.state );
-					if ( stateId === 'featured-image' ) {
+						(state &&
+							(state.id ||
+								(state.get && state.get('id')) ||
+								(state.attributes && state.attributes.id))) ||
+						(frameObj.options && frameObj.options.state);
+					if (stateId === 'featured-image') {
 						isFeaturedContext = true;
 					}
 					// Update current selection to the newly uploaded attachment so it can be inserted or set.
-					const selection = state?.get?.( 'selection' );
-					if ( selection ) {
+					const selection = state?.get?.('selection');
+					if (selection) {
 						const att = wp?.media?.model?.Attachment?.get
-							? wp.media.model.Attachment.get( newId )
+							? wp.media.model.Attachment.get(newId)
 							: null;
-						if ( att?.fetch ) {
+						if (att?.fetch) {
 							try {
 								await att.fetch();
 							} catch {}
 						}
-						if ( att ) {
-							selection.reset( [ att ] );
+						if (att) {
+							selection.reset([att]);
 						}
 					}
 				}
 				// Only set the featured image when the current frame is the featured image modal.
-				if ( isFeaturedContext && wp?.media?.featuredImage?.set ) {
+				if (isFeaturedContext && wp?.media?.featuredImage?.set) {
 					doAction(
 						'tryaura.ai_enhance_upload_success_before',
 						filename,
 						blob,
 						newId
 					);
-					wp.media.featuredImage.set( newId );
+					wp.media.featuredImage.set(newId);
 					doAction(
 						'tryaura.ai_enhance_upload_success_after',
 						filename,
@@ -444,114 +443,111 @@ const PreviewModal = ( {
 						newId
 					);
 				}
-			} catch ( e ) {
+			} catch (e) {
 				// ignore UI sync errors
 			}
 
 			onClose();
-		} catch ( e: any ) {
-			setError( e?.message || __( 'Failed to set image.', 'tryaura' ) );
+		} catch (e: any) {
+			setError(e?.message || __('Failed to set image.', 'tryaura'));
 		} finally {
-			setUploading( false );
+			setUploading(false);
 		}
 	};
 
-	const disabledImageAddToMedia = isBusy || uploading || ! generatedUrl;
+	const disabledImageAddToMedia = isBusy || uploading || !generatedUrl;
 	const generate = window?.tryAura?.testMode ? doTestGenerate : doGenerate;
 
 	return (
 		<Modal
-			onRequestClose={ onClose }
+			onRequestClose={onClose}
 			className="tryaura ai-enhancer-preview-modal"
 			__experimentalHideHeader
-			shouldCloseOnClickOutside={ false }
+			shouldCloseOnClickOutside={false}
 		>
 			<SlotFillProvider>
 				<div className="ai-enhancer-modal__content">
 					<div className="flex flex-row justify-between border-b-[1px] border-b-[#E9E9E9] pt-[16px] pl-[24px] pr-[24px]">
 						<h2 className="mt-0">
-							{ applyFilters(
+							{applyFilters(
 								'tryaura.enhancer.modal_title',
-								__( 'AI Product Image Generation', 'tryaura' ),
+								__('AI Product Image Generation', 'tryaura'),
 								{ isThumbnailMode }
-							) }
+							)}
 						</h2>
 						<button
 							className="w-[16px] h-[16px] cursor-pointer"
-							onClick={ onClose }
+							onClick={onClose}
 							aria-label="Close modal"
-							disabled={ isBusy }
+							disabled={isBusy}
 						>
-							<X size={ 16 } />
+							<X size={16} />
 						</button>
 					</div>
 
 					<div className="grid grid-cols-1 md:grid-cols-11 md:flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
-						{ ( activeTab === 'image' || ! hasPro() ) && (
+						{(activeTab === 'image' || !hasPro()) && (
 							<OriginalImage
-								imageUrls={ imageUrls }
-								multiple={ multiple }
-								selectedIndices={ selectedImageIndices }
-								setSelectedIndices={ setSelectedImageIndices }
-								showSelection={ true }
-								showGeneratedImage={ false }
-								limits={ { min: 1, max: 3 } }
+								imageUrls={imageUrls}
+								multiple={multiple}
+								selectedIndices={selectedImageIndices}
+								setSelectedIndices={setSelectedImageIndices}
+								showSelection={true}
+								showGeneratedImage={false}
+								limits={{ min: 1, max: 3 }}
 								className="col-span-1 md:col-span-3 max-h-133.25 overflow-auto"
-								isBusy={ isBusy }
+								isBusy={isBusy}
 							/>
-						) }
+						)}
 						<Slot
 							name="TryAuraOriginalImage"
-							fillProps={ {
+							fillProps={{
 								OriginalImage,
 								imageUrls,
 								multiple,
 								className:
 									'col-span-1 md:col-span-3 max-h-133.25 overflow-auto',
-							} }
+							}}
 						/>
 
 						<ConfigSettings
-							supportsVideo={ supportsVideo }
-							doGenerate={ generate }
+							supportsVideo={supportsVideo}
+							doGenerate={generate}
 							className="col-span-1 md:col-span-4 flex flex-col gap-[32px]"
 						/>
 
-						{ ( activeTab === 'image' || ! hasPro() ) && (
+						{(activeTab === 'image' || !hasPro()) && (
 							<Output
-								supportsVideo={ supportsVideo }
+								supportsVideo={supportsVideo}
 								className="col-span-1 md:col-span-4"
 							/>
-						) }
+						)}
 
 						<Slot
 							name="TryAuraEnhancerOutput"
-							fillProps={ {
+							fillProps={{
 								className: 'col-span-1 md:col-span-4',
-							} }
+							}}
 						/>
 					</div>
-					{ /* Actions */ }
+					{/* Actions */}
 					<div
-						className={ twMerge(
+						className={twMerge(
 							'mt-6 border-t border-t-[#E9E9E9] p-[16px_24px] flex flex-row justify-end'
-						) }
+						)}
 					>
 						<div className="flex flex-row justify-end gap-3">
-							{ generatedUrl && 'image' === activeTab && (
+							{generatedUrl && 'image' === activeTab && (
 								<Button
-									onClick={ setInMediaSelection }
-									disabled={ disabledImageAddToMedia }
-									loading={ uploading }
+									onClick={setInMediaSelection}
+									disabled={disabledImageAddToMedia}
+									loading={uploading}
 								>
-									{ uploading
-										? __( 'Adding…', 'tryaura' )
-										: __(
-												'Add to Media Library',
-												'tryaura'
-										  ) }
+									{uploading
+										? __('Adding…', 'tryaura')
+										: __('Add to Media Library', 'tryaura')}
 								</Button>
-							) }
+							)}
 
 							<Slot name="TryAuraEnhancerFooterActions" />
 
@@ -559,10 +555,10 @@ const PreviewModal = ( {
 
 							<Button
 								variant="outline"
-								onClick={ onClose }
-								disabled={ isBusy }
+								onClick={onClose}
+								disabled={isBusy}
 							>
-								{ __( 'Close', 'tryaura' ) }
+								{__('Close', 'tryaura')}
 							</Button>
 						</div>
 					</div>

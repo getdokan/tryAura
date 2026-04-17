@@ -1,14 +1,14 @@
 import * as actionTypes from './action-types';
 import { AIStoreState, Model, Capability, Parameter, Provider } from './types';
 
-export function setProviders( providers: AIStoreState ) {
+export function setProviders(providers: AIStoreState) {
 	return {
 		type: actionTypes.SET_PROVIDERS,
 		providers,
 	};
 }
 
-export function addProvider( providerId: string, providerData: Provider = {} ) {
+export function addProvider(providerId: string, providerData: Provider = {}) {
 	return {
 		type: actionTypes.ADD_PROVIDER,
 		providerId,
@@ -16,7 +16,11 @@ export function addProvider( providerId: string, providerData: Provider = {} ) {
 	};
 }
 
-export function addModel( providerId: string, modelId: string, modelData: Model ) {
+export function addModel(
+	providerId: string,
+	modelId: string,
+	modelData: Model
+) {
 	return {
 		type: actionTypes.ADD_MODEL,
 		providerId,
@@ -28,7 +32,7 @@ export function addModel( providerId: string, modelId: string, modelData: Model 
 export function updateModel(
 	providerId: string,
 	modelId: string,
-	modelData: Partial< Model >
+	modelData: Partial<Model>
 ) {
 	return {
 		type: actionTypes.UPDATE_MODEL,
@@ -42,7 +46,7 @@ export function updateCapability(
 	providerId: string,
 	modelId: string,
 	capabilityId: string,
-	capabilityData: Partial< Capability >
+	capabilityData: Partial<Capability>
 ) {
 	return {
 		type: actionTypes.UPDATE_CAPABILITY,
@@ -57,7 +61,7 @@ export function updateParameter(
 	providerId: string,
 	modelId: string,
 	parameterId: string,
-	parameterData: Partial< Parameter >
+	parameterData: Partial<Parameter>
 ) {
 	return {
 		type: actionTypes.UPDATE_PARAMETER,
@@ -68,21 +72,21 @@ export function updateParameter(
 	};
 }
 
-export function setDefaultProvider( providerId: string ) {
+export function setDefaultProvider(providerId: string) {
 	return {
 		type: actionTypes.SET_DEFAULT_PROVIDER,
 		providerId,
 	};
 }
 
-export function setDefaultImageModel( modelId: string ) {
+export function setDefaultImageModel(modelId: string) {
 	return {
 		type: actionTypes.SET_DEFAULT_IMAGE_MODEL,
 		modelId,
 	};
 }
 
-export function setDefaultVideoModel( modelId: string ) {
+export function setDefaultVideoModel(modelId: string) {
 	return {
 		type: actionTypes.SET_DEFAULT_VIDEO_MODEL,
 		modelId,

@@ -44,21 +44,20 @@ declare global {
 }
 
 const PROVIDER_OPTIONS = [
-	{ label: __( 'Gemini', 'tryaura' ), value: 'google' },
-	{ label: __( 'OpenRouter', 'tryaura' ), value: 'openrouter' },
+	{ label: __('Gemini', 'tryaura'), value: 'google' },
+	{ label: __('OpenRouter', 'tryaura'), value: 'openrouter' },
 ];
 
-const getDefaultModelsForProvider = ( provider: ProviderId ) => {
+const getDefaultModelsForProvider = (provider: ProviderId) => {
 	const providerConfig = window.tryAuraAiProviderModels ?? {};
 
-	if ( provider === 'openrouter' ) {
+	if (provider === 'openrouter') {
 		return {
 			imageModel:
 				providerConfig.defaultOpenRouterImageModel ||
 				'google/gemini-2.5-flash-preview-05-20:generateImage',
 			videoModel:
-				providerConfig.defaultOpenRouterVideoModel ||
-				'google/veo-3.1',
+				providerConfig.defaultOpenRouterVideoModel || 'google/veo-3.1',
 		};
 	}
 
@@ -78,56 +77,56 @@ const getProviderModelSettingKey = (
 	const providerPrefix = provider === 'google' ? 'gemini' : 'openrouter';
 	const modelPrefix = modelType === 'image' ? 'Image' : 'Video';
 
-	return `${ providerPrefix }${ modelPrefix }Model${ suffix }`;
+	return `${providerPrefix}${modelPrefix}Model${suffix}`;
 };
 
 const getStoredModelValue = (
-	settings: Record< string, any >,
+	settings: Record<string, any>,
 	provider: ProviderId,
 	modelType: 'image' | 'video',
 	fallback: string
 ) => {
 	const activeKey = modelType === 'image' ? 'imageModel' : 'videoModel';
-	const providerKey = getProviderModelSettingKey( provider, modelType );
+	const providerKey = getProviderModelSettingKey(provider, modelType);
 
 	return (
-		settings?.[ providerKey ] ||
-		( settings?.provider === provider ? settings?.[ activeKey ] : '' ) ||
+		settings?.[providerKey] ||
+		(settings?.provider === provider ? settings?.[activeKey] : '') ||
 		fallback
 	);
 };
 
 const getStoredModelLabel = (
-	settings: Record< string, any >,
+	settings: Record<string, any>,
 	provider: ProviderId,
 	modelType: 'image' | 'video',
 	fallback: string
 ) => {
-	const labelKey = getProviderModelSettingKey( provider, modelType, 'Label' );
+	const labelKey = getProviderModelSettingKey(provider, modelType, 'Label');
 
-	return settings?.[ labelKey ] || fallback;
+	return settings?.[labelKey] || fallback;
 };
 
 async function validateApiKey(
 	provider: ProviderId,
 	key: string
-): Promise< boolean > {
+): Promise<boolean> {
 	try {
-		if ( provider === 'openrouter' ) {
-			const res = await fetch( 'https://openrouter.ai/api/v1/models', {
+		if (provider === 'openrouter') {
+			const res = await fetch('https://openrouter.ai/api/v1/models', {
 				method: 'GET',
 				headers: {
-					Authorization: `Bearer ${ key }`,
+					Authorization: `Bearer ${key}`,
 				},
-			} );
+			});
 
 			return res.ok;
 		}
 
 		const res = await fetch(
-			`https://generativelanguage.googleapis.com/v1beta/models?key=${ encodeURIComponent(
+			`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(
 				key
-			) }`
+			)}`
 		);
 
 		return res.ok;
@@ -136,11 +135,11 @@ async function validateApiKey(
 	}
 }
 
-const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
+const getSchema = (values: FlatSettingsValues): SettingsElement[] => [
 	{
 		id: 'ai_credentials_page',
 		type: 'page',
-		label: __( 'AI Credentials', 'tryaura' ),
+		label: __('AI Credentials', 'tryaura'),
 		description: __(
 			'Configure the active provider credential used by TryAura.',
 			'tryaura'
@@ -149,7 +148,7 @@ const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
 			{
 				id: 'provider_credentials',
 				type: 'section',
-				label: __( 'Provider Credentials', 'tryaura' ),
+				label: __('Provider Credentials', 'tryaura'),
 				description: __(
 					'Use Plugin UI settings to manage the active Gemini or OpenRouter credential.',
 					'tryaura'
@@ -159,7 +158,7 @@ const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
 						id: 'provider',
 						type: 'field',
 						variant: 'select',
-						label: __( 'AI Engine', 'tryaura' ),
+						label: __('AI Engine', 'tryaura'),
 						description: __(
 							'Choose which provider TryAura should use.',
 							'tryaura'
@@ -196,7 +195,7 @@ const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
 								id: 'gemini_api_info',
 								type: 'field',
 								variant: 'base_field_label',
-								label: __( 'Gemini API', 'tryaura' ),
+								label: __('Gemini API', 'tryaura'),
 								description: __(
 									'Connect your Gemini account with your website.',
 									'tryaura'
@@ -207,15 +206,19 @@ const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
 								id: 'gemini_api_notice',
 								type: 'field',
 								variant: 'info',
-								title: __( 'Need help finding your key?', 'tryaura' ),
-								link_url: 'https://aistudio.google.com/app/apikey',
-								link_title: __( 'Gemini Account', 'tryaura' ),
+								title: __(
+									'Need help finding your key?',
+									'tryaura'
+								),
+								link_url:
+									'https://aistudio.google.com/app/apikey',
+								link_title: __('Gemini Account', 'tryaura'),
 							},
 							{
 								id: 'gemini_api_key',
 								type: 'field',
 								variant: 'show_hide',
-								label: __( 'API Key', 'tryaura' ),
+								label: __('API Key', 'tryaura'),
 								description: __(
 									'Paste the API key provided by Gemini.',
 									'tryaura'
@@ -231,17 +234,19 @@ const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
 								id: 'gemini_image_model',
 								type: 'field',
 								variant: 'model_selector',
-								label: __( 'Image Model', 'tryaura' ),
+								label: __('Image Model', 'tryaura'),
 								description: __(
 									'Fetch and select the Gemini image model TryAura should use.',
 									'tryaura'
 								),
-								dependency_key: 'credentials.gemini.image_model',
-								label_key: 'credentials.gemini.image_model_label',
+								dependency_key:
+									'credentials.gemini.image_model',
+								label_key:
+									'credentials.gemini.image_model_label',
 								value: '',
 								provider: 'google',
 								model_type: 'image',
-								api_key: values[ 'credentials.gemini.api_key' ],
+								api_key: values['credentials.gemini.api_key'],
 								saved_label:
 									values[
 										'credentials.gemini.image_model_label'
@@ -251,17 +256,19 @@ const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
 								id: 'gemini_video_model',
 								type: 'field',
 								variant: 'model_selector',
-								label: __( 'Video Model', 'tryaura' ),
+								label: __('Video Model', 'tryaura'),
 								description: __(
 									'Fetch and select the Gemini video model TryAura should use.',
 									'tryaura'
 								),
-								dependency_key: 'credentials.gemini.video_model',
-								label_key: 'credentials.gemini.video_model_label',
+								dependency_key:
+									'credentials.gemini.video_model',
+								label_key:
+									'credentials.gemini.video_model_label',
 								value: '',
 								provider: 'google',
 								model_type: 'video',
-								api_key: values[ 'credentials.gemini.api_key' ],
+								api_key: values['credentials.gemini.api_key'],
 								saved_label:
 									values[
 										'credentials.gemini.video_model_label'
@@ -297,7 +304,7 @@ const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
 								id: 'openrouter_api_info',
 								type: 'field',
 								variant: 'base_field_label',
-								label: __( 'OpenRouter API', 'tryaura' ),
+								label: __('OpenRouter API', 'tryaura'),
 								description: __(
 									'Connect your OpenRouter account with your website.',
 									'tryaura'
@@ -308,15 +315,18 @@ const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
 								id: 'openrouter_api_notice',
 								type: 'field',
 								variant: 'info',
-								title: __( 'Need help finding your key?', 'tryaura' ),
+								title: __(
+									'Need help finding your key?',
+									'tryaura'
+								),
 								link_url: 'https://openrouter.ai/settings/keys',
-								link_title: __( 'OpenRouter Account', 'tryaura' ),
+								link_title: __('OpenRouter Account', 'tryaura'),
 							},
 							{
 								id: 'openrouter_api_key',
 								type: 'field',
 								variant: 'show_hide',
-								label: __( 'API Key', 'tryaura' ),
+								label: __('API Key', 'tryaura'),
 								description: __(
 									'Paste the API key provided by OpenRouter.',
 									'tryaura'
@@ -325,27 +335,28 @@ const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
 									'Enter your OpenRouter API key',
 									'tryaura'
 								),
-								dependency_key: 'credentials.openrouter.api_key',
+								dependency_key:
+									'credentials.openrouter.api_key',
 								value: '',
 							},
 							{
 								id: 'openrouter_image_model',
 								type: 'field',
 								variant: 'model_selector',
-								label: __( 'Image Model', 'tryaura' ),
+								label: __('Image Model', 'tryaura'),
 								description: __(
 									'Fetch and select the OpenRouter image model TryAura should use.',
 									'tryaura'
 								),
-								dependency_key: 'credentials.openrouter.image_model',
+								dependency_key:
+									'credentials.openrouter.image_model',
 								label_key:
 									'credentials.openrouter.image_model_label',
 								value: '',
 								provider: 'openrouter',
 								model_type: 'image',
-								api_key: values[
-									'credentials.openrouter.api_key'
-								],
+								api_key:
+									values['credentials.openrouter.api_key'],
 								saved_label:
 									values[
 										'credentials.openrouter.image_model_label'
@@ -355,20 +366,20 @@ const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
 								id: 'openrouter_video_model',
 								type: 'field',
 								variant: 'model_selector',
-								label: __( 'Video Model', 'tryaura' ),
+								label: __('Video Model', 'tryaura'),
 								description: __(
 									'Fetch and select the OpenRouter video model TryAura should use.',
 									'tryaura'
 								),
-								dependency_key: 'credentials.openrouter.video_model',
+								dependency_key:
+									'credentials.openrouter.video_model',
 								label_key:
 									'credentials.openrouter.video_model_label',
 								value: '',
 								provider: 'openrouter',
 								model_type: 'video',
-								api_key: values[
-									'credentials.openrouter.api_key'
-								],
+								api_key:
+									values['credentials.openrouter.api_key'],
 								saved_label:
 									values[
 										'credentials.openrouter.video_model_label'
@@ -383,22 +394,22 @@ const getSchema = ( values: FlatSettingsValues ): SettingsElement[] => [
 ];
 
 const GeminiSettings = () => {
-	const { settings, fetching, saving } = useSelect( ( select ) => {
+	const { settings, fetching, saving } = useSelect((select) => {
 		return {
-			settings: select( STORE_NAME ).getSettings(),
-			fetching: select( STORE_NAME ).isFetchingSettings(),
-			saving: select( STORE_NAME ).isSavingSettings(),
+			settings: select(STORE_NAME).getSettings(),
+			fetching: select(STORE_NAME).isFetchingSettings(),
+			saving: select(STORE_NAME).isSavingSettings(),
 		};
-	}, [] );
+	}, []);
 
-	const { updateSettings } = useDispatch( STORE_NAME );
+	const { updateSettings } = useDispatch(STORE_NAME);
 	const navigate = useNavigate();
 	const data = window.tryAura!;
 
-	const initialFlatValues = useMemo< FlatSettingsValues >( () => {
-		const googleSettings = settings?.[ data.optionKey ]?.google ?? {};
-		const geminiDefaults = getDefaultModelsForProvider( 'google' );
-		const openrouterDefaults = getDefaultModelsForProvider( 'openrouter' );
+	const initialFlatValues = useMemo<FlatSettingsValues>(() => {
+		const googleSettings = settings?.[data.optionKey]?.google ?? {};
+		const geminiDefaults = getDefaultModelsForProvider('google');
+		const openrouterDefaults = getDefaultModelsForProvider('openrouter');
 		const geminiImageModel = getStoredModelValue(
 			googleSettings,
 			'google',
@@ -425,14 +436,13 @@ const GeminiSettings = () => {
 		);
 
 		return {
-			'credentials.provider': (
-				googleSettings.provider || 'google'
-			) as ProviderId,
+			'credentials.provider': (googleSettings.provider ||
+				'google') as ProviderId,
 			'credentials.gemini.api_key':
 				googleSettings.geminiApiKey ||
-				( googleSettings.provider === 'google'
+				(googleSettings.provider === 'google'
 					? googleSettings.apiKey || ''
-					: '' ),
+					: ''),
 			'credentials.gemini.image_model': geminiImageModel,
 			'credentials.gemini.image_model_label': getStoredModelLabel(
 				googleSettings,
@@ -449,9 +459,9 @@ const GeminiSettings = () => {
 			),
 			'credentials.openrouter.api_key':
 				googleSettings.openrouterApiKey ||
-				( googleSettings.provider === 'openrouter'
+				(googleSettings.provider === 'openrouter'
 					? googleSettings.apiKey || ''
-					: '' ),
+					: ''),
 			'credentials.openrouter.image_model': openrouterImageModel,
 			'credentials.openrouter.image_model_label': getStoredModelLabel(
 				googleSettings,
@@ -467,77 +477,68 @@ const GeminiSettings = () => {
 				openrouterVideoModel
 			),
 		};
-	}, [ settings, data.optionKey ] );
+	}, [settings, data.optionKey]);
 
-	const [ values, setValues ] = useState< FlatSettingsValues >(
-		initialFlatValues
-	);
+	const [values, setValues] = useState<FlatSettingsValues>(initialFlatValues);
 
-	useEffect( () => {
-		setValues( initialFlatValues );
-	}, [ initialFlatValues ] );
+	useEffect(() => {
+		setValues(initialFlatValues);
+	}, [initialFlatValues]);
 
-	const schema = useMemo( () => getSchema( values ), [ values ] );
+	const schema = useMemo(() => getSchema(values), [values]);
 
 	const handleSave = async (
 		_scopeId: string,
-		_treeValues: Record< string, any >,
-		flatValues: Record< string, any >
+		_treeValues: Record<string, any>,
+		flatValues: Record<string, any>
 	) => {
-		const provider = flatValues[
-			'credentials.provider'
-		] as ProviderId;
-		const geminiApiKey =
-			flatValues[ 'credentials.gemini.api_key' ] || '';
+		const provider = flatValues['credentials.provider'] as ProviderId;
+		const geminiApiKey = flatValues['credentials.gemini.api_key'] || '';
 		const openrouterApiKey =
-			flatValues[ 'credentials.openrouter.api_key' ] || '';
+			flatValues['credentials.openrouter.api_key'] || '';
 		const apiKey =
 			provider === 'openrouter' ? openrouterApiKey : geminiApiKey;
-		const geminiDefaults = getDefaultModelsForProvider( 'google' );
-		const openrouterDefaults = getDefaultModelsForProvider( 'openrouter' );
+		const geminiDefaults = getDefaultModelsForProvider('google');
+		const openrouterDefaults = getDefaultModelsForProvider('openrouter');
 		const geminiImageModel =
-			flatValues[ 'credentials.gemini.image_model' ] ||
+			flatValues['credentials.gemini.image_model'] ||
 			geminiDefaults.imageModel;
 		const geminiImageModelLabel =
-			flatValues[ 'credentials.gemini.image_model_label' ] ||
+			flatValues['credentials.gemini.image_model_label'] ||
 			geminiImageModel;
 		const geminiVideoModel =
-			flatValues[ 'credentials.gemini.video_model' ] ||
+			flatValues['credentials.gemini.video_model'] ||
 			geminiDefaults.videoModel;
 		const geminiVideoModelLabel =
-			flatValues[ 'credentials.gemini.video_model_label' ] ||
+			flatValues['credentials.gemini.video_model_label'] ||
 			geminiVideoModel;
 		const openrouterImageModel =
-			flatValues[ 'credentials.openrouter.image_model' ] ||
+			flatValues['credentials.openrouter.image_model'] ||
 			openrouterDefaults.imageModel;
 		const openrouterImageModelLabel =
-			flatValues[ 'credentials.openrouter.image_model_label' ] ||
+			flatValues['credentials.openrouter.image_model_label'] ||
 			openrouterImageModel;
 		const openrouterVideoModel =
-			flatValues[ 'credentials.openrouter.video_model' ] ||
+			flatValues['credentials.openrouter.video_model'] ||
 			openrouterDefaults.videoModel;
 		const openrouterVideoModelLabel =
-			flatValues[ 'credentials.openrouter.video_model_label' ] ||
+			flatValues['credentials.openrouter.video_model_label'] ||
 			openrouterVideoModel;
 		const activeImageModel =
-			provider === 'openrouter'
-				? openrouterImageModel
-				: geminiImageModel;
+			provider === 'openrouter' ? openrouterImageModel : geminiImageModel;
 		const activeVideoModel =
-			provider === 'openrouter'
-				? openrouterVideoModel
-				: geminiVideoModel;
+			provider === 'openrouter' ? openrouterVideoModel : geminiVideoModel;
 
-		if ( ! apiKey ) {
+		if (!apiKey) {
 			toast.error(
 				provider === 'openrouter'
-					? __( 'OpenRouter API key is required.', 'tryaura' )
-					: __( 'Gemini API key is required.', 'tryaura' )
+					? __('OpenRouter API key is required.', 'tryaura')
+					: __('Gemini API key is required.', 'tryaura')
 			);
 			return;
 		}
 
-		if ( ! activeImageModel || ! activeVideoModel ) {
+		if (!activeImageModel || !activeVideoModel) {
 			toast.error(
 				__(
 					'Please fetch and select both image and video models before saving.',
@@ -547,17 +548,17 @@ const GeminiSettings = () => {
 			return;
 		}
 
-		const isValid = await validateApiKey( provider, apiKey );
-		if ( ! isValid ) {
+		const isValid = await validateApiKey(provider, apiKey);
+		if (!isValid) {
 			toast.error(
 				provider === 'openrouter'
-					? __( 'Invalid OpenRouter API key.', 'tryaura' )
-					: __( 'Invalid Gemini API key.', 'tryaura' )
+					? __('Invalid OpenRouter API key.', 'tryaura')
+					: __('Invalid Gemini API key.', 'tryaura')
 			);
 			return;
 		}
 
-		const currentGoogleSettings = settings?.[ data.optionKey ]?.google ?? {};
+		const currentGoogleSettings = settings?.[data.optionKey]?.google ?? {};
 
 		const nextGoogleSettings = {
 			...currentGoogleSettings,
@@ -579,19 +580,18 @@ const GeminiSettings = () => {
 
 		const nextSettings = {
 			...settings,
-			[ data.optionKey ]: {
-				...settings?.[ data.optionKey ],
+			[data.optionKey]: {
+				...settings?.[data.optionKey],
 				google: nextGoogleSettings,
 			},
 		};
 
 		try {
-			const response = await updateSettings( nextSettings );
-			const savedSettings = response?.[ data.optionKey ]?.google;
+			const response = await updateSettings(nextSettings);
+			const savedSettings = response?.[data.optionKey]?.google;
 
-			if ( savedSettings ) {
-				window.tryAura.provider =
-					savedSettings.provider || 'google';
+			if (savedSettings) {
+				window.tryAura.provider = savedSettings.provider || 'google';
 				window.tryAura.apiKey =
 					savedSettings.provider === 'openrouter'
 						? ''
@@ -602,16 +602,16 @@ const GeminiSettings = () => {
 
 			toast.success(
 				provider === 'openrouter'
-					? __( 'OpenRouter credential and models saved.', 'tryaura' )
-					: __( 'Gemini credential and models saved.', 'tryaura' )
+					? __('OpenRouter credential and models saved.', 'tryaura')
+					: __('Gemini credential and models saved.', 'tryaura')
 			);
-		} catch ( error: unknown ) {
+		} catch (error: unknown) {
 			const message =
 				error && typeof error === 'object' && 'message' in error
-					? String( ( error as { message: string } ).message )
-					: __( 'Something went wrong.', 'tryaura' );
+					? String((error as { message: string }).message)
+					: __('Something went wrong.', 'tryaura');
 
-			toast.error( message );
+			toast.error(message);
 		}
 	};
 
@@ -621,60 +621,56 @@ const GeminiSettings = () => {
 				<button
 					type="button"
 					className="inline-flex items-center gap-1.5 m-5.5 hover:cursor-pointer hover:underline bg-transparent border-none p-0"
-					onClick={ () => navigate( '/settings' ) }
+					onClick={() => navigate('/settings')}
 				>
 					<ArrowLeft className="w-4 h-4" />
 					<div className="font-medium text-[14px] leading-5 text-center">
-						{ __( 'Back to Settings', 'tryaura' ) }
+						{__('Back to Settings', 'tryaura')}
 					</div>
 				</button>
 			</div>
 
 			<div className="p-5.5">
 				<Settings
-					schema={ schema }
-					values={ values }
-					loading={ fetching }
-					title={ __( 'TryAura Settings', 'tryaura' ) }
+					schema={schema}
+					values={values}
+					loading={fetching}
+					title={__('TryAura Settings', 'tryaura')}
 					hookPrefix="tryaura"
-					applyFilters={ applyFilters }
-					onChange={ (
+					applyFilters={applyFilters}
+					onChange={(
 						_scopeId: string,
 						key: string,
 						value: string
 					) => {
-						setValues( ( previous ) => ( {
+						setValues((previous) => ({
 							...previous,
-							[ key ]: value,
-						} ) );
-					} }
-					onSave={ handleSave }
-					renderSaveButton={ ( { dirty, hasErrors, onSave } ) => (
+							[key]: value,
+						}));
+					}}
+					onSave={handleSave}
+					renderSaveButton={({ dirty, hasErrors, onSave }) => (
 						<div className="flex gap-2.5">
 							<Button
-								onClick={ onSave }
-								disabled={
-									saving ||
-									hasErrors ||
-									! dirty
-								}
+								onClick={onSave}
+								disabled={saving || hasErrors || !dirty}
 							>
-								{ saving
-									? __( 'Saving...', 'tryaura' )
-									: __( 'Save Credentials', 'tryaura' ) }
+								{saving
+									? __('Saving…', 'tryaura')
+									: __('Save Credentials', 'tryaura')}
 							</Button>
 							<Button
 								variant="outline"
-								onClick={ () => {
-									setValues( initialFlatValues );
-									navigate( '/settings' );
-								} }
-								disabled={ saving }
+								onClick={() => {
+									setValues(initialFlatValues);
+									navigate('/settings');
+								}}
+								disabled={saving}
 							>
-								{ __( 'Cancel', 'tryaura' ) }
+								{__('Cancel', 'tryaura')}
 							</Button>
 						</div>
-					) }
+					)}
 				/>
 			</div>
 		</div>

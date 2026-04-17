@@ -1,28 +1,28 @@
 import * as actionTypes from './action-types';
 
-export function setSettings( settings: any ) {
+export function setSettings(settings: any) {
 	return {
 		type: actionTypes.SET_SETTINGS,
 		settings,
 	};
 }
 
-export function setIsFetching( isFetching: boolean ) {
+export function setIsFetching(isFetching: boolean) {
 	return {
 		type: actionTypes.SET_IS_FETCHING,
 		isFetching,
 	};
 }
 
-export function setIsSaving( isSaving: boolean ) {
+export function setIsSaving(isSaving: boolean) {
 	return {
 		type: actionTypes.SET_IS_SAVING,
 		isSaving,
 	};
 }
 
-export function* updateSettings( settings: any ) {
-	yield setIsSaving( true );
+export function* updateSettings(settings: any) {
+	yield setIsSaving(true);
 	try {
 		const result = yield {
 			type: 'API_FETCH',
@@ -30,9 +30,9 @@ export function* updateSettings( settings: any ) {
 			method: 'POST',
 			data: settings,
 		};
-		yield setSettings( result );
+		yield setSettings(result);
 		return result;
 	} finally {
-		yield setIsSaving( false );
+		yield setIsSaving(false);
 	}
 }

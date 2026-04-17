@@ -27,18 +27,18 @@ export type { ButtonProps } from './Button';
 export type { CheckboxProps } from './Checkbox';
 export type { GroupButtonProps } from './GroupButton';
 
-domReady( () => {
-	const container = document.getElementById( 'aura-toaster' );
+domReady(() => {
+	const container = document.getElementById('aura-toaster');
 
-	if ( ! container ) {
-		const div = document.createElement( 'div' );
+	if (!container) {
+		const div = document.createElement('div');
 		div.id = 'aura-toaster';
-		document.body.appendChild( div );
-		createRoot( div ).render(
+		document.body.appendChild(div);
+		createRoot(div).render(
 			<Toaster
 				position="bottom-right"
 				containerClassName="tryaura-toast-root"
 			/>
 		);
 	}
-} );
+});

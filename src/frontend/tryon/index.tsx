@@ -24,75 +24,75 @@ declare global {
 	}
 }
 
-async function getProductImageUrls(): Promise< string[] > {
-	if ( ! isUserLoggedIn() ) {
+async function getProductImageUrls(): Promise<string[]> {
+	if (!isUserLoggedIn()) {
 		goToLogin();
 		return;
 	}
 	// disable tryaura-tryon-button button
-	const button = window?.document?.getElementById( 'tryaura-tryon-button' );
+	const button = window?.document?.getElementById('tryaura-tryon-button');
 
-	button?.setAttribute( 'disabled', '' );
+	button?.setAttribute('disabled', '');
 	try {
 		// Pass the apiFetch promise directly to toast.promise
-		const product: Record< number, string > = await toast.promise(
-			apiFetch( {
-				path: `/tryaura/v1/product/${ window?.tryAura?.productId }/images`,
-			} ),
+		const product: Record<number, string> = await toast.promise(
+			apiFetch({
+				path: `/tryaura/v1/product/${window?.tryAura?.productId}/images`,
+			}),
 			{
-				loading: __( 'Loading try-on images..', 'tryaura' ),
-				success: __( 'Images loaded!', 'tryaura' ),
-				error: __( 'No product images found to try on.', 'tryaura' ),
+				loading: __('Loading try-on images..', 'tryaura'),
+				success: __('Images loaded!', 'tryaura'),
+				error: __('No product images found to try on.', 'tryaura'),
 			}
 		);
 
-		button?.removeAttribute( 'disabled' );
+		button?.removeAttribute('disabled');
 
-		if ( product && Object.values( product ).length ) {
-			return Object.values( product );
+		if (product && Object.values(product).length) {
+			return Object.values(product);
 		}
 		return [];
-	} catch ( e ) {
-		button?.removeAttribute( 'disabled' );
+	} catch (e) {
+		button?.removeAttribute('disabled');
 		return [];
 	}
 }
 
 const isUserLoggedIn = (): boolean => {
-	const logedIn = select( 'core' ).getCurrentUser();
-	const domLogedin = document.body.classList.contains( 'logged-in' );
+	const logedIn = select('core').getCurrentUser();
+	const domLogedin = document.body.classList.contains('logged-in');
 
 	return logedIn && domLogedin;
 };
 
 const goToLogin = () => {
-	const loginUrl = ( window.location.href =
-		window?.tryAura?.loginUrl ?? '/wp-login.php' );
+	const loginUrl = (window.location.href =
+		window?.tryAura?.loginUrl ?? '/wp-login.php');
 
-	const currentUrl = new URL( window.location.href );
+	const currentUrl = new URL(window.location.href);
 
 	// add your custom param
-	currentUrl.searchParams.set( 'tryOnAutoOpen', 'true' );
+	currentUrl.searchParams.set('tryOnAutoOpen', 'true');
 	const nonce = window?.tryAura?.redirectNonce ?? '';
 	// Redirect to My Account with the current product URL as a parameter
-	window.location.href = `${ loginUrl }?tryaura_redirect_to=${ encodeURIComponent(
+	window.location.href = `${loginUrl}?tryaura_redirect_to=${encodeURIComponent(
 		currentUrl.toString()
-	) }&_tryaura_nonce=${ nonce }`;
+	)}&_tryaura_nonce=${nonce}`;
 };
 
-function openTryOnModal( productImages: string[] ) {
+function openTryOnModal(productImages: string[]) {
 	const containerId = applyFilters(
 		'tryaura.tryon.container_id',
 		'tryaura-tryon-modal-root'
 	);
-	let container = document.getElementById( containerId );
-	if ( ! container ) {
-		container = document.createElement( 'div' );
+	let container = document.getElementById(containerId);
+	if (!container) {
+		container = document.createElement('div');
 		container.id = containerId;
 		container.className = 'tryaura';
-		document.body.appendChild( container );
+		document.body.appendChild(container);
 	}
-	const root: any = ( createRoot as any )( container );
+	const root: any = (createRoot as any)(container);
 	const handleClose = () => {
 		try {
 			root.unmount?.();
@@ -100,16 +100,16 @@ function openTryOnModal( productImages: string[] ) {
 		container?.remove();
 	};
 	root.render(
-		<TryOnModal productImages={ productImages } onClose={ handleClose } />
+		<TryOnModal productImages={productImages} onClose={handleClose} />
 	);
 }
 
 const handleTryOnBtnClick = async () => {
 	const images = await getProductImageUrls();
-	if ( ! images.length ) {
+	if (!images.length) {
 		return;
 	}
-	openTryOnModal( images );
+	openTryOnModal(images);
 };
 
 function injectButton() {
@@ -117,7 +117,7 @@ function injectButton() {
 		'tryaura.tryon.button_id',
 		'tryaura-tryon-button'
 	);
-	if ( document.getElementById( btnId ) ) {
+	if (document.getElementById(btnId)) {
 		return;
 	}
 	const addToCart: HTMLElement | null = document.querySelector(
@@ -126,22 +126,22 @@ function injectButton() {
 			'.single_add_to_cart_button, .wc-block-add-to-cart-button, .wc-block-components-product-add-to-cart-button'
 		)
 	);
-	if ( ! addToCart ) {
+	if (!addToCart) {
 		return;
 	}
-	const btn = document.createElement( 'button' );
+	const btn = document.createElement('button');
 	btn.id = btnId;
 	btn.type = 'button';
-	btn.textContent = __( 'Try on', 'tryaura' );
+	btn.textContent = __('Try on', 'tryaura');
 	btn.className =
-		addToCart.className.replace( 'single_add_to_cart_button', '' ).trim() ||
+		addToCart.className.replace('single_add_to_cart_button', '').trim() ||
 		'button';
 	btn.style.marginLeft = '8px';
-	addToCart.insertAdjacentElement( 'afterend', btn );
+	addToCart.insertAdjacentElement('afterend', btn);
 
-	btn.addEventListener( 'click', handleTryOnBtnClick );
+	btn.addEventListener('click', handleTryOnBtnClick);
 
-	doAction( 'tryaura.tryon.button_added', btn, addToCart );
+	doAction('tryaura.tryon.button_added', btn, addToCart);
 }
 
 addAction(
@@ -149,14 +149,14 @@ addAction(
 	'tryaura-tryon-button-added',
 	async () => {
 		// check if in the url there is a tryOnAutoOpen param, if so, open the modal
-		const currentUrl = new URL( window.location.href );
-		const tryOnAutoOpen = currentUrl.searchParams.get( 'tryOnAutoOpen' );
-		if ( tryOnAutoOpen ) {
+		const currentUrl = new URL(window.location.href);
+		const tryOnAutoOpen = currentUrl.searchParams.get('tryOnAutoOpen');
+		if (tryOnAutoOpen) {
 			const productImages = await getProductImageUrls();
-			if ( productImages.length ) {
-				openTryOnModal( productImages );
-				currentUrl.searchParams.delete( 'tryOnAutoOpen' );
-				window.history.replaceState( null, '', currentUrl.toString() );
+			if (productImages.length) {
+				openTryOnModal(productImages);
+				currentUrl.searchParams.delete('tryOnAutoOpen');
+				window.history.replaceState(null, '', currentUrl.toString());
 			}
 		}
 	}
@@ -164,8 +164,8 @@ addAction(
 
 function init() {
 	injectButton();
-	const observer = new MutationObserver( () => injectButton() );
-	observer.observe( document.body, { childList: true, subtree: true } );
+	const observer = new MutationObserver(() => injectButton());
+	observer.observe(document.body, { childList: true, subtree: true });
 }
 
-document.addEventListener( 'DOMContentLoaded', init );
+document.addEventListener('DOMContentLoaded', init);

@@ -5,15 +5,15 @@ declare const tryAuraWoo: {
 };
 
 // @ts-ignore
-jQuery( document ).ready( function ( $ ) {
-	$( '.tryaura-toggle-try-on' ).on( 'change', function () {
-		const checkbox = $( this );
-		const productId = checkbox.data( 'product-id' );
-		const enabled = checkbox.is( ':checked' );
+jQuery(document).ready(function ($) {
+	$('.tryaura-toggle-try-on').on('change', function () {
+		const checkbox = $(this);
+		const productId = checkbox.data('product-id');
+		const enabled = checkbox.is(':checked');
 
-		checkbox.prop( 'disabled', true );
+		checkbox.prop('disabled', true);
 
-		$.ajax( {
+		$.ajax({
 			url: tryAuraWoo.ajaxUrl,
 			type: 'POST',
 			data: {
@@ -22,17 +22,17 @@ jQuery( document ).ready( function ( $ ) {
 				enabled,
 				nonce: tryAuraWoo.nonce,
 			},
-			success( response ) {
-				if ( ! response.success ) {
-					checkbox.prop( 'checked', ! enabled );
+			success(response) {
+				if (!response.success) {
+					checkbox.prop('checked', !enabled);
 				}
 			},
 			error() {
-				checkbox.prop( 'checked', ! enabled );
+				checkbox.prop('checked', !enabled);
 			},
 			complete() {
-				checkbox.prop( 'disabled', false );
+				checkbox.prop('disabled', false);
 			},
-		} );
-	} );
-} );
+		});
+	});
+});

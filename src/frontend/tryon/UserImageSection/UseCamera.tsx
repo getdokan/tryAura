@@ -1,7 +1,7 @@
 import ImagePreview from './ImagePreview';
 import { __ } from '@wordpress/i18n';
 
-function UseCamera( {
+function UseCamera({
 	cameraActive,
 	capture,
 	videoRef,
@@ -15,15 +15,15 @@ function UseCamera( {
 	videoRef: any;
 	isBusy: boolean;
 	userImages: [];
-	removeUserImage: ( idx: number ) => void;
+	removeUserImage: (idx: number) => void;
 	startCamera: () => void;
-} ) {
+}) {
 	return (
 		<div className="w-full">
-			{ cameraActive && (
+			{cameraActive && (
 				<div className="w-full flex flex-col gap-[20px]">
 					<video
-						ref={ videoRef }
+						ref={videoRef}
 						autoPlay
 						playsInline
 						muted
@@ -32,32 +32,32 @@ function UseCamera( {
 
 					<button
 						className="bg-[#000000] text-white px-[50px] py-[10px] cursor-pointer mx-auto"
-						onClick={ capture }
-						disabled={ ! cameraActive || isBusy }
+						onClick={capture}
+						disabled={!cameraActive || isBusy}
 					>
-						{ __( 'Capture', 'tryaura' ) }
+						{__('Capture', 'tryaura')}
 					</button>
 				</div>
-			) }
+			)}
 
 			<div className="flex flex-col w-full gap-[20px]">
-				{ userImages.length > 0 && ! cameraActive && (
+				{userImages.length > 0 && !cameraActive && (
 					<div className="rounded-[5px] border-2 border-dashed border-[#E0E0E0] bg-[#F8F9F8] p-[8px] text-center">
 						<ImagePreview
-							userImages={ userImages }
-							removeUserImage={ removeUserImage }
+							userImages={userImages}
+							removeUserImage={removeUserImage}
 						/>
 					</div>
-				) }
+				)}
 
-				{ ! cameraActive && (
+				{!cameraActive && (
 					<button
 						className="bg-[#000000] text-white px-[50px] py-[10px] cursor-pointer mx-auto"
-						onClick={ startCamera }
+						onClick={startCamera}
 					>
-						{ __( 'Recapture', 'tryaura' ) }
+						{__('Recapture', 'tryaura')}
 					</button>
-				) }
+				)}
 			</div>
 		</div>
 	);

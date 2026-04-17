@@ -2,7 +2,7 @@ import { Button } from '../../../components';
 import { __ } from '@wordpress/i18n';
 import { hasPro } from '../../../utils/tryaura';
 
-function ConfigFooter( {
+function ConfigFooter({
 	generatedUrl,
 	doGenerate,
 	isBusy,
@@ -10,53 +10,53 @@ function ConfigFooter( {
 	downloadName,
 	isBlockEditorPage = false,
 	optionalPrompt = '',
-} ) {
+}) {
 	return (
 		<div className="flex flex-row gap-[12px]">
-			{ generatedUrl ? (
+			{generatedUrl ? (
 				<>
 					<Button
-						onClick={ doGenerate }
-						disabled={ isBusy || uploading }
-						loading={ isBusy }
+						onClick={doGenerate}
+						disabled={isBusy || uploading}
+						loading={isBusy}
 					>
-						{ isBusy
-							? __( 'Regenerating…', 'tryaura' )
-							: __( 'Regenerate', 'tryaura' ) }
+						{isBusy
+							? __('Regenerating…', 'tryaura')
+							: __('Regenerate', 'tryaura')}
 					</Button>
 
 					<Button
 						type="link"
 						variant="outline"
-						href={ isBusy ? undefined : generatedUrl }
-						download={ isBusy ? undefined : downloadName }
-						aria-disabled={ isBusy }
-						style={ {
+						href={isBusy ? undefined : generatedUrl}
+						download={isBusy ? undefined : downloadName}
+						aria-disabled={isBusy}
+						style={{
 							pointerEvents: isBusy ? 'none' : 'auto',
 							opacity: isBusy ? 0.6 : 1,
-						} }
-						disabled={ isBusy }
+						}}
+						disabled={isBusy}
 					>
-						{ __( 'Download', 'tryaura' ) }
+						{__('Download', 'tryaura')}
 					</Button>
 				</>
 			) : (
 				<Button
-					onClick={ doGenerate }
+					onClick={doGenerate}
 					disabled={
 						isBusy ||
 						uploading ||
-						( hasPro() &&
+						(hasPro() &&
 							isBlockEditorPage &&
-							optionalPrompt.trim() === '' )
+							optionalPrompt.trim() === '')
 					}
-					loading={ isBusy }
+					loading={isBusy}
 				>
-					{ isBusy
-						? __( 'Generating…', 'tryaura' )
-						: __( 'Generate', 'tryaura' ) }
+					{isBusy
+						? __('Generating…', 'tryaura')
+						: __('Generate', 'tryaura')}
 				</Button>
-			) }
+			)}
 		</div>
 	);
 }

@@ -10,7 +10,7 @@ interface GenerateVideoParams {
 	objectId?: string;
 	objectType?: string;
 	signal?: AbortSignal;
-	onStatusChange: ( status: string ) => void;
+	onStatusChange: (status: string) => void;
 }
 
 interface GenerateVideoResult {
@@ -36,10 +36,11 @@ const MAX_POLL_ATTEMPTS = 120; // ~20 minutes at 10s, ~60 minutes at 30s
 /**
  * Submit a video generation job and poll until completion.
  * Works for both Gemini and OpenRouter — the PHP backend handles provider routing.
+ * @param params
  */
 export async function generateVideo(
 	params: GenerateVideoParams
-): Promise< GenerateVideoResult > {
+): Promise<GenerateVideoResult> {
 	const {
 		model,
 		prompt,
@@ -53,12 +54,12 @@ export async function generateVideo(
 		onStatusChange,
 	} = params;
 
-	const aura = ( window as any ).tryAura;
+	const aura = (window as any).tryAura;
 
-	onStatusChange( 'submitting' );
+	onStatusChange('submitting');
 
 	// Step 1: Submit the video generation job.
-	const submitResponse = await apiFetch< SubmitResponse >( {
+	const submitResponse = await apiFetch<SubmitResponse>({
 		path: '/tryaura/v1/video/generate',
 		method: 'POST',
 		data: {
@@ -73,15 +74,15 @@ export async function generateVideo(
 			object_type: objectType || '',
 		},
 		signal,
-	} );
+	});
 
 	const { jobId, provider } = submitResponse;
 
-	if ( ! jobId ) {
-		throw new Error( 'No job ID returned from server.' );
+	if (!jobId) {
+		throw new Error('No job ID returned from server.');
 	}
 
-	onStatusChange( 'pending' );
+	onStatusChange('pending');
 
 	// Step 2: Poll for status.
 	const pollInterval =
@@ -91,19 +92,19 @@ export async function generateVideo(
 
 	let attempts = 0;
 
-	while ( attempts < MAX_POLL_ATTEMPTS ) {
-		if ( signal?.aborted ) {
-			throw new DOMException( 'Video generation cancelled.', 'AbortError' );
+	while (attempts < MAX_POLL_ATTEMPTS) {
+		if (signal?.aborted) {
+			throw new DOMException('Video generation cancelled.', 'AbortError');
 		}
 
-		await new Promise< void >( ( resolve, reject ) => {
-			const timer = setTimeout( resolve, pollInterval );
+		await new Promise<void>((resolve, reject) => {
+			const timer = setTimeout(resolve, pollInterval);
 
-			if ( signal ) {
+			if (signal) {
 				signal.addEventListener(
 					'abort',
 					() => {
-						clearTimeout( timer );
+						clearTimeout(timer);
 						reject(
 							new DOMException(
 								'Video generation cancelled.',
@@ -114,33 +115,31 @@ export async function generateVideo(
 					{ once: true }
 				);
 			}
-		} );
+		});
 
-		const statusResponse = await apiFetch< StatusResponse >( {
-			path: `/tryaura/v1/video/status?job_id=${ encodeURIComponent(
+		const statusResponse = await apiFetch<StatusResponse>({
+			path: `/tryaura/v1/video/status?job_id=${encodeURIComponent(
 				jobId
-			) }&provider=${ encodeURIComponent( provider ) }`,
+			)}&provider=${encodeURIComponent(provider)}`,
 			method: 'GET',
 			signal,
-		} );
+		});
 
-		if ( statusResponse.status === 'completed' && statusResponse.videoUrl ) {
-			onStatusChange( 'completed' );
+		if (statusResponse.status === 'completed' && statusResponse.videoUrl) {
+			onStatusChange('completed');
 			return {
 				videoUrl: statusResponse.videoUrl,
 				jobId,
 			};
 		}
 
-		if ( statusResponse.status === 'failed' ) {
-			throw new Error(
-				statusResponse.error || 'Video generation failed.'
-			);
+		if (statusResponse.status === 'failed') {
+			throw new Error(statusResponse.error || 'Video generation failed.');
 		}
 
-		onStatusChange( statusResponse.status );
+		onStatusChange(statusResponse.status);
 		attempts++;
 	}
 
-	throw new Error( 'Video generation timed out.' );
+	throw new Error('Video generation timed out.');
 }

@@ -135,223 +135,221 @@ async function validateApiKey(
 	}
 }
 
-const getSchema = (values: FlatSettingsValues): SettingsElement[] => [
-	{
-		id: 'ai_credentials_page',
-		type: 'page',
-		label: __('AI Credentials', 'tryaura'),
-		description: __(
-			'Configure the active provider credential used by TryAura.',
-			'tryaura'
-		),
-		children: [
+const createModelSelectorField = (
+	id: string,
+	label: string,
+	description: string,
+	dependencyKey: string,
+	labelKey: string,
+	provider: ProviderId,
+	modelType: 'image' | 'video',
+	apiKey: string,
+	savedLabel: string
+): SettingsElement => ({
+	id,
+	type: 'field',
+	variant: 'model_selector',
+	label,
+	description,
+	dependency_key: dependencyKey,
+	label_key: labelKey,
+	value: '',
+	provider,
+	model_type: modelType,
+	api_key: apiKey,
+	saved_label: savedLabel,
+});
+
+const getSchema = (values: FlatSettingsValues): SettingsElement[] => {
+	const geminiChildren = applyFilters(
+		'tryaura.admin.ai_provider_fields',
+		[
 			{
-				id: 'provider',
+				id: 'gemini_api_info',
 				type: 'field',
-				variant: 'select',
-				label: __('AI Engine', 'tryaura'),
+				variant: 'base_field_label',
+				label: __('Gemini API', 'tryaura'),
 				description: __(
-					'Choose which provider TryAura should use.',
+					'Connect your Gemini account with your website.',
 					'tryaura'
 				),
-				dependency_key: 'credentials.provider',
-				value: 'google',
-				options: PROVIDER_OPTIONS,
+				image_url: geminiLogo,
 			},
 			{
-				id: 'gemini_group',
-				type: 'fieldgroup',
-				dependencies: [
-					{
-						key: 'credentials.provider',
-						value: 'google',
-						to_self: true,
-						attribute: 'display',
-						effect: 'show',
-						comparison: '===',
-						self: 'gemini_group',
-					},
-					{
-						key: 'credentials.provider',
-						value: 'google',
-						to_self: true,
-						attribute: 'display',
-						effect: 'hide',
-						comparison: '!==',
-						self: 'gemini_group',
-					},
-				],
-				children: [
-					{
-						id: 'gemini_api_info',
-						type: 'field',
-						variant: 'base_field_label',
-						label: __('Gemini API', 'tryaura'),
-						description: __(
-							'Connect your Gemini account with your website.',
-							'tryaura'
-						),
-						image_url: geminiLogo,
-					},
-					{
-						id: 'gemini_api_notice',
-						type: 'field',
-						variant: 'info',
-						title: __('Need help finding your key?', 'tryaura'),
-						link_url: 'https://aistudio.google.com/app/apikey',
-						link_title: __('Gemini Account', 'tryaura'),
-					},
-					{
-						id: 'gemini_api_key',
-						type: 'field',
-						variant: 'show_hide',
-						label: __('API Key', 'tryaura'),
-						description: __(
-							'Paste the API key provided by Gemini.',
-							'tryaura'
-						),
-						placeholder: __('Enter your Gemini API key', 'tryaura'),
-						dependency_key: 'credentials.gemini.api_key',
-						value: '',
-					},
-					{
-						id: 'gemini_image_model',
-						type: 'field',
-						variant: 'model_selector',
-						label: __('Image Model', 'tryaura'),
-						description: __(
-							'Fetch and select the Gemini image model TryAura should use.',
-							'tryaura'
-						),
-						dependency_key: 'credentials.gemini.image_model',
-						label_key: 'credentials.gemini.image_model_label',
-						value: '',
-						provider: 'google',
-						model_type: 'image',
-						api_key: values['credentials.gemini.api_key'],
-						saved_label:
-							values['credentials.gemini.image_model_label'],
-					},
-					{
-						id: 'gemini_video_model',
-						type: 'field',
-						variant: 'model_selector',
-						label: __('Video Model', 'tryaura'),
-						description: __(
-							'Fetch and select the Gemini video model TryAura should use.',
-							'tryaura'
-						),
-						dependency_key: 'credentials.gemini.video_model',
-						label_key: 'credentials.gemini.video_model_label',
-						value: '',
-						provider: 'google',
-						model_type: 'video',
-						api_key: values['credentials.gemini.api_key'],
-						saved_label:
-							values['credentials.gemini.video_model_label'],
-					},
-				],
+				id: 'gemini_api_notice',
+				type: 'field',
+				variant: 'info',
+				title: __('Need help finding your key?', 'tryaura'),
+				link_url: 'https://aistudio.google.com/app/apikey',
+				link_title: __('Gemini Account', 'tryaura'),
 			},
 			{
-				id: 'openrouter_group',
-				type: 'fieldgroup',
-				dependencies: [
-					{
-						key: 'credentials.provider',
-						value: 'openrouter',
-						to_self: true,
-						attribute: 'display',
-						effect: 'show',
-						comparison: '===',
-						self: 'openrouter_group',
-					},
-					{
-						key: 'credentials.provider',
-						value: 'openrouter',
-						to_self: true,
-						attribute: 'display',
-						effect: 'hide',
-						comparison: '!==',
-						self: 'openrouter_group',
-					},
-				],
-				children: [
-					{
-						id: 'openrouter_api_info',
-						type: 'field',
-						variant: 'base_field_label',
-						label: __('OpenRouter API', 'tryaura'),
-						description: __(
-							'Connect your OpenRouter account with your website.',
-							'tryaura'
-						),
-						image_url: openrouterLogo,
-					},
-					{
-						id: 'openrouter_api_notice',
-						type: 'field',
-						variant: 'info',
-						title: __('Need help finding your key?', 'tryaura'),
-						link_url: 'https://openrouter.ai/settings/keys',
-						link_title: __('OpenRouter Account', 'tryaura'),
-					},
-					{
-						id: 'openrouter_api_key',
-						type: 'field',
-						variant: 'show_hide',
-						label: __('API Key', 'tryaura'),
-						description: __(
-							'Paste the API key provided by OpenRouter.',
-							'tryaura'
-						),
-						placeholder: __(
-							'Enter your OpenRouter API key',
-							'tryaura'
-						),
-						dependency_key: 'credentials.openrouter.api_key',
-						value: '',
-					},
-					{
-						id: 'openrouter_image_model',
-						type: 'field',
-						variant: 'model_selector',
-						label: __('Image Model', 'tryaura'),
-						description: __(
-							'Fetch and select the OpenRouter image model TryAura should use.',
-							'tryaura'
-						),
-						dependency_key: 'credentials.openrouter.image_model',
-						label_key: 'credentials.openrouter.image_model_label',
-						value: '',
-						provider: 'openrouter',
-						model_type: 'image',
-						api_key: values['credentials.openrouter.api_key'],
-						saved_label:
-							values['credentials.openrouter.image_model_label'],
-					},
-					{
-						id: 'openrouter_video_model',
-						type: 'field',
-						variant: 'model_selector',
-						label: __('Video Model', 'tryaura'),
-						description: __(
-							'Fetch and select the OpenRouter video model TryAura should use.',
-							'tryaura'
-						),
-						dependency_key: 'credentials.openrouter.video_model',
-						label_key: 'credentials.openrouter.video_model_label',
-						value: '',
-						provider: 'openrouter',
-						model_type: 'video',
-						api_key: values['credentials.openrouter.api_key'],
-						saved_label:
-							values['credentials.openrouter.video_model_label'],
-					},
-				],
+				id: 'gemini_api_key',
+				type: 'field',
+				variant: 'show_hide',
+				label: __('API Key', 'tryaura'),
+				description: __(
+					'Paste the API key provided by Gemini.',
+					'tryaura'
+				),
+				placeholder: __('Enter your Gemini API key', 'tryaura'),
+				dependency_key: 'credentials.gemini.api_key',
+				value: '',
 			},
+			createModelSelectorField(
+				'gemini_image_model',
+				__('Image Model', 'tryaura'),
+				__(
+					'Fetch and select the Gemini image model TryAura should use.',
+					'tryaura'
+				),
+				'credentials.gemini.image_model',
+				'credentials.gemini.image_model_label',
+				'google',
+				'image',
+				values['credentials.gemini.api_key'],
+				values['credentials.gemini.image_model_label']
+			),
 		],
-	},
-];
+		{
+			provider: 'google',
+			values,
+		}
+	) as SettingsElement[];
+
+	const openRouterChildren = applyFilters(
+		'tryaura.admin.ai_provider_fields',
+		[
+			{
+				id: 'openrouter_api_info',
+				type: 'field',
+				variant: 'base_field_label',
+				label: __('OpenRouter API', 'tryaura'),
+				description: __(
+					'Connect your OpenRouter account with your website.',
+					'tryaura'
+				),
+				image_url: openrouterLogo,
+			},
+			{
+				id: 'openrouter_api_notice',
+				type: 'field',
+				variant: 'info',
+				title: __('Need help finding your key?', 'tryaura'),
+				link_url: 'https://openrouter.ai/settings/keys',
+				link_title: __('OpenRouter Account', 'tryaura'),
+			},
+			{
+				id: 'openrouter_api_key',
+				type: 'field',
+				variant: 'show_hide',
+				label: __('API Key', 'tryaura'),
+				description: __(
+					'Paste the API key provided by OpenRouter.',
+					'tryaura'
+				),
+				placeholder: __('Enter your OpenRouter API key', 'tryaura'),
+				dependency_key: 'credentials.openrouter.api_key',
+				value: '',
+			},
+			createModelSelectorField(
+				'openrouter_image_model',
+				__('Image Model', 'tryaura'),
+				__(
+					'Fetch and select the OpenRouter image model TryAura should use.',
+					'tryaura'
+				),
+				'credentials.openrouter.image_model',
+				'credentials.openrouter.image_model_label',
+				'openrouter',
+				'image',
+				values['credentials.openrouter.api_key'],
+				values['credentials.openrouter.image_model_label']
+			),
+		],
+		{
+			provider: 'openrouter',
+			values,
+		}
+	) as SettingsElement[];
+
+	return [
+		{
+			id: 'ai_credentials_page',
+			type: 'page',
+			label: __('AI Credentials', 'tryaura'),
+			description: __(
+				'Configure the active provider credential used by TryAura.',
+				'tryaura'
+			),
+			children: [
+				{
+					id: 'provider',
+					type: 'field',
+					variant: 'select',
+					label: __('AI Engine', 'tryaura'),
+					description: __(
+						'Choose which provider TryAura should use.',
+						'tryaura'
+					),
+					dependency_key: 'credentials.provider',
+					value: 'google',
+					options: PROVIDER_OPTIONS,
+				},
+				{
+					id: 'gemini_group',
+					type: 'fieldgroup',
+					dependencies: [
+						{
+							key: 'credentials.provider',
+							value: 'google',
+							to_self: true,
+							attribute: 'display',
+							effect: 'show',
+							comparison: '===',
+							self: 'gemini_group',
+						},
+						{
+							key: 'credentials.provider',
+							value: 'google',
+							to_self: true,
+							attribute: 'display',
+							effect: 'hide',
+							comparison: '!==',
+							self: 'gemini_group',
+						},
+					],
+					children: geminiChildren,
+				},
+				{
+					id: 'openrouter_group',
+					type: 'fieldgroup',
+					dependencies: [
+						{
+							key: 'credentials.provider',
+							value: 'openrouter',
+							to_self: true,
+							attribute: 'display',
+							effect: 'show',
+							comparison: '===',
+							self: 'openrouter_group',
+						},
+						{
+							key: 'credentials.provider',
+							value: 'openrouter',
+							to_self: true,
+							attribute: 'display',
+							effect: 'hide',
+							comparison: '!==',
+							self: 'openrouter_group',
+						},
+					],
+					children: openRouterChildren,
+				},
+			],
+		},
+	];
+};
 
 const GeminiSettings = () => {
 	const { settings, fetching, saving } = useSelect((select) => {
@@ -365,6 +363,10 @@ const GeminiSettings = () => {
 	const { updateSettings } = useDispatch(STORE_NAME);
 	const navigate = useNavigate();
 	const data = window.tryAura!;
+	const hasVideoModelSettings = !!applyFilters(
+		'tryaura.admin.ai_video_settings_enabled',
+		false
+	);
 
 	const initialFlatValues = useMemo<FlatSettingsValues>(() => {
 		const googleSettings = settings?.[data.optionKey]?.google ?? {};
@@ -498,12 +500,17 @@ const GeminiSettings = () => {
 			return;
 		}
 
-		if (!activeImageModel || !activeVideoModel) {
+		if (!activeImageModel || (hasVideoModelSettings && !activeVideoModel)) {
 			toast.error(
-				__(
-					'Please fetch and select both image and video models before saving.',
-					'tryaura'
-				)
+				hasVideoModelSettings
+					? __(
+							'Please fetch and select both image and video models before saving.',
+							'tryaura'
+						)
+					: __(
+							'Please fetch and select an image model before saving.',
+							'tryaura'
+						)
 			);
 			return;
 		}

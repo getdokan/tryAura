@@ -57,7 +57,8 @@ const getDefaultModelsForProvider = (provider: ProviderId) => {
 				providerConfig.defaultOpenRouterImageModel ||
 				'google/gemini-2.5-flash-preview-05-20:generateImage',
 			videoModel:
-				providerConfig.defaultOpenRouterVideoModel || 'google/veo-3.1',
+				providerConfig.defaultOpenRouterVideoModel ||
+				'bytedance/seedance-2.0-fast',
 		};
 	}
 

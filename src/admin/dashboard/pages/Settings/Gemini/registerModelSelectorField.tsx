@@ -143,6 +143,7 @@ const fetchOpenRouterModels = async (
 					(model: {
 						id?: string;
 						name?: string;
+						supported_frame_images?: string[] | null;
 						architecture?: { output_modalities?: string[] };
 					}) => {
 						const modelId = String(model.id || '').trim();
@@ -150,20 +151,31 @@ const fetchOpenRouterModels = async (
 						return {
 							label: String(model.name || modelId).trim(),
 							value: modelId,
+							supportedFrameImages: Array.isArray(
+								model.supported_frame_images
+							)
+								? model.supported_frame_images
+								: [],
 							outputModalities:
 								model.architecture?.output_modalities || [],
 						};
 					}
 				)
 				.filter(
-					(model: ModelOption & { outputModalities?: string[] }) => {
+					(
+						model: ModelOption & {
+							outputModalities?: string[];
+							supportedFrameImages?: string[];
+						}
+					) => {
 						if (!model.value) {
 							return false;
 						}
 
-						// OpenRouter's video endpoint already returns video models,
-						// and many valid ids do not include our fallback keywords.
 						if (modelType === 'video') {
+							// Keep the picker aligned with OpenRouter's video models API.
+							// Some models support image inputs via `input_references`
+							// even when `supported_frame_images` is empty or omitted.
 							return true;
 						}
 
@@ -175,7 +187,12 @@ const fetchOpenRouterModels = async (
 					}
 				)
 				.map(
-					(model: ModelOption & { outputModalities?: string[] }) => ({
+					(
+						model: ModelOption & {
+							outputModalities?: string[];
+							supportedFrameImages?: string[];
+						}
+					) => ({
 						label: model.label,
 						value: model.value,
 					})

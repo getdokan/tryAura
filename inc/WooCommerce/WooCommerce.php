@@ -126,11 +126,84 @@ class WooCommerce {
 			)
 		);
 
-		$css_path = TRYAURA_DIR . '/build/admin/style-woocommerce-products-list.css';
-		if ( file_exists( $css_path ) ) {
-			$css_url = plugins_url( 'build/admin/style-woocommerce-products-list.css', TRYAURA_FILE );
-			wp_enqueue_style( 'tryaura-woo-products', $css_url, array(), $version );
-		}
+		wp_register_style( 'tryaura-woo-products', false, array(), $version );
+		wp_enqueue_style( 'tryaura-woo-products' );
+		wp_add_inline_style( 'tryaura-woo-products', $this->get_admin_products_inline_css() );
+	}
+
+	/**
+	 * Get scoped CSS for the product list try-on toggle.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	private function get_admin_products_inline_css(): string {
+		return '
+			.column-tryaura_try_on {
+				width: 88px;
+				text-align: center;
+			}
+
+			.tryaura-try-on {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.tryaura-try-on__input {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				padding: 0;
+				margin: -1px;
+				overflow: hidden;
+				clip: rect(0, 0, 0, 0);
+				white-space: nowrap;
+				border: 0;
+			}
+
+			.tryaura-try-on__track {
+				position: relative;
+				display: inline-block;
+				width: 32px;
+				height: 18px;
+				background: #8c8f94;
+				border-radius: 999px;
+				transition: background-color 0.2s ease;
+				cursor: pointer;
+			}
+
+			.tryaura-try-on__track::after {
+				content: "";
+				position: absolute;
+				top: 2px;
+				left: 2px;
+				width: 14px;
+				height: 14px;
+				background: #fff;
+				border-radius: 50%;
+				box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+				transition: transform 0.2s ease;
+			}
+
+			.tryaura-try-on__input:checked + .tryaura-try-on__track {
+				background: #2271b1;
+			}
+
+			.tryaura-try-on__input:checked + .tryaura-try-on__track::after {
+				transform: translateX(14px);
+			}
+
+			.tryaura-try-on__input:focus + .tryaura-try-on__track {
+				box-shadow: 0 0 0 1px #fff, 0 0 0 3px #2271b1;
+			}
+
+			.tryaura-try-on__input:disabled + .tryaura-try-on__track {
+				opacity: 0.7;
+				cursor: not-allowed;
+			}
+		';
 	}
 
 	/**

@@ -7,7 +7,11 @@ import ProductImagesSection from './ProductImagesSection';
 import Output from './Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
 import { Button } from '../../components';
-import { hasPro } from '../../utils/tryaura';
+import {
+	blobToOptimizedInlineData,
+	hasPro,
+	optimizeImageDataUrl,
+} from '../../utils/tryaura';
 import { twMerge } from 'tailwind-merge';
 
 type TryOnModalProps = {
@@ -166,15 +170,30 @@ const TryOnModal = ({ productImages, onClose }: TryOnModalProps) => {
 			'tryaura.tryon.photo_capture_data_url',
 			canvas.toDataURL('image/jpeg', 0.95)
 		);
-		setUserImages([dataUrl]);
-		setMessage(__('Photo captured. Click Try to generate.', 'tryaura'));
+		optimizeImageDataUrl(dataUrl, { preferredMimeType: 'image/jpeg' })
+			.then((optimizedDataUrl) => {
+				setUserImages([optimizedDataUrl]);
+				setMessage(
+					__('Photo captured. Click Try to generate.', 'tryaura')
+				);
+				doAction('tryaura.after_photo_capture', {
+					videoRef,
+					canvasRef,
+					dataUrl: optimizedDataUrl,
+				});
+			})
+			.catch(() => {
+				setUserImages([dataUrl]);
+				setMessage(
+					__('Photo captured. Click Try to generate.', 'tryaura')
+				);
+				doAction('tryaura.after_photo_capture', {
+					videoRef,
+					canvasRef,
+					dataUrl,
+				});
+			});
 		stopCamera();
-
-		doAction('tryaura.after_photo_capture', {
-			videoRef,
-			canvasRef,
-			dataUrl,
-		});
 	};
 
 	const onFileChange = (e: any) => {
@@ -197,15 +216,39 @@ const TryOnModal = ({ productImages, onClose }: TryOnModalProps) => {
 		}
 		Promise.all(readers)
 			.then((results) => {
-				doAction('tryaura.photo_selected_before', {
-					files,
-					results,
-				});
-				setUserImages(results);
-				setMessage(
-					__('Photo(s) selected. Click Try to generate.', 'tryaura')
-				);
-				doAction('tryaura.photo_selected_after', { files, results });
+				Promise.all(
+					results.map((result) =>
+						optimizeImageDataUrl(result, {
+							preferredMimeType: 'image/jpeg',
+						}).catch(() => result)
+					)
+				)
+					.then((optimizedResults) => {
+						doAction('tryaura.photo_selected_before', {
+							files,
+							results: optimizedResults,
+						});
+						setUserImages(optimizedResults);
+						setMessage(
+							__(
+								'Photo(s) selected. Click Try to generate.',
+								'tryaura'
+							)
+						);
+						doAction('tryaura.photo_selected_after', {
+							files,
+							results: optimizedResults,
+						});
+					})
+					.catch(() => {
+						setUserImages(results);
+						setMessage(
+							__(
+								'Photo(s) selected. Click Try to generate.',
+								'tryaura'
+							)
+						);
+					});
 			})
 			.catch(() => {
 				setError(__('Failed to read one or more files.', 'tryaura'));
@@ -241,11 +284,15 @@ const TryOnModal = ({ productImages, onClose }: TryOnModalProps) => {
 		img: string
 	): Promise<{ mimeType: string; data: string }> => {
 		if (img.startsWith('data:')) {
-			const comma = img.indexOf(',');
-			const header = img.substring(0, Math.max(0, comma));
+			const optimizedDataUrl = await optimizeImageDataUrl(img, {
+				preferredMimeType: 'image/jpeg',
+			});
+			const comma = optimizedDataUrl.indexOf(',');
+			const header = optimizedDataUrl.substring(0, Math.max(0, comma));
 			const match = /^data:([^;]+)/.exec(header);
-			const mimeType = match && match[1] ? match[1] : 'image/png';
-			const data = comma >= 0 ? img.substring(comma + 1) : img;
+			const mimeType = match && match[1] ? match[1] : 'image/jpeg';
+			const data =
+				comma >= 0 ? optimizedDataUrl.substring(comma + 1) : optimizedDataUrl;
 			return { mimeType, data };
 		}
 		const resp = (await apiFetch({
@@ -253,18 +300,10 @@ const TryOnModal = ({ productImages, onClose }: TryOnModalProps) => {
 			parse: false,
 		})) as Response;
 		const blob = await resp.blob();
-		const mimeType = blob.type || 'image/png';
-		const base64 = await new Promise<string>((resolve, reject) => {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				const result = reader.result as string;
-				const comma = result.indexOf(',');
-				resolve(comma >= 0 ? result.substring(comma + 1) : result);
-			};
-			reader.onerror = reject;
-			reader.readAsDataURL(blob);
+		const optimized = await blobToOptimizedInlineData(blob, {
+			preferredMimeType: 'image/jpeg',
 		});
-		return { mimeType, data: base64 };
+		return { mimeType: optimized.mimeType, data: optimized.data };
 	};
 
 	const doTry = async () => {

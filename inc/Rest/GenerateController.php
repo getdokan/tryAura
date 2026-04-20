@@ -17,6 +17,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class GenerateController {
 	/**
+	 * Timeout for upstream image generation requests.
+	 *
+	 * Keep this below common proxy defaults so WordPress can return a useful
+	 * JSON error instead of letting the proxy surface a generic 504 page.
+	 *
+	 * @since 1.1.0
+	 */
+	private const REMOTE_TIMEOUT = 50;
+
+	/**
 	 * Normalize an incoming image payload into a data URL or raw string.
 	 *
 	 * @param mixed $image_payload Image payload from request or API response.
@@ -115,6 +125,50 @@ class GenerateController {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Build a REST response for an upstream API failure.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param mixed  $response Raw response from `wp_remote_post`.
+	 * @param string $fallback_message Fallback error message.
+	 *
+	 * @return WP_REST_Response|null
+	 */
+	private function build_remote_error_response( $response, string $fallback_message ) {
+		if ( is_wp_error( $response ) ) {
+			$message = $response->get_error_message();
+
+			if ( false !== stripos( $message, 'timed out' ) ) {
+				$message = __( 'Image generation timed out before the AI provider responded. Try using fewer or smaller images and try again.', 'tryaura' );
+			}
+
+			return new WP_REST_Response( array( 'error' => $message ), 504 );
+		}
+
+		$status_code = (int) wp_remote_retrieve_response_code( $response );
+		if ( $status_code >= 200 && $status_code < 300 ) {
+			return null;
+		}
+
+		$body    = json_decode( wp_remote_retrieve_body( $response ), true );
+		$message = $fallback_message;
+
+		if ( isset( $body['error']['message'] ) && is_string( $body['error']['message'] ) ) {
+			$message = $body['error']['message'];
+		} elseif ( isset( $body['error'] ) && is_string( $body['error'] ) ) {
+			$message = $body['error'];
+		}
+
+		return new WP_REST_Response(
+			array(
+				'error'  => $message,
+				'status' => $status_code,
+			),
+			$status_code > 0 ? $status_code : 500
+		);
 	}
 
 	/**
@@ -273,12 +327,16 @@ class GenerateController {
 			array(
 				'body'    => wp_json_encode( $body ),
 				'headers' => array( 'Content-Type' => 'application/json' ),
-				'timeout' => 120,
+				'timeout' => self::REMOTE_TIMEOUT,
 			)
 		);
 
-		if ( is_wp_error( $response ) ) {
-			return new WP_REST_Response( array( 'error' => $response->get_error_message() ), 500 );
+		$error_response = $this->build_remote_error_response(
+			$response,
+			__( 'Gemini image generation failed.', 'tryaura' )
+		);
+		if ( $error_response ) {
+			return $error_response;
 		}
 
 		$data = json_decode( wp_remote_retrieve_body( $response ), true );
@@ -373,12 +431,16 @@ class GenerateController {
 					'Content-Type'  => 'application/json',
 					'Authorization' => 'Bearer ' . $api_key,
 				),
-				'timeout' => 120,
+				'timeout' => self::REMOTE_TIMEOUT,
 			)
 		);
 
-		if ( is_wp_error( $response ) ) {
-			return new WP_REST_Response( array( 'error' => $response->get_error_message() ), 500 );
+		$error_response = $this->build_remote_error_response(
+			$response,
+			__( 'OpenRouter image generation failed.', 'tryaura' )
+		);
+		if ( $error_response ) {
+			return $error_response;
 		}
 
 		$data = json_decode( wp_remote_retrieve_body( $response ), true );

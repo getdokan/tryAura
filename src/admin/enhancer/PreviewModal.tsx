@@ -13,7 +13,7 @@ import Output from './PreviewSections/Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
 import { Modal, Slot, SlotFillProvider } from '@wordpress/components';
 import { PluginArea } from '@wordpress/plugins';
-import { hasPro } from '../../utils/tryaura';
+import { blobToOptimizedInlineData, hasPro } from '../../utils/tryaura';
 import { twMerge } from 'tailwind-merge';
 
 declare const wp: any;
@@ -182,24 +182,13 @@ const PreviewModal = ({
 						credentials: 'same-origin',
 					});
 					const blob = await resp.blob();
-					const mimeType = blob.type || 'image/png';
-					const base64 = await new Promise<string>(
-						(resolve, reject) => {
-							const reader = new FileReader();
-							reader.onloadend = () => {
-								const result = reader.result as string;
-								const comma = result.indexOf(',');
-								resolve(
-									comma >= 0
-										? result.substring(comma + 1)
-										: result
-								);
-							};
-							reader.onerror = reject;
-							reader.readAsDataURL(blob);
-						}
-					);
-					return { mimeType, base64 };
+					const optimized = await blobToOptimizedInlineData(blob, {
+						preferredMimeType: 'image/jpeg',
+					});
+					return {
+						mimeType: optimized.mimeType,
+						base64: optimized.data,
+					};
 				})
 			);
 

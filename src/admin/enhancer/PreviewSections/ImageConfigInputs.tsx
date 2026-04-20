@@ -19,7 +19,7 @@ import ConfigFooter from './ConfigFooter';
 import { hasPro } from '../../../utils/tryaura';
 import { twMerge } from 'tailwind-merge';
 
-function ImageConfigInputs( { doGenerate } ) {
+function ImageConfigInputs({ doGenerate }) {
 	const {
 		isBlockEditorPage,
 		isWoocommerceProductPage,
@@ -28,8 +28,8 @@ function ImageConfigInputs( { doGenerate } ) {
 		isBusy,
 		uploading,
 		isThumbnailMode,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+	} = useSelect((select) => {
+		const store = select(STORE_NAME);
 		return {
 			isBlockEditorPage: store.getIsBlockEditorPage(),
 			isWoocommerceProductPage: store.getIsWoocommerceProductPage(),
@@ -39,187 +39,187 @@ function ImageConfigInputs( { doGenerate } ) {
 			uploading: store.getUploading(),
 			isThumbnailMode: store.isThumbnailMode(),
 		};
-	}, [] );
+	}, []);
 
-	const { setImageConfigData } = useDispatch( STORE_NAME );
+	const { setImageConfigData } = useDispatch(STORE_NAME);
 
 	const allBackgroundPrefrences = applyFilters(
 		'tryaura.enhancer.background_preferences',
 		[
 			{
-				label: __( 'Plain', 'tryaura' ),
+				label: __('Plain', 'tryaura'),
 				value: 'plain',
 				icon: <Circle />,
 			},
 			{
-				label: __( 'Natural', 'tryaura' ),
+				label: __('Natural', 'tryaura'),
 				value: 'natural',
 				icon: <Leaf />,
 			},
 			{
-				label: __( 'Studio', 'tryaura' ),
+				label: __('Studio', 'tryaura'),
 				value: 'studio',
 				icon: <Wallpaper />,
 			},
 		]
 	);
 
-	const allOutputStyles = applyFilters( 'tryaura.enhancer.output_styles', [
+	const allOutputStyles = applyFilters('tryaura.enhancer.output_styles', [
 		{
-			label: __( 'Photo Realistic', 'tryaura' ),
+			label: __('Photo Realistic', 'tryaura'),
 			value: 'photo-realistic',
 			icon: <Image />,
 		},
 		{
-			label: __( 'Studio Mockup', 'tryaura' ),
+			label: __('Studio Mockup', 'tryaura'),
 			value: 'studio mockup',
 			icon: <Shirt />,
 		},
 		{
-			label: __( 'Model Shoot', 'tryaura' ),
+			label: __('Model Shoot', 'tryaura'),
 			value: 'model shoot',
 			icon: <User />,
 		},
-	] );
+	]);
 
-	const allAspectRatios = applyFilters( 'tryaura.enhancer.aspect_ratios', [
+	const allAspectRatios = applyFilters('tryaura.enhancer.aspect_ratios', [
 		{
-			label: __( 'Square (1:1)', 'tryaura' ),
+			label: __('Square (1:1)', 'tryaura'),
 			value: '1:1',
 			icon: <Square />,
 		},
 		{
-			label: __( 'Landscape (16:9)', 'tryaura' ),
+			label: __('Landscape (16:9)', 'tryaura'),
 			value: '16:9',
 			icon: <RectangleHorizontal />,
-			locked: ! hasPro(),
+			locked: !hasPro(),
 		},
 		{
-			label: __( 'Portrait (9:16)', 'tryaura' ),
+			label: __('Portrait (9:16)', 'tryaura'),
 			value: '9:16',
 			icon: <RectangleVertical />,
-			locked: ! hasPro(),
+			locked: !hasPro(),
 		},
-	] );
+	]);
 
 	return (
 		<>
-			{ /* Controls */ }
-			{ isThumbnailMode && (
+			{/* Controls */}
+			{isThumbnailMode && (
 				<ModernSelect
-					label={ __( 'Video Platforms', 'tryaura' ) }
-					value={ imageConfigData?.videoPlatform ?? 'youtube' }
-					onChange={ ( val: any ) =>
-						setImageConfigData( {
+					label={__('Video Platforms', 'tryaura')}
+					value={imageConfigData?.videoPlatform ?? 'youtube'}
+					onChange={(val: any) =>
+						setImageConfigData({
 							videoPlatform: val,
-						} )
+						})
 					}
-					options={ [ { label: 'Youtube', value: 'youtube' } ] }
+					options={[{ label: 'Youtube', value: 'youtube' }]}
 					variant="list"
-					disabled={ isBusy }
+					disabled={isBusy}
 				/>
-			) }
+			)}
 
 			<>
-				{ applyFilters(
+				{applyFilters(
 					'tryaura.enhancer.image_config_extra_inputs',
 					null,
 					{ imageConfigData, setImageConfigData }
 				) || (
 					<>
 						<ModernSelect
-							value={ imageConfigData?.backgroundType ?? '' }
-							onChange={ ( val ) =>
-								setImageConfigData( {
+							value={imageConfigData?.backgroundType ?? ''}
+							onChange={(val) =>
+								setImageConfigData({
 									backgroundType: val,
-								} )
+								})
 							}
-							label={ __( 'Background Preference', 'tryaura' ) }
-							options={ allBackgroundPrefrences }
-							disabled={ isBusy }
+							label={__('Background Preference', 'tryaura')}
+							options={allBackgroundPrefrences}
+							disabled={isBusy}
 						/>
 
 						<ModernSelect
-							value={ imageConfigData?.styleType ?? '' }
-							onChange={ ( val ) =>
-								setImageConfigData( {
+							value={imageConfigData?.styleType ?? ''}
+							onChange={(val) =>
+								setImageConfigData({
 									styleType: val,
-								} )
+								})
 							}
-							label={ __( 'Output Style', 'tryaura' ) }
-							options={ allOutputStyles }
-							disabled={ isBusy }
+							label={__('Output Style', 'tryaura')}
+							options={allOutputStyles}
+							disabled={isBusy}
 						/>
 					</>
-				) }
+				)}
 			</>
 
 			<ModernSelect
-				value={ imageConfigData?.imageSize ?? '' }
+				value={imageConfigData?.imageSize ?? ''}
 				variant="list"
-				onChange={ ( val ) =>
-					setImageConfigData( {
+				onChange={(val) =>
+					setImageConfigData({
 						imageSize: val,
-					} )
+					})
 				}
-				label={ __( 'Image Size', 'tryaura' ) }
-				options={ allAspectRatios }
-				disabled={ isBusy }
+				label={__('Image Size', 'tryaura')}
+				options={allAspectRatios}
+				disabled={isBusy}
 			/>
 
 			<label
-				style={ {
+				style={{
 					display: 'flex',
 					flexDirection: 'column',
 					gap: 4,
-				} }
+				}}
 			>
 				<div className="flex flex-row gap-2 items-center mb-2">
 					<span
-						className={ twMerge(
+						className={twMerge(
 							'w-[500] text-[14px]',
 							!hasPro() ? 'text-[#929296]' : ''
-						) }
+						)}
 					>
-						{ isBlockEditorPage && ! isWoocommerceProductPage
-							? __( 'Prompt', 'tryaura' )
-							: __( 'Prompt (Optional)', 'tryaura' ) }
+						{isBlockEditorPage && !isWoocommerceProductPage
+							? __('Prompt', 'tryaura')
+							: __('Prompt (Optional)', 'tryaura')}
 					</span>
-					{ ! hasPro() && <CrownIcon className="text-[16px]" /> }
+					{!hasPro() && <CrownIcon className="text-[16px]" />}
 				</div>
 				<textarea
 					className="border border-[#E9E9E9] placeholder-[#A5A5AA] max-h-44 focus:shadow-none focus:ring-1 focus:ring-primary"
-					required={ hasPro() }
-					value={ imageConfigData?.optionalPrompt ?? '' }
-					onChange={ ( e: any ) =>
+					required={hasPro()}
+					value={imageConfigData?.optionalPrompt ?? ''}
+					onChange={(e: any) =>
 						hasPro() &&
-						setImageConfigData( {
+						setImageConfigData({
 							optionalPrompt: e.target.value,
-						} )
+						})
 					}
-					disabled={ isBusy || ! hasPro() }
-					rows={ 3 }
+					disabled={isBusy || !hasPro()}
+					rows={3}
 					placeholder={
-						isBlockEditorPage && ! isWoocommerceProductPage
-							? __( 'Add any specific instructions', 'tryaura' )
+						isBlockEditorPage && !isWoocommerceProductPage
+							? __('Add any specific instructions', 'tryaura')
 							: __(
 									'Add any specific instructions (optional)',
 									'tryaura'
-							  )
+								)
 					}
 				/>
 			</label>
 
 			<ConfigFooter
-				generatedUrl={ generatedUrl }
-				doGenerate={ doGenerate }
-				isBusy={ isBusy }
-				uploading={ uploading }
+				generatedUrl={generatedUrl}
+				doGenerate={doGenerate}
+				isBusy={isBusy}
+				uploading={uploading}
 				downloadName="enhanced.png"
 				isBlockEditorPage={
-					isBlockEditorPage && ! isWoocommerceProductPage
+					isBlockEditorPage && !isWoocommerceProductPage
 				}
-				optionalPrompt={ imageConfigData?.optionalPrompt ?? '' }
+				optionalPrompt={imageConfigData?.optionalPrompt ?? ''}
 			/>
 		</>
 	);

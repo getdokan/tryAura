@@ -6,7 +6,7 @@ export const INITIAL_STATE: EnhancerState = {
 	isBlockEditorPage: false,
 	isWoocommerceProductPage: false,
 	status: 'idle',
-	message: __( 'Ready to generate', 'tryaura' ),
+	message: __('Ready to generate', 'tryaura'),
 	generatedUrl: null,
 	error: null,
 	uploading: false,
@@ -18,19 +18,23 @@ export const INITIAL_STATE: EnhancerState = {
 		videoPlatform: 'youtube',
 	},
 	activeTab: 'image',
-	selectedImageIndices: [ 0 ],
+	selectedImageIndices: [0],
 	isThumbnailMode: false,
 	imageUrls: [],
 	attachmentIds: [],
 	supportsVideo: false,
 	isVideoBusy: false,
+	videoJobId: null,
+	videoJobStatus: 'idle',
+	videoResultUrl: null,
+	videoError: null,
 };
 
 const reducer = (
 	state = INITIAL_STATE,
-	action: { type: string; [ key: string ]: any }
+	action: { type: string; [key: string]: any }
 ): EnhancerState => {
-	switch ( action.type ) {
+	switch (action.type) {
 		case TYPES.SET_IS_BLOCK_EDITOR_PAGE:
 			return { ...state, isBlockEditorPage: action.isBlockEditorPage };
 		case TYPES.SET_IS_WOOCOMMERCE_PRODUCT_PAGE:
@@ -73,6 +77,14 @@ const reducer = (
 			return { ...state, supportsVideo: action.supportsVideo };
 		case TYPES.SET_IS_VIDEO_BUSY:
 			return { ...state, isVideoBusy: action.isVideoBusy };
+		case TYPES.SET_VIDEO_JOB_ID:
+			return { ...state, videoJobId: action.videoJobId };
+		case TYPES.SET_VIDEO_JOB_STATUS:
+			return { ...state, videoJobStatus: action.videoJobStatus };
+		case TYPES.SET_VIDEO_RESULT_URL:
+			return { ...state, videoResultUrl: action.videoResultUrl };
+		case TYPES.SET_VIDEO_ERROR:
+			return { ...state, videoError: action.videoError };
 		case TYPES.RESET_STATE:
 			return {
 				...INITIAL_STATE,

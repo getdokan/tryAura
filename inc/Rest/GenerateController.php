@@ -17,6 +17,161 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class GenerateController {
 	/**
+	 * Timeout for upstream image generation requests.
+	 *
+	 * Keep this below common proxy defaults so WordPress can return a useful
+	 * JSON error instead of letting the proxy surface a generic 504 page.
+	 *
+	 * @since 1.1.0
+	 */
+	private const REMOTE_TIMEOUT = 50;
+
+	/**
+	 * Normalize an incoming image payload into a data URL or raw string.
+	 *
+	 * @param mixed $image_payload Image payload from request or API response.
+	 *
+	 * @return string
+	 */
+	private function normalize_image_payload( $image_payload ): string {
+		if ( is_string( $image_payload ) ) {
+			return trim( $image_payload );
+		}
+
+		if ( is_array( $image_payload ) ) {
+			if ( isset( $image_payload['url'] ) && is_string( $image_payload['url'] ) ) {
+				return trim( $image_payload['url'] );
+			}
+
+			if ( isset( $image_payload['image_url'] ) && is_string( $image_payload['image_url'] ) ) {
+				return trim( $image_payload['image_url'] );
+			}
+
+			if ( isset( $image_payload['data'] ) && is_string( $image_payload['data'] ) ) {
+				return trim( $image_payload['data'] );
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Normalize an OpenRouter response image into raw base64 when possible.
+	 *
+	 * @param mixed $image_payload Image payload from OpenRouter response.
+	 *
+	 * @return string|null
+	 */
+	private function extract_openrouter_image_data( $image_payload ): ?string {
+		$image_value = $this->normalize_image_payload( $image_payload );
+
+		if ( '' === $image_value ) {
+			return null;
+		}
+
+		if ( preg_match( '/^data:image\/[\w.+-]+;base64,(.+)$/', $image_value, $matches ) ) {
+			return $matches[1];
+		}
+
+		return $image_value;
+	}
+
+	/**
+	 * Recursively search an OpenRouter response payload for an image.
+	 *
+	 * @param mixed $payload Response payload or fragment.
+	 *
+	 * @return string|null
+	 */
+	private function find_openrouter_image_in_payload( $payload ): ?string {
+		$image = $this->extract_openrouter_image_data( $payload );
+
+		if ( ! empty( $image ) ) {
+			return $image;
+		}
+
+		if ( ! is_array( $payload ) ) {
+			return null;
+		}
+
+		$priority_keys = array(
+			'images',
+			'image',
+			'image_url',
+			'url',
+			'data',
+			'b64_json',
+			'b64',
+			'content',
+			'message',
+		);
+
+		foreach ( $priority_keys as $key ) {
+			if ( ! array_key_exists( $key, $payload ) ) {
+				continue;
+			}
+
+			$found = $this->find_openrouter_image_in_payload( $payload[ $key ] );
+			if ( ! empty( $found ) ) {
+				return $found;
+			}
+		}
+
+		foreach ( $payload as $value ) {
+			$found = $this->find_openrouter_image_in_payload( $value );
+			if ( ! empty( $found ) ) {
+				return $found;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Build a REST response for an upstream API failure.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param mixed  $response Raw response from `wp_remote_post`.
+	 * @param string $fallback_message Fallback error message.
+	 *
+	 * @return WP_REST_Response|null
+	 */
+	private function build_remote_error_response( $response, string $fallback_message ) {
+		if ( is_wp_error( $response ) ) {
+			$message = $response->get_error_message();
+
+			if ( false !== stripos( $message, 'timed out' ) ) {
+				$message = __( 'Image generation timed out before the AI provider responded. Try using fewer or smaller images and try again.', 'tryaura' );
+			}
+
+			return new WP_REST_Response( array( 'error' => $message ), 504 );
+		}
+
+		$status_code = (int) wp_remote_retrieve_response_code( $response );
+		if ( $status_code >= 200 && $status_code < 300 ) {
+			return null;
+		}
+
+		$body    = json_decode( wp_remote_retrieve_body( $response ), true );
+		$message = $fallback_message;
+
+		if ( isset( $body['error']['message'] ) && is_string( $body['error']['message'] ) ) {
+			$message = $body['error']['message'];
+		} elseif ( isset( $body['error'] ) && is_string( $body['error'] ) ) {
+			$message = $body['error'];
+		}
+
+		return new WP_REST_Response(
+			array(
+				'error'  => $message,
+				'status' => $status_code,
+			),
+			$status_code > 0 ? $status_code : 500
+		);
+	}
+
+	/**
 	 * REST API namespace.
 	 *
 	 * @since 1.0.0
@@ -105,13 +260,41 @@ class GenerateController {
 		$ref_images = $request->get_param( 'images' ) ?? array();
 
 		$settings = get_option( 'tryaura_settings', array() );
+		$provider = isset( $settings['google']['provider'] ) ? $settings['google']['provider'] : 'google';
 		$api_key  = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
+		$model    = isset( $settings['google']['imageModel'] ) && ! empty( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : 'gemini-2.5-flash-image';
 
-		$model   = isset( $settings['google']['imageModel'] ) && ! empty( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : 'gemini-2.5-flash-image';
+		if ( 'openrouter' === $provider ) {
+			return $this->generate_via_openrouter( $api_key, $model, $prompt, $ref_images, $request );
+		}
+
+		return $this->generate_via_gemini( $api_key, $model, $prompt, $ref_images, $request );
+	}
+
+	/**
+	 * Generate image via Gemini direct API.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param string          $api_key    API key.
+	 * @param string          $model      Model ID.
+	 * @param string          $prompt     Generation prompt.
+	 * @param array           $ref_images Reference images (base64).
+	 * @param WP_REST_Request $request    Original request.
+	 *
+	 * @return WP_REST_Response
+	 */
+	private function generate_via_gemini( string $api_key, string $model, string $prompt, array $ref_images, WP_REST_Request $request ) {
 		$api_url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$api_key}";
 
 		$prepared_images = array();
-		foreach ( $ref_images as $base64_data ) {
+		foreach ( $ref_images as $image_payload ) {
+			$base64_data = $this->normalize_image_payload( $image_payload );
+
+			if ( '' === $base64_data ) {
+				continue;
+			}
+
 			if ( preg_match( '/^data:image\/(\w+);base64,/', $base64_data, $type ) ) {
 				$base64_data = substr( $base64_data, strpos( $base64_data, ',' ) + 1 );
 				$mime_type   = 'image/' . $type[1];
@@ -144,12 +327,16 @@ class GenerateController {
 			array(
 				'body'    => wp_json_encode( $body ),
 				'headers' => array( 'Content-Type' => 'application/json' ),
-				'timeout' => 120,
+				'timeout' => self::REMOTE_TIMEOUT,
 			)
 		);
 
-		if ( is_wp_error( $response ) ) {
-			return new WP_REST_Response( array( 'error' => $response->get_error_message() ), 500 );
+		$error_response = $this->build_remote_error_response(
+			$response,
+			__( 'Gemini image generation failed.', 'tryaura' )
+		);
+		if ( $error_response ) {
+			return $error_response;
 		}
 
 		$data = json_decode( wp_remote_retrieve_body( $response ), true );
@@ -182,6 +369,117 @@ class GenerateController {
 			array(
 				'image' => $image,
 				'usage' => $usage,
+			),
+			200
+		);
+	}
+
+	/**
+	 * Generate image via OpenRouter API.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param string          $api_key    API key.
+	 * @param string          $model      Model ID (OpenRouter slug).
+	 * @param string          $prompt     Generation prompt.
+	 * @param array           $ref_images Reference images (base64).
+	 * @param WP_REST_Request $request    Original request.
+	 *
+	 * @return WP_REST_Response
+	 */
+	private function generate_via_openrouter( string $api_key, string $model, string $prompt, array $ref_images, WP_REST_Request $request ) {
+		$content = array();
+
+		// Add text prompt.
+		$content[] = array(
+			'type' => 'text',
+			'text' => $prompt,
+		);
+
+		// Add reference images as image_url content parts.
+		foreach ( $ref_images as $image_payload ) {
+			$base64_data = $this->normalize_image_payload( $image_payload );
+
+			if ( '' === $base64_data ) {
+				continue;
+			}
+
+			$content[] = array(
+				'type'      => 'image_url',
+				'image_url' => array(
+					'url' => $base64_data,
+				),
+			);
+		}
+
+		$body = array(
+			'model'      => $model,
+			'messages'   => array(
+				array(
+					'role'    => 'user',
+					'content' => $content,
+				),
+			),
+			'modalities' => array( 'image' ),
+		);
+
+		$response = wp_remote_post(
+			'https://openrouter.ai/api/v1/chat/completions',
+			array(
+				'body'    => wp_json_encode( $body ),
+				'headers' => array(
+					'Content-Type'  => 'application/json',
+					'Authorization' => 'Bearer ' . $api_key,
+				),
+				'timeout' => self::REMOTE_TIMEOUT,
+			)
+		);
+
+		$error_response = $this->build_remote_error_response(
+			$response,
+			__( 'OpenRouter image generation failed.', 'tryaura' )
+		);
+		if ( $error_response ) {
+			return $error_response;
+		}
+
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( isset( $data['error'] ) ) {
+			$error_msg = isset( $data['error']['message'] ) ? $data['error']['message'] : __( 'OpenRouter image generation failed.', 'tryaura' );
+			return new WP_REST_Response( array( 'error' => $error_msg ), 400 );
+		}
+
+		// Extract image from OpenRouter response.
+		$image      = null;
+		$usage_data = $data['usage'] ?? null;
+		$choices    = $data['choices'] ?? array();
+
+		if ( ! empty( $choices ) ) {
+			$image = $this->find_openrouter_image_in_payload( $choices[0] );
+		}
+
+		if ( $image ) {
+			( new UsageManager() )->log_usage(
+				array(
+					'type'           => 'image',
+					'model'          => $model,
+					'prompt'         => $prompt,
+					'input_tokens'   => $usage_data['prompt_tokens'] ?? 0,
+					'output_tokens'  => $usage_data['completion_tokens'] ?? 0,
+					'total_tokens'   => $usage_data['total_tokens'] ?? 0,
+					'generated_from' => $request->get_param( 'generated_from' ) ?? 'tryon',
+					'object_id'      => $request->get_param( 'object_id' ) ?? 0,
+					'object_type'    => $request->get_param( 'object_type' ) ?? '',
+					'status'         => 'success',
+				)
+			);
+		}
+
+		return new WP_REST_Response(
+			array(
+				'image' => $image,
+				'usage' => $usage_data,
 			),
 			200
 		);

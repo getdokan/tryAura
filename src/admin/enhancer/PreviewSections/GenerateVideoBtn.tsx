@@ -5,7 +5,7 @@ import { Button } from '@tryaura/components';
 import { hasPro } from '../../../utils/tryaura';
 
 function GenerateVideoBtn() {
-	const liteStore = select( STORE_NAME );
+	const liteStore = select(STORE_NAME);
 	const supportsVideo = liteStore.getSupportsVideo();
 	const isThumbnailMode = liteStore.isThumbnailMode();
 	const generatedUrl = liteStore.getGeneratedUrl();
@@ -14,7 +14,7 @@ function GenerateVideoBtn() {
 
 	if (
 		supportsVideo &&
-		! isThumbnailMode &&
+		!isThumbnailMode &&
 		activeTab === 'image' &&
 		generatedUrl
 	) {
@@ -23,12 +23,10 @@ function GenerateVideoBtn() {
 				<Button
 					variant="solid"
 					className="border border-primary text-primary bg-white"
-					onClick={ () =>
-						dispatch( STORE_NAME ).setActiveTab( 'video' )
-					}
-					isPro={ ! hasPro() }
+					onClick={() => dispatch(STORE_NAME).setActiveTab('video')}
+					isPro={!hasPro()}
 				>
-					{ __( 'Generate Video', 'tryaura' ) }
+					{__('Generate Video', 'tryaura')}
 				</Button>
 			</div>
 		);

@@ -6,8 +6,8 @@ const initialState = {
 	isSaving: false,
 };
 
-const reducer = ( state = initialState, action: any ) => {
-	switch ( action.type ) {
+const reducer = (state = initialState, action: any) => {
+	switch (action.type) {
 		case actionTypes.SET_SETTINGS:
 			return {
 				...state,

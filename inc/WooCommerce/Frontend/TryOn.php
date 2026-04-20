@@ -46,6 +46,9 @@ class TryOn {
 			return;
 		}
 
+		$settings = get_option( 'tryaura_settings', array() );
+		$provider = isset( $settings['google']['provider'] ) ? $settings['google']['provider'] : 'google';
+
 		// Localize data for the frontend app.
 		wp_localize_script(
 			'tryaura-tryon',
@@ -54,6 +57,7 @@ class TryOn {
 				'restUrl'         => esc_url_raw( rest_url() ),
 				'tryonNonce'      => wp_create_nonce( 'tryon_nonce' ),
 				'redirectNonce'   => wp_create_nonce( 'tryaura_redirect_to_nonce' ),
+				'provider'        => $provider,
 				'productId'       => $product_id,
 				'loginUrl'        => $this->get_login_url(),
 				'hasPro'          => (bool) TryAura::is_pro_exists(),

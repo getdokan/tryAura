@@ -5,10 +5,10 @@ import * as selectors from './selectors';
 
 export const STORE_NAME = 'tryaura/ai-models';
 
-const store = createReduxStore( STORE_NAME, {
+const store = createReduxStore(STORE_NAME, {
 	reducer,
 	actions,
 	selectors,
-} );
+});
 
-register( store );
+register(store);

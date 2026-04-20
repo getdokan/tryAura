@@ -1,15 +1,15 @@
 import { setSettings, setIsFetching } from './actions';
 
 export function* getSettings() {
-	yield setIsFetching( true );
+	yield setIsFetching(true);
 	try {
 		const result = yield {
 			type: 'API_FETCH',
 			path: '/tryaura/v1/settings',
 		};
-		yield setSettings( result );
+		yield setSettings(result);
 	} finally {
-		yield setIsFetching( false );
+		yield setIsFetching(false);
 	}
 }
 

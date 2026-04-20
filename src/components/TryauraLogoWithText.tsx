@@ -1,4 +1,4 @@
-function TryauraLogoWithText( { className = '' } ) {
+function TryauraLogoWithText({ className = '' }) {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -6,7 +6,7 @@ function TryauraLogoWithText( { className = '' } ) {
 			height="143"
 			viewBox="0 0 598 143"
 			fill="none"
-			className={ className }
+			className={className}
 		>
 			<g clipPath="url(#clip0_8_56)">
 				<path

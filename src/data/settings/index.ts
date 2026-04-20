@@ -7,12 +7,12 @@ import controls from './controls';
 
 export const STORE_NAME = 'tryaura/settings';
 
-const store = createReduxStore( STORE_NAME, {
+const store = createReduxStore(STORE_NAME, {
 	reducer,
 	actions,
 	selectors,
 	resolvers,
 	controls,
-} );
+});
 
-register( store );
+register(store);

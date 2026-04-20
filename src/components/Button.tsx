@@ -5,15 +5,17 @@ import { CrownIcon } from './index';
 type Variant = 'solid' | 'outline' | 'outline-primary';
 type Color = 'primary';
 
-export interface ButtonProps
-	extends Omit< JSX.IntrinsicElements[ 'button' ], 'color' > {
+export interface ButtonProps extends Omit<
+	JSX.IntrinsicElements['button'],
+	'color'
+> {
 	variant?: Variant;
 	color?: Color;
 	loading?: boolean;
 	isPro?: boolean;
 	proIconClassName?: string;
 }
-const Button = forwardRef< HTMLButtonElement, ButtonProps >( function Button(
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
 	{
 		variant = 'solid',
 		color = 'primary',
@@ -30,27 +32,23 @@ const Button = forwardRef< HTMLButtonElement, ButtonProps >( function Button(
 	let classNames =
 		'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-primary px-3 py-2 text-[14px] text-white hover:bg-bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 
-	if ( variant === 'outline' ) {
+	if (variant === 'outline') {
 		classNames =
 			'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-white px-3 py-2 text-[14px] text-neutral-900 inset-ring inset-ring-neutral-300 hover:bg-neutral-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 	}
 
-	if ( variant === 'outline-primary' ) {
+	if (variant === 'outline-primary') {
 		classNames =
 			'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-white px-3 py-2 text-[14px] text-primary inset-ring inset-ring-primary hover:bg-primary/5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 	}
 	const Tag = type === 'link' ? 'a' : 'button';
 
 	return (
-		<Tag
-			ref={ ref }
-			className={ twMerge( classNames, className ) }
-			{ ...rest }
-		>
+		<Tag ref={ref} className={twMerge(classNames, className)} {...rest}>
 			<svg
-				className={ `transition-[width,margin] ease-out animate-spin h-4 ${
+				className={`transition-[width,margin] ease-out animate-spin h-4 ${
 					loading ? 'w-4 mr-3' : 'w-0'
-				}` }
+				}`}
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
 				viewBox="0 0 24 24"
@@ -71,15 +69,15 @@ const Button = forwardRef< HTMLButtonElement, ButtonProps >( function Button(
 			</svg>
 
 			<div className="flex flex-row items-center justify-center gap-2">
-				<div>{ children ?? '' }</div>
-				{ isPro && (
+				<div>{children ?? ''}</div>
+				{isPro && (
 					<CrownIcon
-						className={ twMerge( 'text-[15px]', proIconClassName ) }
+						className={twMerge('text-[15px]', proIconClassName)}
 					/>
-				) }
+				)}
 			</div>
 		</Tag>
 	);
-} );
+});
 
 export default Button;

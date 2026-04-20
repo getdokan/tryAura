@@ -2,17 +2,14 @@ import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import domReady from '@wordpress/dom-ready';
 
-domReady( () => {
+domReady(() => {
 	// Modal title filter for thumbnails
 	addFilter(
 		'tryaura.enhancer.modal_title',
 		'tryaura/enhancer/modal-title',
-		( title, { isThumbnailMode } ) => {
-			if ( isThumbnailMode ) {
-				return __(
-					'AI Product Video Thumbnail Generation',
-					'tryaura'
-				);
+		(title, { isThumbnailMode }) => {
+			if (isThumbnailMode) {
+				return __('AI Product Video Thumbnail Generation', 'tryaura');
 			}
 			return title;
 		}
@@ -22,22 +19,22 @@ domReady( () => {
 	addFilter(
 		'tryaura.ai_enhance_image_prompt_base',
 		'tryaura/enhancer/image-prompt-base',
-		( prompt, { imageConfigData, isThumbnailMode } ) => {
-			if ( isThumbnailMode ) {
+		(prompt, { imageConfigData, isThumbnailMode }) => {
+			if (isThumbnailMode) {
 				const videoPlatform =
 					imageConfigData?.videoPlatform || 'youtube';
 
 				// Insert the video platform into the prompt
-				const requirementsIdx = prompt.indexOf( 'Requirements:' );
-				if ( requirementsIdx !== -1 ) {
+				const requirementsIdx = prompt.indexOf('Requirements:');
+				if (requirementsIdx !== -1) {
 					return (
-						prompt.substring( 0, requirementsIdx ) +
-						`- Video Platform: ${ videoPlatform }\n` +
-						prompt.substring( requirementsIdx )
+						prompt.substring(0, requirementsIdx) +
+						`- Video Platform: ${videoPlatform}\n` +
+						prompt.substring(requirementsIdx)
 					);
 				}
 			}
 			return prompt;
 		}
 	);
-} );
+});

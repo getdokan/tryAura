@@ -346,7 +346,7 @@ class Assets {
 			'defaultImageModel'            => 'gemini-2.5-flash-image',
 			'defaultVideoModel'            => 'veo-3.1-generate-preview',
 			'defaultOpenRouterImageModel'   => 'google/gemini-2.5-flash-preview-05-20:generateImage',
-			'defaultOpenRouterVideoModel'   => 'google/veo-3.1',
+			'defaultOpenRouterVideoModel'   => 'bytedance/seedance-2.0-fast',
 		);
 
 		wp_localize_script( 'tryaura-ai-models', 'tryAuraAiProviderModels', apply_filters( 'tryaura_ai_models', $config ) );

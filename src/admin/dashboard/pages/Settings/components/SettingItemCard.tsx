@@ -1,7 +1,7 @@
 import { Button } from '../../../../../components';
 import { useNavigate } from 'react-router-dom';
 
-function SettingsItemCard( {
+function SettingsItemCard({
 	icon,
 	title,
 	badge,
@@ -19,10 +19,10 @@ function SettingsItemCard( {
 	linkText: string;
 	loading?: boolean;
 	disabledLink?: boolean;
-} ) {
+}) {
 	const navigate = useNavigate();
 
-	if ( loading ) {
+	if (loading) {
 		return (
 			<div className="flex justify-between flex-wrap bg-[#FFFFFF] border-2 border-[#FFFFFF] p-[24px] rounded-[16px] animate-pulse">
 				<div className="flex">
@@ -45,7 +45,7 @@ function SettingsItemCard( {
 				<div className="flex items-center">
 					<Button
 						className="py-3 px-7 bg-neutral-200 text-neutral-200"
-						disabled={ true }
+						disabled={true}
 					>
 						lorem
 					</Button>
@@ -57,29 +57,29 @@ function SettingsItemCard( {
 	return (
 		<div className="flex justify-between flex-wrap bg-[#FFFFFF] border-2 border-[#FFFFFF] p-[24px] rounded-[16px]">
 			<div className="flex">
-				<div className="mr-3.5">{ icon }</div>
+				<div className="mr-3.5">{icon}</div>
 				<div className="flex flex-col justify-center">
 					<div className="flex mb-2.5 items-center">
 						<div className="font-semibold text-[16px] leading-5.5 text-[rgba(37,37,45,1)]">
-							{ title }
+							{title}
 						</div>
-						<div className="ml-3">{ badge }</div>
+						<div className="ml-3">{badge}</div>
 					</div>
 
 					<div className="font-normal text-[14px] leading-4.5 text-[rgba(99,99,99,1)]">
-						{ subTitle }
+						{subTitle}
 					</div>
 				</div>
 			</div>
 			<div className="flex items-center">
 				<Button
 					className="py-3 px-7"
-					onClick={ () => {
-						navigate( link );
-					} }
-					disabled={ disabledLink }
+					onClick={() => {
+						navigate(link);
+					}}
+					disabled={disabledLink}
 				>
-					{ linkText }
+					{linkText}
 				</Button>
 			</div>
 		</div>

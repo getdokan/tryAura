@@ -4,7 +4,7 @@ import { Check } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { useEffect } from '@wordpress/element';
 
-function OriginalImage( {
+function OriginalImage({
 	imageUrls,
 	multiple = false,
 	className = '',
@@ -20,53 +20,50 @@ function OriginalImage( {
 	multiple?: boolean;
 	className?: string;
 	selectedIndices: number[];
-	setSelectedIndices: ( indices: number[] ) => void;
+	setSelectedIndices: (indices: number[]) => void;
 	showGeneratedImage?: boolean;
 	showSelection?: boolean;
 	limits?: { min: number; max: number };
 	sectionTitle?: string;
 	isBusy: boolean;
-} ) {
-	const { generatedUrl } = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+}) {
+	const { generatedUrl } = useSelect((select) => {
+		const store = select(STORE_NAME);
 		return {
 			generatedUrl: store.getGeneratedUrl(),
 		};
-	}, [] );
+	}, []);
 
-	useEffect( () => {
-		let nextIndices = [ ...selectedIndices ];
+	useEffect(() => {
+		let nextIndices = [...selectedIndices];
 		let changed = false;
 
-		if ( nextIndices.length > limits.max ) {
-			nextIndices = nextIndices.slice( 0, limits.max );
+		if (nextIndices.length > limits.max) {
+			nextIndices = nextIndices.slice(0, limits.max);
 			changed = true;
 		}
 
 		// Ensure all indices are within bounds
 		const validIndices = nextIndices.filter(
-			( idx ) => idx >= 0 && idx < imageUrls.length
+			(idx) => idx >= 0 && idx < imageUrls.length
 		);
-		if ( validIndices.length !== nextIndices.length ) {
+		if (validIndices.length !== nextIndices.length) {
 			nextIndices = validIndices;
 			changed = true;
 		}
 
 		// Ensure minimum selection if possible
-		if (
-			nextIndices.length < limits.min &&
-			imageUrls.length >= limits.min
-		) {
-			for ( let i = 0; i < limits.min; i++ ) {
-				if ( ! nextIndices.includes( i ) ) {
-					nextIndices.push( i );
+		if (nextIndices.length < limits.min && imageUrls.length >= limits.min) {
+			for (let i = 0; i < limits.min; i++) {
+				if (!nextIndices.includes(i)) {
+					nextIndices.push(i);
 				}
 			}
 			changed = true;
 		}
 
-		if ( changed ) {
-			setSelectedIndices( nextIndices );
+		if (changed) {
+			setSelectedIndices(nextIndices);
 		}
 	}, [
 		limits.max,
@@ -74,126 +71,125 @@ function OriginalImage( {
 		selectedIndices,
 		setSelectedIndices,
 		imageUrls.length,
-	] );
+	]);
 
 	let displayTitle =
 		sectionTitle ||
-		( multiple
-			? __( 'Original Images', 'tryaura' )
-			: __( 'Original Image', 'tryaura' ) );
+		(multiple
+			? __('Original Images', 'tryaura')
+			: __('Original Image', 'tryaura'));
 
-	if ( showGeneratedImage ) {
-		displayTitle = __( 'Generated Image', 'tryaura' );
+	if (showGeneratedImage) {
+		displayTitle = __('Generated Image', 'tryaura');
 	}
 
-	const toggleSelection = ( index: number ) => {
-		if ( ! showSelection ) {
+	const toggleSelection = (index: number) => {
+		if (!showSelection) {
 			return;
 		}
 
-		let nextIndices = [ ...selectedIndices ];
-		if ( nextIndices.includes( index ) ) {
-			if ( nextIndices.length > limits.min ) {
-				nextIndices = nextIndices.filter( ( i ) => i !== index );
+		let nextIndices = [...selectedIndices];
+		if (nextIndices.includes(index)) {
+			if (nextIndices.length > limits.min) {
+				nextIndices = nextIndices.filter((i) => i !== index);
 			}
-		} else if ( nextIndices.length < limits.max ) {
-			nextIndices.push( index );
-		} else if ( limits.max === 1 ) {
-			nextIndices = [ index ];
+		} else if (nextIndices.length < limits.max) {
+			nextIndices.push(index);
+		} else if (limits.max === 1) {
+			nextIndices = [index];
 		}
-		setSelectedIndices( nextIndices );
+		setSelectedIndices(nextIndices);
 	};
 
 	let content;
-	if ( showGeneratedImage ) {
+	if (showGeneratedImage) {
 		content = (
 			<div className="relative rounded-[8px] overflow-hidden">
-				{ generatedUrl ? (
+				{generatedUrl ? (
 					<img
-						src={ generatedUrl }
+						src={generatedUrl}
 						alt="Generated"
 						className="w-full h-auto block border-none"
 					/>
 				) : (
 					<div className="w-full h-[200px] bg-gray-100 flex items-center justify-center text-gray-400">
-						{ __( 'No generated image available', 'tryaura' ) }
+						{__('No generated image available', 'tryaura')}
 					</div>
-				) }
+				)}
 			</div>
 		);
-	} else if ( multiple ) {
+	} else if (multiple) {
 		content = (
 			<div className="flex flex-col gap-[8px]">
-				{ imageUrls.map( ( url, idx ) => (
+				{imageUrls.map((url, idx) => (
 					<div
-						key={ idx }
-						className={ `relative rounded-[8px] overflow-hidden ${
+						key={idx}
+						className={`relative rounded-[8px] overflow-hidden ${
 							showSelection
 								? 'cursor-pointer hover:opacity-90 transition-opacity '
 								: ''
-						} ${ isBusy ? 'cursor-not-allowed opacity-50' : '' }` }
-						onClick={ () => ! isBusy && toggleSelection( idx ) }
-						role={ showSelection ? 'button' : undefined }
-						tabIndex={ showSelection ? 0 : -1 }
-						onKeyDown={ ( e ) => {
+						} ${isBusy ? 'cursor-not-allowed opacity-50' : ''}`}
+						onClick={() => !isBusy && toggleSelection(idx)}
+						role={showSelection ? 'button' : undefined}
+						tabIndex={showSelection ? 0 : -1}
+						onKeyDown={(e) => {
 							if (
 								showSelection &&
-								( e.key === 'Enter' || e.key === ' ' )
+								(e.key === 'Enter' || e.key === ' ')
 							) {
 								e.preventDefault();
-								toggleSelection( idx );
+								toggleSelection(idx);
 							}
-						} }
+						}}
 					>
 						<img
-							src={ url }
-							alt={ `Original ${ idx + 1 }` }
-							className={ `w-full h-auto block rounded-[8px]
+							src={url}
+							alt={`Original ${idx + 1}`}
+							className={`w-full h-auto block rounded-[8px]
 								${
 									showSelection &&
-									selectedIndices.includes( idx )
+									selectedIndices.includes(idx)
 										? 'border-2 border-primary'
 										: 'border-none'
 								}
-							` }
+							`}
 						/>
-						{ showSelection && selectedIndices.includes( idx ) && (
+						{showSelection && selectedIndices.includes(idx) && (
 							<div className="absolute top-2 right-2 bg-primary text-white rounded-full p-0.5">
-								<Check size={ 16 } />
+								<Check size={16} />
 							</div>
-						) }
+						)}
 					</div>
-				) ) }
+				))}
 			</div>
 		);
 	} else {
 		content = (
 			<div className="relative rounded-[8px] overflow-hidden">
 				<img
-					src={ imageUrls[ 0 ] }
-					alt={ 'Original' }
-					className={ `w-full h-auto block rounded-[8px]
+					src={imageUrls[0]}
+					alt={'Original'}
+					className={`w-full h-auto block rounded-[8px]
 								${
-									showSelection &&
-									selectedIndices.includes( 0 )
+									showSelection && selectedIndices.includes(0)
 										? 'border-2 border-primary'
 										: 'border-none'
 								}
-							` }
+							`}
 				/>
-				{ showSelection && selectedIndices.includes( 0 ) && (
+				{showSelection && selectedIndices.includes(0) && (
 					<div className="absolute top-2 right-2 bg-primary text-white rounded-full p-0.5">
-						<Check size={ 16 } />
+						<Check size={16} />
 					</div>
-				) }
+				)}
 			</div>
 		);
 	}
 
 	return (
-		<div className={ className }>
-			<div className="text-[14px] mb-[8px]">{ displayTitle }</div>
-			{ content }
+		<div className={className}>
+			<div className="text-[14px] mb-[8px]">{displayTitle}</div>
+			{content}
 		</div>
 	);
 }

@@ -53,6 +53,7 @@ class Enhancer {
 			array(
 				'restUrl'         => esc_url_raw( rest_url() ),
 				'nonce'           => wp_create_nonce( 'wp_rest' ),
+				'tryonNonce'      => wp_create_nonce( 'tryon_nonce' ),
 				'provider'        => $provider,
 				'apiKey'          => 'openrouter' === $provider ? '' : $api_key,
 				'imageModel'      => $image_model,

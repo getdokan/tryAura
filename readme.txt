@@ -274,4 +274,4 @@ This may have bugs and lack of many features. If you want to contribute on this 
 * Initial release
 
 = 1.0.1 ( Apr 21, 2026 ) =
-*
+* Enhance – Update redirection URL across all modal entry points

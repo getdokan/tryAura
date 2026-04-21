@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       TryAura
  * Description:       TryAura is an AI-powered virtual try-on and content creation platform built for fashion and eCommerce. With seamless WooCommerce integration, it allows brands and shoppers to instantly visualize clothing on models, customers, or in any scene — without costly photoshoots. From product images to lifestyle videos, TryAura helps online stores boost engagement, reduce returns, and elevate their shopping experience with cutting-edge AI.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.6
  * Requires PHP:      7.4
  * Author:            weDevs

@@ -1,6 +1,6 @@
 import { forwardRef } from '@wordpress/element';
 import { twMerge } from 'tailwind-merge';
-import { CrownIcon } from './index';
+import CrownIcon from './CrownIcon';
 
 type Variant = 'solid' | 'outline' | 'outline-primary';
 type Color = 'primary';
@@ -27,18 +27,18 @@ const Button = forwardRef< HTMLButtonElement, ButtonProps >( function Button(
 	},
 	ref
 ) {
-	let classNames =
-		'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-primary px-3 py-2 text-[14px] text-white hover:bg-bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
-
-	if ( variant === 'outline' ) {
-		classNames =
-			'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-white px-3 py-2 text-[14px] text-neutral-900 inset-ring inset-ring-neutral-300 hover:bg-neutral-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
-	}
-
-	if ( variant === 'outline-primary' ) {
-		classNames =
-			'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-white px-3 py-2 text-[14px] text-primary inset-ring inset-ring-primary hover:bg-primary/5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
-	}
+	const classNamesByColor = {
+		primary: {
+			solid: 'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-primary px-3 py-2 text-[14px] text-white hover:bg-bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
+			outline:
+				'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-white px-3 py-2 text-[14px] text-neutral-900 inset-ring inset-ring-neutral-300 hover:bg-neutral-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
+			'outline-primary':
+				'flex flex-row justify-center items-center gap-1 rounded-[5px] bg-white px-3 py-2 text-[14px] text-primary inset-ring inset-ring-primary hover:bg-primary/5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
+		},
+	};
+	const classNames =
+		classNamesByColor[ color ]?.[ variant ] ??
+		classNamesByColor.primary.solid;
 	const Tag = type === 'link' ? 'a' : 'button';
 
 	return (

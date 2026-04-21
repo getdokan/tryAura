@@ -1,4 +1,5 @@
 import { useSelect, useDispatch } from '@wordpress/data';
+import { useRef, useState } from '@wordpress/element';
 import { STORE_NAME } from '../store';
 import { CrownIcon, ModernSelect } from '../../../components';
 import { __ } from '@wordpress/i18n';
@@ -6,7 +7,6 @@ import { applyFilters } from '@wordpress/hooks';
 import {
 	Circle,
 	Leaf,
-	Settings,
 	Shirt,
 	User,
 	Wallpaper,
@@ -16,8 +16,9 @@ import {
 	RectangleVertical,
 } from 'lucide-react';
 import ConfigFooter from './ConfigFooter';
-import { hasPro } from '../../../utils/tryaura';
+import { getUpgradeToProUrl, hasPro } from '../../../utils/tryaura';
 import { twMerge } from 'tailwind-merge';
+import ProUpgradePopover from '../../../components/ProUpgradePopover';
 
 function ImageConfigInputs( { doGenerate } ) {
 	const {
@@ -42,6 +43,35 @@ function ImageConfigInputs( { doGenerate } ) {
 	}, [] );
 
 	const { setImageConfigData } = useDispatch( STORE_NAME );
+	const [ promptPopoverAnchor, setPromptPopoverAnchor ] =
+		useState< SVGSVGElement | null >( null );
+	const [ isPromptPopoverOpen, setIsPromptPopoverOpen ] = useState( false );
+	const promptHoverTimeout = useRef< ReturnType< typeof setTimeout > | null >(
+		null
+	);
+	const proFeaturePopoverMessage = __(
+		'Unlock advanced features like landscape and portrait image sizes plus custom prompts with a pro account.',
+		'tryaura'
+	);
+
+	const clearPromptPopoverTimeout = () => {
+		if ( promptHoverTimeout.current ) {
+			clearTimeout( promptHoverTimeout.current );
+			promptHoverTimeout.current = null;
+		}
+	};
+
+	const handlePromptPopoverEnter = () => {
+		clearPromptPopoverTimeout();
+		setIsPromptPopoverOpen( true );
+	};
+
+	const handlePromptPopoverLeave = () => {
+		clearPromptPopoverTimeout();
+		promptHoverTimeout.current = setTimeout( () => {
+			setIsPromptPopoverOpen( false );
+		}, 150 );
+	};
 
 	const allBackgroundPrefrences = applyFilters(
 		'tryaura.enhancer.background_preferences',
@@ -165,6 +195,9 @@ function ImageConfigInputs( { doGenerate } ) {
 				label={ __( 'Image Size', 'tryaura' ) }
 				options={ allAspectRatios }
 				disabled={ isBusy }
+				showLockedPopover={ ! hasPro() }
+				lockedPopoverMessage={ proFeaturePopoverMessage }
+				lockedPopoverUpgradeUrl={ getUpgradeToProUrl() }
 			/>
 
 			<label
@@ -173,19 +206,33 @@ function ImageConfigInputs( { doGenerate } ) {
 					flexDirection: 'column',
 					gap: 4,
 				} }
+				htmlFor="tryaura-image-optional-prompt"
 			>
 				<div className="flex flex-row gap-2 items-center mb-2">
 					<span
 						className={ twMerge(
 							'w-[500] text-[14px]',
-							!hasPro() ? 'text-[#929296]' : ''
+							! hasPro() ? 'text-[#929296]' : ''
 						) }
 					>
 						{ isBlockEditorPage && ! isWoocommerceProductPage
 							? __( 'Prompt', 'tryaura' )
 							: __( 'Prompt (Optional)', 'tryaura' ) }
 					</span>
-					{ ! hasPro() && <CrownIcon className="text-[16px]" /> }
+					{ ! hasPro() && (
+						<CrownIcon
+							// @ts-ignore
+							ref={ setPromptPopoverAnchor }
+							className="text-[16px] cursor-pointer"
+							onMouseEnter={ handlePromptPopoverEnter }
+							onMouseLeave={ handlePromptPopoverLeave }
+							onFocus={ handlePromptPopoverEnter }
+							onBlur={ handlePromptPopoverLeave }
+							role="button"
+							tabIndex={ 0 }
+							aria-label={ __( 'Upgrade to Pro', 'tryaura' ) }
+						/>
+					) }
 				</div>
 				<textarea
 					className="border border-[#E9E9E9] placeholder-[#A5A5AA] max-h-44 focus:shadow-none focus:ring-1 focus:ring-primary"
@@ -199,6 +246,7 @@ function ImageConfigInputs( { doGenerate } ) {
 					}
 					disabled={ isBusy || ! hasPro() }
 					rows={ 3 }
+					id="tryaura-image-optional-prompt"
 					placeholder={
 						isBlockEditorPage && ! isWoocommerceProductPage
 							? __( 'Add any specific instructions', 'tryaura' )
@@ -209,6 +257,16 @@ function ImageConfigInputs( { doGenerate } ) {
 					}
 				/>
 			</label>
+
+			<ProUpgradePopover
+				anchor={ promptPopoverAnchor }
+				isOpen={ ! hasPro() && isPromptPopoverOpen }
+				onClose={ () => setIsPromptPopoverOpen( false ) }
+				onMouseEnter={ handlePromptPopoverEnter }
+				onMouseLeave={ handlePromptPopoverLeave }
+				message={ proFeaturePopoverMessage }
+				upgradeUrl={ getUpgradeToProUrl() }
+			/>
 
 			<ConfigFooter
 				generatedUrl={ generatedUrl }

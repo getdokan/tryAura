@@ -1,6 +1,12 @@
-const CrownIcon = ( { className = '', ...props } ) => {
+import { forwardRef } from '@wordpress/element';
+
+const CrownIcon = forwardRef< SVGSVGElement, any >( function CrownIcon(
+	{ className = '', ...props },
+	ref
+) {
 	return (
 		<svg
+			ref={ ref }
 			viewBox="0 0 17 14"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
@@ -21,6 +27,6 @@ const CrownIcon = ( { className = '', ...props } ) => {
 			/>
 		</svg>
 	);
-};
+} );
 
 export default CrownIcon;

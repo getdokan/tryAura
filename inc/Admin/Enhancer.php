@@ -60,7 +60,7 @@ class Enhancer {
 				'testVideo'       => defined( 'TRYAURA_TEST_VIDEO' ) ? TRYAURA_TEST_VIDEO : '',
 				'testImage'       => defined( 'TRYAURA_TEST_IMAGE' ) ? TRYAURA_TEST_IMAGE : '',
 				'hasPro'          => (bool) TryAura::is_pro_exists(),
-				'upgradeToProUrl' => '#',
+				'upgradeToProUrl' => 'https://storepulse.co/tryaura/pricing/',
 			)
 		);
 

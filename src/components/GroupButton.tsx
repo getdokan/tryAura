@@ -1,5 +1,5 @@
 import { twMerge } from 'tailwind-merge';
-import { CrownIcon } from './index';
+import CrownIcon from './CrownIcon';
 
 export interface GroupButtonProps {
 	options: {

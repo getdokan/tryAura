@@ -3,7 +3,16 @@ import { useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
 import { twMerge } from 'tailwind-merge';
-import { CrownIcon } from './index';
+import CrownIcon from './CrownIcon';
+import ProUpgradePopover from './ProUpgradePopover';
+
+type SelectOption = {
+	label: string;
+	value: string;
+	icon?: any;
+	locked?: boolean;
+};
+
 const ModernSelect = ( {
 	value,
 	onChange,
@@ -14,27 +23,69 @@ const ModernSelect = ( {
 	label = '',
 	variant = 'grid',
 	disabled = false,
+	showLockedPopover = false,
+	lockedPopoverMessage = __(
+		'Unlock advanced features with a pro account.',
+		'tryaura'
+	),
+	lockedPopoverUpgradeUrl,
 }: {
 	value: string;
 	label?: string;
 	onChange: ( val: string ) => void;
-	options: { label: string; value: string; icon?: any; locked?: boolean }[];
+	options: SelectOption[];
 	placeholder?: string;
 	className?: string;
 	labelClassName?: string;
 	variant?: 'grid' | 'list';
 	disabled?: boolean;
+	showLockedPopover?: boolean;
+	lockedPopoverMessage?: string;
+	lockedPopoverUpgradeUrl?: string;
 } ) => {
 	const [ open, setOpen ] = useState( false );
 	const contentRef = useRef< HTMLDivElement >( null );
-	const [ popoverAnchor, setPopoverAnchor ] = useState();
+	const [ popoverAnchor, setPopoverAnchor ] =
+		useState< HTMLButtonElement | null >( null );
+	const [ lockedPopoverAnchor, setLockedPopoverAnchor ] =
+		useState< HTMLButtonElement | null >( null );
+	const [ isLockedPopoverOpen, setIsLockedPopoverOpen ] = useState( false );
+	const lockedHoverTimeout = useRef< ReturnType< typeof setTimeout > | null >(
+		null
+	);
 	const current = options.find( ( o ) => o.value === value );
 
 	if ( variant === 'list' ) {
 	}
 
+	const clearLockedPopoverTimeout = () => {
+		if ( lockedHoverTimeout.current ) {
+			clearTimeout( lockedHoverTimeout.current );
+			lockedHoverTimeout.current = null;
+		}
+	};
+
+	const closeLockedPopover = () => {
+		clearLockedPopoverTimeout();
+		setIsLockedPopoverOpen( false );
+	};
+
+	const handleLockedPopoverEnter = ( anchor: HTMLButtonElement ) => {
+		clearLockedPopoverTimeout();
+		setLockedPopoverAnchor( anchor );
+		setIsLockedPopoverOpen( true );
+	};
+
+	const handleLockedPopoverLeave = () => {
+		clearLockedPopoverTimeout();
+		lockedHoverTimeout.current = setTimeout( () => {
+			setIsLockedPopoverOpen( false );
+		}, 150 );
+	};
+
 	const handleSelect = ( val: string ) => {
 		onChange( val );
+		closeLockedPopover();
 		setOpen( false );
 	};
 
@@ -65,7 +116,14 @@ const ModernSelect = ( {
 					) }
 					aria-haspopup="listbox"
 					aria-expanded={ open }
-					onClick={ () => ! disabled && setOpen( ( v ) => ! v ) }
+					onClick={ () => {
+						if ( disabled ) {
+							return;
+						}
+
+						closeLockedPopover();
+						setOpen( ( v ) => ! v );
+					} }
 				>
 					<span className="truncate">
 						{ current ? current.label : placeholder }
@@ -81,8 +139,22 @@ const ModernSelect = ( {
 				{ open && ! disabled ? (
 					<Popover
 						anchor={ popoverAnchor }
-						onClose={ () => ! disabled && setOpen( false ) }
-						onFocusOutside={ () => ! disabled && setOpen( false ) }
+						onClose={ () => {
+							if ( disabled ) {
+								return;
+							}
+
+							closeLockedPopover();
+							setOpen( false );
+						} }
+						onFocusOutside={ () => {
+							if ( disabled ) {
+								return;
+							}
+
+							closeLockedPopover();
+							setOpen( false );
+						} }
 						noArrow
 						flip={ true }
 						style={ {
@@ -122,6 +194,42 @@ const ModernSelect = ( {
 											variant === 'grid' &&
 												'hover:border-primary'
 										) }
+										onMouseEnter={ ( event ) => {
+											if (
+												showLockedPopover &&
+												opt.locked
+											) {
+												handleLockedPopoverEnter(
+													event.currentTarget
+												);
+											}
+										} }
+										onMouseLeave={ () => {
+											if (
+												showLockedPopover &&
+												opt.locked
+											) {
+												handleLockedPopoverLeave();
+											}
+										} }
+										onFocus={ ( event ) => {
+											if (
+												showLockedPopover &&
+												opt.locked
+											) {
+												handleLockedPopoverEnter(
+													event.currentTarget
+												);
+											}
+										} }
+										onBlur={ () => {
+											if (
+												showLockedPopover &&
+												opt.locked
+											) {
+												handleLockedPopoverLeave();
+											}
+										} }
 										onClick={ () =>
 											! opt.locked &&
 											handleSelect( opt.value )
@@ -151,6 +259,16 @@ const ModernSelect = ( {
 						</div>
 					</Popover>
 				) : null }
+
+				<ProUpgradePopover
+					anchor={ lockedPopoverAnchor }
+					isOpen={ showLockedPopover && open && isLockedPopoverOpen }
+					onClose={ closeLockedPopover }
+					onMouseEnter={ clearLockedPopoverTimeout }
+					onMouseLeave={ handleLockedPopoverLeave }
+					message={ lockedPopoverMessage }
+					upgradeUrl={ lockedPopoverUpgradeUrl }
+				/>
 			</div>
 		</div>
 	);

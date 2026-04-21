@@ -4,7 +4,7 @@ Tags: virtual try on, product visualization, try-on, virtual mirror
 Requires at least: 6.6
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -270,5 +270,8 @@ This may have bugs and lack of many features. If you want to contribute on this 
 
 == Changelog ==
 
-= 1.0.0 =
+= 1.0.0 ( Mar 13, 2026 ) =
 * Initial release
+
+= 1.0.1 ( Apr 21, 2026 ) =
+* Enhance – Update redirection URL across all modal entry points

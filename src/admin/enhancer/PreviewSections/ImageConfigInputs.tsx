@@ -208,7 +208,7 @@ function ImageConfigInputs( { doGenerate } ) {
 				} }
 				htmlFor="tryaura-image-optional-prompt"
 			>
-				<div className="flex flex-row gap-2 items-center mb-2">
+				<div className="flex flex-row gap-2 justify-between mb-2">
 					<span
 						className={ twMerge(
 							'w-[500] text-[14px]',
@@ -223,7 +223,7 @@ function ImageConfigInputs( { doGenerate } ) {
 						<CrownIcon
 							// @ts-ignore
 							ref={ setPromptPopoverAnchor }
-							className="text-[16px] cursor-pointer"
+							className="text-[14px] cursor-pointer"
 							onMouseEnter={ handlePromptPopoverEnter }
 							onMouseLeave={ handlePromptPopoverLeave }
 							onFocus={ handlePromptPopoverEnter }

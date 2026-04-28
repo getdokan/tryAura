@@ -1,5 +1,5 @@
 import { Modal } from '@wordpress/components';
-import { createRoot, RawHTML, render } from "@wordpress/element";
+import { createRoot, render, useState } from "@wordpress/element";
 import { __ } from '@wordpress/i18n';
 import './style.scss';
 import { X } from "lucide-react";
@@ -11,22 +11,42 @@ interface VideoModalProps {
 	onClose: () => void;
 }
 
+const DEFAULT_ASPECT_RATIO = 16 / 9;
+
 const VideoModal = ( {
 	videoUrl,
 	videoPlatform,
 	onClose,
 }: VideoModalProps ) => {
-	let videoHtml = '';
+	const [ aspectRatio, setAspectRatio ] = useState< number >( DEFAULT_ASPECT_RATIO );
+
+	const handleLoadedMetadata = ( event: React.SyntheticEvent< HTMLVideoElement > ) => {
+		const { videoWidth, videoHeight } = event.currentTarget;
+		if ( videoWidth > 0 && videoHeight > 0 ) {
+			setAspectRatio( videoWidth / videoHeight );
+		}
+	};
+
+	let content: React.ReactNode = null;
 	if ( videoPlatform === 'youtube' ) {
 		const videoId = getYoutubeId( videoUrl );
 		if ( videoId ) {
-			videoHtml = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ videoId }?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+			content = (
+				<iframe
+					src={ `https://www.youtube.com/embed/${ videoId }?autoplay=1` }
+					title={ __( 'Product video', 'tryaura' ) }
+					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+					allowFullScreen
+				/>
+			);
 		}
 	} else {
-		videoHtml = `<video width="100%" height="auto" controls autoplay><source src="${ videoUrl }" type="video/mp4">${ __(
-			'Your browser does not support the video tag.',
-			'tryaura'
-		) }</video>`;
+		content = (
+			<video controls autoPlay onLoadedMetadata={ handleLoadedMetadata }>
+				<source src={ videoUrl } type="video/mp4" />
+				{ __( 'Your browser does not support the video tag.', 'tryaura' ) }
+			</video>
+		);
 	}
 
 	return (
@@ -37,14 +57,15 @@ const VideoModal = ( {
 			className="tryaura tryaura-video-modal-root"
 			__experimentalHideHeader
 		>
-			<div className="tryaura-video-modal-player">
-				<div className="w-full h-full relative">
-					<X
-						className="absolute top-1 right-1 cursor-pointer z-50 bg-red-50 rounded-full p-1 text-red-400"
-						onClick={ onClose }
-					/>
-					<RawHTML>{ videoHtml }</RawHTML>
-				</div>
+			<div
+				className="tryaura-video-modal-player"
+				style={ { '--tryaura-video-aspect': String( aspectRatio ) } as React.CSSProperties }
+			>
+				<X
+					className="absolute top-1 right-1 cursor-pointer z-50 bg-red-50 rounded-full p-1 text-red-400"
+					onClick={ onClose }
+				/>
+				{ content }
 			</div>
 		</Modal>
 	);

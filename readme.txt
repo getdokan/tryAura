@@ -2,9 +2,10 @@
 Contributors: wedevs, tareq1988, nizamuddinbabu
 Tags: virtual try on, product visualization, try-on, virtual mirror
 Requires at least: 6.6
-Tested up to: 6.9
+Tested up to: 6.9.4
+WC tested up to: 10.7.0
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -270,8 +271,12 @@ This may have bugs and lack of many features. If you want to contribute on this 
 
 == Changelog ==
 
-= 1.0.0 ( Mar 13, 2026 ) =
-* Initial release
+= v1.0.2 ( April 28, 2026 ) =
+- **update:** Updated plugin display name on WordPress.org to improve search visibility and clarity.
+- **fix:** Made storefront product video frame responsive to support any aspect ratio without breaking the layout.
 
-= 1.0.1 ( Apr 21, 2026 ) =
-* Enhance – Update redirection URL across all modal entry points
+= v1.0.1 ( Apr 21, 2026 ) =
+- **update:** Update redirection URL across all modal entry points
+
+= v1.0.0 ( Mar 13, 2026 ) =
+* Initial release

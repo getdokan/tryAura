@@ -1,6 +1,6 @@
 {
 	"name": "tryaura",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "an AI-powered virtual try-on and content creation platform built for fashion and eCommerce.",
 	"private": true,
 	"main": "index.js",

@@ -1,4 +1,4 @@
-# TryAura — AI Virtual Try‑On and Content Enhancer for WordPress
+# TryAura: AI Virtual Try-On, Product Visualization & Product Videos for WooCommerce
 
 ## Overview
 TryAura is an AI‑powered virtual try‑on and content creation plugin for WordPress and WooCommerce. It helps stores create better product visuals without costly photoshoots by enabling:

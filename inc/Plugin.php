@@ -34,8 +34,23 @@ class Plugin {
 		$this->container = TryAura::container();
 		register_activation_hook( TRYAURA_FILE, array( Installer::class, 'activate' ) );
 		$this->define_constants();
+		add_action( 'before_woocommerce_init', array( $this, 'declare_woocommerce_compatibility' ) );
 		add_action( 'plugins_loaded', array( $this, 'load_container' ) );
 		add_action( 'init', array( $this, 'init_classes') );
+	}
+
+	/**
+	 * Declare compatibility with WooCommerce features.
+	 *
+	 * @since 1.0.3
+	 *
+	 * @return void
+	 */
+	public function declare_woocommerce_compatibility() {
+		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', TRYAURA_FILE, true );
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', TRYAURA_FILE, true );
+		}
 	}
 
 	/**

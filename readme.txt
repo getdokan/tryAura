@@ -273,7 +273,6 @@ This may have bugs and lack of many features. If you want to contribute on this 
 
 = v1.0.3 ( May 12, 2026 ) =
 - **fix:** Declared WooCommerce HPOS and cart/checkout blocks compatibility.
-- **fix:** Granted GitHub Actions `contents: write` permission so release tag publishing succeeds.
 
 = v1.0.2 ( April 28, 2026 ) =
 - **update:** Updated plugin display name on WordPress.org to improve search visibility and clarity.

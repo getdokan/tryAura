@@ -5,7 +5,7 @@ Requires at least: 6.6
 Tested up to: 6.9.4
 WC tested up to: 10.7.0
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -270,6 +270,9 @@ This may have bugs and lack of many features. If you want to contribute on this 
 6. TryAura - Unlimited Generations With Your Own Key
 
 == Changelog ==
+
+= v1.0.3 ( May 12, 2026 ) =
+- **fix:** Declared WooCommerce HPOS and cart/checkout blocks compatibility.
 
 = v1.0.2 ( April 28, 2026 ) =
 - **update:** Updated plugin display name on WordPress.org to improve search visibility and clarity.

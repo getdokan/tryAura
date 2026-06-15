@@ -17,7 +17,8 @@
 	],
 	"minimum-stability": "stable",
 	"require": {
-		"php": ">=7.4"
+		"php": ">=7.4",
+		"appsero/client": "^v2.0"
 	},
 	"require-dev": {
 		"automattic/vipwpcs": "^3.0",
@@ -59,7 +60,8 @@
 			"classmap_directory": "/lib/classes/",
 			"classmap_prefix": "Dokan_TryAura_",
 			"packages": [
-				"league/container"
+				"league/container",
+				"appsero/client"
 			],
 			"delete_vendor_directories": true
 		}

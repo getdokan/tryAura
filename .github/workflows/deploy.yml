@@ -29,6 +29,7 @@ jobs:
 
             - name: Build
               run: |
+                composer install
                 composer install --no-dev -o
                 npm install
                 npm run build

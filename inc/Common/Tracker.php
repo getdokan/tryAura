@@ -14,13 +14,11 @@ use Dokan\TryAura\ThirdParty\Packages\Appsero\Insights;
  * TryAura tracker.
  *
  * Uses Appsero\Insights for anonymous usage tracking.
- *
  */
 class Tracker {
 
 	/**
 	 * Insights instance.
-	 *
 	 *
 	 * @var Insights|null
 	 */
@@ -28,7 +26,6 @@ class Tracker {
 
 	/**
 	 * Constructor.
-	 *
 	 */
 	public function __construct() {
 		$this->init_tracker();
@@ -36,7 +33,6 @@ class Tracker {
 
 	/**
 	 * Initialize the Appsero tracker.
-	 *
 	 *
 	 * @return void
 	 */

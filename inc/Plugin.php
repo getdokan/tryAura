@@ -104,6 +104,11 @@ class Plugin {
 			$this->container->get( 'assets' );
 		}
 
+		// Initialize Appsero tracker.
+		if ( $this->container->has( 'tracker' ) ) {
+			$this->container->get( 'tracker' );
+		}
+
 		// WooCommerce integrations.
 		if ( $this->container->has( 'woocommerce' ) ) {
 			$this->container->get( 'woocommerce' );

@@ -43,97 +43,119 @@ class Assets {
 	 * @return void
 	 */
 	public function localize_scripts() {
+		$image_models = array(
+			'gemini-2.5-flash-image' => __( 'Nano Banana (gemini-2.5-flash-image)', 'tryaura' ),
+			'gemini-3.1-flash-image' => __( 'Nano Banana 2 (gemini-3.1-flash-image)', 'tryaura' ),
+			'gemini-3-pro-image'     => __( 'Nano Banana Pro (gemini-3-pro-image)', 'tryaura' ),
+		);
+
+		$google_models = array();
+		foreach ( $image_models as $model => $label ) {
+			$google_models[ $model ] = $this->get_image_model_config( $label );
+		}
+
 		$config = array(
 			'aiProviders'       => array(
-				'google' => array(
-					'gemini-2.5-flash-image'         => array(
-						'label'        => __( 'gemini-2.5-flash-image', 'tryaura' ),
-						'identity'     => 'image',
-						'inputTypes'   => array( 'text', 'image' ),
-						'outputTypes'  => array( 'image' ),
-						'supported'    => true,
-						'locked'       => false,
-						'capabilities' => array(
-							'image'  => array(
-								'supported' => true,
-								'locked'    => false,
-							),
-							'prompt' => array(
-								'supported' => true,
-								'locked'    => false,
-							),
+				'google' => $google_models,
+			),
+			'defaultProvider'   => 'google',
+			'defaultImageModel' => 'gemini-3.1-flash-image',
+		);
+
+		wp_localize_script( 'tryaura-ai-models', 'tryAuraAiProviderModels', apply_filters( 'tryaura_ai_models', $config ) );
+	}
+
+	/**
+	 * Get the shared configuration for a Gemini image model.
+	 *
+	 * @since 1.0.4
+	 *
+	 * @param string $label Display label shown in the model dropdown.
+	 *
+	 * @return array
+	 */
+	private function get_image_model_config( $label ) {
+		return array(
+			'label'        => $label,
+			'identity'     => 'image',
+			'inputTypes'   => array( 'text', 'image' ),
+			'outputTypes'  => array( 'image' ),
+			'supported'    => true,
+			'locked'       => false,
+			'capabilities' => array(
+				'image'  => array(
+					'supported' => true,
+					'locked'    => false,
+				),
+				'prompt' => array(
+					'supported' => true,
+					'locked'    => false,
+				),
+			),
+			'parameters'   => array(
+				'aspectRatio'      => array(
+					'supported' => true,
+					'locked'    => false,
+					'default'   => '1:1',
+					'values'    => array(
+						array(
+							'label'  => __( '1:1', 'tryaura' ),
+							'value'  => '1:1',
+							'locked' => false,
 						),
-						'parameters'   => array(
-							'aspectRatio'      => array(
-								'supported' => true,
-								'locked'    => false,
-								'default'   => '1:1',
-								'values'    => array(
-									array(
-										'label'  => __( '1:1', 'tryaura' ),
-										'value'  => '1:1',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( '16:9', 'tryaura' ),
-										'value'  => '16:9',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( '9:16', 'tryaura' ),
-										'value'  => '9:16',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( '4:3', 'tryaura' ),
-										'value'  => '4:3',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( '3:4', 'tryaura' ),
-										'value'  => '3:4',
-										'locked' => false,
-									),
-								),
-							),
-							'personGeneration' => array(
-								'supported' => true,
-								'locked'    => false,
-								'default'   => 'allow_adult',
-								'values'    => array(
-									array(
-										'label'  => __( 'Allow Adult', 'tryaura' ),
-										'value'  => 'allow_adult',
-										'locked' => false,
-									),
-									array(
-										'label'  => __( 'Disallow', 'tryaura' ),
-										'value'  => 'disallow',
-										'locked' => false,
-									),
-								),
-							),
-							'candidateCount'   => array(
-								'supported' => true,
-								'locked'    => false,
-								'default'   => '1',
-								'values'    => array(
-									array(
-										'label'  => __( '1 image', 'tryaura' ),
-										'value'  => '1',
-										'locked' => false,
-									),
-								),
-							),
+						array(
+							'label'  => __( '16:9', 'tryaura' ),
+							'value'  => '16:9',
+							'locked' => false,
+						),
+						array(
+							'label'  => __( '9:16', 'tryaura' ),
+							'value'  => '9:16',
+							'locked' => false,
+						),
+						array(
+							'label'  => __( '4:3', 'tryaura' ),
+							'value'  => '4:3',
+							'locked' => false,
+						),
+						array(
+							'label'  => __( '3:4', 'tryaura' ),
+							'value'  => '3:4',
+							'locked' => false,
+						),
+					),
+				),
+				'personGeneration' => array(
+					'supported' => true,
+					'locked'    => false,
+					'default'   => 'allow_adult',
+					'values'    => array(
+						array(
+							'label'  => __( 'Allow Adult', 'tryaura' ),
+							'value'  => 'allow_adult',
+							'locked' => false,
+						),
+						array(
+							'label'  => __( 'Disallow', 'tryaura' ),
+							'value'  => 'disallow',
+							'locked' => false,
+						),
+					),
+				),
+				'candidateCount'   => array(
+					'supported' => true,
+					'locked'    => false,
+					'default'   => '1',
+					'values'    => array(
+						array(
+							'label'  => __( '1 image', 'tryaura' ),
+							'value'  => '1',
+							'locked' => false,
 						),
 					),
 				),
 			),
-			'defaultProvider'   => 'google',
-			'defaultImageModel' => 'gemini-2.5-flash-image',
 		);
-
-		wp_localize_script( 'tryaura-ai-models', 'tryAuraAiProviderModels', apply_filters( 'tryaura_ai_models', $config ) );
 	}
 
 	/**

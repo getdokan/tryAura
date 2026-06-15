@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Dokan\TryAura\DependencyManagement\BaseServiceProvider;
 use Dokan\TryAura\Common\Assets;
+use Dokan\TryAura\Common\Tracker;
 
 /**
  * CommonServiceProvider Class
@@ -24,7 +25,8 @@ class CommonServiceProvider extends BaseServiceProvider {
 	 * @var array
 	 */
 	protected $services = [
-		'assets' => Assets::class,
+		'assets'  => Assets::class,
+		'tracker' => Tracker::class,
 	];
 
 	/**

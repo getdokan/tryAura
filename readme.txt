@@ -271,6 +271,11 @@ This may have bugs and lack of many features. If you want to contribute on this 
 
 == Changelog ==
 
+= v1.0.4 ( Jun 15, 2026 ) =
+-----------------------------------
+- **new:** Added new Gemini image models — Nano Banana 2 (gemini-3.1-flash-image) and Nano Banana Pro (gemini-3-pro-image) — to the image model selector.
+- **update:** Set Nano Banana 2 (gemini-3.1-flash-image) as the default image model and relabelled options as "Name (model-string)".
+
 = v1.0.3 ( May 12, 2026 ) =
 - **fix:** Declared WooCommerce HPOS and cart/checkout blocks compatibility.
 

@@ -9,235 +9,248 @@ Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Upgrade your WooCommerce store with **AI-powered product images** and **virtual try on**, using your existing products.
+Upgrade your WooCommerce store with AI-powered product images, video generation, and virtual try-on, using your existing products.
 
 == Description ==
 
-TryAura helps you upgrade your **WooCommerce store** with **virtual try on** and **AI-powered product visuals**.
+Get **AI product photography**, **product video generation**, and a customer-facing **virtual try-on** built right into WooCommerce.
 
-With TryAura, you can improve existing product images, generate product visuals, and enable virtual try on directly on product pages. Everything works **inside WordPress and WooCommerce**, without external tools or complex setup.
+**[TryAura](https://storepulse.co/tryaura/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo)** turns basic product photos into studio-quality visuals, gives shoppers a virtual mirror to try products on before buying, and creates unlimited images using your own Google Gemini key.
 
-TryAura is built for **WooCommerce store owners** who want to improve product presentation, create clearer visual experiences, and help customers make informed purchase decisions.
+It is built for **WooCommerce store owners** who want to improve product presentation, create clearer visual experiences, and help customers make informed purchase decisions.
+
+TryAura is built and maintained by [weDevs](https://wedevs.com/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo), a WordPress-focused software company with 13 years in the ecosystem, trusted by over 1 million users across its product portfolio. It is part of the [StorePulse](https://storepulse.co/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo) family of eCommerce solutions.
+
+[youtube https://www.youtube.com/watch?v=G1JB-r8eZ7g]
+
+Find step-by-step setup guides and tutorials in the [product documentation](https://storepulse.co/tryaura/docs/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo) to get the most out of every feature.
+
+If you have additional questions or need assistance, please [contact our team](https://storepulse.co/contact/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo), or visit our official website at [StorePulse](https://storepulse.co/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo).
+
+== 🛍️ What You Can Do With TryAura ==
+
+* **Try on clothing**, so shoppers see how items look on real models before buying
+* **Try on accessories** like glasses, watches, and jewelry, without new photoshoots
+* **Show product in hand**, with models holding cosmetics, gadgets, bottles, or accessories
+* **Change the model** to match different styles, demographics, or brand aesthetics
+* **Change the background** to clean, lifestyle, or studio-style scenes
+* **Create product videos** that turn static images into short, engaging clips
+* **Generate blog featured images** for content that matches your store
+* **Build any visually driven WooCommerce store**: fashion, apparel, beauty, jewelry, accessories, lifestyle
+
+== The Problem TryAura Solves ==
+
+Shoppers hesitate when they cannot picture a product clearly. That hesitation shows up as low conversion rates, weak product engagement, and returns from buyers who were not sure what they were getting.
+
+Professional photoshoots help, but they are expensive, slow to repeat, and hard to scale as your catalog grows. Supplier images look identical to every competing store.
+
+**[TryAura](https://storepulse.co/tryaura/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo)** helps you close that gap. It improves your existing product images, generates new visuals and videos, and adds a virtual mirror to the product page, so shoppers see the product clearly and decide with confidence before they add to cart.
+
+Everything happens inside WooCommerce, with no exports, no separate dashboards, and no third-party apps to manage.
 
 == Create Stunning Product Visuals with Cutting Edge AI Infrastructure ==
+With TryAura, you can upgrade your whole catalogue with fresh photos, videos, and virtual try-on experiences without expensive photoshoots. Here are some of the **[features](https://storepulse.co/tryaura/features/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo)** of TryAura.
 
-=== WooCommerce Native Virtual Try On ===
-Allow customers to **preview products visually** before purchasing, directly on the shop and product page.
+=== Show Products Clearly. Sell With Confidence. ===
 
-=== Improved Product Images With Generative AI ===
-Create product images using your existing WooCommerce product images, without expensive photoshoots or third-party tools.
+Just a few clicks turn simple product images into realistic visuals and try-on experiences. Clean, studio-quality images make your catalog look professional, product videos showcase the fit and fine details that static images miss, and virtual try-on helps customers picture the product before they buy.
 
-=== Product-Level try on Controls ===
-Enable or disable virtual try on **for individual products** from the WooCommerce product editor.
+When a shopper can see exactly what they are getting, they feel more secure about the purchase, and you spend less time creating and re-creating product imagery by hand.
 
-=== Media Library Integration ===
-All generated images are saved to the **WordPress Media Library** and can be reused, downloaded, or published anywhere on your site. TryOn results are not stored to retain customer privacy.
+=== WooCommerce Native Virtual Try-On ===
 
-=== Camera or Image Upload for Customers ===
-Customers can choose to use their device camera or upload a photo for virtual try on.
+Let customers preview products visually before purchasing, directly on the shop and product page. Shoppers turn their camera into a virtual mirror or upload a photo to see how a product looks on them, then add the item to the cart straight from the try-on view.
 
-=== Consistent Visual Output Across Products ===
-Generated visuals are designed to maintain a **consistent appearance** across products and variations.
+You decide exactly where it appears: enable or disable virtual try-on on a single product from the WooCommerce product editor, or toggle it across your entire catalog from TryAura settings. Virtual try-on works on an unlimited number of products on the Free plan.
 
-=== No Credit-Based Usage Limits ===
-Work on your product visuals without managing usage credits or tracking generation limits.
+=== AI Product Photography Without Reshoots ===
 
-*Advanced features such as product video generation and additional customization options are available in the Pro version.*
+Open any WooCommerce product, choose a background and style, and generate studio-quality product visuals in a few clicks. TryAura works with your existing product photos, so you can elevate dull or inconsistent images across your whole catalog without booking a photographer, renting a set, or editing in design software.
 
+Upgrade one product at a time, or work through a full collection whenever you refresh your store. Every generated image saves straight to the WordPress Media Library, ready to publish.
 
-== Visual Presets & Creative Controls ==
+=== Bring Products To Life With Product Video ===
 
-TryAura includes **built-in presets and controls** designed specifically for eCommerce product presentation.
+Static images often miss the fit, fluidity, and fine details that help shoppers decide. With TryAura Pro, you turn product images into short videos that show movement and real-world context, then drop them straight into product galleries.
 
-These preference settings help WooCommerce store owners create **consistent and realistic visuals** without manual design work or complex configuration.
+You can also embed YouTube or self-hosted videos on product pages for demos, tutorials, and reviews without slowing your store down. Product video helps shoppers understand what they are buying and keeps them engaged longer on the page.
 
-=== Built-In Visual Presets ===
-Presets provide ready-made visual styles optimized for common product use cases.
+=== Bring Your Own Gemini Key (BYOK) ===
 
-Available preset types include:
-* **Clean studio-style** product visuals
-* **Natural** product scenes
-* **Neutral, distraction-free** plain backgrounds
-* **Photorealistic, studio & model shoot** output styles
-* **Custom prompt box** for design consistency or custom requirements
+TryAura connects to your own [Google Gemini API key](https://aistudio.google.com/). Generation costs go straight to Google at standard API rates, never to a middleman.
 
-Presets can be applied during image or video generation and reused across products to maintain a consistent look throughout your store.
+There are no TryAura credits, no per-image fees, and no expiring packs, so you stay in full control of your AI usage and cost.
 
-=== Background and Scene Control ===
-Control how products appear within generated visuals.
+=== Backgrounds, Styles, and Creative Controls ===
 
-You can:
-* Improve or replace backgrounds while preserving the original product
-* Generate clean backgrounds for uniform product listings
-* Apply scene-based visuals suitable for marketing or lifestyle presentation
+Built-in presets are designed specifically for eCommerce product presentation, so you get consistent, realistic visuals without manual design work.
 
-=== Consistent Composition and Proportions ===
-Generated visuals are designed to maintain **consistent composition** and **realistic proportions**.
+* **Backgrounds**: Studio, Custom, Natural, and Plain
+* **Output styles**: Photo Realistic, Studio Mockup, and Model Shoot
+* **Custom prompt box** to describe exactly the visual you want (Starter plan and above)
+* **Image aspect ratios**: square, landscape, and portrait output (Pro)
+* **Background and scene control** to improve or replace backgrounds while preserving the original product
 
-This helps ensure:
-* Visual alignment across product grids
-* Consistency between similar products or variations
-* A uniform, professional presentation across your catalog
+Apply the same preset across products to keep a uniform, professional look throughout your store, or switch to lifestyle scenes for marketing and campaign visuals.
 
-=== Product Video Generation (Pro) ===
-TryAura Pro includes support for generating **short product videos** using existing product visuals.
+=== Fits Natively In Your Workflow ===
 
-Generated videos are saved to the **WordPress Media Library** and can be reused across your site.
+TryAura works right inside your Product Editor and Media Library. Add visuals the same way you add any image to a product or post.
 
-=== Managed Directly Inside WooCommerce ===
-All presets and visual controls are available directly inside the **WooCommerce product editor**.
+* **Media Library integration**: every generated image and video is stored on your own site, ready to reuse, download, or publish anywhere
+* **Per-product and catalog-wide controls**: turn try-on on for one product or the entire store from a single setting
+* **Reuse visuals anywhere**: native WordPress image, video, and gallery blocks let you place assets on any page or post, not just product pages
+* **Blog featured images**: generate eye-catching featured images for posts directly from the WordPress editor
+* **Analytics dashboard**: track total images, videos, virtual try-ons, and API token usage over time
+* **Add to cart from try-on**: shoppers buy the moment they feel confident, with fewer steps between decision and purchase
 
-Store owners can:
-* Select video preferences during generation
-* Control virtual try on per product
-* Manage generated images and videos
-* Reuse assets from the Media Library
+=== Consistent, Accurate Product Visuals ===
 
-== How To Use TryAura ==
-1. Install and activate the **TryAura** plugin.
-2. Make sure **WooCommerce** is installed and active.
-3. Open any WooCommerce product from the product editor.
-4. Generate product visuals or enable virtual try on.
-5. Save the product and publish.
+TryAura is tuned for eCommerce accuracy. Generated visuals are designed to preserve fabric texture, folds, and realistic human proportions, and to stay consistent across products, angles, and variations.
 
-Generated images are saved to the **WordPress Media Library**, and virtual try on becomes available on the product page.
+Customers choose how they want to try a product on, with a live camera view or an uploaded photo, and if camera access is unavailable, try-on continues through image upload, so no shopper is left out. The goal is realistic, trustworthy visuals, not over-polished images that look fake.
 
-== Why TryAura ==
+== How TryAura Works ==
 
-TryAura is designed to help WooCommerce store owners improve product visuals and virtual try on experiences in a **reliable and manageable** way.
+From product image to virtual try-on in minutes, all inside WooCommerce.
 
-Rather than focusing on experimental or artistic outputs, TryAura prioritizes **visual clarity**, **consistency**, and **predictable results**.
+1. **Choose a product.** Pick an existing product from your WooCommerce store, or upload a basic image.
+2. **Generate visuals.** Create studio-quality product images and short videos in a few clicks.
+3. **Enable virtual try-on.** Turn on virtual try-on so shoppers can see how the product looks on them.
+4. **Publish.** Add images, videos, and try-on directly to your product pages and start selling with confidence.
 
-=== Advanced and Optimized AI Models ===
-AI models are optimized specifically for eCommerce product visuals and virtual try on scenarios.
+== Who TryAura Is For ==
 
-=== Fabric and Texture Consistency ===
-Generated visuals aim to preserve fabric appearance and texture details across images.
+TryAura is built for WooCommerce store owners who want better product visuals and a clearer buying experience, without a steep learning curve or surprise costs.
 
-=== Realistic Human Proportions ===
-Virtual try on results are generated with realistic human proportions in mind.
+* **Small store owners** who want studio-quality visuals without hiring a photographer or learning design tools
+* **Boutique and niche brands** that need a consistent, professional look across the whole catalog
+* **Scaling merchants** whose photoshoots no longer keep up with a growing product range
+* **WooCommerce agencies and builders** who manage visuals for many clients and stores
+* **DTC brands moving from Shopify** who want a bring-your-own-key model with no platform fees
+* **Dropshippers and catalog-heavy sellers** who need to differentiate generic supplier images
 
-=== WooCommerce-Native Workflow ===
-All features integrate directly into the WooCommerce product editor and WordPress dashboard.
+TryAura works best for stores where appearance carries the sale: fashion, apparel, accessories, jewelry, beauty, cosmetics, and lifestyle products.
 
-=== Merchant-Controlled try on ===
-Store owners control where and how virtual try on appears on a per-product basis.
+== How Stores Use TryAura Every Day ==
 
-=== Transparent and Predictable Costs ===
-Advanced features are offered through clearly defined plans without hidden usage fees.
+* **Refreshing an outdated catalog.** A boutique owner brings hundreds of older product photos up to a consistent, studio-quality standard, product by product, instead of a weeks-long reshoot.
+* **Reducing guesswork in fashion and apparel.** A clothing store turns on virtual try-on so shoppers visualize fit and style before buying, which supports more confident decisions and fewer surprises after the order arrives.
+* **Differentiating generic supplier images.** A dropshipper changes backgrounds and swaps models to create unique product visuals that stand out, without commissioning new photography.
+* **Scaling visuals for an agency.** An agency rolls out AI product photography, product video, and virtual try-on across many client stores, with multi-site licensing and no per-image fees eating into margins.
+* **Launching new products faster.** A growing merchant generates images and short videos the same day a new SKU is added, then publishes them straight to the product page.
 
-== Data Handling & Privacy ==
+== 🎯 TryAura Pro Features ==
 
-TryAura is designed with **merchant and customer privacy** in mind.
+Upgrade to a [Pro plan](https://storepulse.co/tryaura/pricing/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo) to unlock advanced creative control and product video generation.
 
-* Generated images and assets are stored in your WordPress Media Library
-* Product data and generated visuals remain associated with your website
-* Camera-based try on is optional and requires explicit user permission
-* Customers can upload a photo instead of using a camera
-* Customer photos are not stored in website backend
+* **Product video generation**: turn existing product visuals into short product videos
+* **Custom prompt field**: describe exactly the visual you want for full control over results
+* **Image aspect ratio control**: output square, landscape, or portrait images for every placement
+* **Camera motion controls**: add cinematic movement to generated product videos
+* **Video aspect ratios**: produce 16:9 and 9:16 videos for product pages, social, and ads
+* **Video duration control**: set how long each generated product video runs
+* **Video thumbnail generation**: create or customize thumbnails to lift play rates
+* **Multi-site licensing**: use TryAura across multiple WooCommerce sites on Professional and Agency plans
+* **Remove TryAura branding**: hide TryAura branding on the try-on widget for a white-labeled experience
 
-== Performance ==
+== Why Store Owners Choose TryAura ==
 
-TryAura is built to work efficiently within WooCommerce.
+* **No credit system.** Bring your own Gemini key and pay Google directly at API rates, with no per-image fees and no expiring packs.
+* **Everything inside WooCommerce.** No exports, no separate dashboards, and no third-party apps to manage.
+* **Accuracy you can trust.** Models are tuned for eCommerce, so results look realistic instead of over-polished or fake.
+* **One plugin, three jobs.** AI product images, product videos, and virtual try-on live in a single tool.
+* **Privacy by design.** Camera use is optional and customer try-on photos are not stored in your backend.
+* **Built to scale.** Roll out visuals and try-on across catalogs of any size, one product at a time or all at once.
 
-* Features load only on product pages where enabled
-* The plugin does not affect pages where TryAura is not in use
-* Store owners control which products use virtual try on
+== Save Time and Cut Photography Costs ==
 
-== Camera Usage & Fallback Behavior ==
+Photoshoots are expensive to book and slow to repeat every time your catalog changes, and supplier images look the same in every competing store.
 
-Camera-based virtual try on is optional.
+TryAura lets you create and update product visuals on demand, from your own desk, in minutes. You skip the studio, the editing software, and the wait, while keeping a consistent look across every listing.
 
-* Customers can use their device camera or upload a photo
-* If camera access is unavailable, try on continues via image upload
+Because you bring your own Gemini key, the only cost is the standard Google API rate for what you generate, with no markups, no subscription to a credit pool, and no fees charged per image on top. That makes it practical to refresh a few products or an entire catalog whenever you need to.
 
-== Compatibility Notes ==
+== Works With Your Existing WooCommerce Setup ==
 
-TryAura is designed to work with **standard WooCommerce setups**.
+TryAura is designed to work with standard WooCommerce stores and stays out of the way of the rest of your site.
 
 * Compatible with default WooCommerce product templates
 * Works with most WooCommerce-compatible themes
-* Compatible with common page builders using WooCommerce templates
+* Compatible with common page builders that use WooCommerce templates
+* Integrates with the WordPress Media Library and native Gutenberg image, video, and gallery blocks
 
-For heavily customized product templates, testing on a staging site is recommended.
+For heavily customized product templates, testing on a staging site first is recommended.
 
-== Who This Plugin Is For ==
+== Privacy ==
 
-TryAura is built for WooCommerce store owners who want to improve how products are presented and experienced online.
+TryAura is designed with merchant and customer privacy in mind.
 
-This plugin is a good fit if you:
-* Want to upgrade product visuals
-* Want to add virtual try on to product pages
-* Use existing product images
-* Prefer managing everything inside WordPress
+* Generated images and assets are stored in your own WordPress Media Library.
+* Product data and generated visuals stay associated with your website.
+* Camera-based try-on is optional and requires explicit shopper permission.
+* Customers can upload a photo instead of using a camera.
+* Customer try-on photos are not stored in the website backend.
 
 == External Services ==
 
-This plugin connects to the Google Gemini API to provide AI-powered image generation, video generation, and virtual try-on features.
+TryAura connects to the Google Gemini API to generate product images, product videos, and virtual try-on visuals. This connection uses your own Google Gemini API key, which you add in TryAura settings.
 
-Data sent to Google Gemini:
-* Product images uploaded by the merchant
-* Customer photos submitted for virtual try-on (frontend)
-* Text prompts for image/video generation
-* Selected AI model preferences
+1. **Google Gemini API (Google AI)**: Used to generate product images, product videos, and virtual try-on results. When you generate a visual, the relevant product image and your prompt or preset selection are sent to Google for processing. Generation costs are billed by Google directly to your own account.
 
-This connection happens when:
-* A merchant generates or enhances a product image
-* A merchant generates a product video
-* A customer uses the Virtual Try-On feature on the storefront
+Please refer to [Google AI Studio](https://aistudio.google.com/), [Google Terms of Service](https://policies.google.com/terms), and [Google Privacy Policy](https://policies.google.com/privacy)
 
-Google Gemini is a service by Google LLC.
-* Service homepage: https://ai.google.dev
-* Terms of Service: https://ai.google.dev/terms
-* Privacy Policy: https://policies.google.com/privacy
-* API Endpoints: https://generativelanguage.googleapis.com, https://aiplatform.googleapis.com
-
-This plugin optionally embeds YouTube videos on product pages when a merchant adds a YouTube video URL to a product gallery.
-
-Data sent to YouTube:
-* The YouTube video ID is used to construct an embed URL
-* Standard browser data is sent to YouTube when the embed loads on the frontend
-
-This connection happens when:
-* A visitor views a product page that has a YouTube video attached by the merchant
-
-YouTube is a service by Google LLC.
-* Service homepage: https://www.youtube.com
-* Terms of Service: https://www.youtube.com/t/terms
-* Privacy Policy: https://policies.google.com/privacy
+Customer try-on photos are used only to generate the requested preview and are not stored in your website backend.
 
 == Frequently Asked Questions ==
 
-=== What types of products work best with TryAura Virtual Try On? ===
-TryAura works best with products where visual appearance matters, such as fashion items, accessories, lifestyle products, and other visually driven ecommerce products. Results may vary depending on product photography quality and angles.
+= What is TryAura and how does it work with WooCommerce? =
+[TryAura](https://storepulse.co/tryaura/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo) is a WooCommerce plugin that helps you upgrade product images, create short videos, and enable virtual try-on directly inside your store. You select a product, generate visuals, and publish them to your product pages. 
 
-=== Do I need special product images for Virtual Try On to work well? ===
-No. TryAura works with your existing WooCommerce product images. However, clear images with good lighting and minimal background noise produce more reliable product visualization results.
+= How does virtual try-on help with conversions and returns? =
+A virtual try-on, or virtual mirror, helps shoppers see how a product looks before buying. Clearer product visualization reduces hesitation and supports more confident decisions, which helps with engagement and fewer surprises after purchase.
 
-=== Can I choose which products show Virtual Try On? ===
-Yes. Virtual try on can be enabled or disabled on a per-product basis from the WooCommerce product editor. This allows you to use try on only where it makes sense.
+= What types of products work best with TryAura virtual try-on? =
+TryAura works best with products where visual appearance matters, such as fashion items, accessories, jewelry, beauty, and other visually driven eCommerce products. Results may vary depending on product photography quality and angles.
 
-=== Can I use generated product images outside WooCommerce? ===
-Yes. All generated images and videos are saved to the WordPress Media Library. You can use them anywhere on your site, including product galleries, landing pages, or marketing content.
+= Do I need special product images for it to work well? =
+No. TryAura works with your existing WooCommerce product images. Clear images with good lighting and minimal background noise produce more reliable product visualization results.
 
-=== Does TryAura replace professional product photography? ===
-TryAura is designed to reduce reliance on repeated photoshoots, not necessarily replace all photography. Many store owners use it to improve or extend existing product visuals without reshooting products.
+= Can I choose which products show virtual try-on? =
+Yes. Virtual try-on can be enabled or disabled on a per-product basis from the WooCommerce product editor, or across your whole catalog from TryAura settings. This lets you use try-on only where it makes sense.
 
-=== What happens if a customer does not allow camera access? ===
-If camera access is denied or unavailable, customers can upload a photo instead. Virtual try on continues to work without requiring camera permission.
+= What does "bring your own key" (BYOK) mean? =
+TryAura connects to your own [Google Gemini API key](https://aistudio.google.com/). This allows unlimited creation without per-image charges, while you keep full control of AI usage and cost through your own Google account. There are no TryAura credits and no expiring packs.
 
-=== Is TryAura suitable for large WooCommerce stores with many products? ===
-Yes. TryAura is designed to work with WooCommerce stores of all sizes. Store owners control where try on and visual generation are used, allowing gradual rollout across large catalogs.
+= Is the Free plan really unlimited? =
+Yes. The Free plan includes unlimited product image generation and unlimited virtual try-on for one WooCommerce site. You can [upgrade](https://storepulse.co/tryaura/pricing/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo) later to unlock the custom prompt field, advanced controls, and video generation.
 
-=== Does TryAura store customer photos or personal data? ===
-TryAura does not require customers to submit personal information. Camera usage is optional, and uploaded images are used only for generating visual previews.
+= Can I create both product images and product videos? =
+Yes. TryAura generates product images, short product videos, and virtual try-on experiences. Video generation and advanced controls are available in the Pro plans.
 
-=== Can I customize the visual style of generated product images? ===
-Yes. TryAura includes built-in presets and visual controls that help generate consistent product images with different backgrounds, lighting styles, and compositions.
+= Can I use generated images and videos outside WooCommerce? =
+Yes. All generated images and videos are saved to the WordPress Media Library, so you can use them anywhere on your site, including product galleries, landing pages, and marketing content.
 
-=== Is TryAura a WooCommerce-specific ecommerce tool? ===
-Yes. TryAura is built specifically for WooCommerce and integrates directly with the WooCommerce product editor and WordPress dashboard.
+= Does TryAura replace professional product photography? =
+TryAura is designed to reduce reliance on repeated photoshoots, not to replace all photography. Many store owners use it to improve or extend existing visuals without reshooting.
 
+= Can I customize the visual style of generated images? =
+Yes. TryAura includes built-in presets and visual controls that help you generate consistent product images with different backgrounds, lighting styles, and compositions. The custom prompt field on paid plans gives you even more control.
+
+= What happens if a customer does not allow camera access? =
+If camera access is denied or unavailable, customers can upload a photo instead. Virtual try-on continues to work without requiring camera permission.
+
+= Does TryAura store customer photos or personal data? =
+No. Camera usage is optional, uploaded images are used only to generate the preview, and customer try-on photos are not stored in your website backend.
+
+= Is TryAura suitable for large WooCommerce stores? =
+Yes. TryAura works with stores of all sizes. You control where try-on and visual generation are used, which makes gradual rollout across large catalogs easy.
+
+= Will TryAura slow down my store? =
+No. Features load only on product pages where you enable them, generation runs without blocking the admin, and pages where TryAura is not used are not affected.
+
+= Where can I get support? =
+We provide ongoing support through the [WordPress.org support forum](https://wordpress.org/support/plugin/tryaura/), the [TryAura Help Center](https://storepulse.co/tryaura/docs/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo), and our [contact page](https://storepulse.co/contact/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo). Support covers usage questions, setup guidance, and known issues. Custom development or theme-specific customizations may require additional review.
 
 == Installation ==
 
@@ -288,3 +301,8 @@ This may have bugs and lack of many features. If you want to contribute on this 
 
 = v1.0.0 ( Mar 13, 2026 ) =
 * Initial release
+
+== Upgrade Notice ==
+
+= 1.0.2 =
+Stability and compatibility improvements for the latest WooCommerce. Update is recommended for all users.

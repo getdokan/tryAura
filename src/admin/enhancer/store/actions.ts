@@ -82,6 +82,16 @@ export const setIsVideoBusy = ( isVideoBusy: boolean ) => ( {
 	isVideoBusy,
 } );
 
+export const setAltText = ( altText: string ) => ( {
+	type: TYPES.SET_ALT_TEXT,
+	altText,
+} );
+
+export const setGeneratingAltText = ( generatingAltText: boolean ) => ( {
+	type: TYPES.SET_GENERATING_ALT_TEXT,
+	generatingAltText,
+} );
+
 export const resetState = () => ( {
 	type: TYPES.RESET_STATE,
 } );

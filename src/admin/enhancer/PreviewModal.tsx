@@ -39,6 +39,8 @@ const PreviewModal = ( {
 		uploading,
 		activeTab,
 		isBusy,
+		altText,
+		generatingAltText,
 		isThumbnailMode,
 		selectedImageIndices,
 		imageConfigData,
@@ -57,6 +59,8 @@ const PreviewModal = ( {
 				uploading: store.getUploading(),
 				activeTab: store.getActiveTab(),
 				isBusy: store.isBusy(),
+				altText: store.getAltText(),
+				generatingAltText: store.getGeneratingAltText(),
 				isThumbnailMode: store.isThumbnailMode(),
 				selectedImageIndices: store.getSelectedImageIndices(),
 				imageConfigData: store.getImageConfigData(),
@@ -86,6 +90,8 @@ const PreviewModal = ( {
 		setAttachmentIds,
 		setSupportsVideo,
 		resetState,
+		setAltText,
+		setGeneratingAltText,
 	} = useDispatch( STORE_NAME );
 
 	// Holds the in-flight generation's AbortController so the merchant can cancel
@@ -161,11 +167,89 @@ const PreviewModal = ( {
 		}
 	};
 
+	// #25: generate SEO/accessibility alt text for the generated image via a
+	// lightweight Gemini text call. Best-effort — never blocks image generation.
+	const generateAltText = async ( sourceDataUrl?: string ) => {
+		const imgUrl = sourceDataUrl || generatedUrl;
+		if ( ! imgUrl ) {
+			return;
+		}
+		try {
+			setGeneratingAltText( true );
+			const aura = ( window as any )?.tryAura;
+			const google = settings?.[ aura?.optionKey ]?.google;
+			const apiKey = google?.apiKey || aura?.apiKey;
+			if ( ! apiKey ) {
+				return;
+			}
+			const comma = imgUrl.indexOf( ',' );
+			const header = imgUrl.substring( 0, Math.max( 0, comma ) );
+			const mime = /data:([^;]+)/.exec( header )?.[ 1 ] || 'image/png';
+			const base64 = comma >= 0 ? imgUrl.substring( comma + 1 ) : imgUrl;
+
+			const ai = new GoogleGenAI( { apiKey } );
+			const altModel = applyFilters(
+				'tryaura.alt_text_model',
+				'gemini-2.5-flash'
+			);
+			const altPromptText = applyFilters(
+				'tryaura.alt_text_prompt',
+				'Write a single concise, descriptive alt text (max ~125 characters) for this e-commerce product image, for SEO and accessibility. Return only the alt text — no quotes, labels, or extra lines.'
+			);
+			const response: any = await ( ai as any ).models.generateContent( {
+				model: altModel,
+				contents: [
+					{ text: altPromptText },
+					{ inlineData: { mimeType: mime, data: base64 } },
+				],
+			} );
+			const parts = response?.candidates?.[ 0 ]?.content?.parts || [];
+			const text = parts
+				.map( ( p: any ) => p?.text )
+				.filter( Boolean )
+				.join( ' ' )
+				.replace( /\s+/g, ' ' )
+				.trim()
+				.replace( /^["']+|["']+$/g, '' );
+			if ( text ) {
+				setAltText( text );
+			}
+			const usage = response?.usageMetadata;
+			apiFetch( {
+				path: '/tryaura/v1/log-usage',
+				method: 'POST',
+				data: {
+					type: 'alt_text',
+					model: altModel,
+					prompt: altPromptText,
+					input_tokens: usage?.promptTokenCount,
+					output_tokens:
+						usage?.candidatesTokenCount ??
+						usage?.responseTokenCount,
+					total_tokens: usage?.totalTokenCount,
+					generated_from: 'admin',
+					object_id: ( window as any )?.tryAura?.postId,
+					object_type: ( window as any )?.tryAura?.postType,
+					status: 'success',
+				},
+			} ).catch( () => {
+				// ignore logging errors
+			} );
+		} catch ( e ) {
+			// Alt text is a best-effort enhancement — never block generation.
+			// eslint-disable-next-line no-console
+			console.error( 'TryAura alt text generation failed:', e );
+		} finally {
+			setGeneratingAltText( false );
+		}
+	};
+
 	const doGenerate = async () => {
 		const controller = new AbortController();
 		abortRef.current = controller;
 		try {
 			setError( null );
+			setAltText( '' );
 			const selectedUrls = imageUrls.filter( ( _, idx ) =>
 				selectedImageIndices.includes( idx )
 			);
@@ -314,6 +398,15 @@ const PreviewModal = ( {
 				isBlockEditorPage,
 				isWoocommerceProductPage
 			);
+			// #22: the Gemini native-image generateContent path has no
+			// negativePrompt field, so exclusions are injected as prompt text.
+			// Best-effort — the model handles exclusions conversationally.
+			const imageNegativePrompt = (
+				imageConfigData?.negativePrompt || ''
+			).trim();
+			if ( imageNegativePrompt ) {
+				promptText += `\n\nAvoid including the following in the image: ${ imageNegativePrompt }.`;
+			}
 			const prompt = applyFilters( 'tryaura.ai_enhance_prompt', [
 				{ text: promptText },
 				...encodedImages.map( ( img ) => ( {
@@ -365,6 +458,9 @@ const PreviewModal = ( {
 			setStatus( 'done' );
 			setMessage( __( 'Done', 'tryaura' ) );
 			setError( null );
+
+			// #25: kick off alt text on the new image (non-blocking).
+			generateAltText( dataUrl );
 
 			const usage = response?.usageMetadata;
 			const postId = ( window as any )?.tryAura?.postId;
@@ -476,6 +572,23 @@ const PreviewModal = ( {
 				throw new Error(
 					__( 'Upload succeeded but no attachment ID returned.', 'tryaura' )
 				);
+			}
+
+			// #25: persist the generated/edited alt text onto the attachment.
+			// Use `url:` (absolute) like the media upload above — passing an
+			// absolute URL to `path:` makes apiFetch's rootURL middleware
+			// double-prepend the REST root and 404 silently.
+			if ( altText && altText.trim() ) {
+				apiFetch( {
+					url: applyFilters(
+						'tryaura.media_alt_text_rest_api',
+						`${ restBase }wp/v2/media/${ newId }`
+					) as string,
+					method: 'POST',
+					data: { alt_text: altText.trim() },
+				} ).catch( () => {
+					// non-fatal — the image is already in the library
+				} );
 			}
 
 			doAction(
@@ -631,6 +744,7 @@ const PreviewModal = ( {
 							<Output
 								supportsVideo={ supportsVideo }
 								className="col-span-1 md:col-span-4"
+								onRegenerateAltText={ generateAltText }
 							/>
 						) }
 

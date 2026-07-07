@@ -15,6 +15,7 @@ export const INITIAL_STATE: EnhancerState = {
 		backgroundType: 'plain',
 		styleType: 'photo-realistic',
 		optionalPrompt: '',
+		negativePrompt: '',
 		videoPlatform: 'youtube',
 	},
 	activeTab: 'image',
@@ -24,6 +25,8 @@ export const INITIAL_STATE: EnhancerState = {
 	attachmentIds: [],
 	supportsVideo: false,
 	isVideoBusy: false,
+	altText: '',
+	generatingAltText: false,
 };
 
 const reducer = (
@@ -73,6 +76,10 @@ const reducer = (
 			return { ...state, supportsVideo: action.supportsVideo };
 		case TYPES.SET_IS_VIDEO_BUSY:
 			return { ...state, isVideoBusy: action.isVideoBusy };
+		case TYPES.SET_ALT_TEXT:
+			return { ...state, altText: action.altText };
+		case TYPES.SET_GENERATING_ALT_TEXT:
+			return { ...state, generatingAltText: action.generatingAltText };
 		case TYPES.RESET_STATE:
 			return {
 				...INITIAL_STATE,

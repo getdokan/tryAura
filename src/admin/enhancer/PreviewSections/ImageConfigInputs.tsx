@@ -112,11 +112,43 @@ function ImageConfigInputs( { doGenerate } ) {
 		},
 	] );
 
+	// Only the aspect ratios documented as supported by @google/genai
+	// ImageConfig.aspectRatio. 4:5 was dropped (not on the documented list).
 	const allAspectRatios = applyFilters( 'tryaura.enhancer.aspect_ratios', [
 		{
 			label: __( 'Square (1:1)', 'tryaura' ),
 			value: '1:1',
 			icon: <Square />,
+		},
+		{
+			label: __( 'Portrait (2:3)', 'tryaura' ),
+			value: '2:3',
+			icon: <RectangleVertical />,
+			locked: ! hasPro(),
+		},
+		{
+			label: __( 'Portrait (3:4)', 'tryaura' ),
+			value: '3:4',
+			icon: <RectangleVertical />,
+			locked: ! hasPro(),
+		},
+		{
+			label: __( 'Portrait (9:16)', 'tryaura' ),
+			value: '9:16',
+			icon: <RectangleVertical />,
+			locked: ! hasPro(),
+		},
+		{
+			label: __( 'Landscape (3:2)', 'tryaura' ),
+			value: '3:2',
+			icon: <RectangleHorizontal />,
+			locked: ! hasPro(),
+		},
+		{
+			label: __( 'Landscape (4:3)', 'tryaura' ),
+			value: '4:3',
+			icon: <RectangleHorizontal />,
+			locked: ! hasPro(),
 		},
 		{
 			label: __( 'Landscape (16:9)', 'tryaura' ),
@@ -125,9 +157,9 @@ function ImageConfigInputs( { doGenerate } ) {
 			locked: ! hasPro(),
 		},
 		{
-			label: __( 'Portrait (9:16)', 'tryaura' ),
-			value: '9:16',
-			icon: <RectangleVertical />,
+			label: __( 'Landscape (21:9)', 'tryaura' ),
+			value: '21:9',
+			icon: <RectangleHorizontal />,
 			locked: ! hasPro(),
 		},
 	] );
@@ -192,7 +224,7 @@ function ImageConfigInputs( { doGenerate } ) {
 						aspectRatio: val,
 					} )
 				}
-				label={ __( 'Image Size', 'tryaura' ) }
+				label={ __( 'Aspect Ratio', 'tryaura' ) }
 				options={ allAspectRatios }
 				disabled={ isBusy }
 				showLockedPopover={ ! hasPro() }
@@ -255,6 +287,41 @@ function ImageConfigInputs( { doGenerate } ) {
 									'tryaura'
 							  )
 					}
+				/>
+			</label>
+
+			<label
+				style={ {
+					display: 'flex',
+					flexDirection: 'column',
+					gap: 4,
+				} }
+				htmlFor="tryaura-image-negative-prompt"
+			>
+				<span
+					className={ twMerge(
+						'w-[500] text-[14px] mb-2',
+						! hasPro() ? 'text-[#929296]' : ''
+					) }
+				>
+					{ __( 'Negative Prompt (Optional)', 'tryaura' ) }
+				</span>
+				<textarea
+					className="border border-[#E9E9E9] placeholder-[#A5A5AA] max-h-44 focus:shadow-none focus:ring-1 focus:ring-primary"
+					value={ imageConfigData?.negativePrompt ?? '' }
+					onChange={ ( e: any ) =>
+						hasPro() &&
+						setImageConfigData( {
+							negativePrompt: e.target.value,
+						} )
+					}
+					disabled={ isBusy || ! hasPro() }
+					rows={ 2 }
+					id="tryaura-image-negative-prompt"
+					placeholder={ __(
+						'Things to avoid, e.g. people, text, reflections',
+						'tryaura'
+					) }
 				/>
 			</label>
 

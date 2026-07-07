@@ -12,6 +12,7 @@ export interface ImageConfigData {
 	backgroundType: string;
 	styleType: string;
 	optionalPrompt: string;
+	negativePrompt?: string;
 	videoPlatform?: string;
 }
 
@@ -31,4 +32,6 @@ export interface EnhancerState {
 	attachmentIds: number[];
 	supportsVideo: boolean;
 	isVideoBusy: boolean;
+	altText: string;
+	generatingAltText: boolean;
 }

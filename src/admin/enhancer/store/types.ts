@@ -8,7 +8,7 @@ export type Status =
 export type ActiveTab = string;
 
 export interface ImageConfigData {
-	imageSize: string;
+	aspectRatio: string;
 	backgroundType: string;
 	styleType: string;
 	optionalPrompt: string;

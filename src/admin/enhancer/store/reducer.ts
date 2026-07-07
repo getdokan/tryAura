@@ -11,7 +11,7 @@ export const INITIAL_STATE: EnhancerState = {
 	error: null,
 	uploading: false,
 	imageConfigData: {
-		imageSize: '1:1',
+		aspectRatio: '1:1',
 		backgroundType: 'plain',
 		styleType: 'photo-realistic',
 		optionalPrompt: '',

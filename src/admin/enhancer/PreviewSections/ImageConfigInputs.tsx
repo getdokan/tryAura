@@ -185,11 +185,11 @@ function ImageConfigInputs( { doGenerate } ) {
 			</>
 
 			<ModernSelect
-				value={ imageConfigData?.imageSize ?? '' }
+				value={ imageConfigData?.aspectRatio ?? '' }
 				variant="list"
 				onChange={ ( val ) =>
 					setImageConfigData( {
-						imageSize: val,
+						aspectRatio: val,
 					} )
 				}
 				label={ __( 'Image Size', 'tryaura' ) }

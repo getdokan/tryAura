@@ -1,4 +1,4 @@
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { useSelect, useDispatch } from '@wordpress/data';
 // @ts-ignore
@@ -43,11 +43,12 @@ const PreviewModal = ( {
 		selectedImageIndices,
 		imageConfigData,
 		defaultImageModel,
+		validImageModels,
 		settings,
 	} = useSelect(
 		( select ) => {
 			const store = select( STORE_NAME );
-			const aiModelsStore = select( 'tryaura/ai-models' );
+			const aiModelsStore: any = select( 'tryaura/ai-models' );
 			const settingsStore = select( SETTINGS_STORE_NAME );
 			return {
 				isBlockEditorPage: store.getIsBlockEditorPage(),
@@ -60,6 +61,12 @@ const PreviewModal = ( {
 				selectedImageIndices: store.getSelectedImageIndices(),
 				imageConfigData: store.getImageConfigData(),
 				defaultImageModel: aiModelsStore.getDefaultImageModel(),
+				validImageModels: Object.keys(
+					aiModelsStore.getProviderModels(
+						aiModelsStore.getDefaultProvider(),
+						{ identity: 'image', supported: true }
+					) || {}
+				),
 				settings: settingsStore.getSettings(),
 			};
 		},
@@ -80,6 +87,10 @@ const PreviewModal = ( {
 		setSupportsVideo,
 		resetState,
 	} = useDispatch( STORE_NAME );
+
+	// Holds the in-flight generation's AbortController so the merchant can cancel
+	// (Close while busy) instead of being forced to refresh the tab (#16 #5).
+	const abortRef = useRef< AbortController | null >( null );
 
 	const multiple = imageUrls.length > 1;
 
@@ -151,6 +162,8 @@ const PreviewModal = ( {
 	};
 
 	const doGenerate = async () => {
+		const controller = new AbortController();
+		abortRef.current = controller;
 		try {
 			setError( null );
 			const selectedUrls = imageUrls.filter( ( _, idx ) =>
@@ -177,10 +190,20 @@ const PreviewModal = ( {
 				);
 			}
 
+			// Validate the saved model against the merged tryaura_ai_models registry
+			// and fall back to a live default if it is unknown/decommissioned — this
+			// covers the missing on-save validation + #14 migration (#16 finding #6).
+			// If the registry has not loaded yet, keep the old resolution (never block).
 			const imageModel =
-				savedImageModel ||
-				defaultImageModel ||
-				'gemini-2.5-flash-image-preview';
+				validImageModels.length === 0
+					? savedImageModel ||
+					  defaultImageModel ||
+					  'gemini-2.5-flash-image'
+					: validImageModels.includes( savedImageModel )
+					? savedImageModel
+					: validImageModels.includes( defaultImageModel )
+					? defaultImageModel
+					: validImageModels[ 0 ] || 'gemini-2.5-flash-image';
 
 			setStatus( 'fetching' );
 			setMessage( __( 'Fetching images…', 'tryaura' ) );
@@ -188,6 +211,7 @@ const PreviewModal = ( {
 				selectedUrls.map( async ( url ) => {
 					const resp = await fetch( url, {
 						credentials: 'same-origin',
+						signal: controller.signal,
 					} );
 					const blob = await resp.blob();
 					const mimeType = blob.type || 'image/png';
@@ -245,20 +269,42 @@ const PreviewModal = ( {
 					  )
 					: '';
 
-			let promptText: string =
-				isBlockPage && hasPro()
-					? `Generate a high-quality AI image based on the provided image(s) and user instructions.\n\nInstructions: ${ imageConfigData?.optionalPrompt?.trim() }\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }`
-					: applyFilters(
-							'tryaura.ai_enhance_image_prompt_base',
-							`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ extras }${ multiHint }`,
-							{
-								imageConfigData,
-								safetyInstruction,
-								extras,
-								multiHint,
-								isThumbnailMode,
-							}
-					  );
+			const userInstruction = (
+				imageConfigData?.optionalPrompt || ''
+			).trim();
+
+			let promptText: string;
+			if ( userInstruction ) {
+				// The merchant gave an explicit instruction — make it the primary
+				// directive and do NOT force the "put the product on a human model"
+				// try-on template. Forcing that template is why "remove the text"
+				// produced a model wearing the product, and why a backdrop request
+				// only removed the background (#16 finding #2).
+				promptText = applyFilters(
+					'tryaura.ai_enhance_image_prompt_base',
+					`Edit the provided image(s) according to this instruction, following it closely: ${ userInstruction }.\n\nPreserve the product's shape, colours, logos, and details; change only what the instruction asks for.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
+					{
+						imageConfigData,
+						safetyInstruction,
+						extras,
+						multiHint,
+						isThumbnailMode,
+					}
+				);
+			} else {
+				// No instruction — fall back to the default product try-on output.
+				promptText = applyFilters(
+					'tryaura.ai_enhance_image_prompt_base',
+					`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
+					{
+						imageConfigData,
+						safetyInstruction,
+						extras,
+						multiHint,
+						isThumbnailMode,
+					}
+				);
+			}
 			promptText = applyFilters(
 				'tryaura.ai_enhance_prompt_text',
 				promptText,
@@ -282,8 +328,10 @@ const PreviewModal = ( {
 				config: {
 					responseModalities: [ 'IMAGE' ],
 					candidateCount: 1,
+					// Client-side only; lets Cancel abort the request (#16 #5).
+					abortSignal: controller.signal,
 					imageConfig: {
-						aspectRatio: imageConfigData?.imageSize || '1:1',
+						aspectRatio: imageConfigData?.aspectRatio || '1:1',
 					},
 				},
 			};
@@ -341,9 +389,20 @@ const PreviewModal = ( {
 				// ignore logging errors
 			} );
 		} catch ( e: any ) {
+			// A user-initiated abort (Cancel/Close while generating) is not a
+			// failure — reset quietly instead of showing an error (#16 #5).
+			if ( e?.name === 'AbortError' ) {
+				setStatus( 'idle' );
+				setMessage( __( 'Generation cancelled.', 'tryaura' ) );
+				return;
+			}
 			setError( e?.message || __( 'Generation failed.', 'tryaura' ) );
 			setStatus( 'error' );
 			setMessage( __( 'Generation failed.', 'tryaura' ) );
+		} finally {
+			if ( abortRef.current === controller ) {
+				abortRef.current = null;
+			}
 		}
 	};
 
@@ -497,9 +556,23 @@ const PreviewModal = ( {
 	const disabledImageAddToMedia = isBusy || uploading || ! generatedUrl;
 	const generate = window?.tryAura?.testMode ? doTestGenerate : doGenerate;
 
+	const handleClose = () => {
+		// Never trap the merchant while a generation is running — abort the
+		// in-flight request and reset so a hang can't force a tab refresh (#16 #5).
+		if ( abortRef.current ) {
+			abortRef.current.abort();
+			abortRef.current = null;
+		}
+		if ( isBusy ) {
+			setStatus( 'idle' );
+			setMessage( __( 'Ready to generate', 'tryaura' ) );
+		}
+		onClose();
+	};
+
 	return (
 		<Modal
-			onRequestClose={ onClose }
+			onRequestClose={ handleClose }
 			className="tryaura ai-enhancer-preview-modal"
 			__experimentalHideHeader
 			shouldCloseOnClickOutside={ false }
@@ -516,9 +589,8 @@ const PreviewModal = ( {
 						</h2>
 						<button
 							className="w-[16px] h-[16px] cursor-pointer"
-							onClick={ onClose }
+							onClick={ handleClose }
 							aria-label="Close modal"
-							disabled={ isBusy }
 						>
 							<X size={ 16 } />
 						</button>
@@ -597,10 +669,11 @@ const PreviewModal = ( {
 
 							<Button
 								variant="outline"
-								onClick={ onClose }
-								disabled={ isBusy }
+								onClick={ handleClose }
 							>
-								{ __( 'Close', 'tryaura' ) }
+								{ isBusy
+									? __( 'Cancel', 'tryaura' )
+									: __( 'Close', 'tryaura' ) }
 							</Button>
 						</div>
 					</div>

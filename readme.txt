@@ -57,6 +57,8 @@ Just a few clicks turn simple product images into realistic visuals and try-on e
 
 When a shopper can see exactly what they are getting, they feel more secure about the purchase, and you spend less time creating and re-creating product imagery by hand.
 
+[youtube https://www.youtube.com/watch?v=aOKc8Ckh2Gs]
+
 === WooCommerce Native Virtual Try-On ===
 
 Let customers preview products visually before purchasing, directly on the shop and product page. Shoppers turn their camera into a virtual mirror or upload a photo to see how a product looks on them, then add the item to the cart straight from the try-on view.

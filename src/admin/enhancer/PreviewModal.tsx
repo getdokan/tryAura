@@ -8,6 +8,9 @@ import { Button } from '../../components';
 import { __ } from '@wordpress/i18n';
 import { X } from 'lucide-react';
 import OriginalImage from './PreviewSections/OriginalImage';
+import ReferenceAngles, {
+	MAX_IMAGE_REFERENCES,
+} from './PreviewSections/ReferenceAngles';
 import ConfigSettings from './PreviewSections/ConfigSettings';
 import Output from './PreviewSections/Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
@@ -15,6 +18,7 @@ import { Modal, Slot, SlotFillProvider } from '@wordpress/components';
 import { PluginArea } from '@wordpress/plugins';
 import { GoogleGenAI } from '@google/genai';
 import { hasPro } from '../../utils/tryaura';
+import { getBackgroundScene } from './sceneStaging';
 import { twMerge } from 'tailwind-merge';
 
 declare const wp: any;
@@ -278,7 +282,7 @@ const PreviewModal = ( {
 			// and fall back to a live default if it is unknown/decommissioned — this
 			// covers the missing on-save validation + #14 migration (#16 finding #6).
 			// If the registry has not loaded yet, keep the old resolution (never block).
-			const imageModel =
+			let imageModel =
 				validImageModels.length === 0
 					? savedImageModel ||
 					  defaultImageModel ||
@@ -288,6 +292,22 @@ const PreviewModal = ( {
 					: validImageModels.includes( defaultImageModel )
 					? defaultImageModel
 					: validImageModels[ 0 ] || 'gemini-2.5-flash-image';
+
+			// #29: 4K renders only on the Pro image model, so route 4K requests to
+			// gemini-3-pro-image (Nano Banana Pro) regardless of the saved model.
+			const resolution = imageConfigData?.resolution || '1K';
+			if ( resolution === '4K' ) {
+				const proImageModel = applyFilters(
+					'tryaura.image_4k_model',
+					'gemini-3-pro-image'
+				) as string;
+				if (
+					validImageModels.length === 0 ||
+					validImageModels.includes( proImageModel )
+				) {
+					imageModel = proImageModel;
+				}
+			}
 
 			setStatus( 'fetching' );
 			setMessage( __( 'Fetching images…', 'tryaura' ) );
@@ -318,6 +338,30 @@ const PreviewModal = ( {
 					return { mimeType, base64 };
 				} )
 			);
+
+			// #28: append the merchant's extra reference photos (data URLs) as
+			// additional inlineData parts so the model keeps the real product's
+			// logos, colours and shape accurate. Cap the total toward the API limit.
+			const referenceParts = ( imageConfigData?.referenceImages || [] )
+				.map( ( url: string ) => {
+					if ( typeof url !== 'string' || ! url.startsWith( 'data:' ) ) {
+						return null;
+					}
+					const comma = url.indexOf( ',' );
+					const header = url.substring( 0, Math.max( 0, comma ) );
+					const mimeType =
+						/data:([^;]+)/.exec( header )?.[ 1 ] || 'image/png';
+					const base64 =
+						comma >= 0 ? url.substring( comma + 1 ) : url;
+					return { mimeType, base64 };
+				} )
+				.filter( Boolean ) as { mimeType: string; base64: string }[];
+
+			const allImageParts = [ ...encodedImages, ...referenceParts ].slice(
+				0,
+				MAX_IMAGE_REFERENCES
+			);
+			const hasReferences = referenceParts.length > 0;
 
 			setStatus( 'generating' );
 			setMessage( __( 'Thinking and generating…', 'tryaura' ) );
@@ -357,6 +401,14 @@ const PreviewModal = ( {
 				imageConfigData?.optionalPrompt || ''
 			).trim();
 
+			// #27: resolve the selected background into a rich scene instruction.
+			// Empty scene (Plain/unknown) keeps the product on a neutral backdrop.
+			const backgroundScene = getBackgroundScene(
+				imageConfigData?.backgroundType
+			);
+			const backgroundPreference =
+				backgroundScene || __( 'a clean, neutral background', 'tryaura' );
+
 			let promptText: string;
 			if ( userInstruction ) {
 				// The merchant gave an explicit instruction — make it the primary
@@ -366,7 +418,7 @@ const PreviewModal = ( {
 				// only removed the background (#16 finding #2).
 				promptText = applyFilters(
 					'tryaura.ai_enhance_image_prompt_base',
-					`Edit the provided image(s) according to this instruction, following it closely: ${ userInstruction }.\n\nPreserve the product's shape, colours, logos, and details; change only what the instruction asks for.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
+					`Edit the provided image(s) according to this instruction, following it closely: ${ userInstruction }.\n\nPreserve the product's shape, colours, logos, and details; change only what the instruction asks for.\n\nPreferences:\n- Background / scene: ${ backgroundPreference }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
 					{
 						imageConfigData,
 						safetyInstruction,
@@ -379,7 +431,7 @@ const PreviewModal = ( {
 				// No instruction — fall back to the default product try-on output.
 				promptText = applyFilters(
 					'tryaura.ai_enhance_image_prompt_base',
-					`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
+					`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background / scene: ${ backgroundPreference }\n- Output style: ${ imageConfigData?.styleType }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
 					{
 						imageConfigData,
 						safetyInstruction,
@@ -407,9 +459,18 @@ const PreviewModal = ( {
 			if ( imageNegativePrompt ) {
 				promptText += `\n\nAvoid including the following in the image: ${ imageNegativePrompt }.`;
 			}
+			// #28: tell the model the extra photos are the same product from other
+			// angles, so it treats them as fidelity references, not new subjects.
+			if ( hasReferences ) {
+				promptText += applyFilters(
+					'tryaura.ai_enhance_reference_hint',
+					'\n\nAdditional reference photos of the same product are provided (different angles/details). Treat them as the same physical product and keep its logos, colours, shape, textures and proportions accurate.',
+					referenceParts.length
+				);
+			}
 			const prompt = applyFilters( 'tryaura.ai_enhance_prompt', [
 				{ text: promptText },
-				...encodedImages.map( ( img ) => ( {
+				...allImageParts.map( ( img ) => ( {
 					inlineData: { mimeType: img.mimeType, data: img.base64 },
 				} ) ),
 			] );
@@ -425,6 +486,13 @@ const PreviewModal = ( {
 					abortSignal: controller.signal,
 					imageConfig: {
 						aspectRatio: imageConfigData?.aspectRatio || '1:1',
+						// #29: imageSize ('1K'|'2K'|'4K') is a Gemini 3 feature.
+						// Only send it to Gemini 3 models — sending it to the older
+						// gemini-2.5-flash-image can reject the request. 4K already
+						// routes to gemini-3-pro-image above, so it is always sent.
+						...( /gemini-3/.test( imageModel )
+							? { imageSize: resolution }
+							: {} ),
 					},
 				},
 			};
@@ -711,17 +779,23 @@ const PreviewModal = ( {
 
 					<div className="grid grid-cols-1 md:grid-cols-11 md:flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
 						{ ( activeTab === 'image' || ! hasPro() ) && (
-							<OriginalImage
-								imageUrls={ imageUrls }
-								multiple={ multiple }
-								selectedIndices={ selectedImageIndices }
-								setSelectedIndices={ setSelectedImageIndices }
-								showSelection={ true }
-								showGeneratedImage={ false }
-								limits={ { min: 1, max: 3 } }
-								className="col-span-1 md:col-span-3 max-h-133.25 overflow-auto"
-								isBusy={ isBusy }
-							/>
+							<div className="col-span-1 md:col-span-3 flex flex-col gap-4">
+								<OriginalImage
+									imageUrls={ imageUrls }
+									multiple={ multiple }
+									selectedIndices={ selectedImageIndices }
+									setSelectedIndices={
+										setSelectedImageIndices
+									}
+									showSelection={ true }
+									showGeneratedImage={ false }
+									limits={ { min: 1, max: 3 } }
+									className="max-h-133.25 overflow-auto"
+									isBusy={ isBusy }
+								/>
+								{ /* #28: reference angles for product fidelity. */ }
+								<ReferenceAngles />
+							</div>
 						) }
 						<Slot
 							name="TryAuraOriginalImage"

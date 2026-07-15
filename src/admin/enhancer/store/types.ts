@@ -14,6 +14,14 @@ export interface ImageConfigData {
 	optionalPrompt: string;
 	negativePrompt?: string;
 	videoPlatform?: string;
+	// #29: output resolution — '1K' | '2K' | '4K'. Sent as imageConfig.imageSize.
+	resolution?: string;
+	// #28: extra reference photos of the real product (data URLs), sent as
+	// additional inlineData parts so the model keeps logos/colours/shape accurate.
+	referenceImages?: string[];
+	// #26: the active "look" template id (for chip highlighting). Applying a
+	// look writes its prompt/negative-prompt into the visible fields above.
+	templateId?: string;
 }
 
 export interface EnhancerState {

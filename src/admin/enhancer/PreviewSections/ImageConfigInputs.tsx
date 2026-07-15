@@ -5,17 +5,16 @@ import { CrownIcon, ModernSelect } from '../../../components';
 import { __ } from '@wordpress/i18n';
 import { applyFilters } from '@wordpress/hooks';
 import {
-	Circle,
-	Leaf,
 	Shirt,
 	User,
-	Wallpaper,
 	Image,
 	Square,
 	RectangleHorizontal,
 	RectangleVertical,
 } from 'lucide-react';
 import ConfigFooter from './ConfigFooter';
+import LockedTemplateTeaser from './LockedTemplateTeaser';
+import { getBackgroundOptions } from '../sceneStaging';
 import { getUpgradeToProUrl, hasPro } from '../../../utils/tryaura';
 import { twMerge } from 'tailwind-merge';
 import ProUpgradePopover from '../../../components/ProUpgradePopover';
@@ -73,26 +72,10 @@ function ImageConfigInputs( { doGenerate } ) {
 		}, 150 );
 	};
 
-	const allBackgroundPrefrences = applyFilters(
-		'tryaura.enhancer.background_preferences',
-		[
-			{
-				label: __( 'Plain', 'tryaura' ),
-				value: 'plain',
-				icon: <Circle />,
-			},
-			{
-				label: __( 'Natural', 'tryaura' ),
-				value: 'natural',
-				icon: <Leaf />,
-			},
-			{
-				label: __( 'Studio', 'tryaura' ),
-				value: 'studio',
-				icon: <Wallpaper />,
-			},
-		]
-	);
+	// #27: expanded background / scene staging options (Plain, Studio, Natural,
+	// Lifestyle, Marble, Wood table, Outdoor, Interior). Shared with the prompt
+	// builder via sceneStaging so options and their scene text stay in sync.
+	const allBackgroundPrefrences = getBackgroundOptions();
 
 	const allOutputStyles = applyFilters( 'tryaura.enhancer.output_styles', [
 		{
@@ -166,6 +149,16 @@ function ImageConfigInputs( { doGenerate } ) {
 
 	return (
 		<>
+			{ /* #26: "Start from a look" — a Pro feature. The real template row is
+			   injected by the Pro plugin via this filter; non-Pro users see a
+			   locked teaser that drives upgrades. Hidden in thumbnail mode. */ }
+			{ ! isThumbnailMode &&
+				applyFilters(
+					'tryaura.enhancer.image_template_row',
+					hasPro() ? null : <LockedTemplateTeaser />,
+					{ imageConfigData, setImageConfigData }
+				) }
+
 			{ /* Controls */ }
 			{ isThumbnailMode && (
 				<ModernSelect
@@ -231,6 +224,32 @@ function ImageConfigInputs( { doGenerate } ) {
 				lockedPopoverMessage={ proFeaturePopoverMessage }
 				lockedPopoverUpgradeUrl={ getUpgradeToProUrl() }
 			/>
+
+			{ /* #29: output resolution. 4K renders on Nano Banana Pro. */ }
+			<ModernSelect
+				value={ imageConfigData?.resolution ?? '1K' }
+				variant="list"
+				onChange={ ( val ) =>
+					setImageConfigData( {
+						resolution: val,
+					} )
+				}
+				label={ __( 'Resolution', 'tryaura' ) }
+				options={ [
+					{ label: __( '1K', 'tryaura' ), value: '1K' },
+					{ label: __( '2K', 'tryaura' ), value: '2K' },
+					{ label: __( '4K', 'tryaura' ), value: '4K' },
+				] }
+				disabled={ isBusy }
+			/>
+			{ imageConfigData?.resolution === '4K' && (
+				<span className="text-[12px] text-[#828282] -mt-4">
+					{ __(
+						'4K renders with Nano Banana Pro (gemini-3-pro-image).',
+						'tryaura'
+					) }
+				</span>
+			) }
 
 			<label
 				style={ {

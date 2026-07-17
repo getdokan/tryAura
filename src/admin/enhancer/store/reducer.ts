@@ -19,6 +19,8 @@ export const INITIAL_STATE: EnhancerState = {
 		videoPlatform: 'youtube',
 		resolution: '1K',
 		referenceImages: [],
+		apparelMode: '',
+		cleanupPreset: '',
 		templateId: '',
 	},
 	activeTab: 'image',

@@ -10,6 +10,9 @@ function ConfigFooter( {
 	downloadName,
 	isBlockEditorPage = false,
 	optionalPrompt = '',
+	// #33: an apparel mode is itself a directive, so it satisfies the
+	// block-editor prompt requirement without any typed text.
+	bypassPromptRequirement = false,
 } ) {
 	return (
 		<div className="flex flex-row gap-[12px]">
@@ -48,7 +51,8 @@ function ConfigFooter( {
 						uploading ||
 						( hasPro() &&
 							isBlockEditorPage &&
-							optionalPrompt.trim() === '' )
+							optionalPrompt.trim() === '' &&
+							! bypassPromptRequirement )
 					}
 					loading={ isBusy }
 				>

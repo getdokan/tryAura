@@ -19,6 +19,8 @@ import { PluginArea } from '@wordpress/plugins';
 import { GoogleGenAI } from '@google/genai';
 import { hasPro } from '../../utils/tryaura';
 import { getBackgroundScene } from './sceneStaging';
+import { buildCleanupPrompt } from './cleanupPresets';
+import { buildApparelPrompt } from './apparelModes';
 import { twMerge } from 'tailwind-merge';
 
 declare const wp: any;
@@ -293,13 +295,19 @@ const PreviewModal = ( {
 					? defaultImageModel
 					: validImageModels[ 0 ] || 'gemini-2.5-flash-image';
 
-			// #29: 4K renders only on the Pro image model, so route 4K requests to
-			// gemini-3-pro-image (Nano Banana Pro) regardless of the saved model.
+			// #29: 4K renders only on the Pro image model. #33/#34: on-model,
+			// ghost-mannequin and cleanup all need the higher-fidelity model to
+			// hold the product faithful. All route to gemini-3-pro-image regardless
+			// of the saved model.
 			const resolution = imageConfigData?.resolution || '1K';
-			if ( resolution === '4K' ) {
+			const cleanupPreset = imageConfigData?.cleanupPreset || '';
+			const apparelMode = imageConfigData?.apparelMode || '';
+			const needsHighFidelityModel =
+				resolution === '4K' || !! cleanupPreset || !! apparelMode;
+			if ( needsHighFidelityModel ) {
 				const proImageModel = applyFilters(
-					'tryaura.image_4k_model',
-					'gemini-3-pro-image'
+					'tryaura.image_high_fidelity_model',
+					applyFilters( 'tryaura.image_4k_model', 'gemini-3-pro-image' )
 				) as string;
 				if (
 					validImageModels.length === 0 ||
@@ -371,10 +379,15 @@ const PreviewModal = ( {
 			const safetyInstruction =
 				'Do not generate any nudity, harassment, or abuse.';
 
+			// On block-editor pages a prompt is normally required, but a one-click
+			// cleanup (#34) or an apparel mode (#33) IS the instruction, so those
+			// must not be blocked by the empty-prompt guard.
 			if (
 				hasPro() &&
 				isBlockPage &&
-				! imageConfigData?.optionalPrompt?.trim()
+				! imageConfigData?.optionalPrompt?.trim() &&
+				! ( imageConfigData?.cleanupPreset || '' ) &&
+				! ( imageConfigData?.apparelMode || '' )
 			) {
 				throw new Error(
 					__(
@@ -409,8 +422,28 @@ const PreviewModal = ( {
 			const backgroundPreference =
 				backgroundScene || __( 'a clean, neutral background', 'tryaura' );
 
+			// #34: a one-click cleanup is a self-contained instruction — it must not
+			// be mixed with the scene/try-on prompts, which would restyle the image
+			// instead of just fixing the defect.
+			const cleanupPrompt = buildCleanupPrompt( cleanupPreset );
+			// #33: an apparel mode is the primary directive, and it overrides the
+			// default "worn by a model" fallback (ghost mannequin is the opposite).
+			const apparelPrompt = buildApparelPrompt( apparelMode, userInstruction );
+
 			let promptText: string;
-			if ( userInstruction ) {
+			if ( cleanupPrompt ) {
+				promptText = applyFilters(
+					'tryaura.ai_enhance_image_prompt_base',
+					cleanupPrompt,
+					{ imageConfigData, safetyInstruction, extras, multiHint, isThumbnailMode }
+				);
+			} else if ( apparelPrompt ) {
+				promptText = applyFilters(
+					'tryaura.ai_enhance_image_prompt_base',
+					`${ apparelPrompt }\n\nPreferences:\n- Background / scene: ${ backgroundPreference }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
+					{ imageConfigData, safetyInstruction, extras, multiHint, isThumbnailMode }
+				);
+			} else if ( userInstruction ) {
 				// The merchant gave an explicit instruction — make it the primary
 				// directive and do NOT force the "put the product on a human model"
 				// try-on template. Forcing that template is why "remove the text"

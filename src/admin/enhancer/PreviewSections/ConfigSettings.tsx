@@ -25,12 +25,12 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 
 	const tabs = applyFilters( 'tryaura.enhancer.tabs', [
 		{
-			label: __( 'Generate Image', 'tryaura' ),
+			label: __( 'Image', 'tryaura' ),
 			value: 'image',
 			disabled: isBusy,
 		},
 		{
-			label: __( 'Generate Video', 'tryaura' ),
+			label: __( 'Video', 'tryaura' ),
 			value: 'video',
 			disabled: isBusy,
 			locked: true,

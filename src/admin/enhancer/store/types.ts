@@ -21,9 +21,10 @@ export interface ImageConfigData {
 	referenceImages?: string[];
 	// #33: apparel output mode — '' | 'on-model' | 'ghost-mannequin'.
 	apparelMode?: string;
-	// #34: the one-click cleanup action being run, e.g. 'de-wrinkle'. Transient:
-	// set when the action is triggered, cleared once it has been sent.
-	cleanupPreset?: string;
+	// #32: Edit tab — selected quick-edit type (e.g. 'recolor', 'clean-up') and
+	// the merchant's free-text refinement. #34 cleanup is the 'clean-up' type.
+	editPreset?: string;
+	editInstruction?: string;
 	// #26: the active "look" template id (for chip highlighting). Applying a
 	// look writes its prompt/negative-prompt into the visible fields above.
 	templateId?: string;

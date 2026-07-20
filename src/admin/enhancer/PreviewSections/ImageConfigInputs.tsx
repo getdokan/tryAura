@@ -1,5 +1,5 @@
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { useRef, useState } from '@wordpress/element';
 import { STORE_NAME } from '../store';
 import { CrownIcon, ModernSelect } from '../../../components';
 import { __ } from '@wordpress/i18n';
@@ -16,7 +16,6 @@ import ConfigFooter from './ConfigFooter';
 import LockedTemplateTeaser from './LockedTemplateTeaser';
 import { getBackgroundOptions } from '../sceneStaging';
 import { getApparelModes } from '../apparelModes';
-import { getCleanupPresets } from '../cleanupPresets';
 import { getUpgradeToProUrl, hasPro } from '../../../utils/tryaura';
 import { twMerge } from 'tailwind-merge';
 import ProUpgradePopover from '../../../components/ProUpgradePopover';
@@ -90,29 +89,7 @@ function ImageConfigInputs( { doGenerate } ) {
 		} ) ),
 	];
 
-	// #34: one-click cleanup. Clicking a chip applies the fix and generates;
-	// clicking the active chip again turns it off so Generate behaves normally.
-	const cleanupPresets = getCleanupPresets();
-	const activeCleanup = imageConfigData?.cleanupPreset || '';
-	const [ cleanupTick, setCleanupTick ] = useState( 0 );
-
-	useEffect( () => {
-		if ( cleanupTick > 0 ) {
-			doGenerate();
-		}
-		// Only fire when a cleanup is actually requested. By this point the store
-		// already holds the new preset, so doGenerate reads it.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ cleanupTick ] );
-
-	const onCleanupClick = ( id: string ) => {
-		if ( activeCleanup === id ) {
-			setImageConfigData( { cleanupPreset: '' } );
-			return;
-		}
-		setImageConfigData( { cleanupPreset: id } );
-		setCleanupTick( ( tick ) => tick + 1 );
-	};
+	// #32/#34: quick edits and cleanup live in the Edit tab now (EditConfigInputs).
 
 	const allOutputStyles = applyFilters( 'tryaura.enhancer.output_styles', [
 		{
@@ -259,7 +236,8 @@ function ImageConfigInputs( { doGenerate } ) {
 							) }
 							lockedPopoverUpgradeUrl={ getUpgradeToProUrl() }
 						/>
-						{ imageConfigData?.apparelMode === 'ghost-mannequin' && (
+						{ imageConfigData?.apparelMode ===
+							'ghost-mannequin' && (
 							<span className="text-[12px] text-[#828282] -mt-4">
 								{ __(
 									'The garment keeps its worn shape with no visible person or mannequin.',
@@ -405,51 +383,6 @@ function ImageConfigInputs( { doGenerate } ) {
 					) }
 				/>
 			</label>
-
-			{ /* #34: one-click cleanup on the source photo. Edit mode (#32) is not
-			   shipped, so these apply to the whole image — the fix is scoped by
-			   wording, with everything but the named defect pinned. */ }
-			{ ! isThumbnailMode && (
-				<div className="flex flex-col gap-2">
-					<span className="text-[14px] w-[500]">
-						{ __( 'Quick cleanup', 'tryaura' ) }
-					</span>
-					<span className="text-[11px] text-[#828282] leading-snug -mt-1">
-						{ __(
-							'Fix small defects in the source photo. Runs straight away.',
-							'tryaura'
-						) }
-					</span>
-					<div className="flex flex-row flex-wrap gap-2 mt-1">
-						{ cleanupPresets.map( ( preset ) => (
-							<button
-								key={ preset.id }
-								type="button"
-								onClick={ () => onCleanupClick( preset.id ) }
-								disabled={ isBusy }
-								title={ preset.instruction }
-								className={ twMerge(
-									'inline-flex items-center px-3 py-1.5 text-[13px] rounded-full border cursor-pointer transition-colors',
-									activeCleanup === preset.id
-										? 'border-primary bg-[#EEF0FF] text-primary'
-										: 'border-[#E9E9E9] bg-white text-[#333] hover:border-primary',
-									isBusy ? 'opacity-60 pointer-events-none' : ''
-								) }
-							>
-								{ preset.label }
-							</button>
-						) ) }
-					</div>
-					{ activeCleanup && (
-						<span className="text-[11px] text-[#828282]">
-							{ __(
-								'Cleanup is on — Generate re-runs it. Click the active chip to turn it off.',
-								'tryaura'
-							) }
-						</span>
-					) }
-				</div>
-			) }
 
 			<ProUpgradePopover
 				anchor={ promptPopoverAnchor }

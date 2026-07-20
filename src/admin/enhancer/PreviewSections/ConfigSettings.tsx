@@ -3,6 +3,7 @@ import { STORE_NAME } from '../store';
 import GroupButton from '../../../components/GroupButton';
 import { __ } from '@wordpress/i18n';
 import ImageConfigInputs from './ImageConfigInputs';
+import EditConfigInputs from './EditConfigInputs';
 import { applyFilters } from '@wordpress/hooks';
 import ConfigFooter from './ConfigFooter';
 
@@ -34,6 +35,17 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 			disabled: isBusy,
 			locked: true,
 		},
+		// #32: Edit tab. The tab is open to everyone (it advertises the feature);
+		// the panel inside is Pro-gated. Hidden in single-purpose thumbnail mode.
+		...( isThumbnailMode
+			? []
+			: [
+					{
+						label: __( 'Edit', 'tryaura' ),
+						value: 'edit',
+						disabled: isBusy,
+					},
+			  ] ),
 	] );
 
 	return (
@@ -50,6 +62,10 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 			<div className="flex flex-col gap-[12px]">
 				{ activeTab === 'image' && (
 					<ImageConfigInputs doGenerate={ doGenerate } />
+				) }
+
+				{ activeTab === 'edit' && (
+					<EditConfigInputs doGenerate={ doGenerate } />
 				) }
 
 				{ activeTab === 'video' && ! hasPro() && (

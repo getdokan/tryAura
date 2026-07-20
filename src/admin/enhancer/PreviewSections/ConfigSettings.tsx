@@ -35,8 +35,9 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 			disabled: isBusy,
 			locked: true,
 		},
-		// #32: Edit tab. The tab is open to everyone (it advertises the feature);
-		// the panel inside is Pro-gated. Hidden in single-purpose thumbnail mode.
+		// #32: Edit tab. Open to everyone (it advertises the feature) but the panel
+		// inside is Pro-gated, so the tab shows the Pro crown for non-Pro users —
+		// same as the Generate Video tab. Hidden in single-purpose thumbnail mode.
 		...( isThumbnailMode
 			? []
 			: [
@@ -44,6 +45,7 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 						label: __( 'Edit', 'tryaura' ),
 						value: 'edit',
 						disabled: isBusy,
+						locked: ! hasPro(),
 					},
 			  ] ),
 	] );

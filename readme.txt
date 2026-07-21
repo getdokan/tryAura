@@ -37,6 +37,7 @@ If you have additional questions or need assistance, please [contact our team](h
 * **Create product videos** that turn static images into short, engaging clips
 * **Generate blog featured images** for content that matches your store
 * **Build any visually driven WooCommerce store**: fashion, apparel, beauty, jewelry, accessories, lifestyle
+* **Virtual mirrors** that let customers try the product on themselves
 
 == The Problem TryAura Solves ==
 
@@ -106,7 +107,7 @@ TryAura works right inside your Product Editor and Media Library. Add visuals th
 * **Reuse visuals anywhere**: native WordPress image, video, and gallery blocks let you place assets on any page or post, not just product pages
 * **Blog featured images**: generate eye-catching featured images for posts directly from the WordPress editor
 * **Analytics dashboard**: track total images, videos, virtual try-ons, and API token usage over time
-* **Add to cart from try-on**: shoppers buy the moment they feel confident, with fewer steps between decision and purchase
+* **Add to cart from virtual try-on**: shoppers buy the moment they feel confident, with fewer steps between decision and purchase
 
 === Consistent, Accurate Product Visuals ===
 
@@ -120,7 +121,7 @@ From AI product photography, product video generation, to virtual try-on in minu
 
 1. **Choose a product.** Pick an existing product from your WooCommerce store, or upload a basic image.
 2. **Generate visuals.** Create studio-quality product images and short videos in a few clicks.
-3. **Enable virtual try-on.** Turn on virtual try-on so shoppers can see how the product looks on them.
+3. **Enable virtual try-on.** Turn on virtual try-on so shoppers can see how the product looks on them in front of a virtual mirror.
 4. **Publish.** Add images, videos, and virtual try-on directly to your product pages and start selling with confidence.
 
 == Who TryAura Is For ==
@@ -156,7 +157,6 @@ Upgrade to a [Pro plan](https://storepulse.co/tryaura/pricing/?utm_source=wordpr
 * **Video duration control**: set how long each generated product video runs
 * **Video thumbnail generation**: create or customize thumbnails to lift play rates
 * **Multi-site licensing**: use TryAura across multiple WooCommerce sites on Professional and Agency plans
-* **Remove TryAura branding**: hide TryAura branding on the try-on widget for a white-labeled experience
 
 == Why Store Owners Choose TryAura ==
 

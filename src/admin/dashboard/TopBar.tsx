@@ -137,12 +137,14 @@ function TopBar() {
 							render={
 								<Button
 									variant="ghost"
-									size="icon-sm"
+									size="icon"
 									aria-label={ __( 'Help menu', 'tryaura' ) }
 								/>
 							}
 						>
-							<CircleHelp />
+							{ /* size on the icon itself: plugin-ui's button styles
+							     the svg only when it has no `size-*` class. */ }
+							<CircleHelp className="size-6" />
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							{ helpMenuItems.map( ( item ) => (

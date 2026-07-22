@@ -2,6 +2,11 @@
 @import "@wedevs/plugin-ui/styles.css";
 
 @source "../dashboard/**/*.{ts,tsx,js,jsx,php,html}";
+/* Scan plugin-ui's compiled bundle so Tailwind generates the utility classes
+   its components use (e.g. the TopBar's h-7.5 / max-h-16.5). They aren't in
+   plugin-ui's own styles.css, so without this the bar breaks on any site that
+   doesn't separately ship those utilities (e.g. via Dokan's global CSS). */
+@source "../../../node_modules/@wedevs/plugin-ui/dist/index.js";
 
 
 .tryaura {

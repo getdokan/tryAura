@@ -870,7 +870,7 @@ const PreviewModal = ( {
 						<h2 className="mt-0">
 							{ applyFilters(
 								'tryaura.enhancer.modal_title',
-								__( 'AI Product Image Generation', 'tryaura' ),
+								__( 'AI Product Studio', 'tryaura' ),
 								{ isThumbnailMode }
 							) }
 						</h2>

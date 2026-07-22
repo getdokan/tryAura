@@ -164,8 +164,14 @@ const ModernSelect = ( {
 					>
 						<div
 							className={ twMerge(
-								'bg-white border border-[#E9E9E9] rounded-[5px] shadow flex flex-wrap',
-								variant === 'list' ? 'flex-col' : 'flex-row'
+								'bg-white border border-[#E9E9E9] rounded-[5px] shadow',
+								// Grid variant: equal-width columns that stretch
+								// edge-to-edge — a wrapped flex row of fixed-width
+								// tiles always leaves the remainder as dead space
+								// on the right.
+								variant === 'list'
+									? 'flex flex-wrap flex-col'
+									: 'grid grid-cols-4'
 							) }
 							style={ {
 								width:
@@ -190,7 +196,7 @@ const ModernSelect = ( {
 												: 'bg-white',
 											variant === 'list'
 												? 'w-full flex-row p-[8px_12px]'
-												: 'w-[78.25px] p-[12px] flex-col items-center justify-center border border-transparent',
+												: 'w-full p-[12px] flex-col items-center justify-center border border-transparent',
 											variant === 'grid' &&
 												'hover:border-primary'
 										) }

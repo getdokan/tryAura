@@ -81,9 +81,6 @@ function EditConfigInputs( { doGenerate } ) {
 				<span className="text-[16px] font-semibold">
 					{ __( 'Targeted edit', 'tryaura' ) }
 				</span>
-				<span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#FBF3D9] text-[#8A6D1B]">
-					{ __( 'PRO', 'tryaura' ) }
-				</span>
 				{ ! isPro && (
 					<CrownIcon
 						// @ts-ignore

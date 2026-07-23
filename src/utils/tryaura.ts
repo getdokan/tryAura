@@ -25,6 +25,13 @@ export const getUpgradeToProUrl = () => {
 	return upgradeToProUrl ?? '';
 };
 
+export const shouldShowUpgradeBanner = () => {
+	// Computed server-side: false when Pro is active, the banner was
+	// dismissed by this user less than 30 days ago, etc.
+	// @ts-ignore
+	return Boolean( window?.tryAura?.showUpgradeBanner );
+};
+
 export const getMediaSelectedItems = () => {
 	let frameObj =
 		wp?.media?.frame ||

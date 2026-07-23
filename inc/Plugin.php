@@ -22,7 +22,7 @@ class Plugin {
 	 *
 	 * @var string
 	 */
-	private $version = '1.0.4';
+	private $version = '2.0.0';
 	private Container $container;
 
 	/**

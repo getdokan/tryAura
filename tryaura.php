@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       TryAura: AI Virtual Try-On, Product Visualization & Product Videos for WooCommerce
  * Description:       Turn basic product photos into realistic photos, videos, and virtual try-ons that help WooCommerce shoppers buy with confidence.
- * Version:           1.0.4
+ * Version:           2.0.0
  * Requires at least: 6.6
  * Requires PHP:      7.4
  * Author:            weDevs

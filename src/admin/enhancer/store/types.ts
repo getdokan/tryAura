@@ -19,6 +19,12 @@ export interface ImageConfigData {
 	// #28: extra reference photos of the real product (data URLs), sent as
 	// additional inlineData parts so the model keeps logos/colours/shape accurate.
 	referenceImages?: string[];
+	// #33: apparel output mode — '' | 'on-model' | 'ghost-mannequin'.
+	apparelMode?: string;
+	// #32: Edit tab — selected quick-edit type (e.g. 'recolor', 'clean-up') and
+	// the merchant's free-text refinement. #34 cleanup is the 'clean-up' type.
+	editPreset?: string;
+	editInstruction?: string;
 	// #26: the active "look" template id (for chip highlighting). Applying a
 	// look writes its prompt/negative-prompt into the visible fields above.
 	templateId?: string;

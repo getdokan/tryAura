@@ -15,6 +15,7 @@ import {
 import ConfigFooter from './ConfigFooter';
 import LockedTemplateTeaser from './LockedTemplateTeaser';
 import { getBackgroundOptions } from '../sceneStaging';
+import { getApparelModes } from '../apparelModes';
 import { getUpgradeToProUrl, hasPro } from '../../../utils/tryaura';
 import { twMerge } from 'tailwind-merge';
 import ProUpgradePopover from '../../../components/ProUpgradePopover';
@@ -76,6 +77,19 @@ function ImageConfigInputs( { doGenerate } ) {
 	// Lifestyle, Marble, Wood table, Outdoor, Interior). Shared with the prompt
 	// builder via sceneStaging so options and their scene text stay in sync.
 	const allBackgroundPrefrences = getBackgroundOptions();
+
+	// #33: apparel output. "On model" was already the default behaviour when no
+	// instruction was typed — this makes it explicit. Ghost mannequin is Pro.
+	const apparelOptions = [
+		{ label: __( 'Default', 'tryaura' ), value: '' },
+		...getApparelModes().map( ( mode ) => ( {
+			label: mode.label,
+			value: mode.id,
+			locked: !! mode.pro && ! hasPro(),
+		} ) ),
+	];
+
+	// #32/#34: quick edits and cleanup live in the Edit tab now (EditConfigInputs).
 
 	const allOutputStyles = applyFilters( 'tryaura.enhancer.output_styles', [
 		{
@@ -205,6 +219,32 @@ function ImageConfigInputs( { doGenerate } ) {
 							options={ allOutputStyles }
 							disabled={ isBusy }
 						/>
+
+						{ /* #33: apparel output — on model / ghost mannequin. */ }
+						<ModernSelect
+							value={ imageConfigData?.apparelMode ?? '' }
+							onChange={ ( val ) =>
+								setImageConfigData( { apparelMode: val } )
+							}
+							label={ __( 'Apparel Output', 'tryaura' ) }
+							options={ apparelOptions }
+							disabled={ isBusy }
+							showLockedPopover={ ! hasPro() }
+							lockedPopoverMessage={ __(
+								'Generate invisible-mannequin (ghost mannequin) product shots with a pro account.',
+								'tryaura'
+							) }
+							lockedPopoverUpgradeUrl={ getUpgradeToProUrl() }
+						/>
+						{ imageConfigData?.apparelMode ===
+							'ghost-mannequin' && (
+							<span className="text-[12px] text-[#828282] -mt-4">
+								{ __(
+									'The garment keeps its worn shape with no visible person or mannequin.',
+									'tryaura'
+								) }
+							</span>
+						) }
 					</>
 				) }
 			</>
@@ -364,6 +404,7 @@ function ImageConfigInputs( { doGenerate } ) {
 					isBlockEditorPage && ! isWoocommerceProductPage
 				}
 				optionalPrompt={ imageConfigData?.optionalPrompt ?? '' }
+				bypassPromptRequirement={ !! imageConfigData?.apparelMode }
 			/>
 		</>
 	);

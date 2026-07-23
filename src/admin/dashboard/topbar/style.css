@@ -1,0 +1,26 @@
+/* Standalone Tailwind compilation for the admin Top Bar (imported from
+   index.tsx, NOT from the dashboard style.scss — Tailwind only honors one utilities
+   emission per compilation, so this must be its own unit).
+
+   Why it exists: other plugin-ui consumers (dokan-pro, dokan-lite, wePOS, …)
+   ship plugin-ui's utilities globally in wp-admin scoped to
+   `:is(.pui-root, .dokan-layout)` — specificity (0,2,0) — sometimes from an
+   older plugin-ui build that lacks the Top Bar's responsive variants
+   (md:h-7.5, md:px-2, …). Their base utilities (p-0, h-10) then beat the
+   (0,1,0) copies in plugin-ui's styles.css at every viewport and squash the
+   version badges into oversized ovals. Re-emitting the utilities under the
+   header's ID — (1,1,0) + !important — makes the Top Bar win regardless of
+   what other plugins load. */
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+
+#tryaura-admin-header {
+  @import "tailwindcss/utilities.css" layer(utilities) important;
+}
+
+@source "../TopBar.tsx";
+/* The Top Bar is built from plugin-ui components, so their classes must be
+   scanned too. plugin-ui ships a single bundle, so this pulls in the full
+   plugin-ui utility set. */
+@source "../../../../node_modules/@wedevs/plugin-ui/dist/index.js";

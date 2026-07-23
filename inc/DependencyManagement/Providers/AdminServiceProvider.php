@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Dokan\TryAura\DependencyManagement\BaseServiceProvider;
 use Dokan\TryAura\Admin\Admin;
 use Dokan\TryAura\Admin\Enhancer;
+use Dokan\TryAura\Admin\Promotion;
 
 /**
  * AdminServiceProvider Class
@@ -25,8 +26,9 @@ class AdminServiceProvider extends BaseServiceProvider {
 	 * @var array
 	 */
 	protected $services = [
-		'admin'    => Admin::class,
-		'enhancer' => Enhancer::class,
+		'admin'     => Admin::class,
+		'enhancer'  => Enhancer::class,
+		'promotion' => Promotion::class,
 	];
 
 	/**

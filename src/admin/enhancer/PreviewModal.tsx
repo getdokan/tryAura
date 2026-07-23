@@ -8,6 +8,9 @@ import { Button } from '../../components';
 import { __ } from '@wordpress/i18n';
 import { X } from 'lucide-react';
 import OriginalImage from './PreviewSections/OriginalImage';
+import ReferenceAngles, {
+	MAX_IMAGE_REFERENCES,
+} from './PreviewSections/ReferenceAngles';
 import ConfigSettings from './PreviewSections/ConfigSettings';
 import Output from './PreviewSections/Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
@@ -15,6 +18,9 @@ import { Modal, Slot, SlotFillProvider } from '@wordpress/components';
 import { PluginArea } from '@wordpress/plugins';
 import { GoogleGenAI } from '@google/genai';
 import { hasPro } from '../../utils/tryaura';
+import { getBackgroundScene } from './sceneStaging';
+import { buildApparelPrompt } from './apparelModes';
+import { buildEditInstruction } from './editPresets';
 import { twMerge } from 'tailwind-merge';
 
 declare const wp: any;
@@ -161,7 +167,9 @@ const PreviewModal = ( {
 			setMessage( __( 'Done', 'tryaura' ) );
 			setError( null );
 		} catch ( e: any ) {
-			setError( e?.message || __( 'Testing generation failed.', 'tryaura' ) );
+			setError(
+				e?.message || __( 'Testing generation failed.', 'tryaura' )
+			);
 			setStatus( 'error' );
 			setMessage( 'Generation failed.' );
 		}
@@ -278,7 +286,7 @@ const PreviewModal = ( {
 			// and fall back to a live default if it is unknown/decommissioned — this
 			// covers the missing on-save validation + #14 migration (#16 finding #6).
 			// If the registry has not loaded yet, keep the old resolution (never block).
-			const imageModel =
+			let imageModel =
 				validImageModels.length === 0
 					? savedImageModel ||
 					  defaultImageModel ||
@@ -288,6 +296,52 @@ const PreviewModal = ( {
 					: validImageModels.includes( defaultImageModel )
 					? defaultImageModel
 					: validImageModels[ 0 ] || 'gemini-2.5-flash-image';
+
+			// #29: 4K renders only on the Pro image model. #33/#34: on-model,
+			// ghost-mannequin and cleanup all need the higher-fidelity model to
+			// hold the product faithful. All route to gemini-3-pro-image regardless
+			// of the saved model.
+			const resolution = imageConfigData?.resolution || '1K';
+			const apparelMode = imageConfigData?.apparelMode || '';
+			const isEdit = activeTab === 'edit';
+			const needsHighFidelityModel =
+				resolution === '4K' || !! apparelMode || isEdit;
+			if ( needsHighFidelityModel ) {
+				const proImageModel = applyFilters(
+					'tryaura.image_high_fidelity_model',
+					applyFilters(
+						'tryaura.image_4k_model',
+						'gemini-3-pro-image'
+					)
+				) as string;
+				if (
+					validImageModels.length === 0 ||
+					validImageModels.includes( proImageModel )
+				) {
+					imageModel = proImageModel;
+				}
+			}
+
+			// #29: imageSize (2K/4K) is a Gemini 3 feature — it is only sent to
+			// gemini-3* models below. So if 2K is selected while still on an older
+			// model (e.g. gemini-2.5-flash-image), move to a Gemini 3 model, else
+			// the resolution is silently dropped and the output stays 1K. (4K is
+			// already covered above; a Gemini-3 model leaves this untouched.)
+			if (
+				( resolution === '2K' || resolution === '4K' ) &&
+				! /gemini-3/.test( imageModel )
+			) {
+				const gemini3Model =
+					/gemini-3/.test( defaultImageModel )
+						? defaultImageModel
+						: 'gemini-3.1-flash-image';
+				if (
+					validImageModels.length === 0 ||
+					validImageModels.includes( gemini3Model )
+				) {
+					imageModel = gemini3Model;
+				}
+			}
 
 			setStatus( 'fetching' );
 			setMessage( __( 'Fetching images…', 'tryaura' ) );
@@ -319,6 +373,33 @@ const PreviewModal = ( {
 				} )
 			);
 
+			// #28: append the merchant's extra reference photos (data URLs) as
+			// additional inlineData parts so the model keeps the real product's
+			// logos, colours and shape accurate. Cap the total toward the API limit.
+			const referenceParts = ( imageConfigData?.referenceImages || [] )
+				.map( ( url: string ) => {
+					if (
+						typeof url !== 'string' ||
+						! url.startsWith( 'data:' )
+					) {
+						return null;
+					}
+					const comma = url.indexOf( ',' );
+					const header = url.substring( 0, Math.max( 0, comma ) );
+					const mimeType =
+						/data:([^;]+)/.exec( header )?.[ 1 ] || 'image/png';
+					const base64 =
+						comma >= 0 ? url.substring( comma + 1 ) : url;
+					return { mimeType, base64 };
+				} )
+				.filter( Boolean ) as { mimeType: string; base64: string }[];
+
+			const allImageParts = [ ...encodedImages, ...referenceParts ].slice(
+				0,
+				MAX_IMAGE_REFERENCES
+			);
+			const hasReferences = referenceParts.length > 0;
+
 			setStatus( 'generating' );
 			setMessage( __( 'Thinking and generating…', 'tryaura' ) );
 			const ai = new GoogleGenAI( { apiKey } );
@@ -327,10 +408,30 @@ const PreviewModal = ( {
 			const safetyInstruction =
 				'Do not generate any nudity, harassment, or abuse.';
 
+			// #32: the Edit tab carries its own instruction — validate it here.
+			const editInstruction = isEdit
+				? buildEditInstruction(
+						imageConfigData?.editPreset,
+						imageConfigData?.editInstruction
+				  )
+				: '';
+			if ( isEdit && ! editInstruction ) {
+				throw new Error(
+					__(
+						'Please pick a quick edit or describe the change.',
+						'tryaura'
+					)
+				);
+			}
+
+			// On block-editor pages a prompt is normally required, but an apparel
+			// mode (#33) or an edit (#32) IS the instruction, so they are exempt.
 			if (
 				hasPro() &&
 				isBlockPage &&
-				! imageConfigData?.optionalPrompt?.trim()
+				! isEdit &&
+				! imageConfigData?.optionalPrompt?.trim() &&
+				! ( imageConfigData?.apparelMode || '' )
 			) {
 				throw new Error(
 					__(
@@ -357,8 +458,54 @@ const PreviewModal = ( {
 				imageConfigData?.optionalPrompt || ''
 			).trim();
 
+			// #27: resolve the selected background into a rich scene instruction.
+			// Empty scene (Plain/unknown) keeps the product on a neutral backdrop.
+			const backgroundScene = getBackgroundScene(
+				imageConfigData?.backgroundType
+			);
+			const backgroundPreference =
+				backgroundScene ||
+				__( 'a clean, neutral background', 'tryaura' );
+
+			// #33: an apparel mode is the primary directive, and it overrides the
+			// default "worn by a model" fallback (ghost mannequin is the opposite).
+			const apparelPrompt = buildApparelPrompt(
+				apparelMode,
+				userInstruction
+			);
+
 			let promptText: string;
-			if ( userInstruction ) {
+			if ( isEdit ) {
+				// #32: targeted edit — change only what the instruction asks and
+				// keep the rest of the product faithful to the source. Reuses the
+				// existing edit path; the pixel-mask brush is Vertex-only (skipped).
+				// No multiHint here: that is the try-on composition hint, which
+				// would tell the model to compose a model-wearing-product shot
+				// instead of editing. Extra selected images are context only.
+				promptText = applyFilters(
+					'tryaura.ai_enhance_image_prompt_base',
+					`Edit the provided image(s) according to this instruction, following it closely: ${ editInstruction }.\n\nPreserve the product's shape, colours, logos, textures and the rest of the image; change only what the instruction asks for.\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }`,
+					{
+						imageConfigData,
+						safetyInstruction,
+						extras,
+						multiHint,
+						isThumbnailMode,
+					}
+				);
+			} else if ( apparelPrompt ) {
+				promptText = applyFilters(
+					'tryaura.ai_enhance_image_prompt_base',
+					`${ apparelPrompt }\n\nPreferences:\n- Background / scene: ${ backgroundPreference }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
+					{
+						imageConfigData,
+						safetyInstruction,
+						extras,
+						multiHint,
+						isThumbnailMode,
+					}
+				);
+			} else if ( userInstruction ) {
 				// The merchant gave an explicit instruction — make it the primary
 				// directive and do NOT force the "put the product on a human model"
 				// try-on template. Forcing that template is why "remove the text"
@@ -366,7 +513,7 @@ const PreviewModal = ( {
 				// only removed the background (#16 finding #2).
 				promptText = applyFilters(
 					'tryaura.ai_enhance_image_prompt_base',
-					`Edit the provided image(s) according to this instruction, following it closely: ${ userInstruction }.\n\nPreserve the product's shape, colours, logos, and details; change only what the instruction asks for.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
+					`Edit the provided image(s) according to this instruction, following it closely: ${ userInstruction }.\n\nPreserve the product's shape, colours, logos, and details; change only what the instruction asks for.\n\nPreferences:\n- Background / scene: ${ backgroundPreference }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
 					{
 						imageConfigData,
 						safetyInstruction,
@@ -379,7 +526,7 @@ const PreviewModal = ( {
 				// No instruction — fall back to the default product try-on output.
 				promptText = applyFilters(
 					'tryaura.ai_enhance_image_prompt_base',
-					`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
+					`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background / scene: ${ backgroundPreference }\n- Output style: ${ imageConfigData?.styleType }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
 					{
 						imageConfigData,
 						safetyInstruction,
@@ -407,9 +554,18 @@ const PreviewModal = ( {
 			if ( imageNegativePrompt ) {
 				promptText += `\n\nAvoid including the following in the image: ${ imageNegativePrompt }.`;
 			}
+			// #28: tell the model the extra photos are the same product from other
+			// angles, so it treats them as fidelity references, not new subjects.
+			if ( hasReferences ) {
+				promptText += applyFilters(
+					'tryaura.ai_enhance_reference_hint',
+					'\n\nAdditional reference photos of the same product are provided (different angles/details). Treat them as the same physical product and keep its logos, colours, shape, textures and proportions accurate.',
+					referenceParts.length
+				);
+			}
 			const prompt = applyFilters( 'tryaura.ai_enhance_prompt', [
 				{ text: promptText },
-				...encodedImages.map( ( img ) => ( {
+				...allImageParts.map( ( img ) => ( {
 					inlineData: { mimeType: img.mimeType, data: img.base64 },
 				} ) ),
 			] );
@@ -423,9 +579,22 @@ const PreviewModal = ( {
 					candidateCount: 1,
 					// Client-side only; lets Cancel abort the request (#16 #5).
 					abortSignal: controller.signal,
-					imageConfig: {
-						aspectRatio: imageConfigData?.aspectRatio || '1:1',
-					},
+					// #32: an edit omits aspect/size constraints so the result keeps
+					// the source framing and only the instructed change is applied.
+					...( isEdit
+						? {}
+						: {
+								imageConfig: {
+									aspectRatio:
+										imageConfigData?.aspectRatio || '1:1',
+									// #29: imageSize ('1K'|'2K'|'4K') is a Gemini 3
+									// feature. Only send it to Gemini 3 models —
+									// the older gemini-2.5-flash-image can reject it.
+									...( /gemini-3/.test( imageModel )
+										? { imageSize: resolution }
+										: {} ),
+								},
+						  } ),
 				},
 			};
 			const response: any = await ( ai as any ).models.generateContent(
@@ -450,7 +619,9 @@ const PreviewModal = ( {
 			}
 
 			if ( ! data64 ) {
-				throw new Error( __( 'Model did not return an image.', 'tryaura' ) );
+				throw new Error(
+					__( 'Model did not return an image.', 'tryaura' )
+				);
 			}
 
 			const dataUrl = `data:${ outMime };base64,${ data64 }`;
@@ -570,7 +741,10 @@ const PreviewModal = ( {
 			if ( ! newId ) {
 				doAction( 'tryaura.ai_enhance_upload_failed', filename, blob );
 				throw new Error(
-					__( 'Upload succeeded but no attachment ID returned.', 'tryaura' )
+					__(
+						'Upload succeeded but no attachment ID returned.',
+						'tryaura'
+					)
 				);
 			}
 
@@ -696,7 +870,7 @@ const PreviewModal = ( {
 						<h2 className="mt-0">
 							{ applyFilters(
 								'tryaura.enhancer.modal_title',
-								__( 'AI Product Image Generation', 'tryaura' ),
+								__( 'AI Product Studio', 'tryaura' ),
 								{ isThumbnailMode }
 							) }
 						</h2>
@@ -710,18 +884,26 @@ const PreviewModal = ( {
 					</div>
 
 					<div className="grid grid-cols-1 md:grid-cols-11 md:flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
-						{ ( activeTab === 'image' || ! hasPro() ) && (
-							<OriginalImage
-								imageUrls={ imageUrls }
-								multiple={ multiple }
-								selectedIndices={ selectedImageIndices }
-								setSelectedIndices={ setSelectedImageIndices }
-								showSelection={ true }
-								showGeneratedImage={ false }
-								limits={ { min: 1, max: 3 } }
-								className="col-span-1 md:col-span-3 max-h-133.25 overflow-auto"
-								isBusy={ isBusy }
-							/>
+						{ ( activeTab === 'image' ||
+							activeTab === 'edit' ||
+							! hasPro() ) && (
+							<div className="col-span-1 md:col-span-3 flex flex-col gap-4">
+								<OriginalImage
+									imageUrls={ imageUrls }
+									multiple={ multiple }
+									selectedIndices={ selectedImageIndices }
+									setSelectedIndices={
+										setSelectedImageIndices
+									}
+									showSelection={ true }
+									showGeneratedImage={ false }
+									limits={ { min: 1, max: 3 } }
+									className="max-h-133.25 overflow-auto"
+									isBusy={ isBusy }
+								/>
+								{ /* #28: reference angles — image generation only. */ }
+								{ activeTab === 'image' && <ReferenceAngles /> }
+							</div>
 						) }
 						<Slot
 							name="TryAuraOriginalImage"
@@ -740,7 +922,9 @@ const PreviewModal = ( {
 							className="col-span-1 md:col-span-4 flex flex-col gap-[32px]"
 						/>
 
-						{ ( activeTab === 'image' || ! hasPro() ) && (
+						{ ( activeTab === 'image' ||
+							activeTab === 'edit' ||
+							! hasPro() ) && (
 							<Output
 								supportsVideo={ supportsVideo }
 								className="col-span-1 md:col-span-4"
@@ -762,29 +946,28 @@ const PreviewModal = ( {
 						) }
 					>
 						<div className="flex flex-row justify-end gap-3">
-							{ generatedUrl && 'image' === activeTab && (
-								<Button
-									onClick={ setInMediaSelection }
-									disabled={ disabledImageAddToMedia }
-									loading={ uploading }
-								>
-									{ uploading
-										? __( 'Adding…', 'tryaura' )
-										: __(
-												'Add to Media Library',
-												'tryaura'
-										  ) }
-								</Button>
-							) }
+							{ generatedUrl &&
+								( 'image' === activeTab ||
+									'edit' === activeTab ) && (
+									<Button
+										onClick={ setInMediaSelection }
+										disabled={ disabledImageAddToMedia }
+										loading={ uploading }
+									>
+										{ uploading
+											? __( 'Adding…', 'tryaura' )
+											: __(
+													'Add to Media Library',
+													'tryaura'
+											  ) }
+									</Button>
+								) }
 
 							<Slot name="TryAuraEnhancerFooterActions" />
 
 							<PluginArea scope="tryaura-enhancer" />
 
-							<Button
-								variant="outline"
-								onClick={ handleClose }
-							>
+							<Button variant="outline" onClick={ handleClose }>
 								{ isBusy
 									? __( 'Cancel', 'tryaura' )
 									: __( 'Close', 'tryaura' ) }

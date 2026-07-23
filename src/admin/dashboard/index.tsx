@@ -4,6 +4,10 @@ import { ThemeProvider } from '@wedevs/plugin-ui';
 import App from './App';
 import TopBar from './TopBar';
 import './style.scss';
+// Own file (not part of style.scss): a second Tailwind compilation that
+// re-emits the Top Bar's utilities at ID specificity. See the comment inside.
+// Must be named style.css so wp-scripts merges it into style-index.css.
+import './topbar/style.css';
 import menuFix from './utils/menu-fix.js';
 
 domReady( () => {
@@ -18,9 +22,7 @@ domReady( () => {
 		);
 	}
 
-	const dashboardDomNode = document.getElementById(
-		'tryaura-settings-root'
-	);
+	const dashboardDomNode = document.getElementById( 'tryaura-settings-root' );
 	if ( dashboardDomNode ) {
 		const dashboardRoot = createRoot( dashboardDomNode! );
 		dashboardRoot.render( <App /> );

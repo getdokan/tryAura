@@ -127,13 +127,14 @@ class Promotion {
 		?>
 		<style id="tryaura-upgrade-menu-style">
 			<?php echo $selector; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> {
-				display: inline-block;
-				margin: 4px 0 4px 10px;
-				padding: 4px 14px;
+				display: block;
+				margin: 6px 10px;
+				padding: 8px 12px;
 				background: #ffd932;
 				color: #000000;
 				border-radius: 4px;
 				font-weight: 600;
+				text-align: center;
 			}
 			<?php echo $selector; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>:hover,
 			<?php echo $selector; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>:focus {

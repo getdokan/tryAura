@@ -33,7 +33,7 @@ function UpgradeBanner() {
 	};
 
 	return (
-		<div className="relative mb-6 rounded-lg bg-[#ffd932] px-6 py-5 text-black">
+		<div className="relative mb-6 rounded-lg border border-solid border-[#e2e4e7] bg-white px-6 py-5 text-black">
 			<button
 				type="button"
 				onClick={ dismiss }
@@ -55,7 +55,7 @@ function UpgradeBanner() {
 				href={ upgradeUrl }
 				target="_blank"
 				rel="noopener noreferrer"
-				className="inline-block rounded-md bg-black px-4 py-2 text-sm font-semibold text-white no-underline hover:bg-black/80 hover:text-white focus:text-white"
+				className="inline-block rounded-md bg-[#ffd932] px-4 py-2 text-sm font-semibold text-black no-underline hover:bg-[#ffe164] hover:text-black focus:text-black"
 			>
 				{ __( 'Upgrade Now', 'tryaura' ) }
 			</a>

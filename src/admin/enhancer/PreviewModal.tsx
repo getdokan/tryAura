@@ -1,4 +1,4 @@
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { useSelect, useDispatch } from '@wordpress/data';
 // @ts-ignore
@@ -8,6 +8,9 @@ import { Button } from '../../components';
 import { __ } from '@wordpress/i18n';
 import { X } from 'lucide-react';
 import OriginalImage from './PreviewSections/OriginalImage';
+import ReferenceAngles, {
+	MAX_IMAGE_REFERENCES,
+} from './PreviewSections/ReferenceAngles';
 import ConfigSettings from './PreviewSections/ConfigSettings';
 import Output from './PreviewSections/Output';
 import { applyFilters, doAction } from '@wordpress/hooks';
@@ -15,6 +18,9 @@ import { Modal, Slot, SlotFillProvider } from '@wordpress/components';
 import { PluginArea } from '@wordpress/plugins';
 import { GoogleGenAI } from '@google/genai';
 import { hasPro } from '../../utils/tryaura';
+import { getBackgroundScene } from './sceneStaging';
+import { buildApparelPrompt } from './apparelModes';
+import { buildEditInstruction } from './editPresets';
 import { twMerge } from 'tailwind-merge';
 
 declare const wp: any;
@@ -39,15 +45,18 @@ const PreviewModal = ( {
 		uploading,
 		activeTab,
 		isBusy,
+		altText,
+		generatingAltText,
 		isThumbnailMode,
 		selectedImageIndices,
 		imageConfigData,
 		defaultImageModel,
+		validImageModels,
 		settings,
 	} = useSelect(
 		( select ) => {
 			const store = select( STORE_NAME );
-			const aiModelsStore = select( 'tryaura/ai-models' );
+			const aiModelsStore: any = select( 'tryaura/ai-models' );
 			const settingsStore = select( SETTINGS_STORE_NAME );
 			return {
 				isBlockEditorPage: store.getIsBlockEditorPage(),
@@ -56,10 +65,18 @@ const PreviewModal = ( {
 				uploading: store.getUploading(),
 				activeTab: store.getActiveTab(),
 				isBusy: store.isBusy(),
+				altText: store.getAltText(),
+				generatingAltText: store.getGeneratingAltText(),
 				isThumbnailMode: store.isThumbnailMode(),
 				selectedImageIndices: store.getSelectedImageIndices(),
 				imageConfigData: store.getImageConfigData(),
 				defaultImageModel: aiModelsStore.getDefaultImageModel(),
+				validImageModels: Object.keys(
+					aiModelsStore.getProviderModels(
+						aiModelsStore.getDefaultProvider(),
+						{ identity: 'image', supported: true }
+					) || {}
+				),
 				settings: settingsStore.getSettings(),
 			};
 		},
@@ -79,7 +96,13 @@ const PreviewModal = ( {
 		setAttachmentIds,
 		setSupportsVideo,
 		resetState,
+		setAltText,
+		setGeneratingAltText,
 	} = useDispatch( STORE_NAME );
+
+	// Holds the in-flight generation's AbortController so the merchant can cancel
+	// (Close while busy) instead of being forced to refresh the tab (#16 #5).
+	const abortRef = useRef< AbortController | null >( null );
 
 	const multiple = imageUrls.length > 1;
 
@@ -144,15 +167,97 @@ const PreviewModal = ( {
 			setMessage( __( 'Done', 'tryaura' ) );
 			setError( null );
 		} catch ( e: any ) {
-			setError( e?.message || __( 'Testing generation failed.', 'tryaura' ) );
+			setError(
+				e?.message || __( 'Testing generation failed.', 'tryaura' )
+			);
 			setStatus( 'error' );
 			setMessage( 'Generation failed.' );
 		}
 	};
 
+	// #25: generate SEO/accessibility alt text for the generated image via a
+	// lightweight Gemini text call. Best-effort — never blocks image generation.
+	const generateAltText = async ( sourceDataUrl?: string ) => {
+		const imgUrl = sourceDataUrl || generatedUrl;
+		if ( ! imgUrl ) {
+			return;
+		}
+		try {
+			setGeneratingAltText( true );
+			const aura = ( window as any )?.tryAura;
+			const google = settings?.[ aura?.optionKey ]?.google;
+			const apiKey = google?.apiKey || aura?.apiKey;
+			if ( ! apiKey ) {
+				return;
+			}
+			const comma = imgUrl.indexOf( ',' );
+			const header = imgUrl.substring( 0, Math.max( 0, comma ) );
+			const mime = /data:([^;]+)/.exec( header )?.[ 1 ] || 'image/png';
+			const base64 = comma >= 0 ? imgUrl.substring( comma + 1 ) : imgUrl;
+
+			const ai = new GoogleGenAI( { apiKey } );
+			const altModel = applyFilters(
+				'tryaura.alt_text_model',
+				'gemini-2.5-flash'
+			);
+			const altPromptText = applyFilters(
+				'tryaura.alt_text_prompt',
+				'Write a single concise, descriptive alt text (max ~125 characters) for this e-commerce product image, for SEO and accessibility. Return only the alt text — no quotes, labels, or extra lines.'
+			);
+			const response: any = await ( ai as any ).models.generateContent( {
+				model: altModel,
+				contents: [
+					{ text: altPromptText },
+					{ inlineData: { mimeType: mime, data: base64 } },
+				],
+			} );
+			const parts = response?.candidates?.[ 0 ]?.content?.parts || [];
+			const text = parts
+				.map( ( p: any ) => p?.text )
+				.filter( Boolean )
+				.join( ' ' )
+				.replace( /\s+/g, ' ' )
+				.trim()
+				.replace( /^["']+|["']+$/g, '' );
+			if ( text ) {
+				setAltText( text );
+			}
+			const usage = response?.usageMetadata;
+			apiFetch( {
+				path: '/tryaura/v1/log-usage',
+				method: 'POST',
+				data: {
+					type: 'alt_text',
+					model: altModel,
+					prompt: altPromptText,
+					input_tokens: usage?.promptTokenCount,
+					output_tokens:
+						usage?.candidatesTokenCount ??
+						usage?.responseTokenCount,
+					total_tokens: usage?.totalTokenCount,
+					generated_from: 'admin',
+					object_id: ( window as any )?.tryAura?.postId,
+					object_type: ( window as any )?.tryAura?.postType,
+					status: 'success',
+				},
+			} ).catch( () => {
+				// ignore logging errors
+			} );
+		} catch ( e ) {
+			// Alt text is a best-effort enhancement — never block generation.
+			// eslint-disable-next-line no-console
+			console.error( 'TryAura alt text generation failed:', e );
+		} finally {
+			setGeneratingAltText( false );
+		}
+	};
+
 	const doGenerate = async () => {
+		const controller = new AbortController();
+		abortRef.current = controller;
 		try {
 			setError( null );
+			setAltText( '' );
 			const selectedUrls = imageUrls.filter( ( _, idx ) =>
 				selectedImageIndices.includes( idx )
 			);
@@ -177,10 +282,66 @@ const PreviewModal = ( {
 				);
 			}
 
-			const imageModel =
-				savedImageModel ||
-				defaultImageModel ||
-				'gemini-2.5-flash-image-preview';
+			// Validate the saved model against the merged tryaura_ai_models registry
+			// and fall back to a live default if it is unknown/decommissioned — this
+			// covers the missing on-save validation + #14 migration (#16 finding #6).
+			// If the registry has not loaded yet, keep the old resolution (never block).
+			let imageModel =
+				validImageModels.length === 0
+					? savedImageModel ||
+					  defaultImageModel ||
+					  'gemini-2.5-flash-image'
+					: validImageModels.includes( savedImageModel )
+					? savedImageModel
+					: validImageModels.includes( defaultImageModel )
+					? defaultImageModel
+					: validImageModels[ 0 ] || 'gemini-2.5-flash-image';
+
+			// #29: 4K renders only on the Pro image model. #33/#34: on-model,
+			// ghost-mannequin and cleanup all need the higher-fidelity model to
+			// hold the product faithful. All route to gemini-3-pro-image regardless
+			// of the saved model.
+			const resolution = imageConfigData?.resolution || '1K';
+			const apparelMode = imageConfigData?.apparelMode || '';
+			const isEdit = activeTab === 'edit';
+			const needsHighFidelityModel =
+				resolution === '4K' || !! apparelMode || isEdit;
+			if ( needsHighFidelityModel ) {
+				const proImageModel = applyFilters(
+					'tryaura.image_high_fidelity_model',
+					applyFilters(
+						'tryaura.image_4k_model',
+						'gemini-3-pro-image'
+					)
+				) as string;
+				if (
+					validImageModels.length === 0 ||
+					validImageModels.includes( proImageModel )
+				) {
+					imageModel = proImageModel;
+				}
+			}
+
+			// #29: imageSize (2K/4K) is a Gemini 3 feature — it is only sent to
+			// gemini-3* models below. So if 2K is selected while still on an older
+			// model (e.g. gemini-2.5-flash-image), move to a Gemini 3 model, else
+			// the resolution is silently dropped and the output stays 1K. (4K is
+			// already covered above; a Gemini-3 model leaves this untouched.)
+			if (
+				( resolution === '2K' || resolution === '4K' ) &&
+				! /gemini-3/.test( imageModel )
+			) {
+				const gemini3Model =
+					/gemini-3/.test( defaultImageModel )
+						? defaultImageModel
+						: 'gemini-3.1-flash-image';
+				if (
+					validImageModels.length === 0 ||
+					validImageModels.includes( gemini3Model )
+				) {
+					imageModel = gemini3Model;
+				}
+			}
 
 			setStatus( 'fetching' );
 			setMessage( __( 'Fetching images…', 'tryaura' ) );
@@ -188,6 +349,7 @@ const PreviewModal = ( {
 				selectedUrls.map( async ( url ) => {
 					const resp = await fetch( url, {
 						credentials: 'same-origin',
+						signal: controller.signal,
 					} );
 					const blob = await resp.blob();
 					const mimeType = blob.type || 'image/png';
@@ -211,6 +373,33 @@ const PreviewModal = ( {
 				} )
 			);
 
+			// #28: append the merchant's extra reference photos (data URLs) as
+			// additional inlineData parts so the model keeps the real product's
+			// logos, colours and shape accurate. Cap the total toward the API limit.
+			const referenceParts = ( imageConfigData?.referenceImages || [] )
+				.map( ( url: string ) => {
+					if (
+						typeof url !== 'string' ||
+						! url.startsWith( 'data:' )
+					) {
+						return null;
+					}
+					const comma = url.indexOf( ',' );
+					const header = url.substring( 0, Math.max( 0, comma ) );
+					const mimeType =
+						/data:([^;]+)/.exec( header )?.[ 1 ] || 'image/png';
+					const base64 =
+						comma >= 0 ? url.substring( comma + 1 ) : url;
+					return { mimeType, base64 };
+				} )
+				.filter( Boolean ) as { mimeType: string; base64: string }[];
+
+			const allImageParts = [ ...encodedImages, ...referenceParts ].slice(
+				0,
+				MAX_IMAGE_REFERENCES
+			);
+			const hasReferences = referenceParts.length > 0;
+
 			setStatus( 'generating' );
 			setMessage( __( 'Thinking and generating…', 'tryaura' ) );
 			const ai = new GoogleGenAI( { apiKey } );
@@ -219,10 +408,30 @@ const PreviewModal = ( {
 			const safetyInstruction =
 				'Do not generate any nudity, harassment, or abuse.';
 
+			// #32: the Edit tab carries its own instruction — validate it here.
+			const editInstruction = isEdit
+				? buildEditInstruction(
+						imageConfigData?.editPreset,
+						imageConfigData?.editInstruction
+				  )
+				: '';
+			if ( isEdit && ! editInstruction ) {
+				throw new Error(
+					__(
+						'Please pick a quick edit or describe the change.',
+						'tryaura'
+					)
+				);
+			}
+
+			// On block-editor pages a prompt is normally required, but an apparel
+			// mode (#33) or an edit (#32) IS the instruction, so they are exempt.
 			if (
 				hasPro() &&
 				isBlockPage &&
-				! imageConfigData?.optionalPrompt?.trim()
+				! isEdit &&
+				! imageConfigData?.optionalPrompt?.trim() &&
+				! ( imageConfigData?.apparelMode || '' )
 			) {
 				throw new Error(
 					__(
@@ -245,20 +454,88 @@ const PreviewModal = ( {
 					  )
 					: '';
 
-			let promptText: string =
-				isBlockPage && hasPro()
-					? `Generate a high-quality AI image based on the provided image(s) and user instructions.\n\nInstructions: ${ imageConfigData?.optionalPrompt?.trim() }\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }`
-					: applyFilters(
-							'tryaura.ai_enhance_image_prompt_base',
-							`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background preference: ${ imageConfigData?.backgroundType }\n- Output style: ${ imageConfigData?.styleType }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ extras }${ multiHint }`,
-							{
-								imageConfigData,
-								safetyInstruction,
-								extras,
-								multiHint,
-								isThumbnailMode,
-							}
-					  );
+			const userInstruction = (
+				imageConfigData?.optionalPrompt || ''
+			).trim();
+
+			// #27: resolve the selected background into a rich scene instruction.
+			// Empty scene (Plain/unknown) keeps the product on a neutral backdrop.
+			const backgroundScene = getBackgroundScene(
+				imageConfigData?.backgroundType
+			);
+			const backgroundPreference =
+				backgroundScene ||
+				__( 'a clean, neutral background', 'tryaura' );
+
+			// #33: an apparel mode is the primary directive, and it overrides the
+			// default "worn by a model" fallback (ghost mannequin is the opposite).
+			const apparelPrompt = buildApparelPrompt(
+				apparelMode,
+				userInstruction
+			);
+
+			let promptText: string;
+			if ( isEdit ) {
+				// #32: targeted edit — change only what the instruction asks and
+				// keep the rest of the product faithful to the source. Reuses the
+				// existing edit path; the pixel-mask brush is Vertex-only (skipped).
+				// No multiHint here: that is the try-on composition hint, which
+				// would tell the model to compose a model-wearing-product shot
+				// instead of editing. Extra selected images are context only.
+				promptText = applyFilters(
+					'tryaura.ai_enhance_image_prompt_base',
+					`Edit the provided image(s) according to this instruction, following it closely: ${ editInstruction }.\n\nPreserve the product's shape, colours, logos, textures and the rest of the image; change only what the instruction asks for.\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }`,
+					{
+						imageConfigData,
+						safetyInstruction,
+						extras,
+						multiHint,
+						isThumbnailMode,
+					}
+				);
+			} else if ( apparelPrompt ) {
+				promptText = applyFilters(
+					'tryaura.ai_enhance_image_prompt_base',
+					`${ apparelPrompt }\n\nPreferences:\n- Background / scene: ${ backgroundPreference }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
+					{
+						imageConfigData,
+						safetyInstruction,
+						extras,
+						multiHint,
+						isThumbnailMode,
+					}
+				);
+			} else if ( userInstruction ) {
+				// The merchant gave an explicit instruction — make it the primary
+				// directive and do NOT force the "put the product on a human model"
+				// try-on template. Forcing that template is why "remove the text"
+				// produced a model wearing the product, and why a backdrop request
+				// only removed the background (#16 finding #2).
+				promptText = applyFilters(
+					'tryaura.ai_enhance_image_prompt_base',
+					`Edit the provided image(s) according to this instruction, following it closely: ${ userInstruction }.\n\nPreserve the product's shape, colours, logos, and details; change only what the instruction asks for.\n\nPreferences:\n- Background / scene: ${ backgroundPreference }\n- Output style: ${ imageConfigData?.styleType }\n\nRequirements: Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
+					{
+						imageConfigData,
+						safetyInstruction,
+						extras,
+						multiHint,
+						isThumbnailMode,
+					}
+				);
+			} else {
+				// No instruction — fall back to the default product try-on output.
+				promptText = applyFilters(
+					'tryaura.ai_enhance_image_prompt_base',
+					`Generate a high-quality AI product try-on image where the product from the provided image(s) is naturally worn or used by a suitable human model.\n\nPreferences:\n- Background / scene: ${ backgroundPreference }\n- Output style: ${ imageConfigData?.styleType }\nRequirements: Automatically determine an appropriate model. Ensure the product fits perfectly with accurate lighting, proportions, and textures preserved. Maintain professional composition and a brand-safe output. ${ safetyInstruction }${ multiHint }`,
+					{
+						imageConfigData,
+						safetyInstruction,
+						extras,
+						multiHint,
+						isThumbnailMode,
+					}
+				);
+			}
 			promptText = applyFilters(
 				'tryaura.ai_enhance_prompt_text',
 				promptText,
@@ -268,9 +545,27 @@ const PreviewModal = ( {
 				isBlockEditorPage,
 				isWoocommerceProductPage
 			);
+			// #22: the Gemini native-image generateContent path has no
+			// negativePrompt field, so exclusions are injected as prompt text.
+			// Best-effort — the model handles exclusions conversationally.
+			const imageNegativePrompt = (
+				imageConfigData?.negativePrompt || ''
+			).trim();
+			if ( imageNegativePrompt ) {
+				promptText += `\n\nAvoid including the following in the image: ${ imageNegativePrompt }.`;
+			}
+			// #28: tell the model the extra photos are the same product from other
+			// angles, so it treats them as fidelity references, not new subjects.
+			if ( hasReferences ) {
+				promptText += applyFilters(
+					'tryaura.ai_enhance_reference_hint',
+					'\n\nAdditional reference photos of the same product are provided (different angles/details). Treat them as the same physical product and keep its logos, colours, shape, textures and proportions accurate.',
+					referenceParts.length
+				);
+			}
 			const prompt = applyFilters( 'tryaura.ai_enhance_prompt', [
 				{ text: promptText },
-				...encodedImages.map( ( img ) => ( {
+				...allImageParts.map( ( img ) => ( {
 					inlineData: { mimeType: img.mimeType, data: img.base64 },
 				} ) ),
 			] );
@@ -282,9 +577,24 @@ const PreviewModal = ( {
 				config: {
 					responseModalities: [ 'IMAGE' ],
 					candidateCount: 1,
-					imageConfig: {
-						aspectRatio: imageConfigData?.imageSize || '1:1',
-					},
+					// Client-side only; lets Cancel abort the request (#16 #5).
+					abortSignal: controller.signal,
+					// #32: an edit omits aspect/size constraints so the result keeps
+					// the source framing and only the instructed change is applied.
+					...( isEdit
+						? {}
+						: {
+								imageConfig: {
+									aspectRatio:
+										imageConfigData?.aspectRatio || '1:1',
+									// #29: imageSize ('1K'|'2K'|'4K') is a Gemini 3
+									// feature. Only send it to Gemini 3 models —
+									// the older gemini-2.5-flash-image can reject it.
+									...( /gemini-3/.test( imageModel )
+										? { imageSize: resolution }
+										: {} ),
+								},
+						  } ),
 				},
 			};
 			const response: any = await ( ai as any ).models.generateContent(
@@ -309,7 +619,9 @@ const PreviewModal = ( {
 			}
 
 			if ( ! data64 ) {
-				throw new Error( __( 'Model did not return an image.', 'tryaura' ) );
+				throw new Error(
+					__( 'Model did not return an image.', 'tryaura' )
+				);
 			}
 
 			const dataUrl = `data:${ outMime };base64,${ data64 }`;
@@ -317,6 +629,9 @@ const PreviewModal = ( {
 			setStatus( 'done' );
 			setMessage( __( 'Done', 'tryaura' ) );
 			setError( null );
+
+			// #25: kick off alt text on the new image (non-blocking).
+			generateAltText( dataUrl );
 
 			const usage = response?.usageMetadata;
 			const postId = ( window as any )?.tryAura?.postId;
@@ -341,9 +656,20 @@ const PreviewModal = ( {
 				// ignore logging errors
 			} );
 		} catch ( e: any ) {
+			// A user-initiated abort (Cancel/Close while generating) is not a
+			// failure — reset quietly instead of showing an error (#16 #5).
+			if ( e?.name === 'AbortError' ) {
+				setStatus( 'idle' );
+				setMessage( __( 'Generation cancelled.', 'tryaura' ) );
+				return;
+			}
 			setError( e?.message || __( 'Generation failed.', 'tryaura' ) );
 			setStatus( 'error' );
 			setMessage( __( 'Generation failed.', 'tryaura' ) );
+		} finally {
+			if ( abortRef.current === controller ) {
+				abortRef.current = null;
+			}
 		}
 	};
 
@@ -415,8 +741,28 @@ const PreviewModal = ( {
 			if ( ! newId ) {
 				doAction( 'tryaura.ai_enhance_upload_failed', filename, blob );
 				throw new Error(
-					__( 'Upload succeeded but no attachment ID returned.', 'tryaura' )
+					__(
+						'Upload succeeded but no attachment ID returned.',
+						'tryaura'
+					)
 				);
+			}
+
+			// #25: persist the generated/edited alt text onto the attachment.
+			// Use `url:` (absolute) like the media upload above — passing an
+			// absolute URL to `path:` makes apiFetch's rootURL middleware
+			// double-prepend the REST root and 404 silently.
+			if ( altText && altText.trim() ) {
+				apiFetch( {
+					url: applyFilters(
+						'tryaura.media_alt_text_rest_api',
+						`${ restBase }wp/v2/media/${ newId }`
+					) as string,
+					method: 'POST',
+					data: { alt_text: altText.trim() },
+				} ).catch( () => {
+					// non-fatal — the image is already in the library
+				} );
 			}
 
 			doAction(
@@ -497,9 +843,23 @@ const PreviewModal = ( {
 	const disabledImageAddToMedia = isBusy || uploading || ! generatedUrl;
 	const generate = window?.tryAura?.testMode ? doTestGenerate : doGenerate;
 
+	const handleClose = () => {
+		// Never trap the merchant while a generation is running — abort the
+		// in-flight request and reset so a hang can't force a tab refresh (#16 #5).
+		if ( abortRef.current ) {
+			abortRef.current.abort();
+			abortRef.current = null;
+		}
+		if ( isBusy ) {
+			setStatus( 'idle' );
+			setMessage( __( 'Ready to generate', 'tryaura' ) );
+		}
+		onClose();
+	};
+
 	return (
 		<Modal
-			onRequestClose={ onClose }
+			onRequestClose={ handleClose }
 			className="tryaura ai-enhancer-preview-modal"
 			__experimentalHideHeader
 			shouldCloseOnClickOutside={ false }
@@ -510,33 +870,40 @@ const PreviewModal = ( {
 						<h2 className="mt-0">
 							{ applyFilters(
 								'tryaura.enhancer.modal_title',
-								__( 'AI Product Image Generation', 'tryaura' ),
+								__( 'AI Product Studio', 'tryaura' ),
 								{ isThumbnailMode }
 							) }
 						</h2>
 						<button
 							className="w-[16px] h-[16px] cursor-pointer"
-							onClick={ onClose }
+							onClick={ handleClose }
 							aria-label="Close modal"
-							disabled={ isBusy }
 						>
 							<X size={ 16 } />
 						</button>
 					</div>
 
 					<div className="grid grid-cols-1 md:grid-cols-11 md:flex-row gap-[32px] mt-[27px] pl-[24px] pr-[24px]">
-						{ ( activeTab === 'image' || ! hasPro() ) && (
-							<OriginalImage
-								imageUrls={ imageUrls }
-								multiple={ multiple }
-								selectedIndices={ selectedImageIndices }
-								setSelectedIndices={ setSelectedImageIndices }
-								showSelection={ true }
-								showGeneratedImage={ false }
-								limits={ { min: 1, max: 3 } }
-								className="col-span-1 md:col-span-3 max-h-133.25 overflow-auto"
-								isBusy={ isBusy }
-							/>
+						{ ( activeTab === 'image' ||
+							activeTab === 'edit' ||
+							! hasPro() ) && (
+							<div className="col-span-1 md:col-span-3 flex flex-col gap-4">
+								<OriginalImage
+									imageUrls={ imageUrls }
+									multiple={ multiple }
+									selectedIndices={ selectedImageIndices }
+									setSelectedIndices={
+										setSelectedImageIndices
+									}
+									showSelection={ true }
+									showGeneratedImage={ false }
+									limits={ { min: 1, max: 3 } }
+									className="max-h-133.25 overflow-auto"
+									isBusy={ isBusy }
+								/>
+								{ /* #28: reference angles — image generation only. */ }
+								{ activeTab === 'image' && <ReferenceAngles /> }
+							</div>
 						) }
 						<Slot
 							name="TryAuraOriginalImage"
@@ -555,10 +922,13 @@ const PreviewModal = ( {
 							className="col-span-1 md:col-span-4 flex flex-col gap-[32px]"
 						/>
 
-						{ ( activeTab === 'image' || ! hasPro() ) && (
+						{ ( activeTab === 'image' ||
+							activeTab === 'edit' ||
+							! hasPro() ) && (
 							<Output
 								supportsVideo={ supportsVideo }
 								className="col-span-1 md:col-span-4"
+								onRegenerateAltText={ generateAltText }
 							/>
 						) }
 
@@ -576,31 +946,31 @@ const PreviewModal = ( {
 						) }
 					>
 						<div className="flex flex-row justify-end gap-3">
-							{ generatedUrl && 'image' === activeTab && (
-								<Button
-									onClick={ setInMediaSelection }
-									disabled={ disabledImageAddToMedia }
-									loading={ uploading }
-								>
-									{ uploading
-										? __( 'Adding…', 'tryaura' )
-										: __(
-												'Add to Media Library',
-												'tryaura'
-										  ) }
-								</Button>
-							) }
+							{ generatedUrl &&
+								( 'image' === activeTab ||
+									'edit' === activeTab ) && (
+									<Button
+										onClick={ setInMediaSelection }
+										disabled={ disabledImageAddToMedia }
+										loading={ uploading }
+									>
+										{ uploading
+											? __( 'Adding…', 'tryaura' )
+											: __(
+													'Add to Media Library',
+													'tryaura'
+											  ) }
+									</Button>
+								) }
 
 							<Slot name="TryAuraEnhancerFooterActions" />
 
 							<PluginArea scope="tryaura-enhancer" />
 
-							<Button
-								variant="outline"
-								onClick={ onClose }
-								disabled={ isBusy }
-							>
-								{ __( 'Close', 'tryaura' ) }
+							<Button variant="outline" onClick={ handleClose }>
+								{ isBusy
+									? __( 'Cancel', 'tryaura' )
+									: __( 'Close', 'tryaura' ) }
 							</Button>
 						</div>
 					</div>

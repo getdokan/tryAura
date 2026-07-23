@@ -21,6 +21,9 @@ export const getImageUrls = ( state: EnhancerState ) => state.imageUrls;
 export const getAttachmentIds = ( state: EnhancerState ) => state.attachmentIds;
 export const getSupportsVideo = ( state: EnhancerState ) => state.supportsVideo;
 export const getIsVideoBusy = ( state: EnhancerState ) => state.isVideoBusy;
+export const getAltText = ( state: EnhancerState ) => state.altText;
+export const getGeneratingAltText = ( state: EnhancerState ) =>
+	state.generatingAltText;
 
 export const isBusy = ( state: EnhancerState ) =>
 	state.status === 'fetching' ||

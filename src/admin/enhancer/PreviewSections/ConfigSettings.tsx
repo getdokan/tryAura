@@ -3,6 +3,7 @@ import { STORE_NAME } from '../store';
 import GroupButton from '../../../components/GroupButton';
 import { __ } from '@wordpress/i18n';
 import ImageConfigInputs from './ImageConfigInputs';
+import EditConfigInputs from './EditConfigInputs';
 import { applyFilters } from '@wordpress/hooks';
 import ConfigFooter from './ConfigFooter';
 
@@ -24,16 +25,29 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 
 	const tabs = applyFilters( 'tryaura.enhancer.tabs', [
 		{
-			label: __( 'Generate Image', 'tryaura' ),
+			label: __( 'Image', 'tryaura' ),
 			value: 'image',
 			disabled: isBusy,
 		},
 		{
-			label: __( 'Generate Video', 'tryaura' ),
+			label: __( 'Video', 'tryaura' ),
 			value: 'video',
 			disabled: isBusy,
 			locked: true,
 		},
+		// #32: Edit tab. Open to everyone (it advertises the feature) but the panel
+		// inside is Pro-gated, so the tab shows the Pro crown for non-Pro users —
+		// same as the Generate Video tab. Hidden in single-purpose thumbnail mode.
+		...( isThumbnailMode
+			? []
+			: [
+					{
+						label: __( 'Edit', 'tryaura' ),
+						value: 'edit',
+						disabled: isBusy,
+						locked: ! hasPro(),
+					},
+			  ] ),
 	] );
 
 	return (
@@ -41,6 +55,7 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 			{ /* Tabs for Generated content */ }
 			{ tabs.length > 1 && ! isThumbnailMode && (
 				<GroupButton
+					fullWidth
 					options={ tabs }
 					value={ activeTab }
 					onClick={ ( tab ) => setActiveTab( tab ) }
@@ -50,6 +65,10 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 			<div className="flex flex-col gap-[12px]">
 				{ activeTab === 'image' && (
 					<ImageConfigInputs doGenerate={ doGenerate } />
+				) }
+
+				{ activeTab === 'edit' && (
+					<EditConfigInputs doGenerate={ doGenerate } />
 				) }
 
 				{ activeTab === 'video' && ! hasPro() && (

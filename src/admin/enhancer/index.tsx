@@ -37,8 +37,13 @@ function addEnhancerButton( toolbar ) {
 			container.id = 'tryaura-ai-enhance';
 			container.dataset[ tryauramediaroot ] = time.toString();
 			container.style.display = 'inline-block';
-			container.style.marginLeft = '8px';
-			container.style.marginTop = '14px';
+			// Align with the media-modal primary button ("Set product image"),
+			// which WP core gives margin-top:10px (media-views.css). vertical-align:top
+			// pins our inline-block to the line-box top so its baseline can't drift
+			// below the floated primary button.
+			container.style.verticalAlign = 'top';
+			container.style.marginLeft = '10px';
+			container.style.marginTop = '10px';
 			container = applyFilters(
 				'tryaura.admin_enhance_btn_container',
 				container

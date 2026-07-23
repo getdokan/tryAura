@@ -2,6 +2,7 @@
 
 namespace Dokan\TryAura\Admin;
 
+use Dokan\TryAura\Admin\Promotion;
 use Dokan\TryAura\TryAura;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -32,6 +33,83 @@ class Admin {
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_menu', array( $this, 'register_admin_page' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+
+		// Capture admin notices so the Top Bar renders first on our page.
+		add_action( 'admin_notices', array( $this, 'inject_before_notices' ), -9999 );
+		add_action( 'admin_notices', array( $this, 'inject_after_notices' ), PHP_INT_MAX );
+
+		add_filter( 'plugin_action_links_' . plugin_basename( TRYAURA_FILE ), array( $this, 'add_settings_action_link' ) );
+	}
+
+	/**
+	 * Add the "Settings" action link on the All Plugins screen.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @param array $links Existing plugin action links.
+	 *
+	 * @return array
+	 */
+	public function add_settings_action_link( array $links ): array {
+		array_unshift(
+			$links,
+			sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( admin_url( 'admin.php?page=tryaura#/settings' ) ),
+				esc_html__( 'Settings', 'tryaura' )
+			)
+		);
+
+		return $links;
+	}
+
+	/**
+	 * Whether the current admin screen is the TryAura page.
+	 *
+	 * @since 1.0.5
+	 *
+	 * @return bool
+	 */
+	private function is_tryaura_admin_page(): bool {
+		$screen = get_current_screen();
+
+		return $screen && 'toplevel_page_tryaura' === $screen->id;
+	}
+
+	/**
+	 * Open a hidden wrapper before admin notices render.
+	 *
+	 * WordPress core relocates `.notice` elements to just after the first
+	 * `.wp-header-end`. Opening the wrapper (and printing the catcher) before
+	 * any notice fires collects them all inside a hidden container, so the
+	 * Top Bar can sit at the very top of the page.
+	 *
+	 * @since 1.0.5
+	 *
+	 * @return void
+	 */
+	public function inject_before_notices(): void {
+		if ( ! $this->is_tryaura_admin_page() ) {
+			return;
+		}
+
+		echo '<div class="tryaura-notice-list-hide" id="tryaura__notice-list">';
+		echo '<div class="wp-header-end" id="tryaura__notice-catcher"></div>';
+	}
+
+	/**
+	 * Close the hidden notice wrapper opened in inject_before_notices().
+	 *
+	 * @since 1.0.5
+	 *
+	 * @return void
+	 */
+	public function inject_after_notices(): void {
+		if ( ! $this->is_tryaura_admin_page() ) {
+			return;
+		}
+
+		echo '</div>';
 	}
 
 	/**
@@ -154,13 +232,18 @@ class Admin {
 			'tryaura-admin',
 			'tryAura',
 			array(
-				'restUrl'        => esc_url_raw( rest_url() ),
-				'nonce'          => wp_create_nonce( 'wp_rest' ),
-				'apiKey'         => $api_key,
-				'imageModel'     => $image_model,
-				'videoModel'     => $video_model,
-				'optionKey'      => $this->option_key,
-				'wcExists'       => class_exists( 'WooCommerce' ),
+				'restUrl'                  => esc_url_raw( rest_url() ),
+				'nonce'                    => wp_create_nonce( 'wp_rest' ),
+				'apiKey'                   => $api_key,
+				'imageModel'               => $image_model,
+				'videoModel'               => $video_model,
+				'optionKey'                => $this->option_key,
+				'wcExists'                 => class_exists( 'WooCommerce' ),
+				'version'                  => $this->get_plugin_version( TRYAURA_FILE ),
+				'hasPro'                   => (bool) TryAura::is_pro_exists(),
+				'proVersion'               => TryAura::is_pro_exists() && defined( 'TRYAURAPRO_FILE' ) ? $this->get_plugin_version( TRYAURAPRO_FILE ) : '',
+				'upgradeToProUrl'          => Promotion::UPGRADE_URL,
+				'showUpgradeBanner'        => Promotion::should_show_upgrade_banner(),
 				/**
 				 * Controls whether the Gemini API settings page is read-only.
 				 *
@@ -191,13 +274,32 @@ class Admin {
 	}
 
 	/**
+	 * Read a plugin version from its main file header.
+	 *
+	 * @since 1.0.5
+	 *
+	 * @param string $plugin_file Absolute path to the plugin main file.
+	 *
+	 * @return string Version string, or empty string when unreadable.
+	 */
+	private function get_plugin_version( string $plugin_file ): string {
+		$data = get_file_data( $plugin_file, array( 'Version' => 'Version' ), 'plugin' );
+
+		return $data['Version'] ?? '';
+	}
+
+	/**
 	 * Render the main admin page content.
 	 *
 	 * @since 1.0.0
 	 */
 	public function render_page(): void {
+		// The Top Bar mounts outside `.wrap` so it can span the full content
+		// width, and outside the `.tryaura` Tailwind scope whose importantized
+		// utilities would otherwise clobber the plugin-ui components.
+		echo '<div id="tryaura-admin-header"></div>';
 		echo '<div class="wrap">';
-		echo '<div id="tryaura-settings-root" class="tryaura"></div>';
+		echo '<div id="tryaura-settings-root" class="tryaura tryaura-admin-page-body"></div>';
 		echo '</div>';
 	}
 }

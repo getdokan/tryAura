@@ -14,6 +14,8 @@ export interface GroupButtonProps {
 	value: string;
 	className?: string;
 	disabled?: boolean;
+	/** Stretch the group to fill its container, splitting width evenly. */
+	fullWidth?: boolean;
 }
 
 const GroupButton = ( {
@@ -22,6 +24,7 @@ const GroupButton = ( {
 	value,
 	className,
 	disabled = false,
+	fullWidth = false,
 }: GroupButtonProps ) => {
 	const classNames =
 		'bg-[rgba(37,37,45,1)] px-3 py-2 text-[14px] text-white hover:bg-[rgba(37,37,45,1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer';
@@ -29,7 +32,7 @@ const GroupButton = ( {
 		'bg-white px-3 py-2 text-[14px] text-gray-900 inset-ring inset-ring-gray-300 hover:bg-gray-50 cursor-pointer';
 
 	return (
-		<div className={ className }>
+		<div className={ twMerge( fullWidth ? 'flex w-full' : '', className ) }>
 			{ options.map( ( option, index ) => {
 				const btnDisabled = disabled || option?.disabled;
 				return (
@@ -42,6 +45,7 @@ const GroupButton = ( {
 							index === options.length - 1
 								? 'rounded-r-[5px]'
 								: '',
+							fullWidth ? 'flex-1' : '',
 							btnDisabled ? 'opacity-50 cursor-not-allowed' : '',
 							option?.className ?? ''
 						) }

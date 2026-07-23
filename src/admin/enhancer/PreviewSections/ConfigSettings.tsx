@@ -55,6 +55,7 @@ function ConfigSettings( { doGenerate, className = '' } ) {
 			{ /* Tabs for Generated content */ }
 			{ tabs.length > 1 && ! isThumbnailMode && (
 				<GroupButton
+					fullWidth
 					options={ tabs }
 					value={ activeTab }
 					onClick={ ( tab ) => setActiveTab( tab ) }

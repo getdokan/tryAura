@@ -98,6 +98,9 @@ class Plugin {
 		if ( $this->container->has( 'product_controller' ) ) {
 			$this->container->get( 'product_controller' );
 		}
+		if ( $this->container->has( 'promotion_controller' ) ) {
+			$this->container->get( 'promotion_controller' );
+		}
 
 		// Register assets.
 		if ( $this->container->has( 'assets' ) ) {
@@ -130,6 +133,10 @@ class Plugin {
 			}
 			if ( $this->container->has( 'admin_product_video' ) ) {
 				$this->container->get( 'admin_product_video' );
+			}
+			// Pro promotion touchpoints (sidebar Upgrade button, plugins screen link).
+			if ( $this->container->has( 'promotion' ) ) {
+				$this->container->get( 'promotion' );
 			}
 		}
 

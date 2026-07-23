@@ -2,6 +2,7 @@
 
 namespace Dokan\TryAura\Admin;
 
+use Dokan\TryAura\Admin\Promotion;
 use Dokan\TryAura\TryAura;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -36,6 +37,30 @@ class Admin {
 		// Capture admin notices so the Top Bar renders first on our page.
 		add_action( 'admin_notices', array( $this, 'inject_before_notices' ), -9999 );
 		add_action( 'admin_notices', array( $this, 'inject_after_notices' ), PHP_INT_MAX );
+
+		add_filter( 'plugin_action_links_' . plugin_basename( TRYAURA_FILE ), array( $this, 'add_settings_action_link' ) );
+	}
+
+	/**
+	 * Add the "Settings" action link on the All Plugins screen.
+	 *
+	 * @since PLUGIN_SINCE
+	 *
+	 * @param array $links Existing plugin action links.
+	 *
+	 * @return array
+	 */
+	public function add_settings_action_link( array $links ): array {
+		array_unshift(
+			$links,
+			sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( admin_url( 'admin.php?page=tryaura#/settings' ) ),
+				esc_html__( 'Settings', 'tryaura' )
+			)
+		);
+
+		return $links;
 	}
 
 	/**
@@ -217,6 +242,8 @@ class Admin {
 				'version'                  => $this->get_plugin_version( TRYAURA_FILE ),
 				'hasPro'                   => (bool) TryAura::is_pro_exists(),
 				'proVersion'               => TryAura::is_pro_exists() && defined( 'TRYAURAPRO_FILE' ) ? $this->get_plugin_version( TRYAURAPRO_FILE ) : '',
+				'upgradeToProUrl'          => Promotion::UPGRADE_URL,
+				'showUpgradeBanner'        => Promotion::should_show_upgrade_banner(),
 				/**
 				 * Controls whether the Gemini API settings page is read-only.
 				 *

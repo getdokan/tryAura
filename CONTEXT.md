@@ -27,3 +27,12 @@ A glossary of domain terms for this plugin. Keep implementation details out.
   (getdokan/plugin-ui). Components render inside a `ThemeProvider` scope.
   TryAura consumes it with default tokens: no custom theme, no dark mode, and
   no Shadow DOM for now.
+
+## Features
+
+- **Enhancer** — The admin feature that turns a store's existing product photos into
+  new or improved visuals from inside the WordPress media modal: AI images for all
+  users, and AI videos for Pro. Not the customer-facing feature — that is Try-On.
+- **Try-On** — The customer-facing feature on WooCommerce single-product pages where a
+  shopper supplies a photo (upload or camera) and sees themselves composited wearing or
+  using the product. Avoid "virtual mirror," a marketing phrase for the same thing.

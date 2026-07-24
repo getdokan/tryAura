@@ -1,0 +1,28 @@
+{
+	"core": "WordPress/WordPress",
+	"phpVersion": "8.2",
+	"plugins": [
+		"https://github.com/WP-API/Basic-Auth/archive/master.zip",
+		"https://downloads.wordpress.org/plugin/woocommerce.zip"
+	],
+	"mappings": {
+		"wp-content/plugins/tryaura": "../../",
+		"wp-content/plugins/tryaura-pro": "../../../tryaura-pro",
+		"wp-content/mu-plugins": "./mu-plugins"
+	},
+	"lifecycleScripts": {
+		"afterStart": "wp-env run tests-cli wp plugin activate woocommerce tryaura"
+	},
+	"config": {
+		"WP_DEBUG": true,
+		"WP_DEBUG_DISPLAY": false,
+		"WP_AUTO_UPDATE_CORE": false,
+		"AUTOMATIC_UPDATER_DISABLED": true
+	},
+	"env": {
+		"tests": {
+			"port": 8899,
+			"mysqlPort": 8898
+		}
+	}
+}

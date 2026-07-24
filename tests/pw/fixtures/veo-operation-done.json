@@ -1,0 +1,15 @@
+{
+	"name": "models/veo-3.1-fast-generate-preview/operations/e2e-fake",
+	"done": true,
+	"response": {
+		"generateVideoResponse": {
+			"generatedSamples": [
+				{
+					"video": {
+						"uri": "https://tryaura.test/__fixtures/veo-sample.mp4"
+					}
+				}
+			]
+		}
+	}
+}

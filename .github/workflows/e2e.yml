@@ -62,9 +62,9 @@ jobs:
                   npx playwright install --with-deps chromium
                   npx wp-env start
 
-            - name: Run @lite specs
+            - name: Run E2E specs
               working-directory: tests/pw
-              run: npm run test:lite
+              run: npm run test:e2e
 
             - name: Collect failure diagnostics
               if: failure()

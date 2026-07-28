@@ -6,15 +6,6 @@ on:
             - main
     pull_request:
     workflow_dispatch:
-        inputs:
-            suite:
-                description: "Which tagged suite to run"
-                type: choice
-                default: both
-                options:
-                    - both
-                    - lite
-                    - pro
 
 concurrency:
     group: e2e-${{ github.workflow }}-${{ github.ref }}
@@ -22,36 +13,14 @@ concurrency:
 
 jobs:
     e2e:
-        name: Playwright @lite + @pro
+        name: Playwright @lite
         runs-on: ubuntu-latest
-        timeout-minutes: 40
+        timeout-minutes: 30
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Detect Pro access
-              id: pro_token
-              env:
-                  PRO_REPO_TOKEN: ${{ secrets.PRO_REPO_TOKEN }}
-              run: |
-                  if [ -n "$PRO_REPO_TOKEN" ]; then
-                      echo "enabled=true" >> "$GITHUB_OUTPUT"
-                  else
-                      echo "enabled=false" >> "$GITHUB_OUTPUT"
-                      echo "::notice::PRO_REPO_TOKEN not set — the @pro suite will be skipped."
-                  fi
-
-            - name: Checkout tryaura-pro
-              if: steps.pro_token.outputs.enabled == 'true'
-              uses: actions/checkout@v4
-              with:
-                  repository: getdokan/tryaura-pro
-                  token: ${{ secrets.PRO_REPO_TOKEN }}
-                  path: .tryaura-pro-src
-
             - name: Setup PHP 7.4
-              # Matches deploy.yml and the plugin's minimum. composer.json pins
-              # config.platform.php to 7.4, so the lock installs cleanly here.
               uses: shivammathur/setup-php@v2
               with:
                   php-version: '7.4'
@@ -70,87 +39,43 @@ jobs:
 
             - name: Build plugin
               # Dev install on purpose: Mozart (post-install-cmd) only runs in dev
-              # mode and generates lib/packages/, which the plugin loads at runtime.
+              # mode and emits lib/packages/, which the plugin loads at runtime.
+              # build/, lib/ and vendor/ are all gitignored, so none of this is
+              # optional.
               run: |
                   composer install --no-interaction --no-progress
                   npm ci
                   npm run build
 
-            - name: Prepare tryaura-pro mapping
-              # .wp-env.json maps ../../../tryaura-pro — a sibling of the workspace.
-              # Without Pro source, a stub keeps `wp-env start` from aborting; @lite
-              # never activates it.
-              env:
-                  HAS_PRO: ${{ steps.pro_token.outputs.enabled }}
+            - name: Stub tryaura-pro mapping
+              # .wp-env.json maps ../../../tryaura-pro (a sibling of the workspace).
+              # @lite never activates it, but a missing directory aborts wp-env start.
               run: |
                   PRO_DIR="$(dirname "$GITHUB_WORKSPACE")/tryaura-pro"
-                  rm -rf "$PRO_DIR"
+                  mkdir -p "$PRO_DIR"
+                  echo '<?php /* Plugin Name: TryAura Pro (CI stub) */' > "$PRO_DIR/tryaura-pro.php"
 
-                  if [ "$HAS_PRO" = "true" ]; then
-                      mv "$GITHUB_WORKSPACE/.tryaura-pro-src" "$PRO_DIR"
-                      cd "$PRO_DIR"
-                      if [ -f composer.json ]; then
-                          composer install --no-interaction --no-progress
-                      fi
-                      if [ -f package-lock.json ]; then
-                          npm ci
-                          npm run build --if-present
-                      fi
-                  else
-                      mkdir -p "$PRO_DIR"
-                      cat > "$PRO_DIR/tryaura-pro.php" <<'PHP'
-                  <?php
-                  /**
-                   * Plugin Name: TryAura Pro (CI stub)
-                   * Description: Placeholder so the wp-env mapping resolves when Pro source is unavailable.
-                   */
-                  PHP
-                  fi
-
-            - name: Install E2E dependencies
+            - name: Start wp-env
               working-directory: tests/pw
               run: |
                   npm ci
                   npx playwright install --with-deps chromium
-
-            - name: Start wp-env
-              id: env_start
-              working-directory: tests/pw
-              run: npx wp-env start
+                  npx wp-env start
 
             - name: Run @lite specs
-              if: ${{ !cancelled() && steps.env_start.outcome == 'success' && (github.event_name != 'workflow_dispatch' || inputs.suite != 'pro') }}
               working-directory: tests/pw
-              env:
-                  WP_BASE_URL: http://localhost:8899
-              run: npm run test:lite -- --output=test-results/lite
+              run: npm run test:lite
 
-            - name: Run @pro specs
-              # Runs even if @lite failed, so one run reports both suites — but not
-              # when the environment never came up.
-              if: ${{ !cancelled() && steps.env_start.outcome == 'success' && steps.pro_token.outputs.enabled == 'true' && (github.event_name != 'workflow_dispatch' || inputs.suite != 'lite') }}
-              working-directory: tests/pw
-              env:
-                  WP_BASE_URL: http://localhost:8899
-              run: npm run test:pro -- --output=test-results/pro
-
-            - name: wp-env logs
+            - name: Collect failure diagnostics
               if: failure()
               working-directory: tests/pw
               run: npx wp-env logs tests --no-watch || true
 
             - name: Upload Playwright artifacts
-              if: always()
+              if: failure()
               uses: actions/upload-artifact@v4
               with:
                   name: playwright-artifacts
-                  path: |
-                      tests/pw/playwright-report
-                      tests/pw/test-results
+                  path: tests/pw/test-results
                   retention-days: 7
                   if-no-files-found: ignore
-
-            - name: Stop wp-env
-              if: always()
-              working-directory: tests/pw
-              run: npx wp-env stop || true

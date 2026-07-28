@@ -1,0 +1,21 @@
+{
+	"candidates": [
+		{
+			"content": {
+				"parts": [
+					{
+						"inlineData": {
+							"mimeType": "image/png",
+							"data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+						}
+					}
+				]
+			}
+		}
+	],
+	"usageMetadata": {
+		"promptTokenCount": 12,
+		"candidatesTokenCount": 34,
+		"totalTokenCount": 46
+	}
+}

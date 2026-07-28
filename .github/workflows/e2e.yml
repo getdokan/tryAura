@@ -49,10 +49,12 @@ jobs:
                   token: ${{ secrets.PRO_REPO_TOKEN }}
                   path: .tryaura-pro-src
 
-            - name: Setup PHP 8.2
+            - name: Setup PHP 7.4
+              # Matches deploy.yml and the plugin's minimum. composer.json pins
+              # config.platform.php to 7.4, so the lock installs cleanly here.
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: '8.2'
+                  php-version: '7.4'
                   coverage: none
                   tools: composer:v2
 
@@ -111,19 +113,21 @@ jobs:
                   npx playwright install --with-deps chromium
 
             - name: Start wp-env
+              id: env_start
               working-directory: tests/pw
               run: npx wp-env start
 
             - name: Run @lite specs
-              if: ${{ !cancelled() && (github.event_name != 'workflow_dispatch' || inputs.suite != 'pro') }}
+              if: ${{ !cancelled() && steps.env_start.outcome == 'success' && (github.event_name != 'workflow_dispatch' || inputs.suite != 'pro') }}
               working-directory: tests/pw
               env:
                   WP_BASE_URL: http://localhost:8899
               run: npm run test:lite -- --output=test-results/lite
 
             - name: Run @pro specs
-              # Runs even if @lite failed, so one run reports both suites.
-              if: ${{ !cancelled() && steps.pro_token.outputs.enabled == 'true' && (github.event_name != 'workflow_dispatch' || inputs.suite != 'lite') }}
+              # Runs even if @lite failed, so one run reports both suites — but not
+              # when the environment never came up.
+              if: ${{ !cancelled() && steps.env_start.outcome == 'success' && steps.pro_token.outputs.enabled == 'true' && (github.event_name != 'workflow_dispatch' || inputs.suite != 'lite') }}
               working-directory: tests/pw
               env:
                   WP_BASE_URL: http://localhost:8899

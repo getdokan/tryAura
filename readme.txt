@@ -288,6 +288,24 @@ This may have bugs and lack of many features. If you want to contribute on this 
 
 == Changelog ==
 
+= v2.0.0 ( Jul 29, 2026 ) =
+- **new:** Added an Edit tab for targeted image edits — Remove text, Recolor, Remove object, Clean up and Swap background — with an optional instruction field to refine the change. Only the area you describe is edited; the rest of the shot is left untouched.
+- **new:** Added an Apparel Output control with On model and Ghost mannequin presentations, so a garment can be shown worn or holding its 3D shape with no visible model.
+- **new:** Added Reference angles — attach extra photos of the same product so the AI keeps details it cannot see in the main image.
+- **new:** Added an image Resolution control with 1K, 2K and 4K output.
+- **new:** Expanded background and scene staging with Lifestyle, Marble surface, Wood table, Outdoor and Room/interior options alongside the existing Plain, Studio and Natural.
+- **new:** Added AI-generated alt text for every image, editable before saving and written to the attachment's alt text for SEO and accessibility.
+- **new:** Added a negative prompt field to steer the AI away from unwanted elements.
+- **update:** Renamed "Image Size" to "Aspect Ratio" and limited the choices to the ratios Gemini officially supports (1:1, 2:3, 3:2, 3:4, 4:3, 9:16, 16:9, 21:9).
+- **update:** Your typed instruction now leads the image prompt instead of being placed behind a fixed try-on template, so custom directions carry more weight.
+- **update:** Shortened the enhancer tabs to Image, Video and Edit.
+- **update:** The saved image model is now validated against the available model list, and a decommissioned preview model is no longer used as a fallback.
+- **fix:** Virtual try-on no longer fails when Gemini returns the image in a different position in its response.
+- **fix:** Thumbnail generation no longer hangs or breaks on cross-origin product images; it now times out cleanly instead.
+- **fix:** Close and X now cancel an in-progress generation instead of being disabled until it finishes.
+- **fix:** Selecting 2K on an older image model no longer renders silently at 1K.
+- **fix:** Generation is no longer blocked in the block editor when a cleanup or apparel option is chosen without typing an instruction.
+
 = v1.0.4 ( Jun 15, 2026 ) =
 -----------------------------------
 - **new:** Added new Gemini image models — Nano Banana 2 (gemini-3.1-flash-image) and Nano Banana Pro (gemini-3-pro-image) — to the image model selector.
@@ -307,6 +325,9 @@ This may have bugs and lack of many features. If you want to contribute on this 
 * Initial release
 
 == Upgrade Notice ==
+
+= 2.0.0 =
+Major update: a new Edit tab for targeted image edits, on-model and ghost-mannequin apparel output, reference angles, 1K/2K/4K resolution, expanded scene staging and AI alt text, plus fixes for try-on and thumbnail generation. Update is recommended for all users.
 
 = 1.0.2 =
 Stability and compatibility improvements for the latest WooCommerce. Update is recommended for all users.

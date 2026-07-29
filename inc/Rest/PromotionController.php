@@ -12,13 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * REST controller for Pro promotion state (promo banner dismissal).
  *
- * @since PLUGIN_SINCE
+ * @since 2.0.0
  */
 class PromotionController {
 	/**
 	 * REST API namespace.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @var string api namespace.
 	 */
@@ -27,7 +27,7 @@ class PromotionController {
 	/**
 	 * REST API base.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @var string rest base.
 	 */
@@ -36,7 +36,7 @@ class PromotionController {
 	/**
 	 * Class constructor.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 */
 	public function __construct() {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
@@ -45,7 +45,7 @@ class PromotionController {
 	/**
 	 * Register REST routes.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 */
 	public function register_routes(): void {
 		register_rest_route(
@@ -64,7 +64,7 @@ class PromotionController {
 	/**
 	 * Simple permissions check: only admins (manage_options).
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 */
 	public function permissions_check(): bool {
 		return current_user_can( 'manage_options' );
@@ -76,7 +76,7 @@ class PromotionController {
 	 * Stores a timestamp so the banner can re-appear after the dismissal
 	 * duration (30 days) elapses.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @return WP_REST_Response
 	 */

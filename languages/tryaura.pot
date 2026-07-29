@@ -1,14 +1,14 @@
 # Copyright (c) 2026 Dokan Inc. All Rights Reserved.
 msgid ""
 msgstr ""
-"Project-Id-Version: TryAura: AI Virtual Try-On, Product Visualization & Product Videos for WooCommerce 1.0.4\n"
+"Project-Id-Version: TryAura: AI Virtual Try-On, Product Visualization & Product Videos for WooCommerce 2.0.0\n"
 "Report-Msgid-Bugs-To: https://dokan.co/contact/\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-15T11:15:37+00:00\n"
+"POT-Creation-Date: 2026-07-29T07:48:55+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: tryaura\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #. Description of the plugin
 #: tryaura.php
-msgid "TryAura is an AI-powered virtual try-on and content creation platform built for fashion and eCommerce. With seamless WooCommerce integration, it allows brands and shoppers to instantly visualize clothing on models, customers, or in any scene — without costly photoshoots. From product images to lifestyle videos, TryAura helps online stores boost engagement, reduce returns, and elevate their shopping experience with cutting-edge AI."
+msgid "Turn basic product photos into realistic photos, videos, and virtual try-ons that help WooCommerce shoppers buy with confidence."
 msgstr ""
 
 #. Author of the plugin
@@ -33,19 +33,33 @@ msgstr ""
 msgid "https://wedevs.com"
 msgstr ""
 
-#: inc/Admin/Admin.php:49
-#: inc/Admin/Admin.php:50
+#: inc/Admin/Admin.php:59
+#: inc/Admin/Admin.php:137
+#: build/admin/dashboard/index.js:171
+msgid "Settings"
+msgstr ""
+
+#: inc/Admin/Admin.php:127
+#: inc/Admin/Admin.php:128
 msgid "TryAura"
 msgstr ""
 
-#: inc/Admin/Admin.php:58
+#: inc/Admin/Admin.php:136
 #: build/admin/dashboard/index.js:171
 msgid "Dashboard"
 msgstr ""
 
-#: inc/Admin/Admin.php:59
+#: inc/Admin/Promotion.php:110
+msgid "Upgrade"
+msgstr ""
+
+#: inc/Admin/Promotion.php:196
 #: build/admin/dashboard/index.js:171
-msgid "Settings"
+#: build/admin/dashboard/index.js:175
+#: build/admin/enhancer/index.js:171
+#: build/admin/product-video-gallery/index.js:171
+#: build/components.js:171
+msgid "Upgrade to Pro"
 msgstr ""
 
 #: inc/Common/Assets.php:47
@@ -138,6 +152,7 @@ msgid "Invalid YouTube URL."
 msgstr ""
 
 #: inc/WooCommerce/Admin/ProductGalleryVideo.php:141
+#: build/admin/enhancer/index.js:171
 msgid "Video"
 msgstr ""
 
@@ -158,13 +173,7 @@ msgid "Invalid product ID."
 msgstr ""
 
 #: build/admin/dashboard/index.js:171
-#: build/admin/enhancer/index.js:171
-#: build/admin/product-video-gallery/index.js:171
-#: build/components.js:171
-msgid "Select…"
-msgstr ""
-
-#: build/admin/dashboard/index.js:171
+#: build/admin/dashboard/index.js:175
 #: build/admin/enhancer/index.js:171
 #: build/admin/product-video-gallery/index.js:171
 #: build/components.js:171
@@ -172,13 +181,19 @@ msgid "Unlock advanced features with a pro account."
 msgstr ""
 
 #: build/admin/dashboard/index.js:171
-#: build/components.js:171
-msgid "Select Date Range"
+msgid "Dismiss this banner"
 msgstr ""
 
 #: build/admin/dashboard/index.js:171
-#: build/components.js:171
-msgid "Ok"
+msgid "Go Pro. Create Without Limits."
+msgstr ""
+
+#: build/admin/dashboard/index.js:171
+msgid "Unlock AI product videos, custom prompts, flexible image and video sizes, camera motion controls, and priority support."
+msgstr ""
+
+#: build/admin/dashboard/index.js:171
+msgid "Upgrade Now"
 msgstr ""
 
 #: build/admin/dashboard/index.js:171
@@ -330,6 +345,7 @@ msgid "Connect"
 msgstr ""
 
 #: build/admin/dashboard/index.js:171
+#: build/admin/enhancer/index.js:171
 #: build/admin/product-video-gallery/index.js:171
 msgid "Cancel"
 msgstr ""
@@ -382,11 +398,59 @@ msgstr ""
 msgid "Page not found"
 msgstr ""
 
-#: build/admin/dashboard/index.js:171
+#. translators: %s: installed version of the free TryAura plugin.
+#: build/admin/dashboard/index.js:173
+msgid "Lite v%s"
+msgstr ""
+
+#. translators: %s: installed version of the TryAura Pro plugin.
+#: build/admin/dashboard/index.js:175
+msgid "Pro v%s"
+msgstr ""
+
+#: build/admin/dashboard/index.js:175
+msgid "Documentation"
+msgstr ""
+
+#: build/admin/dashboard/index.js:175
+msgid "FAQ"
+msgstr ""
+
+#: build/admin/dashboard/index.js:175
+msgid "Request a Feature"
+msgstr ""
+
+#: build/admin/dashboard/index.js:175
+msgid "Changelog"
+msgstr ""
+
+#: build/admin/dashboard/index.js:175
+msgid "TryAura website"
+msgstr ""
+
+#: build/admin/dashboard/index.js:175
+msgid "Get Support"
+msgstr ""
+
+#: build/admin/dashboard/index.js:175
+msgid "Help menu"
+msgstr ""
+
+#: build/admin/dashboard/index.js:175
 #: build/admin/enhancer/index.js:171
 #: build/admin/product-video-gallery/index.js:171
 #: build/components.js:171
-msgid "Upgrade to Pro"
+msgid "Select…"
+msgstr ""
+
+#: build/admin/dashboard/index.js:175
+#: build/components.js:171
+msgid "Select Date Range"
+msgstr ""
+
+#: build/admin/dashboard/index.js:175
+#: build/components.js:171
+msgid "Ok"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
@@ -410,11 +474,39 @@ msgid "No generated image available"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
-msgid "Regenerating…"
+msgid "Reference angles"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Add more photos of the real product so the AI keeps logos, colour and shape accurate."
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Reference"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Remove reference"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Add reference photo"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Generate"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Generating…"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
 msgid "Regenerate"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Regenerating…"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
@@ -423,15 +515,35 @@ msgid "Download"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
-msgid "Generating…"
+msgid "Studio white"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
-msgid "Generate"
+msgid "Lifestyle"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
-msgid "Unlock advanced features like landscape and portrait image sizes plus custom prompts with a pro account."
+msgid "Flat lay"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Marble"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Wood table"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Outdoor"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Unlock curated \"looks\" and save your own presets with a Pro account."
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Start from a look"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
@@ -439,11 +551,35 @@ msgid "Plain"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
+msgid "Studio"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
 msgid "Natural"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
-msgid "Studio"
+msgid "Marble surface"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Room / interior"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "On model"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Ghost mannequin"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Unlock advanced features like landscape and portrait image sizes plus custom prompts with a pro account."
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Default"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
@@ -463,11 +599,31 @@ msgid "Square (1:1)"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
-msgid "Landscape (16:9)"
+msgid "Portrait (2:3)"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Portrait (3:4)"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
 msgid "Portrait (9:16)"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Landscape (3:2)"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Landscape (4:3)"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Landscape (16:9)"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Landscape (21:9)"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
@@ -484,7 +640,39 @@ msgid "Output Style"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
-msgid "Image Size"
+msgid "Apparel Output"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Generate invisible-mannequin (ghost mannequin) product shots with a pro account."
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "The garment keeps its worn shape with no visible person or mannequin."
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Aspect Ratio"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Resolution"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "1K"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "2K"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "4K"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "4K renders with Nano Banana Pro (gemini-3-pro-image)."
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
@@ -504,6 +692,90 @@ msgid "Add any specific instructions (optional)"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
+msgid "Negative Prompt (Optional)"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Things to avoid, e.g. people, text, reflections"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Remove text"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Optional: which text to remove"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Recolor"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "e.g. 'to navy blue'"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Remove object"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "e.g. 'the price tag on the left'"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Clean up"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Optional: focus the cleanup"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Swap background"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "e.g. 'a clean white studio'"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Targeted editing — remove text, recolor, remove objects, clean up and swap backgrounds — is a Pro feature."
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "e.g. 'remove the printed text', 'make the shirt navy blue'"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Targeted edit"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Pick an edit and describe just that change — the rest of the product stays untouched."
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Quick edits"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Edit instruction"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Apply edit"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Applying…"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Re-apply"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
 msgid "Styles"
 msgstr ""
 
@@ -516,10 +788,6 @@ msgid "Zoom In"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
-msgid "Aspect Ratio"
-msgstr ""
-
-#: build/admin/enhancer/index.js:171
 msgid "Generate Video"
 msgstr ""
 
@@ -528,7 +796,11 @@ msgid "Unlock advanced features and create stunning videos with a pro account."
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
-msgid "Generate Image"
+msgid "Image"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Edit"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
@@ -542,6 +814,18 @@ msgstr ""
 #: build/admin/enhancer/index.js:171
 #: build/frontend/tryon/index.js:171
 msgid "Congratulations"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Alt Text"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Generating alt text…"
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "Alt text will appear here after generation"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
@@ -574,7 +858,15 @@ msgid "Missing Google AI API key. Please set it on the TryAura settings page."
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
+msgid "Please pick a quick edit or describe the change."
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
 msgid "Please provide a prompt for the image generation."
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
+msgid "a clean, neutral background"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
@@ -583,12 +875,16 @@ msgid "Model did not return an image."
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
+msgid "Generation cancelled."
+msgstr ""
+
+#: build/admin/enhancer/index.js:171
 #: build/frontend/tryon/index.js:171
 msgid "Generation failed."
 msgstr ""
 
 #: build/admin/enhancer/index.js:171
-msgid "AI Product Image Generation"
+msgid "AI Product Studio"
 msgstr ""
 
 #: build/admin/enhancer/index.js:171

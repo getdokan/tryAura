@@ -16,13 +16,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * promo banner is rendered by the admin SPA; its visibility is computed
  * here (see should_show_upgrade_banner()).
  *
- * @since PLUGIN_SINCE
+ * @since 2.0.0
  */
 class Promotion {
 	/**
 	 * User meta key storing the promo banner dismissal timestamp.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @var string
 	 */
@@ -31,7 +31,7 @@ class Promotion {
 	/**
 	 * How long a banner dismissal lasts before the banner re-appears.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @var int
 	 */
@@ -40,7 +40,7 @@ class Promotion {
 	/**
 	 * Upgrade/pricing page URL.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @var string
 	 */
@@ -49,7 +49,7 @@ class Promotion {
 	/**
 	 * Bootstrap promotion hooks. All output is gated on Pro being absent.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 */
 	public function __construct() {
 		if ( TryAura::is_pro_exists() ) {
@@ -71,7 +71,7 @@ class Promotion {
 	 * True when Pro is absent and the user has never dismissed the banner,
 	 * or the last dismissal is older than 30 days.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */
@@ -95,7 +95,7 @@ class Promotion {
 	 * WordPress links submenu slugs starting with http(s) directly, so the
 	 * entry points straight at the pricing page.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @return void
 	 */
@@ -118,7 +118,7 @@ class Promotion {
 	 *
 	 * Printed on every admin page because the sidebar menu is global.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @return void
 	 */
@@ -149,7 +149,7 @@ class Promotion {
 	/**
 	 * CSS selector matching the sidebar Upgrade menu link.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @return string
 	 */
@@ -163,7 +163,7 @@ class Promotion {
 	 * Submenu entries render as plain anchors, so the target attribute has
 	 * to be added client-side (same approach as Elementor).
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @return void
 	 */
@@ -183,7 +183,7 @@ class Promotion {
 	/**
 	 * Add the "Upgrade to Pro" action link on the All Plugins screen.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @param array $links Existing plugin action links.
 	 *

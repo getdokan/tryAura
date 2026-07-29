@@ -44,7 +44,7 @@ class Admin {
 	/**
 	 * Add the "Settings" action link on the All Plugins screen.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @param array $links Existing plugin action links.
 	 *
@@ -66,7 +66,7 @@ class Admin {
 	/**
 	 * Whether the current admin screen is the TryAura page.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @return bool
 	 */
@@ -84,7 +84,7 @@ class Admin {
 	 * any notice fires collects them all inside a hidden container, so the
 	 * Top Bar can sit at the very top of the page.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @return void
 	 */
@@ -100,7 +100,7 @@ class Admin {
 	/**
 	 * Close the hidden notice wrapper opened in inject_before_notices().
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @return void
 	 */
@@ -276,7 +276,7 @@ class Admin {
 	/**
 	 * Read a plugin version from its main file header.
 	 *
-	 * @since PLUGIN_SINCE
+	 * @since 2.0.0
 	 *
 	 * @param string $plugin_file Absolute path to the plugin main file.
 	 *

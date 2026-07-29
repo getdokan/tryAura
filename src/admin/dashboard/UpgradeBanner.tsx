@@ -12,7 +12,7 @@ import {
  * TryAura Pro is not active. Visibility is decided server-side (per-user
  * dismissal, re-shown after 30 days) and passed via localized data.
  *
- * @since PLUGIN_SINCE
+ * @since 2.0.0
  */
 function UpgradeBanner() {
 	const [ visible, setVisible ] = useState( shouldShowUpgradeBanner() );

@@ -6,6 +6,7 @@
 /node_modules
 /src
 /tests
+/docs
 /bin
 /dist
 
@@ -28,3 +29,7 @@ phpcs.xml
 postcss.config.js
 webpack.config.js
 webpack-dependency-mapping.js
+.claude
+CLAUDE.md
+CONTEXT.md
+phpunit.xml

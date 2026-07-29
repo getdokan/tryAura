@@ -42,9 +42,20 @@ const { replaceInFile } = require( 'replace-in-file' );
 		} );
 
 		if ( await fs.pathExists( pluginFile ) ) {
+			// Matches any visibility (public/protected/private), with optional
+			// static and an optional type declaration, e.g. `private string $version = '1.0.0';`
+			const versionProp =
+				/((?:public|protected|private)\s+(?:static\s+)?(?:\??[A-Za-z_][\w\\]*\s+)?\$version\s*=\s*')[^']+('\s*;)/m;
+
+			if ( ! versionProp.test( await fs.readFile( pluginFile, 'utf8' ) ) ) {
+				throw new Error(
+					`Could not find a $version property in ${ pluginFile } — update the regex in bin/make-zip.js.`
+				);
+			}
+
 			await replaceInFile( {
 				files: pluginFile,
-				from: /(public\s+\$version\s*=\s*')[^']+('\s*;)/m,
+				from: versionProp,
 				to: `$1${ version }$2`,
 			} );
 		}

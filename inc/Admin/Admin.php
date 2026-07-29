@@ -35,8 +35,8 @@ class Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
 		// Capture admin notices so the Top Bar renders first on our page.
-		add_action( 'admin_notices', array( $this, 'inject_before_notices' ), 0 );
-		add_action( 'admin_notices', array( $this, 'inject_after_notices' ), 99 );
+		add_action( 'admin_notices', array( $this, 'inject_before_notices' ), -9999 );
+		add_action( 'admin_notices', array( $this, 'inject_after_notices' ), PHP_INT_MAX );
 
 		add_filter( 'plugin_action_links_' . plugin_basename( TRYAURA_FILE ), array( $this, 'add_settings_action_link' ) );
 	}

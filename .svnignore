@@ -3,6 +3,7 @@ node_modules
 src
 dist
 tests
+docs
 .git
 .github
 .idea
@@ -26,3 +27,7 @@ postcss.config.js
 webpack.config.js
 webpack-dependency-mapping.js
 debug.log
+.claude
+CLAUDE.md
+CONTEXT.md
+phpunit.xml

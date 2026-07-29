@@ -1,0 +1,25 @@
+{
+	"name": "tryaura-e2e",
+	"private": true,
+	"description": "Playwright E2E tests for TryAura (wp-env). No real Gemini calls — see docs/adr/0002.",
+	"scripts": {
+		"env:start": "wp-env start",
+		"env:stop": "wp-env stop",
+		"env:destroy": "wp-env destroy",
+		"env:clean": "wp-env destroy && wp-env start",
+		"test:e2e": "playwright test",
+		"test:lite": "wp-env run tests-cli wp plugin deactivate tryaura-pro || true && playwright test --grep @lite",
+		"test:pro": "wp-env run tests-cli wp plugin activate tryaura-pro && playwright test --grep @pro",
+		"pro:on": "wp-env run tests-cli wp plugin activate tryaura-pro",
+		"pro:off": "wp-env run tests-cli wp plugin deactivate tryaura-pro",
+		"test:ui": "playwright test --ui",
+		"test:list": "playwright test --list",
+		"type:check": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.60.0",
+		"@types/node": "^22.0.0",
+		"@wordpress/env": "^10.20.0",
+		"typescript": "^5.8.2"
+	}
+}

@@ -158,7 +158,20 @@ class GenerateController {
 			return new WP_REST_Response( $data['error'], 400 );
 		}
 
-		$image = $data['candidates'][0]['content']['parts'][0]['inlineData']['data'] ?? null;
+		// Iterate parts to find the returned image; the API does not guarantee it is parts[0],
+		// and may key it as camelCase inlineData or snake_case inline_data.
+		$image      = null;
+		$resp_parts = $data['candidates'][0]['content']['parts'] ?? array();
+		foreach ( $resp_parts as $resp_part ) {
+			if ( isset( $resp_part['inlineData']['data'] ) ) {
+				$image = $resp_part['inlineData']['data'];
+				break;
+			}
+			if ( isset( $resp_part['inline_data']['data'] ) ) {
+				$image = $resp_part['inline_data']['data'];
+				break;
+			}
+		}
 		$usage = $data['usageMetadata'] ?? null;
 
 		if ( $image ) {

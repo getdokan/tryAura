@@ -173,6 +173,7 @@ The plugin uses `addFilter` / `applyFilters` / `doAction` from `@wordpress/hooks
 | `tryaura.routes` | filter | Add custom dashboard routes/pages |
 | `tryaura.recent.activity.tabs` | filter | Add activity log tabs |
 | `tryaura.chartlines` | filter | Add chart data series |
+| `tryaura.admin.help_menu_items` | filter | Add/remove/reorder Top Bar help menu items |
 
 **Frontend — Try-on modal:**
 

@@ -11,11 +11,18 @@ export const INITIAL_STATE: EnhancerState = {
 	error: null,
 	uploading: false,
 	imageConfigData: {
-		imageSize: '1:1',
+		aspectRatio: '1:1',
 		backgroundType: 'plain',
 		styleType: 'photo-realistic',
 		optionalPrompt: '',
+		negativePrompt: '',
 		videoPlatform: 'youtube',
+		resolution: '1K',
+		referenceImages: [],
+		apparelMode: '',
+		editPreset: '',
+		editInstruction: '',
+		templateId: '',
 	},
 	activeTab: 'image',
 	selectedImageIndices: [ 0 ],
@@ -24,6 +31,8 @@ export const INITIAL_STATE: EnhancerState = {
 	attachmentIds: [],
 	supportsVideo: false,
 	isVideoBusy: false,
+	altText: '',
+	generatingAltText: false,
 };
 
 const reducer = (
@@ -73,6 +82,10 @@ const reducer = (
 			return { ...state, supportsVideo: action.supportsVideo };
 		case TYPES.SET_IS_VIDEO_BUSY:
 			return { ...state, isVideoBusy: action.isVideoBusy };
+		case TYPES.SET_ALT_TEXT:
+			return { ...state, altText: action.altText };
+		case TYPES.SET_GENERATING_ALT_TEXT:
+			return { ...state, generatingAltText: action.generatingAltText };
 		case TYPES.RESET_STATE:
 			return {
 				...INITIAL_STATE,

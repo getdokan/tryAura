@@ -52,37 +52,62 @@ const VideoDetailsModal = ( {
 			}
 		} else if ( platform === 'site_stored' ) {
 			return new Promise( ( resolve ) => {
-				try {
-					const video = document.createElement( 'video' );
-					video.src = url;
-					video.crossOrigin = 'anonymous';
-					video.currentTime = 1;
-					video.onloadeddata = () => {
+				const video = document.createElement( 'video' );
+				// crossOrigin must be set BEFORE src for CORS to apply. Without it
+				// (or without proper CORS headers on the video host) the canvas is
+				// tainted and toDataURL() throws a SecurityError.
+				video.crossOrigin = 'anonymous';
+				video.muted = true;
+
+				// Guarantee the promise always settles — even if no media event
+				// fires — so the modal can never hang.
+				let settled = false;
+				let timer: ReturnType< typeof setTimeout >;
+				const finish = ( result: string | null ) => {
+					if ( settled ) {
+						return;
+					}
+					settled = true;
+					clearTimeout( timer );
+					resolve( result );
+				};
+				timer = setTimeout( () => finish( null ), 15000 );
+
+				video.onloadeddata = () => {
+					try {
 						const canvas = document.createElement( 'canvas' );
 						canvas.width = video.videoWidth;
 						canvas.height = video.videoHeight;
 						const ctx = canvas.getContext( '2d' );
-						if ( ctx ) {
-							ctx.drawImage(
-								video,
-								0,
-								0,
-								canvas.width,
-								canvas.height
-							);
-							const thumbUrl = canvas.toDataURL( 'image/jpeg' );
-							setGeneratedThumbnail( thumbUrl );
-							resolve( thumbUrl );
-						} else {
-							resolve( null );
+						if ( ! ctx ) {
+							finish( null );
+							return;
 						}
-					};
-					video.onerror = () => resolve( null );
-				} catch ( e ) {
-					// eslint-disable-next-line no-console
-					console.error( 'Error generating thumbnail', e );
-					resolve( null );
-				}
+						ctx.drawImage(
+							video,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+						// toDataURL() throws on a cross-origin tainted canvas. This
+						// runs inside an async callback, so the throw MUST be caught
+						// here or the promise never settles and the modal hangs.
+						const thumbUrl = canvas.toDataURL( 'image/jpeg' );
+						setGeneratedThumbnail( thumbUrl );
+						finish( thumbUrl );
+					} catch ( e ) {
+						// eslint-disable-next-line no-console
+						console.error(
+							'Error generating thumbnail (likely cross-origin/CORS on the video host)',
+							e
+						);
+						finish( null );
+					}
+				};
+				video.onerror = () => finish( null );
+				video.src = url;
+				video.currentTime = 1;
 			} );
 		}
 		return null;

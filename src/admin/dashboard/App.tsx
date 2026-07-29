@@ -2,6 +2,7 @@ import { applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import { withRouter } from '../../utils/router';
 import Layout from './Layout/Layout';
+import UpgradeBanner from './UpgradeBanner';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import Settings from './pages/Settings';
 import Dashboard from './pages/Dashboard';
@@ -82,6 +83,7 @@ function App() {
 
 	return (
 		<>
+			<UpgradeBanner />
 			<RouterProvider router={ router } />
 		</>
 	);

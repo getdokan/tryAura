@@ -10,6 +10,14 @@ function ConfigFooter( {
 	downloadName,
 	isBlockEditorPage = false,
 	optionalPrompt = '',
+	// #33: an apparel mode is itself a directive, so it satisfies the
+	// block-editor prompt requirement without any typed text.
+	bypassPromptRequirement = false,
+	// #32: the Edit tab relabels the action ("Apply edit" / "Re-apply").
+	primaryLabel = __( 'Generate', 'tryaura' ),
+	primaryBusyLabel = __( 'Generating…', 'tryaura' ),
+	regenerateLabel = __( 'Regenerate', 'tryaura' ),
+	regenerateBusyLabel = __( 'Regenerating…', 'tryaura' ),
 } ) {
 	return (
 		<div className="flex flex-row gap-[12px]">
@@ -20,9 +28,7 @@ function ConfigFooter( {
 						disabled={ isBusy || uploading }
 						loading={ isBusy }
 					>
-						{ isBusy
-							? __( 'Regenerating…', 'tryaura' )
-							: __( 'Regenerate', 'tryaura' ) }
+						{ isBusy ? regenerateBusyLabel : regenerateLabel }
 					</Button>
 
 					<Button
@@ -48,13 +54,12 @@ function ConfigFooter( {
 						uploading ||
 						( hasPro() &&
 							isBlockEditorPage &&
-							optionalPrompt.trim() === '' )
+							optionalPrompt.trim() === '' &&
+							! bypassPromptRequirement )
 					}
 					loading={ isBusy }
 				>
-					{ isBusy
-						? __( 'Generating…', 'tryaura' )
-						: __( 'Generate', 'tryaura' ) }
+					{ isBusy ? primaryBusyLabel : primaryLabel }
 				</Button>
 			) }
 		</div>

@@ -1,4 +1,4 @@
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { useState, useEffect, useRef } from '@wordpress/element';
 import { STORE_NAME } from '../store';
 import { __ } from '@wordpress/i18n';
@@ -7,21 +7,37 @@ import Congrats from '../../../images/congrats.gif';
 import { Slot } from '@wordpress/components';
 import GenerateVideoBtn from './GenerateVideoBtn';
 
-function Output( { className = '' } ) {
+function Output( {
+	className = '',
+	onRegenerateAltText,
+}: {
+	className?: string;
+	supportsVideo?: boolean;
+	onRegenerateAltText?: ( sourceDataUrl?: string ) => void;
+} ) {
 	const [ showCongrats, setShowCongrats ] = useState( false );
-	const { generatedUrl, message, error, isBusy, status } = useSelect(
-		( select ) => {
-			const store = select( STORE_NAME );
-			return {
-				generatedUrl: store.getGeneratedUrl(),
-				message: store.getMessage(),
-				error: store.getError(),
-				isBusy: store.isBusy(),
-				status: store.getStatus(),
-			};
-		},
-		[]
-	);
+	const {
+		generatedUrl,
+		message,
+		error,
+		isBusy,
+		status,
+		altText,
+		generatingAltText,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+		return {
+			generatedUrl: store.getGeneratedUrl(),
+			message: store.getMessage(),
+			error: store.getError(),
+			isBusy: store.isBusy(),
+			status: store.getStatus(),
+			altText: store.getAltText(),
+			generatingAltText: store.getGeneratingAltText(),
+		};
+	}, [] );
+
+	const { setAltText } = useDispatch( STORE_NAME );
 
 	const prevIsBusy = useRef( isBusy );
 
@@ -80,6 +96,39 @@ function Output( { className = '' } ) {
 					</div>
 
 					<GenerateVideoBtn />
+
+					{ /* #25: editable AI alt text */ }
+					<div className="flex flex-col gap-1">
+						<div className="flex flex-row items-center justify-between">
+							<span className="text-[14px]">
+								{ __( 'Alt Text', 'tryaura' ) }
+							</span>
+							<button
+								type="button"
+								className="text-[12px] text-primary cursor-pointer bg-transparent border-0 p-0 disabled:opacity-50"
+								onClick={ () => onRegenerateAltText?.() }
+								disabled={ generatingAltText || isBusy }
+							>
+								{ generatingAltText
+									? __( 'Generating…', 'tryaura' )
+									: __( 'Regenerate', 'tryaura' ) }
+							</button>
+						</div>
+						<textarea
+							className="border border-[#E9E9E9] placeholder-[#A5A5AA] focus:shadow-none focus:ring-1 focus:ring-primary"
+							value={ altText }
+							onChange={ ( e: any ) => setAltText( e.target.value ) }
+							rows={ 2 }
+							placeholder={
+								generatingAltText
+									? __( 'Generating alt text…', 'tryaura' )
+									: __(
+											'Alt text will appear here after generation',
+											'tryaura'
+									  )
+							}
+						/>
+					</div>
 
 					<Slot name="TryAuraEnhancerAfterImageOutput" />
 				</div>

@@ -1,6 +1,12 @@
 @import "../../base-tailwind.css";
+@import "@wedevs/plugin-ui/styles.css";
 
 @source "../dashboard/**/*.{ts,tsx,js,jsx,php,html}";
+/* Scan plugin-ui's compiled bundle so Tailwind generates the utility classes
+   its components use (e.g. the TopBar's h-7.5 / max-h-16.5). They aren't in
+   plugin-ui's own styles.css, so without this the bar breaks on any site that
+   doesn't separately ship those utilities (e.g. via Dokan's global CSS). */
+@source "../../../node_modules/@wedevs/plugin-ui/dist/index.js";
 
 
 .tryaura {
@@ -13,4 +19,41 @@
 	.components-modal__content {
 		padding: 0 !important;
 	}
+}
+
+/*
+ * The Top Bar help menu renders in a portal at body level, outside the
+ * `.tryaura` scope, so Tailwind utilities from this bundle can't reach it.
+ */
+/* Full-bleed the content area so the Top Bar spans the whole width, then
+   re-add the inset on the app body only (the header keeps its own padding). */
+.toplevel_page_tryaura #wpcontent {
+	padding: 0;
+	overflow-x: hidden;
+}
+
+.toplevel_page_tryaura #wpcontent .wrap {
+	margin: 0;
+}
+
+.toplevel_page_tryaura .tryaura-admin-page-body {
+	padding: 16px 20px 0;
+}
+
+/* Notices are captured into this hidden wrapper so the Top Bar sits first. */
+.tryaura-notice-list-hide {
+	display: none;
+}
+
+/* Doubled .pui-root + !important: Dokan's dokan-tailwind.css ships the same
+   plugin-ui utilities globally in wp-admin with !important at (0,2,0). */
+.pui-root.pui-root [data-slot="dropdown-menu-content"] {
+	width: max-content !important;
+	min-width: 13rem !important;
+}
+
+/* Keep wp-admin's global a:focus box-shadow out of the portal. */
+.pui-root.pui-root [data-slot="dropdown-menu-item"]:focus {
+	outline: none;
+	box-shadow: none;
 }

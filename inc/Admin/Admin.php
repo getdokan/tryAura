@@ -66,7 +66,7 @@ class Admin {
 	/**
 	 * Whether the current admin screen is the TryAura page.
 	 *
-	 * @since 1.0.5
+	 * @since PLUGIN_SINCE
 	 *
 	 * @return bool
 	 */
@@ -84,7 +84,7 @@ class Admin {
 	 * any notice fires collects them all inside a hidden container, so the
 	 * Top Bar can sit at the very top of the page.
 	 *
-	 * @since 1.0.5
+	 * @since PLUGIN_SINCE
 	 *
 	 * @return void
 	 */
@@ -100,7 +100,7 @@ class Admin {
 	/**
 	 * Close the hidden notice wrapper opened in inject_before_notices().
 	 *
-	 * @since 1.0.5
+	 * @since PLUGIN_SINCE
 	 *
 	 * @return void
 	 */
@@ -276,7 +276,7 @@ class Admin {
 	/**
 	 * Read a plugin version from its main file header.
 	 *
-	 * @since 1.0.5
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param string $plugin_file Absolute path to the plugin main file.
 	 *

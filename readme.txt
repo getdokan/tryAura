@@ -2,7 +2,7 @@
 Contributors: wedevs, tareq1988, nizamuddinbabu
 Tags: virtual try on, product visualization, try-on, virtual mirror
 Requires at least: 6.6
-Tested up to: 6.9.4
+Tested up to: 7.0
 WC tested up to: 10.7.0
 Requires PHP: 7.4
 Stable tag: 2.0.0

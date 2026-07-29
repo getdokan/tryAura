@@ -102,7 +102,7 @@ function TopBar() {
 
 	return (
 		<StorePulseTopBar
-			className="border-0 border-b border-solid border-border"
+			className="border-0 border-b border-solid border-border tryaura"
 			logo={
 				<a
 					href="https://storepulse.co/tryaura"

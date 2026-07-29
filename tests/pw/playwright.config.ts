@@ -15,7 +15,18 @@ export default defineConfig( {
 	forbidOnly: !! process.env.CI,
 	retries: process.env.CI ? 1 : 0,
 	workers: 1,
-	reporter: process.env.CI ? 'github' : 'list',
+	// On CI the `github` reporter alone only annotates failures, so a passing run
+	// leaves no trace that anything ran. `list` puts every test in the build log,
+	// `json` feeds scripts/ci-summary.mjs (the job summary), and `html` is
+	// uploaded as an artifact.
+	reporter: process.env.CI
+		? [
+				[ 'list' ],
+				[ 'github' ],
+				[ 'json', { outputFile: 'test-results/results.json' } ],
+				[ 'html', { open: 'never', outputFolder: 'playwright-report' } ],
+		  ]
+		: 'list',
 	use: {
 		baseURL: process.env.WP_BASE_URL || 'http://localhost:8899',
 		trace: 'on-first-retry',

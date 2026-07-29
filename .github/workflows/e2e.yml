@@ -62,9 +62,21 @@ jobs:
                   npx playwright install --with-deps chromium
                   npx wp-env start
 
-            - name: Run E2E specs
+            - name: Run E2E specs (Pro inactive → @lite suite)
               working-directory: tests/pw
               run: npm run test:e2e
+
+            - name: Publish test results
+              # always(), so the summary is written for failures too — and so a
+              # green check always carries the list of what actually ran.
+              if: always()
+              working-directory: tests/pw
+              env:
+                  E2E_EXCLUDED_NOTE: >-
+                      Pro plugin is **inactive** in CI (a stub plugin header
+                      satisfies the wp-env mapping). The `@pro` suite is excluded
+                      via `--grep-invert @pro` and did **not** run.
+              run: node scripts/ci-summary.mjs
 
             - name: Collect failure diagnostics
               if: failure()
@@ -72,10 +84,12 @@ jobs:
               run: npx wp-env logs tests --no-watch || true
 
             - name: Upload Playwright artifacts
-              if: failure()
+              if: always()
               uses: actions/upload-artifact@v4
               with:
-                  name: playwright-artifacts
-                  path: tests/pw/test-results
+                  name: playwright-report
+                  path: |
+                      tests/pw/playwright-report
+                      tests/pw/test-results
                   retention-days: 7
                   if-no-files-found: ignore

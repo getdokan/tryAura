@@ -35,8 +35,8 @@ class Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
 		// Capture admin notices so the Top Bar renders first on our page.
-		add_action( 'admin_notices', array( $this, 'inject_before_notices' ), -9999 );
-		add_action( 'admin_notices', array( $this, 'inject_after_notices' ), PHP_INT_MAX );
+		add_action( 'admin_notices', array( $this, 'inject_before_notices' ), 0 );
+		add_action( 'admin_notices', array( $this, 'inject_after_notices' ), 99 );
 
 		add_filter( 'plugin_action_links_' . plugin_basename( TRYAURA_FILE ), array( $this, 'add_settings_action_link' ) );
 	}
@@ -66,7 +66,7 @@ class Admin {
 	/**
 	 * Whether the current admin screen is the TryAura page.
 	 *
-	 * @since 1.0.5
+	 * @since PLUGIN_SINCE
 	 *
 	 * @return bool
 	 */
@@ -84,7 +84,7 @@ class Admin {
 	 * any notice fires collects them all inside a hidden container, so the
 	 * Top Bar can sit at the very top of the page.
 	 *
-	 * @since 1.0.5
+	 * @since PLUGIN_SINCE
 	 *
 	 * @return void
 	 */
@@ -100,7 +100,7 @@ class Admin {
 	/**
 	 * Close the hidden notice wrapper opened in inject_before_notices().
 	 *
-	 * @since 1.0.5
+	 * @since PLUGIN_SINCE
 	 *
 	 * @return void
 	 */
@@ -276,7 +276,7 @@ class Admin {
 	/**
 	 * Read a plugin version from its main file header.
 	 *
-	 * @since 1.0.5
+	 * @since PLUGIN_SINCE
 	 *
 	 * @param string $plugin_file Absolute path to the plugin main file.
 	 *

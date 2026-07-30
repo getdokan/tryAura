@@ -1,0 +1,160 @@
+name: E2E (wp-env)
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+    workflow_dispatch:
+
+concurrency:
+    group: e2e-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    e2e:
+        name: Playwright E2E Tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        env:
+            # Read into `env` so steps can gate on it: the `secrets` context is not
+            # available to every `if`, and forks never see the token at all.
+            PRO_REPO_TOKEN: ${{ secrets.PRO_REPO_TOKEN }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup PHP 7.4
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '7.4'
+                  coverage: none
+                  tools: composer:v2
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  # @wedevs/plugin-ui declares engines.node >= 22.
+                  node-version: '22'
+                  cache: npm
+                  cache-dependency-path: |
+                      package-lock.json
+                      tests/pw/package-lock.json
+
+            - name: Build plugin
+              # Dev install on purpose: Mozart (post-install-cmd) only runs in dev
+              # mode and emits lib/packages/, which the plugin loads at runtime.
+              # build/, lib/ and vendor/ are all gitignored, so none of this is
+              # optional.
+              run: |
+                  composer install --no-interaction --no-progress
+                  npm ci
+                  npm run build
+
+            # Pro is a separate private repo. Without the token (fork PRs, or before
+            # the secret is added) it is simply absent and the run stays lite-only.
+            - name: Checkout tryaura-pro
+              if: env.PRO_REPO_TOKEN != ''
+              uses: actions/checkout@v4
+              with:
+                  repository: getdokan/tryaura-pro
+                  path: .tryaura-pro-src
+                  token: ${{ env.PRO_REPO_TOKEN }}
+
+            # Pro's composer.json requires php >=8.0, so it cannot be installed
+            # with the 7.4 toolchain used for the free plugin (which pins 7.4 to
+            # match its own minimum). Only the runner's PHP changes here — wp-env
+            # serves both plugins on 8.2 regardless.
+            - name: Setup PHP 8.2 for tryaura-pro
+              if: env.PRO_REPO_TOKEN != ''
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  coverage: none
+                  tools: composer:v2
+
+            - name: Build tryaura-pro
+              if: env.PRO_REPO_TOKEN != ''
+              # actions/checkout cannot write outside the workspace, so move it next
+              # to the plugin dir — the layout .wp-env.ci.json expects, and the same
+              # one developers have locally under wp-content/plugins/.
+              run: |
+                  PRO_DIR="$(dirname "$GITHUB_WORKSPACE")/tryaura-pro"
+                  mv "$GITHUB_WORKSPACE/.tryaura-pro-src" "$PRO_DIR"
+                  cd "$PRO_DIR"
+                  composer install --no-interaction --no-progress
+                  npm ci
+                  npm run build
+
+            - name: Prepare wp-env config
+              id: wpenv
+              working-directory: tests/pw
+              # Picks .wp-env.ci.json (lite + Pro) when Pro is on disk, else the
+              # lite-only .wp-env.json, and reports which via the `pro` output.
+              run: node scripts/prepare-wp-env.mjs
+
+            - name: Start wp-env
+              working-directory: tests/pw
+              run: |
+                  npm ci
+                  npx playwright install --with-deps chromium
+                  npx wp-env start
+
+            # test:lite deactivates Pro first, so these run against a genuine
+            # free-only install even when Pro is present.
+            - name: Run @lite specs
+              working-directory: tests/pw
+              env:
+                  E2E_REPORT_DIR: playwright-report/lite
+                  E2E_RESULTS: test-summary/results-lite.json
+              run: npm run test:lite
+
+            - name: Publish @lite results
+              if: always()
+              working-directory: tests/pw
+              env:
+                  E2E_RESULTS: test-summary/results-lite.json
+                  E2E_SUITE_LABEL: 'E2E — @lite (Pro deactivated)'
+              run: node scripts/ci-summary.mjs
+
+            # !cancelled() rather than always(): a @lite failure should not hide
+            # the @pro result, but a cancelled run should stop here.
+            - name: Run @pro specs
+              if: ${{ !cancelled() && steps.wpenv.outputs.pro == 'true' }}
+              working-directory: tests/pw
+              env:
+                  E2E_REPORT_DIR: playwright-report/pro
+                  E2E_RESULTS: test-summary/results-pro.json
+              run: npm run test:pro
+
+            - name: Publish @pro results
+              if: ${{ !cancelled() && steps.wpenv.outputs.pro == 'true' }}
+              working-directory: tests/pw
+              env:
+                  E2E_RESULTS: test-summary/results-pro.json
+                  E2E_SUITE_LABEL: 'E2E — @pro (Pro activated)'
+              run: node scripts/ci-summary.mjs
+
+            - name: Note skipped @pro suite
+              if: ${{ !cancelled() && steps.wpenv.outputs.pro != 'true' }}
+              run: |
+                  echo "## E2E — @pro: skipped" >> "$GITHUB_STEP_SUMMARY"
+                  echo "" >> "$GITHUB_STEP_SUMMARY"
+                  echo "> TryAura Pro was not checked out (no \`PRO_REPO_TOKEN\`, or a fork PR), so the \`@pro\` suite did **not** run." >> "$GITHUB_STEP_SUMMARY"
+
+            - name: Collect failure diagnostics
+              if: failure()
+              working-directory: tests/pw
+              run: npx wp-env logs tests --no-watch || true
+
+            - name: Upload Playwright artifacts
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: playwright-report
+                  path: |
+                      tests/pw/playwright-report
+                      tests/pw/test-results
+                      tests/pw/test-summary
+                  retention-days: 7
+                  if-no-files-found: ignore

@@ -1,10 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin } from '../../utils/auth';
 
 test.describe( 'Gemini settings', { tag: '@lite' }, () => {
-	test.beforeEach( async ( { page } ) => {
-		await loginAsAdmin( page );
-	} );
 
 	test( 'saves the API key and shows a success message', async ( {
 		page,

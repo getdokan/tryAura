@@ -1,10 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin } from '../../utils/auth';
 import { stubGemini } from '../../utils/gemini';
 
 test.describe( 'Enhancer image generation', { tag: '@lite' }, () => {
 	test.beforeEach( async ( { page } ) => {
-		await loginAsAdmin( page );
 		// Every Gemini call is stubbed in the browser — no token spent.
 		await stubGemini( page );
 	} );

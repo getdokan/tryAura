@@ -1,7 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
-import { loginAsAdmin } from '../../../utils/auth';
 import { openEnhancer, setVideoConfig } from '../../../utils/enhancer';
 import veoDone from '../../../fixtures/veo-operation-done.json';
 
@@ -13,9 +12,6 @@ test.describe(
 	'Video generation — config combinations (Pro)',
 	{ tag: '@pro' },
 	() => {
-		test.beforeEach( async ( { page } ) => {
-			await loginAsAdmin( page );
-		} );
 
 		async function generateVideoWith(
 			page: Page,

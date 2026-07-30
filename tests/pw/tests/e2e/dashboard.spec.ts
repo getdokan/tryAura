@@ -1,10 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin } from '../../utils/auth';
 
 test.describe( 'TryAura admin dashboard', { tag: '@lite' }, () => {
-	test.beforeEach( async ( { page } ) => {
-		await loginAsAdmin( page );
-	} );
 
 	test( 'renders the Top Bar and navigates to Settings', async ( { page } ) => {
 		await page.goto( '/wp-admin/admin.php?page=tryaura#/' );

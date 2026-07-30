@@ -9,10 +9,11 @@
  */
 import fs from 'fs';
 
-const RESULTS = 'test-results/results.json';
+const RESULTS = process.env.E2E_RESULTS || 'test-summary/results.json';
+const SUITE = process.env.E2E_SUITE_LABEL || 'Playwright E2E';
 
 if ( ! fs.existsSync( RESULTS ) ) {
-	const msg = `⚠️ No Playwright results at \`${ RESULTS }\` — the suite did not run.`;
+	const msg = `## ${ SUITE }\n\n⚠️ No results at \`${ RESULTS }\` — this suite did not run.`;
 	writeOut( msg );
 	console.error( msg );
 	process.exit( 0 );
@@ -63,7 +64,7 @@ const headline = failed
 	: `✅ ${ passed } passed`;
 
 const lines = [
-	`## Playwright E2E — ${ headline }`,
+	`## ${ SUITE } — ${ headline }`,
 	'',
 	`**${ passed } passed · ${ failed } failed · ${ flaky } flaky · ${ skipped } skipped** in ${ total.toFixed( 1 ) }s`,
 	'',

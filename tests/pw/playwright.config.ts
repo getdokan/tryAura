@@ -1,4 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
+import { ADMIN_STORAGE_STATE } from './utils/auth';
+
+// The @lite and @pro suites run back to back in CI, so each needs its own report
+// paths or the second run overwrites the first one's evidence.
+const REPORT_DIR = process.env.E2E_REPORT_DIR || 'playwright-report';
+// Deliberately NOT under test-results/: Playwright wipes its outputDir at the
+// start of every run, so the @pro run would delete the @lite run's summary.
+const RESULTS_JSON = process.env.E2E_RESULTS || 'test-summary/results.json';
 
 /**
  * Playwright config for the TryAura E2E suite (runs against wp-env's "tests"
@@ -23,8 +31,8 @@ export default defineConfig( {
 		? [
 				[ 'list' ],
 				[ 'github' ],
-				[ 'json', { outputFile: 'test-results/results.json' } ],
-				[ 'html', { open: 'never', outputFolder: 'playwright-report' } ],
+				[ 'json', { outputFile: RESULTS_JSON } ],
+				[ 'html', { open: 'never', outputFolder: REPORT_DIR } ],
 		  ]
 		: 'list',
 	use: {
@@ -35,6 +43,19 @@ export default defineConfig( {
 		launchOptions: { slowMo: Number( process.env.PW_SLOWMO ) || 0 },
 	},
 	projects: [
-		{ name: 'chromium', use: { ...devices[ 'Desktop Chrome' ] } },
+		// Logs in once and writes the session to ADMIN_STORAGE_STATE. Runs first
+		// because every other project depends on it.
+		{ name: 'setup', testMatch: /_auth\.setup\.ts/ },
+		{
+			name: 'chromium',
+			testMatch: /.*\.spec\.ts/,
+			// Start every spec from the cached session instead of re-running the
+			// login form per test (~2s each).
+			use: {
+				...devices[ 'Desktop Chrome' ],
+				storageState: ADMIN_STORAGE_STATE,
+			},
+			dependencies: [ 'setup' ],
+		},
 	],
 } );

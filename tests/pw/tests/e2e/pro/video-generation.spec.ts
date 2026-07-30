@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
-import { loginAsAdmin } from '../../../utils/auth';
 import { openEnhancer, setVideoConfig } from '../../../utils/enhancer';
 import veoDone from '../../../fixtures/veo-operation-done.json';
 
@@ -11,9 +10,6 @@ import veoDone from '../../../fixtures/veo-operation-done.json';
  * points at a committed few-KB MP4. No token, no real Veo call (docs/adr/0002).
  */
 test.describe( 'Video generation (Pro)', { tag: '@pro' }, () => {
-	test.beforeEach( async ( { page } ) => {
-		await loginAsAdmin( page );
-	} );
 
 	test( 'generates a video through the stubbed Veo flow', async ( {
 		page,

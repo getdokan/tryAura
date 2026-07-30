@@ -1,10 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin } from '../../utils/auth';
 
 test.describe( 'Sidebar Upgrade button', { tag: '@lite' }, () => {
-	test.beforeEach( async ( { page } ) => {
-		await loginAsAdmin( page );
-	} );
 
 	test( 'appears in the TryAura admin menu and links to pricing', async ( {
 		page,

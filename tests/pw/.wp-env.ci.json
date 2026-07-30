@@ -7,6 +7,7 @@
 	],
 	"mappings": {
 		"wp-content/plugins/tryaura": "../../",
+		"wp-content/plugins/tryaura-pro": "../../../tryaura-pro",
 		"wp-content/mu-plugins": "./mu-plugins"
 	},
 	"lifecycleScripts": {

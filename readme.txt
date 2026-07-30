@@ -23,6 +23,26 @@ TryAura is built and maintained by [weDevs](https://wedevs.com/?utm_source=wordp
 
 [youtube https://www.youtube.com/watch?v=G1JB-r8eZ7g]
 
+== 🔥 What Is New in TryAura 2.0 ==
+
+TryAura 2.0 is the most substantial creative workflow update we have shipped. It gives WooCommerce merchants more control over product accuracy, scene, image quality, apparel presentation, image editing, and video motion without leaving WordPress.
+
+The result is a faster path from a basic product photo to a polished visual that is accurate, consistent, and ready for product pages, campaigns, social media, and ads.
+
+=== 🎊 New: Creative Control in TryAura Lite ===
+
+* **More accurate AI product images.** Add reference images from different angles, exclude unwanted elements with a negative prompt, and keep product shape, colour, details, text, and logos more consistent.
+* **Faster scene creation.** Pick studio white, lifestyle, marble, wood table, outdoor, and other ready-made settings. Generated images now follow your Background Preference and Output Style.
+* **Image resolution control.** Choose a supported aspect ratio and generate at 1K, 2K, or 4K with automatic compatible model selection.
+* **Better apparel presentation and image SEO.** Create On model apparel images and receive descriptive AI alt text with every generated image.
+* **A smoother admin workflow.** Cancel a running generation and reach support, documentation, FAQ, changelog, and feature requests from the new Admin Top Bar.
+
+=== 🎊 New : Advanced Image and Video Workflows ===
+
+* **Start from a look.** Use six curated eCommerce presets or save your own presets to your account for reuse across browsers and devices.
+* **Edit instead of regenerating.** Remove text or objects, recolour, clean up imperfections, swap backgrounds, or enter a custom instruction. Ghost mannequin output presents apparel without a visible model.
+* **Direct every product video.** Choose from 15 camera motions, set first and last frames, add reference images, select 4, 6, or 8 seconds, choose up to 4K on supported models, and refine the clip with a negative prompt.
+
 Find step-by-step setup guides and tutorials in the [product documentation](https://storepulse.co/tryaura/docs/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo) to get the most out of every feature.
 
 If you have additional questions or need assistance, please [contact our team](https://storepulse.co/contact/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo), or visit our official website at [StorePulse](https://storepulse.co/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo).
@@ -33,10 +53,14 @@ If you have additional questions or need assistance, please [contact our team](h
 * **Try on accessories** like glasses, watches, and jewelry, without new photoshoots
 * **Show product in hand**, with models holding cosmetics, gadgets, bottles, or accessories
 * **Change the model** to match different styles, demographics, or brand aesthetics
-* **Change the background** to clean, lifestyle, or studio-style scenes
+* **Stage the background** with ready-made studio white, lifestyle, marble, wood table, outdoor, and other product scenes
+* **Keep product details accurate** by adding reference images from more angles
+* **Create apparel visuals** with On model output or Ghost mannequin
+* **Edit existing product images** by removing text or objects, recolouring products, cleaning up blemishes, and swapping backgrounds
 * **Create product videos** that turn static images into short, engaging clips
+* **Control product video motion** with 15 camera motions, first and last frames, reference images, duration, resolution, and negative prompts
 * **Generate blog featured images** for content that matches your store
-* **Build any visually driven WooCommerce store**: fashion, apparel, beauty, jewelry, accessories, lifestyle
+* **Build any visually driven WooCommerce store** for fashion, apparel, beauty, jewelry, accessories, and lifestyle products
 * **Virtual mirrors** that let customers try the product on themselves
 
 == The Problem TryAura Solves ==
@@ -88,15 +112,31 @@ There are no TryAura credits, no per-image fees, and no expiring packs, so you s
 
 Built-in presets are designed specifically for eCommerce product presentation, so you get consistent, realistic visuals without manual design work.
 
-* **Backgrounds**: Studio, Custom, Natural, and Plain
-* **Output styles**: Photo Realistic, Studio Mockup, and Model Shoot
-* **Custom prompt box** to describe exactly the AI image you want (Starter plan and above)
-* **Image aspect ratios**: square, landscape, and portrait output (Pro)
-* **Background and scene control** to improve or replace backgrounds while preserving the original product
+* **Ready-made scenes.** Choose studio white, lifestyle, flat lay, marble, wood table, outdoor, and more
+* **Background preferences.** Choose Studio, Custom, Natural, or Plain
+* **Output styles.** Choose Photo Realistic, Studio Mockup, or Model Shoot
+* **Reference images.** Attach extra product shots to improve shape, colour, and detail accuracy
+* **Image negative prompt.** Describe anything you want excluded from the generated image
+* **Image resolution.** Generate 1K, 2K, or 4K output with automatic compatible model selection
+* **Aspect ratio control.** Choose 1:1, 2:3, 3:2, 3:4, 4:3, 9:16, 16:9, or 21:9
+* **Custom prompt box.** Describe the exact AI product image you want on the Starter plan and above
+* **Start from a look.** TryAura Pro includes six curated looks and lets you save reusable custom looks to your account
 
-We are working on bringing other presets, advanced controls and features to enhance TryAura within your store.
+Generated images now follow your selected Background Preference and Output Style, so the final result reflects the creative direction you chose.
 
 Apply the same preset across products to keep a uniform, professional look throughout your store, or switch to lifestyle scenes for marketing and campaign visuals.
+
+=== Edit Product Images Without Starting Over ===
+
+TryAura Pro adds a dedicated Edit tab for fast product image retouching inside WooCommerce. Remove unwanted text, recolour a product, remove an object, clean up the image, swap the background, or write a custom instruction for another edit.
+
+The Cleanup action removes wrinkles, dust, lint, and blemishes while protecting product shape, colour, text, and logos. This helps you correct a strong image without losing the details that make the product recognizable.
+
+=== Create Apparel Images That Match the Selling Context ===
+
+Use On model output to show clothing naturally worn by a person. TryAura Pro also includes Ghost mannequin output, which presents the garment in its natural worn shape without a visible body.
+
+These apparel modes help fashion and clothing stores create clearer product gallery images without arranging a separate model shoot for every item.
 
 === Fits Natively In Your Workflow ===
 
@@ -147,22 +187,28 @@ TryAura works best for stores where product appearance matters most for the sale
 
 == 🎯 TryAura Pro Features ==
 
-Upgrade to a [Pro plan](https://storepulse.co/tryaura/pricing/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo) to unlock advanced creative control and product video generation.
+Upgrade to a [Pro plan](https://storepulse.co/tryaura/pricing/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo) to unlock advanced image editing, reusable creative looks, Ghost mannequin apparel output, and deeper product video control.
 
-* **Product video generation**: turn existing product visuals into short product videos
-* **Custom prompt field**: describe exactly the visual you want for full control over results
-* **Image aspect ratio control**: output square, landscape, or portrait images for every placement
-* **Camera motion controls**: add cinematic movement to generated product videos
-* **Video aspect ratios**: produce 16:9 and 9:16 videos for product pages, social, and ads
-* **Video duration control**: set how long each generated product video runs
-* **Video thumbnail generation**: create or customize thumbnails to lift play rates
-* **Multi-site licensing**: use TryAura across multiple WooCommerce sites on Professional and Agency plans
+* **Reusable eCommerce looks.** Start with one of six curated looks or save your own setup to your account for reuse across browsers and devices
+* **Product image editing and protected cleanup.** Remove text or objects, recolour, swap backgrounds, or clear wrinkles, dust, lint, and blemishes while protecting shape, colour, text, and logos
+* **Ghost mannequin apparel output.** Show garments in their natural worn shape without a visible model
+* **Product video generation.** Turn existing product visuals into short product videos
+* **Motion and frame direction.** Choose from 15 camera motions and set the first and last frames
+* **Video product accuracy.** Add reference images and an editable negative prompt
+* **Video duration and resolution.** Create 4, 6, or 8 second clips at 720p or 1080p, with 4K on supported models
+* **Custom prompt field.** Describe the exact visual you want for full control over results
+* **Image and video aspect ratios.** Prepare visuals for product pages, social media, and ads
+* **Video thumbnail generation.** Create or customize thumbnails to improve first impressions
+* **Multi-site licensing.** Use TryAura across multiple WooCommerce sites on Professional and Agency plans
 
 == Why Store Owners Choose TryAura ==
 
 * **No credit system.** Bring your own Gemini key and pay Google directly at API rates, with no per-image fees and no expiring packs.
 * **Everything inside WooCommerce.** No exports, no separate dashboards, and no third-party apps to manage.
-* **Accuracy you can trust.** Models are tuned for eCommerce, so results look realistic instead of over-polished or fake.
+* **Accuracy you can trust.** Reference images help preserve product shape, colour, details, text, and logos across generated visuals.
+* **Control from input to output.** Choose scenes, negative prompts, aspect ratio, resolution, apparel presentation, and advanced video motion.
+* **Edit instead of restarting.** TryAura Pro lets you retouch strong product images and clean up common imperfections without rebuilding the whole visual.
+* **Accessible product images.** Automatic AI alt text gives every generated image a useful description for accessibility and image SEO.
 * **One plugin, three jobs.** AI product images, product videos, and virtual try-on live in a single tool.
 * **Privacy by design.** Camera use is optional and customer try-on photos are not stored in your backend.
 * **Built to scale.** Roll out visuals and try-on across catalogs of any size, one product at a time or all at once.
@@ -206,10 +252,14 @@ Please refer to [Google AI Studio](https://aistudio.google.com/), [Google Terms 
 
 Customer try-on photos are used only to generate the requested preview and are not stored in your website backend.
 
+
 == Frequently Asked Questions ==
 
 = What is TryAura and how does it work with WooCommerce? =
 [TryAura](https://storepulse.co/tryaura/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo) is a WooCommerce plugin that helps you upgrade product images, create short videos, and enable virtual try-on directly inside your store. You select a product, generate visuals, and publish them to your product pages. 
+
+= What is new in TryAura 2.0? =
+TryAura 2.0 adds reference images, ready-made scene staging, 1K, 2K, and 4K image output, image negative prompts, automatic AI alt text, On model apparel output, clearer generation controls, and a new admin top bar. TryAura Pro adds reusable looks, product image editing, protected cleanup, Ghost mannequin output, 15 camera motions, first and last frames, video reference images, video duration and resolution controls, and editable video negative prompts.
 
 = How does virtual try-on help with conversions and returns? =
 A virtual try-on, or virtual mirror, helps shoppers see how a product looks before buying. Clearer product visualization reduces hesitation and supports more confident decisions, which helps with engagement and fewer surprises after purchase.

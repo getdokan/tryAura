@@ -17,7 +17,7 @@ Get **AI product photography**, **product video generation**, and a customer-fac
 
 **[TryAura](https://storepulse.co/tryaura/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo)** turns basic product photos into studio-quality **AI product photography**, realistic **AI product images**, engaging product videos, and immersive **WooCommerce virtual try-on** experiences. Improve **product visualization**, help shoppers visualize products before purchasing, and create unlimited AI-generated product visuals using your own Google Gemini API key.
 
-It is built for **WooCommerce store owners** who want to improve product presentation, create clearer visual experiences, and help customers make informed purchase decisions.
+It is built for **WooCommerce store owners** who want to improve product presentation, create clearer visual experiences, and help customers make informed purchase decisions without jumping between multiple AI tools.
 
 TryAura is built and maintained by [weDevs](https://wedevs.com/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo), a WordPress-focused software company with 13 years in the ecosystem, trusted by over 1 million users across its product portfolio. It is part of the [StorePulse](https://storepulse.co/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo) family of eCommerce solutions.
 
@@ -27,11 +27,11 @@ TryAura is built and maintained by [weDevs](https://wedevs.com/?utm_source=wordp
 
 TryAura 2.0 is the most substantial creative workflow update we have shipped. It gives WooCommerce merchants more control over product accuracy, scene, image quality, apparel presentation, image editing, and video motion without leaving WordPress.
 
-The result is a faster path from a basic product photo to a polished visual that is accurate, consistent, and ready for product pages, campaigns, social media, and ads.
+The result is a faster path from a basic product photo to a polished product photo & video that is accurate, consistent, and ready for product pages, campaigns, social media, and ads. 
 
-=== 🎊 New: Creative Control in TryAura Lite ===
+=== 🎊 New: Creative Controls in TryAura Lite ===
 
-* **More accurate AI product images.** Add reference images from different angles, exclude unwanted elements with a negative prompt, and keep product shape, colour, details, text, and logos more consistent.
+* **More accurate AI product images.** Add reference images from different angles, exclude unwanted elements with a negative prompt, and keep product shape, colour, details, text, and logos more consistent for clearer visuals.
 * **Faster scene creation.** Pick studio white, lifestyle, marble, wood table, outdoor, and other ready-made settings. Generated images now follow your Background Preference and Output Style.
 * **Image resolution control.** Choose a supported aspect ratio and generate at 1K, 2K, or 4K with automatic compatible model selection.
 * **Better apparel presentation and image SEO.** Create On model apparel images and receive descriptive AI alt text with every generated image.
@@ -71,7 +71,7 @@ Professional photoshoots help, but they are expensive, slow to repeat, and hard 
 
 **[TryAura](https://storepulse.co/tryaura/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo)** helps you close that gap. It improves your existing product images, generates new visuals and videos, and adds a virtual mirror to the product page, so shoppers see the product clearly and decide with confidence before they add to cart.
 
-Everything happens inside WooCommerce, with no exports, no separate dashboards, and no third-party apps to manage.
+Everything happens inside WooCommerce, with no exports, no separate dashboards, and no third-party apps to manage. Save hundreds of hours when working with a large catalogue, and create on-brand visuals without expensive workarounds.
 
 == Create Stunning Product Visuals with Cutting Edge AI Infrastructure ==
 With TryAura, you can upgrade your whole product catalogue with fresh photos, videos, and virtual try-on experiences without expensive photoshoots. Here are some of the **[features](https://storepulse.co/tryaura/features/?utm_source=wordpress.org&utm_medium=readme&utm_campaign=tryaura-repo)** of TryAura.

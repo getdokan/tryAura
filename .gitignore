@@ -10,6 +10,9 @@ composer.phar
 # Playwright E2E artifacts
 tests/pw/test-results/
 tests/pw/playwright-report/
+tests/pw/playwright/.auth/
+tests/pw/test-summary/
+tests/pw/.wp-env.override.json
 tests/pw/.last-run.json
 
 # Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control

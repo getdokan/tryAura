@@ -16,6 +16,18 @@ export default function globalSetup(): void {
 		// The meta may not exist yet — that's fine.
 	}
 
+	// Ensure a Gemini API key exists — PreviewModal refuses to call Gemini without
+	// one, so on a clean/CI DB the enhancer and image-config specs would have no
+	// request to intercept. The seeded key is fake; every call is still stubbed.
+	try {
+		execSync(
+			'npx wp-env run tests-cli wp eval-file wp-content/plugins/tryaura/tests/pw/seed-settings.php',
+			{ stdio: 'ignore' }
+		);
+	} catch ( e ) {
+		// best effort — the enhancer specs will surface a missing key clearly
+	}
+
 	// Ensure the media library has at least one image — the enhancer specs open
 	// the media modal and select one (a clean/CI DB would otherwise be empty).
 	try {

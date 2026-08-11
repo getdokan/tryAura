@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin } from '../../utils/auth';
 import { openEnhancer, setImageConfig } from '../../utils/enhancer';
 import imageFixture from '../../fixtures/gemini-image.json';
 
@@ -9,9 +8,6 @@ import imageFixture from '../../fixtures/gemini-image.json';
  * under test; the returned image is a fixed fixture (docs/adr/0002).
  */
 test.describe( 'Image generation — config combinations', { tag: '@lite' }, () => {
-	test.beforeEach( async ( { page } ) => {
-		await loginAsAdmin( page );
-	} );
 
 	/**
 	 * Generate with the given config; return the captured Gemini request.

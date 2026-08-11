@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin } from '../../../utils/auth';
 
 /**
  * @pro — runs only with TryAura Pro active (`npm run test:pro`). Verifies the
@@ -9,9 +8,6 @@ test.describe(
 	'Pro promotion touchpoints are hidden when Pro is active',
 	{ tag: '@pro' },
 	() => {
-		test.beforeEach( async ( { page } ) => {
-			await loginAsAdmin( page );
-		} );
 
 		test( 'no promo banner on the TryAura dashboard', async ( { page } ) => {
 			await page.goto( '/wp-admin/admin.php?page=tryaura#/' );

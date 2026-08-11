@@ -1,12 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin } from '../../utils/auth';
 
 const BANNER_HEADING = 'Go Pro. Create Without Limits.';
 
 test.describe( 'Pro promo banner', { tag: '@lite' }, () => {
-	test.beforeEach( async ( { page } ) => {
-		await loginAsAdmin( page );
-	} );
 
 	test( 'shows on the TryAura dashboard and the dismissal persists', async ( {
 		page,

@@ -144,7 +144,20 @@ class UsageManager {
 			return $stats;
 		}
 
-		$where  = "WHERE status = 'success'";
+		/**
+		 * Filters the base WHERE clause of the dashboard usage queries.
+		 *
+		 * Lets add-ons keep their own ledger rows out of (or scoped within)
+		 * the stats, chart and activity queries. The clause must not contain
+		 * placeholders.
+		 *
+		 * @since PLUGIN_SINCE
+		 *
+		 * @param string $where   Base WHERE clause.
+		 * @param string $context Query context: `stats`, `chart` or `activities`.
+		 * @param array  $args    Query arguments.
+		 */
+		$where  = apply_filters( 'tryaura_usage_query_where', "WHERE status = 'success'", 'stats', $args );
 		$params = array();
 
 		if ( $start_date ) {
@@ -211,7 +224,8 @@ class UsageManager {
 			return $chart_data;
 		}
 
-		$where  = "WHERE status = 'success'";
+		/** This filter is documented in inc/Database/UsageManager.php */
+		$where  = apply_filters( 'tryaura_usage_query_where', "WHERE status = 'success'", 'chart', $args );
 		$params = [ $table ];
 
 		$where   .= ' AND created_at >= %s';
@@ -307,7 +321,8 @@ class UsageManager {
 			return $results;
 		}
 
-		$where  = "WHERE status = 'success'";
+		/** This filter is documented in inc/Database/UsageManager.php */
+		$where  = apply_filters( 'tryaura_usage_query_where', "WHERE status = 'success'", 'activities', $args );
 		$params = array( $table );
 
 		if ( $type ) {
@@ -316,7 +331,23 @@ class UsageManager {
 
 			if( $is_fetchable === false ) return [];
 
-			if ( $type === 'tryon' ) {
+			/**
+			 * Filters the WHERE fragment for a custom activity type.
+			 *
+			 * Return a non-empty fragment, for example "AND provider = 'x'", to
+			 * handle a type that is not a `type` column value. The fragment must
+			 * not contain placeholders.
+			 *
+			 * @since PLUGIN_SINCE
+			 *
+			 * @param string $type_where WHERE fragment. Default empty.
+			 * @param string $type       Requested activity type.
+			 */
+			$type_where = apply_filters( 'tryaura_recent_activity_type_where', '', $type );
+
+			if ( '' !== $type_where ) {
+				$where .= ' ' . $type_where;
+			} elseif ( $type === 'tryon' ) {
 				if ( ! class_exists( 'WooCommerce' )) {
 					return array();
 				}

@@ -1,6 +1,10 @@
 import { __ } from '@wordpress/i18n';
+import { Slot } from '@wordpress/components';
 import Gemini from './Gemini';
 import TryOnControl from './Woocommerce/TryOnControl';
+import LiveTryOnUpsellCard from './LiveTryOn/UpsellCard';
+import SettingItemCard from './components/SettingItemCard';
+import { hasPro } from '../../../../utils/tryaura';
 
 const Index = () => {
 	// @ts-ignore
@@ -15,6 +19,11 @@ const Index = () => {
 			<div className="flex flex-col gap-8">
 				<Gemini />
 				{ wcExists && <TryOnControl /> }
+				{ wcExists && ! hasPro() && <LiveTryOnUpsellCard /> }
+				<Slot
+					name="tryaura-settings-cards"
+					fillProps={ { SettingItemCard, wcExists } }
+				/>
 			</div>
 		</div>
 	);

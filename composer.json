@@ -69,6 +69,10 @@
 		],
 		"test-f": [
 			"phpunit --filter"
+		],
+		"test-pro": [
+			"@putenv TRYAURA_TEST_PRO=1",
+			"phpunit --group live-try-on"
 		]
 	},
 	"extra": {

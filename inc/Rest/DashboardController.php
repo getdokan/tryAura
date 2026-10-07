@@ -176,7 +176,14 @@ class DashboardController {
 						'sanitize_callback' => 'sanitize_text_field',
 						'schema'            => array(
 							'type' => 'string',
-							'enum' => array( '', 'image', 'video', 'tryon' ),
+							/**
+							 * Filters the activity types accepted by the activities route.
+							 *
+							 * @since PLUGIN_SINCE
+							 *
+							 * @param string[] $types Accepted activity types. Empty means all.
+							 */
+							'enum' => apply_filters( 'tryaura_recent_activity_rest_types', array( '', 'image', 'video', 'tryon' ) ),
 						),
 					),
 				),

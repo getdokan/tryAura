@@ -31,6 +31,14 @@ require_once $_tests_dir . '/includes/functions.php';
 
 define( 'TEST_WC_DIR', dirname( TRYAURA_PLUGIN_ROOT ) . '/woocommerce' );
 
+/*
+ * Pro suite: `TRYAURA_TEST_PRO=1 vendor/bin/phpunit --group live-try-on` (or
+ * `composer test-pro`) also loads TryAura Pro with a simulated active license.
+ * Off by default, so Lite-only tests keep seeing Lite on its own.
+ */
+define( 'TRYAURA_TEST_PRO', (bool) getenv( 'TRYAURA_TEST_PRO' ) );
+define( 'TEST_TRYAURA_PRO_DIR', dirname( TRYAURA_PLUGIN_ROOT ) . '/tryaura-pro' );
+
 // Load WooCommerce (if present) then the plugin, once mu-plugins have loaded.
 tests_add_filter(
 	'muplugins_loaded',
@@ -42,6 +50,22 @@ tests_add_filter(
 			require TEST_WC_DIR . '/woocommerce.php';
 		}
 		require TRYAURA_PLUGIN_ROOT . '/tryaura.php';
+
+		if ( TRYAURA_TEST_PRO && file_exists( TEST_TRYAURA_PRO_DIR . '/tryaura-pro.php' ) ) {
+			// Simulate an active license, as the E2E guard mu-plugin does.
+			add_filter(
+				'pre_option_tryaura_pro_license',
+				static function () {
+					return array(
+						'key'         => 'phpunit',
+						'status'      => 'activate',
+						'expiry_days' => false,
+					);
+				}
+			);
+
+			require TEST_TRYAURA_PRO_DIR . '/tryaura-pro.php';
+		}
 	}
 );
 

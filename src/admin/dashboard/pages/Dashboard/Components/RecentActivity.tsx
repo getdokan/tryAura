@@ -22,8 +22,10 @@ function RecentActivity( {
 	const [ activities, setActivities ] = useState( [] );
 	const [ loading, setLoading ]       = useState( true );
 
+	// Tabs that need WooCommerce (Try Ons, or add-on tabs that set
+	// `requiresWooCommerce`) wait until WooCommerce is confirmed.
 	const filteredTabs = tabs.filter( ( tab ) => {
-		if ( tab.id === 'tryon' ) {
+		if ( tab.id === 'tryon' || tab.requiresWooCommerce ) {
 			return wcExists;
 		}
 		return true;
@@ -44,7 +46,22 @@ function RecentActivity( {
 			.catch( () => setLoading( false ) );
 	}, [ activeTab ] );
 
+	// Add-ons can render their own rows (for example Live try-on sessions).
+	// Return null from the filter to keep the default display.
+	const getCustomDisplay = (
+		activity: any
+	): { icon: JSX.Element; iconBg: string; text: string } | null =>
+		applyFilters(
+			'tryaura.recent.activity.item_display',
+			null,
+			activity
+		) as { icon: JSX.Element; iconBg: string; text: string } | null;
+
 	const getIcon = ( activity: any ) => {
+		const custom = getCustomDisplay( activity );
+		if ( custom ) {
+			return custom.icon;
+		}
 		if ( activity.generated_from === 'tryon' ) {
 			return <Eye size={ 20 } className="text-[#0ea5e9]" />;
 		}
@@ -55,6 +72,10 @@ function RecentActivity( {
 	};
 
 	const getIconBg = ( activity: any ) => {
+		const custom = getCustomDisplay( activity );
+		if ( custom ) {
+			return custom.iconBg;
+		}
 		if ( activity.generated_from === 'tryon' ) {
 			return 'bg-[#0ea5e91a]';
 		}
@@ -65,6 +86,10 @@ function RecentActivity( {
 	};
 
 	const getActivityText = ( activity: any ) => {
+		const custom = getCustomDisplay( activity );
+		if ( custom ) {
+			return custom.text;
+		}
 		const objectName = activity.object_name
 			? ` '${ activity.object_name }'`
 			: '';

@@ -5,7 +5,7 @@ Requires at least: 6.6
 Tested up to: 7.0
 WC tested up to: 10.7.0
 Requires PHP: 7.4
-Stable tag: 2.0.0
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -338,6 +338,11 @@ This may have bugs and lack of many features. If you want to contribute on this 
 
 == Changelog ==
 
+= v2.1.0 ( Oct 07, 2026 ) =
+- **new:** Added a Live Try-On card to Settings, introducing real-time camera try-on available with TryAura Pro.
+- **update:** Added dashboard and Recent Activity extension points so add-ons can contribute their own activity types, tabs and stats filters.
+- **update:** Recent Activity tabs can now require WooCommerce, matching the existing Try Ons tab.
+
 = v2.0.0 ( Jul 29, 2026 ) =
 - **new:** Added an Edit tab for targeted image edits — Remove text, Recolor, Remove object, Clean up and Swap background — with an optional instruction field to refine the change. Only the area you describe is edited; the rest of the shot is left untouched.
 - **new:** Added an Apparel Output control with On model and Ghost mannequin presentations, so a garment can be shown worn or holding its 3D shape with no visible model.
@@ -375,6 +380,9 @@ This may have bugs and lack of many features. If you want to contribute on this 
 * Initial release
 
 == Upgrade Notice ==
+
+= 2.1.0 =
+Adds the groundwork for Live Try-On, real-time camera try-on available with TryAura Pro. Update is recommended for all users.
 
 = 2.0.0 =
 Major update: a new Edit tab for targeted image edits, on-model and ghost-mannequin apparel output, reference angles, 1K/2K/4K resolution, expanded scene staging and AI alt text, plus fixes for try-on and thumbnail generation. Update is recommended for all users.

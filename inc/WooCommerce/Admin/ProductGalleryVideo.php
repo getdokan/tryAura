@@ -110,7 +110,8 @@ class ProductGalleryVideo {
 		$video_data = get_post_meta( $product_id, self::VIDEO_META_KEY, true );
 
 		$settings    = get_option( 'tryaura_settings', array() );
-		$api_key     = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
+		// Only admins may see the key; it is printed into the page for client-side generation.
+		$api_key     = current_user_can( 'manage_options' ) && isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
 		$image_model = isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '';
 
 		$script_path = 'build/admin/product-video-gallery/index.js';

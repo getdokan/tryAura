@@ -40,7 +40,8 @@ class Enhancer {
 		$post_type = $post ? $post->post_type : '';
 
 		$settings    = get_option( 'tryaura_settings', array() );
-		$api_key     = isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
+		// Only admins may see the key; it is printed into the page for client-side generation.
+		$api_key     = current_user_can( 'manage_options' ) && isset( $settings['google']['apiKey'] ) ? $settings['google']['apiKey'] : '';
 		$image_model = isset( $settings['google']['imageModel'] ) ? $settings['google']['imageModel'] : '';
 		$video_model = isset( $settings['google']['videoModel'] ) ? $settings['google']['videoModel'] : '';
 
